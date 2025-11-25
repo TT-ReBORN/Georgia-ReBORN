@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-11-2024                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -194,7 +194,7 @@ class PlaylistRow extends BaseListItem {
 
 			if (this.length_text) {
 				const length_x = this.x + this.w - length_w - right_pad;
-				gr.DrawString(this.length_text, title_font, this.title_color, length_x, this.y, length_w, this.h, Stringformat.h_align_far | Stringformat.v_align_center);
+				gr.DrawString(this.length_text, title_font, this.title_color, length_x, this.y, length_w, this.h, Stringformat.H_Align_Far | Stringformat.V_Align_Center);
 				testRect && gr.DrawRect(length_x, this.y - 1, length_w, this.h, 1, RGBA(155, 155, 255, 250));
 
 				// * Refresh playlist time display every second if it is not default
@@ -234,7 +234,7 @@ class PlaylistRow extends BaseListItem {
 				const plr_track_w = Math.ceil(gr.MeasureString(this.plr_track, pl.font.plr_track, 0, 0, 0, 0).Width);
 				const plr_track_x = this.x + this.w - plr_track_w - right_pad;
 
-				gr.DrawString(this.plr_track, pl.font.plr_track, this.title_color, plr_track_x, this.y, plr_track_w, this.h, Stringformat.align_center);
+				gr.DrawString(this.plr_track, pl.font.plr_track, this.title_color, plr_track_x, this.y, plr_track_w, this.h, Stringformat.Align_Center);
 				testRect && gr.DrawRect(plr_track_x, this.y - 1, plr_track_w, this.h, 1, RGBA(155, 155, 255, 250));
 
 				right_pad = this.w - (plr_track_x - this.x) + 5;
@@ -271,7 +271,7 @@ class PlaylistRow extends BaseListItem {
 				);
 				const count_x = this.x + this.w - count_w - right_pad;
 
-				gr.DrawString(this.count_text, pl.font.playcount, this.title_color, count_x, this.y, count_w, this.h, Stringformat.align_center);
+				gr.DrawString(this.count_text, pl.font.playcount, this.title_color, count_x, this.y, count_w, this.h, Stringformat.Align_Center);
 				testRect && gr.DrawRect(count_x, this.y - 1, count_w, this.h, 1, RGBA(155, 155, 255, 250));
 
 				right_pad += count_w;
@@ -303,7 +303,7 @@ class PlaylistRow extends BaseListItem {
 		}
 		if (this.title_text) {
 			const title_w = this.w - right_pad - SCALE(44);
-			const title_text_format = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+			const title_text_format = Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 
 			DrawString(gr, this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			if (this.is_playing) {
@@ -334,7 +334,7 @@ class PlaylistRow extends BaseListItem {
 		if (this.title_artist_text) {
 			const title_artist_x = cur_x;
 			const title_artist_w = this.w - (title_artist_x - this.x) - right_pad;
-			const title_artist_text_format = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+			const title_artist_text_format = Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 
 			if (grSet.showDifferentArtist) {
 				DrawString(gr, this.title_artist_text, title_artist_font, this.title_color, title_artist_x, this.y, title_artist_w, this.h, title_artist_text_format);
@@ -350,7 +350,7 @@ class PlaylistRow extends BaseListItem {
 		if (queueText) {
 			const queueX = cur_x;
 			const queueW = this.w - (queueX - this.x) - right_pad;
-			const queueTextFormat = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+			const queueTextFormat = Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 			let queueColor = this.title_color; // col.primary;
 
 			if (this.is_playing || ColorDistance(queueColor, pl.col.row_stripes_bg) < 165) {

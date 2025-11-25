@@ -3213,7 +3213,7 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
 			line.text += ' ABCDEFGHIJKMLNOPQRSTUVWXYZABCDEFGHIJKMLNOPQRSTUVWXYZ';	// Trigger ellipses
 		}
 		gr.DrawString(line.text, line.font, color, left + line.x_offset, top + yOffset,
-			availableWidth - line.x_offset, lineHeight, Stringformat.trim_ellipsis_word);
+			availableWidth - line.x_offset, lineHeight, Stringformat.Trim_Ellipsis_Word);
 		yOffset += lineHeight;
 	}
 	return linesDrawn * lineHeight;

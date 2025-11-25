@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-08-2024                                              * //
+// * Last change:    25-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -52,10 +52,10 @@ function PlaylistCreateFonts(forceCreation = false) {
 	pl.font.title_selected = Font(titleSelectedFont, rowFontSize);
 	pl.font.title_playing  = Font(titlePlayingFont, rowFontSize);
 
-	pl.font.artist_normal          = Font(artistNormalFont, headerFontSize + 3, grSet.customThemeFonts ? FontStyle.bold : 0);
-	pl.font.artist_playing         = Font(artistPlayingFont, headerFontSize + 3, grSet.customThemeFonts ? FontStyle.bold : 0);
+	pl.font.artist_normal          = Font(artistNormalFont, headerFontSize + 3, grSet.customThemeFonts ? FontStyle.Bold : 0);
+	pl.font.artist_playing         = Font(artistPlayingFont, headerFontSize + 3, grSet.customThemeFonts ? FontStyle.Bold : 0);
 	pl.font.artist_normal_compact  = Font(artistNormalCompactFont, headerFontSize);
-	pl.font.artist_playing_compact = Font(artistPlayingCompactFont, headerFontSize, FontStyle.underline);
+	pl.font.artist_playing_compact = Font(artistPlayingCompactFont, headerFontSize, FontStyle.Underline);
 
 	pl.font.album          = Font(albumFont, headerFontSize);
 	pl.font.date           = Font(dateFont, headerFontSize + 3);

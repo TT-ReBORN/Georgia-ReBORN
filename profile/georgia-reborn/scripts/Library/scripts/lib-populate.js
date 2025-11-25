@@ -902,7 +902,7 @@ class LibPopulate {
 	}
 
 	draw(gr) { // * Heavily modified
-		if (lib.lib.empty) return gr.DrawString(lib.lib.empty, lib.ui.font.main, lib.ui.col.text, lib.ui.x, grm.ui.wh * 0.5 - lib.ui.y - lib.panel.search.h * 0.5, lib.panel.tree.w, lib.ui.row.h * 3, Stringformat.align_center);
+		if (lib.lib.empty) return gr.DrawString(lib.lib.empty, lib.ui.font.main, lib.ui.col.text, lib.ui.x, grm.ui.wh * 0.5 - lib.ui.y - lib.panel.search.h * 0.5, lib.panel.tree.w, lib.ui.row.h * 3, Stringformat.Align_Center);
 		if (!this.tree.length || !lib.panel.draw) return gr.GdiDrawText(this.libItems && !lib.panel.search.txt && !libSet.filterBy && libSet.libSource ? 'Loading...\n\n' : lib.lib.none, lib.ui.font.main, lib.ui.col.text, lib.ui.x + lib.ui.sz.margin, lib.ui.y + lib.panel.search.h, lib.panel.tree.w, lib.ui.row.h * 3);
 		if (lib.panel.imgView) return;
 		const b = $Lib.clamp(Math.round(lib.sbar.delta / lib.ui.row.h + 0.4), 0, this.tree.length - 1);

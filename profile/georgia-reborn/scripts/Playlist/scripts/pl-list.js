@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-11-2024                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -313,7 +313,7 @@ class BaseList {
 			const empty = plman.PlaylistCount <= 1;
 			const name = plman.GetPlaylistName(plman.ActivePlaylist);
 			const text = empty ? 'Drop some tracks here\nor play from the library' : `Playlist: ${name}\nEmpty`;
-			gr.DrawString(text, pl.font.title_normal, pl.col.row_title_normal, this.x, this.y, this.w, this.h, Stringformat.align_center);
+			gr.DrawString(text, pl.font.title_normal, pl.col.row_title_normal, this.x, this.y, this.w, this.h, Stringformat.Align_Center);
 		}
 
 		if (this.is_scrollbar_visible) {

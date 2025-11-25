@@ -232,19 +232,19 @@ const TextRenderingHint = {
 /**
  * A set of foobar's album art ID settings used to identify which album art image to load.
  * @typedef  {object} AlbumArtId
- * @property {number} front - The front album art image.
- * @property {number} back - The back album art image.
- * @property {number} disc - The disc album art image.
- * @property {number} icon - The ccon album art image.
- * @property {number} artist - The artist album art image.
+ * @property {number} Front - The front album art image.
+ * @property {number} Back - The back album art image.
+ * @property {number} Disc - The disc album art image.
+ * @property {number} Icon - The ccon album art image.
+ * @property {number} Artist - The artist album art image.
  */
 /** @global @enum @type {AlbumArtId} */
 const AlbumArtId = {
-	front: 0,
-	back: 1,
-	disc: 2,
-	icon: 3,
-	artist: 4
+	Front: 0,
+	Back: 1,
+	Disc: 2,
+	Icon: 3,
+	Artist: 4
 };
 
 /**
@@ -276,77 +276,77 @@ const DrawText = {
 /**
  * A set of text formatting settings used in gr.DrawString() or gr.GdiDrawText().
  * @typedef  {object} Stringformat
- * @property {number} h_align_near - The horizontal align near.
- * @property {number} h_align_center - The horizontal align center.
- * @property {number} h_align_far - The horizontal align far.
- * @property {number} v_align_near - The vertical align near.
- * @property {number} v_align_center - The vertical align center.
- * @property {number} v_align_far - The vertical align far.
- * @property {number} align_center - The align center.
- * @property {number} trim_none - The no trimming.
- * @property {number} trim_char - The trim to character.
- * @property {number} trim_word - The trim to word.
- * @property {number} trim_ellipsis_char - The trim with ellipsis at character.
- * @property {number} trim_ellipsis_word - The trim with ellipsis at word.
- * @property {number} trim_ellipsis_path - The trim with ellipsis at path.
- * @property {number} dir_right_to_Left - The right to left text direction.
- * @property {number} dir_vertical - The vertical text direction.
- * @property {number} no_fit_black_box - The no fit black box.
- * @property {number} display_format_control - The display format control.
- * @property {number} no_font_fallback - The no font fallback.
- * @property {number} measure_trailing_spaces - The measure trailing spaces.
- * @property {number} no_wrap - The no wrap.
- * @property {number} line_limit - The line limit.
- * @property {number} no_clip - The no clip.
+ * @property {number} H_Align_Near - The horizontal align near.
+ * @property {number} H_Align_Center - The horizontal align center.
+ * @property {number} H_Align_Far - The horizontal align far.
+ * @property {number} V_Align_Near - The vertical align near.
+ * @property {number} V_Align_Center - The vertical align center.
+ * @property {number} V_Align_Far - The vertical align far.
+ * @property {number} Align_Center - The align center.
+ * @property {number} Trim_None - The no trimming.
+ * @property {number} Trim_Char - The trim to character.
+ * @property {number} Trim_Word - The trim to word.
+ * @property {number} Trim_Ellipsis_Char - The trim with ellipsis at character.
+ * @property {number} Trim_Ellipsis_Word - The trim with ellipsis at word.
+ * @property {number} Trim_Ellipsis_Path - The trim with ellipsis at path.
+ * @property {number} Dir_Right_To_Left - The right to left text direction.
+ * @property {number} Dir_Vertical - The vertical text direction.
+ * @property {number} No_Fit_Black_Box - The no fit black box.
+ * @property {number} Display_Format_Control - The display format control.
+ * @property {number} No_Font_Fallback - The no font fallback.
+ * @property {number} Measure_Trailing_Spaces - The measure trailing spaces.
+ * @property {number} No_Wrap - The no wrap.
+ * @property {number} Line_Limit - The line limit.
+ * @property {number} No_Clip - The no clip.
  */
 /** @global @enum @type {Stringformat} */
 const Stringformat = {
-	h_align_near: 0x00000000,
-	h_align_center: 0x10000000,
-	h_align_far: 0x20000000,
+	H_Align_Near: 0x00000000,
+	H_Align_Center: 0x10000000,
+	H_Align_Far: 0x20000000,
 
-	v_align_near: 0x00000000,
-	v_align_center: 0x01000000,
-	v_align_far: 0x02000000,
+	V_Align_Near: 0x00000000,
+	V_Align_Center: 0x01000000,
+	V_Align_Far: 0x02000000,
 
-	align_center: 0x11000000,
+	Align_Center: 0x11000000,
 
-	trim_none: 0x00000000,
-	trim_char: 0x00100000,
-	trim_word: 0x00200000,
-	trim_ellipsis_char: 0x00300000,
-	trim_ellipsis_word: 0x00400000,
-	trim_ellipsis_path: 0x00500000,
+	Trim_None: 0x00000000,
+	Trim_Char: 0x00100000,
+	Trim_Word: 0x00200000,
+	Trim_Ellipsis_Char: 0x00300000,
+	Trim_Ellipsis_Word: 0x00400000,
+	Trim_Ellipsis_Path: 0x00500000,
 
-	dir_right_to_Left: 0x00000001,
-	dir_vertical: 0x00000002,
-	no_fit_black_box: 0x00000004,
-	display_format_control: 0x00000020,
-	no_font_fallback: 0x00000400,
-	measure_trailing_spaces: 0x00000800,
-	no_wrap: 0x00001000,
-	line_limit: 0x00002000,
-	no_clip: 0x00004000
+	Dir_Right_To_Left: 0x00000001,
+	Dir_Vertical: 0x00000002,
+	No_Fit_Black_Box: 0x00000004,
+	Display_Format_Control: 0x00000020,
+	No_Font_Fallback: 0x00000400,
+	Measure_Trailing_Spaces: 0x00000800,
+	No_Wrap: 0x00001000,
+	Line_Limit: 0x00002000,
+	No_Clip: 0x00004000
 };
 
 /**
  * A set of font style settings used when creating font objects.
  * @typedef  {object} FontStyle
- * @property {number} regular - The regular font style.
- * @property {number} bold - The bold font style.
- * @property {number} italic - The italic font style.
- * @property {number} bold_italic - The bold and italic font style.
- * @property {number} underline - The underline font style.
- * @property {number} strikeout - The strikeout font style.
+ * @property {number} Regular - The regular font style.
+ * @property {number} Bold - The bold font style.
+ * @property {number} Italic - The italic font style.
+ * @property {number} Bold_Italic - The bold and italic font style.
+ * @property {number} Underline - The underline font style.
+ * @property {number} Strikeout - The strikeout font style.
  */
 /** @global @enum @type {FontStyle} */
 const FontStyle = {
-	regular: 0,
-	bold: 1,
-	italic: 2,
-	bold_italic: 3,
-	underline: 4,
-	strikeout: 8
+	Regular: 0,
+	Bold: 1,
+	Italic: 2,
+	Bold_Italic: 3,
+	Underline: 4,
+	Strikeout: 8
 };
 
 /**

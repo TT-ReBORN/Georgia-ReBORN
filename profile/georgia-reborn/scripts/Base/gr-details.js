@@ -420,7 +420,7 @@ class Details {
 		gr.SetTextRenderingHint(!RES._4K && (grSet.gridArtistFontSize_layout < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
 		const artistColor = ['white', 'black', 'reborn', 'random'].includes(grSet.theme) ? grCol.detailsText : grSet.theme === 'cream' ? pl.col.header_artist_normal : pl.col.header_artist_playing;
-		DrawString(gr, grm.ui.getFormattedString('gridArtist'), grFont.gridArtist, artistColor,	this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridArtistNumLinesHeight, Stringformat.trim_ellipsis_char);
+		DrawString(gr, grm.ui.getFormattedString('gridArtist'), grFont.gridArtist, artistColor,	this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridArtistNumLinesHeight, Stringformat.Trim_Ellipsis_Char);
 
 		// * Artist country flags
 		if (grStr.artist && grSet.showGridArtistFlags_layout) {
@@ -443,7 +443,7 @@ class Details {
 		// * Apply better anti-aliasing on smaller font sizes in HD res
 		gr.SetTextRenderingHint(!RES._4K && (grSet.gridTitleFontSize_layout < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
-		DrawString(gr, grm.ui.getFormattedString('gridTitle'), grFont.gridTitle, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridTitleNumLinesHeight, Stringformat.trim_ellipsis_char);
+		DrawString(gr, grm.ui.getFormattedString('gridTitle'), grFont.gridTitle, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridTitleNumLinesHeight, Stringformat.Trim_Ellipsis_Char);
 
 		this.gridTitleTop = this.gridTop;
 		this.gridTitleBottom = this.gridTop + this.gridTitleNumLinesHeight;
@@ -461,7 +461,7 @@ class Details {
 		// * Apply better anti-aliasing on smaller font sizes in HD res
 		gr.SetTextRenderingHint(!RES._4K && (grSet.gridAlbumFontSize_layout < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
-		DrawString(gr, grStr.album, grFont.gridAlbum, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridAlbumNumLinesHeight, Stringformat.trim_ellipsis_char);
+		DrawString(gr, grStr.album, grFont.gridAlbum, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridAlbumNumLinesHeight, Stringformat.Trim_Ellipsis_Char);
 
 		this.gridAlbumTop = this.gridTop;
 		this.gridAlbumBottom = this.gridTop + this.gridAlbumNumLinesHeight;
@@ -545,7 +545,7 @@ class Details {
 						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft + gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
 						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft - gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
 					}
-					gr.DrawString(this.gridColumnKey, grFont.gridKey, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridColumnKeyWidth, this.gridColumnCellHeight, Stringformat.trim_ellipsis_char);
+					gr.DrawString(this.gridColumnKey, grFont.gridKey, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridColumnKeyWidth, this.gridColumnCellHeight, Stringformat.Trim_Ellipsis_Char);
 					gr.DrawString(this.gridColumnValue, grFont.gridVal, gridValueColor, this.gridColumnValueLeft, Math.round(this.gridTop), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
 
 					// * Release flag
@@ -876,7 +876,7 @@ class Details {
 			this.gridArtistWrapInfo        = CalcWrapSpace(gr, grStr.artist, grFont.gridArtist, this.gridContentWidth, this.cachedGridWrapSpace);
 			this.gridArtistWrapLinesExceed = this.gridArtistWrapInfo.lineCount > 2;
 			this.gridArtistWrapWidth       = this.gridArtistWrapInfo.totalWrapSpace - this.gridFlagSizeW;
-			this.gridArtistWidth           = Math.ceil(gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0, Stringformat.trim_ellipsis_char | Stringformat.measure_trailing_spaces).Width + this.gridFlagSizeW + this.gridArtistWrapWidth);
+			this.gridArtistWidth           = Math.ceil(gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0, Stringformat.Trim_Ellipsis_Char | Stringformat.Measure_Trailing_Spaces).Width + this.gridFlagSizeW + this.gridArtistWrapWidth);
 			this.gridArtistHeight          = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0).Height;
 			this.gridArtistTxtRec          = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, grSet.showGridArtistFlags_layout && grm.ui.flagImgs.length ? this.gridContentWidth - this.gridFlagSizeW : this.gridContentWidth, grm.ui.wh);
 			this.gridArtistNumLines        = Math.min(2, this.gridArtistTxtRec.Lines);
@@ -887,7 +887,7 @@ class Details {
 			this.gridTitleWrapInfo        = CalcWrapSpace(gr, grm.ui.getFormattedString('gridTitle'), grFont.gridTitle, this.gridContentWidth, this.cachedGridWrapSpace);
 			this.gridTitleWrapLinesExceed = this.gridTitleWrapInfo.lineCount > 2;
 			this.gridTitleWrapWidth       = this.gridTitleWrapInfo.totalWrapSpace;
-			this.gridTitleWidth           = Math.ceil(gr.MeasureString(grStr.title, grFont.gridTitle, 0, 0, 0, 0, Stringformat.trim_ellipsis_char | Stringformat.measure_trailing_spaces).Width + this.gridTrackNumWidth + this.gridTrackNumSpacing + this.gridTitleWrapWidth);
+			this.gridTitleWidth           = Math.ceil(gr.MeasureString(grStr.title, grFont.gridTitle, 0, 0, 0, 0, Stringformat.Trim_Ellipsis_Char | Stringformat.Measure_Trailing_Spaces).Width + this.gridTrackNumWidth + this.gridTrackNumSpacing + this.gridTitleWrapWidth);
 			this.gridTitleHeight          = gr.MeasureString(grStr.title, grFont.gridTitle, 0, 0, 0, 0).Height;
 			this.gridTitleTxtRec          = gr.MeasureString(grm.ui.getFormattedString('gridTitle'), grFont.gridTitle, 0, 0, this.gridContentWidth, grm.ui.wh);
 			this.gridTitleNumLines        = Math.min(2, this.gridTitleTxtRec.Lines);
@@ -896,7 +896,7 @@ class Details {
 			this.gridAlbumWrapInfo        = CalcWrapSpace(gr, grStr.album, grFont.gridAlbum, this.gridContentWidth, this.cachedGridWrapSpace);
 			this.gridAlbumWrapLinesExceed = this.gridAlbumWrapInfo.lineCount > (grSet.showGridArtist_layout || grSet.showGridTitle_layout ? 2 : 3);
 			this.gridAlbumWrapWidth       = this.gridAlbumWrapInfo.totalWrapSpace;
-			this.gridAlbumWidth           = Math.ceil(gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, 0, 0, Stringformat.trim_ellipsis_char | Stringformat.measure_trailing_spaces).Width) + this.gridAlbumWrapWidth;
+			this.gridAlbumWidth           = Math.ceil(gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, 0, 0, Stringformat.Trim_Ellipsis_Char | Stringformat.Measure_Trailing_Spaces).Width) + this.gridAlbumWrapWidth;
 			this.gridAlbumHeight          = gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, 0, 0).Height;
 			this.gridAlbumTxtRec          = gr.MeasureString(grStr.album, grFont.gridAlbum, 0, 0, this.gridContentWidth, grm.ui.wh);
 			this.gridAlbumNumLines        = Math.min(grSet.showGridArtist_layout || grSet.showGridTitle_layout ? 2 : 3, this.gridAlbumTxtRec.Lines);

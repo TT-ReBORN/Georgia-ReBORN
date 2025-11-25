@@ -966,10 +966,10 @@ class MainUI {
 
 		// * Artist, tracknum, title
 		if (this.lowerBarOneLine || this.lowerBarTwoLines && grSet.layout === 'default') {
-			DrawString(gr, grStr.artistLower, grFont.lowerBarArtist, grCol.lowerBarArtist, this.lowerBarArtistX, this.lowerBarArtistY, this.lowerBarAvailableW - this.lowerBarFlagW, this.lowerBarArtistH, Stringformat.trim_ellipsis_char);
+			DrawString(gr, grStr.artistLower, grFont.lowerBarArtist, grCol.lowerBarArtist, this.lowerBarArtistX, this.lowerBarArtistY, this.lowerBarAvailableW - this.lowerBarFlagW, this.lowerBarArtistH, Stringformat.Trim_Ellipsis_Char);
 		}
 		gr.DrawString(this.getFormattedString('lowerBarTrackNum'), grFont.lowerBarTitle, grCol.lowerBarTitle, this.lowerBarTrackNumX, this.lowerBarTrackNumY, this.lowerBarTrackNumW - this.lowerBarTimeAreaW, this.lowerBarTitleH, StringFormat(0, 0, 4, 0x00001000));
-		DrawString(gr, grStr.titleLower, grFont.lowerBarTitle, grCol.lowerBarTitle, this.lowerBarTitleX, this.lowerBarTitleY, this.lowerBarAvailableW - this.lowerBarTrackNumW, this.lowerBarTitleH, Stringformat.trim_ellipsis_char);
+		DrawString(gr, grStr.titleLower, grFont.lowerBarTitle, grCol.lowerBarTitle, this.lowerBarTitleX, this.lowerBarTitleY, this.lowerBarAvailableW - this.lowerBarTrackNumW, this.lowerBarTitleH, Stringformat.Trim_Ellipsis_Char);
 
 		// * Artist country flags
 		if (grSet.showLowerBarArtist_layout && grSet.showLowerBarArtistFlags_layout && (grSet.layout === 'default' || grSet.layout !== 'default' && !this.lowerBarTwoLines)) {
@@ -3112,12 +3112,12 @@ class MainUI {
 		grFont.topMenuCompact = Font(grFont.fontAwesome, grSet.menuFontSize_layout, 0);
 
 		// * LOWER BAR * //
-		grFont.lowerBarArtist = Font(grFont.fontLowerBarArtist, grSet.lowerBarFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.lowerBarArtist = Font(grFont.fontLowerBarArtist, grSet.lowerBarFontSize_layout, grSet.customThemeFonts ? FontStyle.Bold : 0);
 		grFont.lowerBarTitle  = Font(grFont.fontLowerBarTitle,  grSet.lowerBarFontSize_layout, 0);
 		grFont.lowerBarDisc   = Font(grFont.fontLowerBarDisc,   grSet.lowerBarFontSize_layout, 0);
-		grFont.lowerBarTime   = Font(grFont.fontLowerBarTime,   grSet.lowerBarFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.lowerBarTime   = Font(grFont.fontLowerBarTime,   grSet.lowerBarFontSize_layout, grSet.customThemeFonts ? FontStyle.Bold : 0);
 		grFont.lowerBarLength = Font(grFont.fontLowerBarLength, grSet.lowerBarFontSize_layout, 0);
-		grFont.lowerBarWave   = Font(grFont.fontLowerBarWave,   grSet.lowerBarFontSize_layout - 6, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.lowerBarWave   = Font(grFont.fontLowerBarWave,   grSet.lowerBarFontSize_layout - 6, grSet.customThemeFonts ? FontStyle.Bold : 0);
 
 		if (grCfg.updateHyperlink) grCfg.updateHyperlink.setFont(grFont.lowerBarTitle);
 
@@ -3142,10 +3142,10 @@ class MainUI {
 		if (grSet.layout === 'compact') return; // These fonts below are not available in Compact layout, so skip these to prevent errors
 
 		// * DETAILS METADATA GRID * //
-		grFont.gridArtist      = Font(grFont.fontGridArtist, grSet.gridArtistFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.gridArtist      = Font(grFont.fontGridArtist, grSet.gridArtistFontSize_layout, grSet.customThemeFonts ? FontStyle.Bold : 0);
 		grFont.gridTrackNumber = Font(artistTitle ? grFont.fontGridTitle : grFont.fontGridTitleBold, grSet.gridTrackNumFontSize_layout, 0);
 		grFont.gridTitle       = Font(artistTitle ? grFont.fontGridTitle : grFont.fontGridTitleBold, grSet.gridTitleFontSize_layout, 0);
-		grFont.gridAlbum       = Font(grFont.fontGridAlbum, grSet.gridAlbumFontSize_layout, grSet.customThemeFonts ? FontStyle.bold : 0);
+		grFont.gridAlbum       = Font(grFont.fontGridAlbum, grSet.gridAlbumFontSize_layout, grSet.customThemeFonts ? FontStyle.Bold : 0);
 		grFont.gridKey         = Font(grFont.fontGridKey, grSet.gridKeyFontSize_layout, 0);
 		grFont.gridVal         = Font(grFont.fontGridValue, grSet.gridValueFontSize_layout + 1, 0);
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-10-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -556,12 +556,12 @@ class PlaylistHeader extends PlaylistBaseHeader {
 						grClip.DrawImage(this.art, art_x, art_y, art_w, art_h, 0, 0, art_w, art_h);
 					}
 					else if (!this.is_art_loaded()) {
-						grClip.DrawString('LOADING', pl.font.cover, this.is_playing() ? artist_color : pl.col.row_title_normal, art_box_x, art_box_y, art_box_size, art_box_size, Stringformat.align_center);
+						grClip.DrawString('LOADING', pl.font.cover, this.is_playing() ? artist_color : pl.col.row_title_normal, art_box_x, art_box_y, art_box_size, art_box_size, Stringformat.Align_Center);
 						cache_header = false; // Don't cache until artwork is loaded
 					}
 					else { // null
 						const is_radio = this.metadb.RawPath.startsWith('http') || this.metadb.Path.startsWith('spotify');
-						grClip.DrawString(grm.ui.isStreaming && is_radio ? 'LIVE\n ON AIR' : 'NO COVER', pl.font.cover, this.is_playing() ? artist_color : pl.col.row_title_normal, art_box_x, art_box_y, art_box_size, art_box_size, Stringformat.align_center);
+						grClip.DrawString(grm.ui.isStreaming && is_radio ? 'LIVE\n ON AIR' : 'NO COVER', pl.font.cover, this.is_playing() ? artist_color : pl.col.row_title_normal, art_box_x, art_box_y, art_box_size, art_box_size, Stringformat.Align_Center);
 					}
 
 					grClip.DrawRect(art_box_x, art_box_y, art_box_w - 1, art_box_h - 1, 1, line_color);
@@ -606,7 +606,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					if (!this.hyperlinks.date && date_x > left_pad) {
 						const date_y = 0;
 						const date_h = this.h - 4;
-						grClip.DrawString(date_text, date_font, date_color, date_x, date_y, date_w, date_h, Stringformat.v_align_center);
+						grClip.DrawString(date_text, date_font, date_color, date_x, date_y, date_w, date_h, Stringformat.V_Align_Center);
 					} else {
 						this.hyperlinks.date.draw(grClip, date_color);
 					}
@@ -617,7 +617,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 			// * ARTIST * //
 			if (this.grouping_handler.get_title_query()) {
-				const artist_text_format = Stringformat.v_align_far | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+				const artist_text_format = Stringformat.V_Align_Far | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 				let artist_text = grSet.headerFlipRows ? $(this.grouping_handler.get_sub_title_query(), this.metadb) : $(this.grouping_handler.get_title_query(), this.metadb);
 
 				if (!artist_text && is_radio) {
@@ -668,9 +668,9 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					}
 					const album_w = this.w - album_x - (part2_right_pad + 5);
 
-					let album_text_format = Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+					let album_text_format = Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 					if (plSet.show_group_info) {
-						album_text_format |= Stringformat.v_align_center;
+						album_text_format |= Stringformat.V_Align_Center;
 					}
 
 					if (!this.hyperlinks.album) {
@@ -698,7 +698,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				const info_y = 2 * part_h - HD_4K(0, 5);
 				const info_h = part_h; //row_h;
 				const info_w = this.w - info_x;
-				const info_text_format = Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+				const info_text_format = Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 
 				// * Genres
 				let genre_text_w = 0;
@@ -734,7 +734,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 					const label_string = $('$if2(%label%,[%publisher%])', this.metadb).replace(/, /g, ' \u2022 ');
 					const label_w = Math.ceil(gr.MeasureString(label_string, pl.font.info, 0, 0, 0, 0).Width + 10);
 					if (info_w > label_w + info_text_w) {
-						grClip.DrawString(label_string, pl.font.info, info_color, this.w - label_w - 10, info_y, label_w, info_h, Stringformat.h_align_far);
+						grClip.DrawString(label_string, pl.font.info, info_color, this.w - label_w - 10, info_y, label_w, info_h, Stringformat.H_Align_Far);
 					}
 				} else {
 					let i = 0;
@@ -886,7 +886,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				const date_h = this.h;
 
 				if (date_x > left_pad) {
-					grClip.DrawString(date_text, date_font, date_color, date_x, date_y, date_w, date_h, Stringformat.v_align_center);
+					grClip.DrawString(date_text, date_font, date_color, date_x, date_y, date_w, date_h, Stringformat.V_Align_Center);
 				}
 
 				right_pad += this.w - date_x;
@@ -905,7 +905,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				const artist_w = this.w - artist_x - (right_pad + 5);
 				const artist_h = this.h;
 
-				const artist_text_format = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+				const artist_text_format = Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 				grClip.DrawString(artist_text, artist_font, artist_color, artist_x, 0, artist_w, artist_h, artist_text_format);
 
 				cur_x += Math.ceil(
@@ -927,7 +927,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				const album_x = cur_x;
 				const album_w = this.w - album_x - (right_pad + SCALE(40));
 
-				const album_text_format = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+				const album_text_format = Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 				grClip.DrawString(album_text, pl.font.album, album_color, album_x, 0, album_w, album_h, album_text_format);
 
 				// cur_x += gr.MeasureString(album_text, pl.font.album, 0, 0, 0, 0).Width;
@@ -1588,7 +1588,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 			gr.FillSolidRect(this.x, this.y, SCALE(8), this.h - 1, pl.col.row_sideMarker);
 		}
 
-		const disc_header_text_format = Stringformat.v_align_center | Stringformat.trim_ellipsis_char | Stringformat.no_wrap;
+		const disc_header_text_format = Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
 		const disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb);
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		const disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
@@ -1600,7 +1600,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 		const tracks_w = Math.ceil(gr.MeasureString(tracks_text, title_font, 0, 0, 0, 0).Width + 20);
 		const tracks_x = this.x + this.w - tracks_w - right_pad;
 
-		gr.DrawString(tracks_text, title_font, title_color, tracks_x, this.y, tracks_w, this.h, Stringformat.v_align_center | Stringformat.h_align_far);
+		gr.DrawString(tracks_text, title_font, title_color, tracks_x, this.y, tracks_w, this.h, Stringformat.V_Align_Center | Stringformat.H_Align_Far);
 
 		if (this.is_collapsed || !this.is_collapsed) {
 			const line_y = Math.round(this.y + this.h / 2) + SCALE(4);

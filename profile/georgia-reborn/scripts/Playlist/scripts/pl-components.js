@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-11-2025                                              * //
+// * Last change:    25-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -656,7 +656,7 @@ class PlaylistImage {
 				// TODO: Once this has been better tested, remove on_get_album_art_done callback from this file, and probably gr-callbacks.js as well
 				// utils.GetAlbumArtAsync(window.ID, metadb, g_album_art_id.front);
 				pl.thumbnail_list.add(metadb);
-				utils.GetAlbumArtAsyncV2(window.ID, metadb, AlbumArtId.front).then((artResult) => {
+				utils.GetAlbumArtAsyncV2(window.ID, metadb, AlbumArtId.Front).then((artResult) => {
 					if (!item.is_art_loaded()) {
 						item.assign_art(artResult.image);
 						item.repaint();
@@ -1012,7 +1012,7 @@ class PlaylistScrollbar {
 				grClip.SetSmoothingMode(SmoothingMode.HighQuality);
 				grClip.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 
-				const btn_format = Stringformat.h_align_center | Stringformat.v_align_far;
+				const btn_format = Stringformat.H_Align_Center | Stringformat.V_Align_Far;
 				if (i === 'lineDown') {
 					grClip.DrawString(item.ico, item.font, icoColor, 0, HD_4K(-12, -25), w, h, btn_format);
 				}
@@ -2075,10 +2075,10 @@ class PlaylistRating {
 
 		for (let j = 0; j < 5; j++) {
 			if (j < cur_rating) {
-				gr.DrawString('\u2605', pl.font.rating_set, grm.ui.loadingThemeComplete ? RGBA(0, 0, 0, 100) : color, cur_rating_x, y, this.btn_w + 1, this.h + 2, Stringformat.align_center);
-				gr.DrawString('\u2605', pl.font.rating_set, color, cur_rating_x, y, this.btn_w, this.h, Stringformat.align_center);
+				gr.DrawString('\u2605', pl.font.rating_set, grm.ui.loadingThemeComplete ? RGBA(0, 0, 0, 100) : color, cur_rating_x, y, this.btn_w + 1, this.h + 2, Stringformat.Align_Center);
+				gr.DrawString('\u2605', pl.font.rating_set, color, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
 			} else if (grSet.showPlaylistRatingGrid) {
-				gr.DrawString('\u2219', pl.font.rating_not_set, pl.col.row_title_normal, cur_rating_x, y, this.btn_w, this.h, Stringformat.align_center);
+				gr.DrawString('\u2219', pl.font.rating_not_set, pl.col.row_title_normal, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
 			}
 			cur_rating_x += this.btn_w;
 		}
@@ -2472,7 +2472,7 @@ class PlaylistManager {
 				/** @type {!number} */
 				gr.MeasureString(lock_text, pl.font.font_awesome, 0, 0, 0, 0).Width
 			);
-			gr.DrawString(lock_text, pl.font.font_awesome, text_color, lock_x, y, lock_w, h, Stringformat.align_center);
+			gr.DrawString(lock_text, pl.font.font_awesome, text_color, lock_x, y, lock_w, h, Stringformat.Align_Center);
 
 			// right_pad += lock_w;  // Deactivated -> PLM text should be always centered
 		}
@@ -2483,7 +2483,7 @@ class PlaylistManager {
 		const info_x = x + (w - info_w) * 0.5;
 		const info_y = centralPoint - (info_h * 0.5);
 
-		gr.DrawString(this.info_text, pl.font.title_selected, text_color, info_x, info_y, info_w, info_h, Stringformat.trim_ellipsis_char | Stringformat.no_wrap);
+		gr.DrawString(this.info_text, pl.font.title_selected, text_color, info_x, info_y, info_w, info_h, Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap);
 
 		const showBtns = grSet.autoHidePlman && (panel_state !== this.state.normal && info_x > pl.playlist.x) || !grSet.autoHidePlman;
 		const btn_h = SCALE(22);

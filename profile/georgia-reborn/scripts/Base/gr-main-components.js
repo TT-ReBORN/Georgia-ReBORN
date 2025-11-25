@@ -2170,7 +2170,7 @@ class Hyperlink {
 	 */
 	draw(gr, color) {
 		const font = this.state === HyperlinkStates.Hovered ? this.hoverFont : this.font;
-		DrawString(gr, this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w + SCALE(1), this.h, Stringformat.trim_ellipsis_char);
+		DrawString(gr, this.text, font, color, this.x, this.inPlaylist ? this.y_offset : this.y, this.w + SCALE(1), this.h, Stringformat.Trim_Ellipsis_Char);
 	}
 
 	/**
@@ -2196,7 +2196,7 @@ class Hyperlink {
 	 */
 	setFont(font) {
 		this.font = font;
-		this.hoverFont = gdi.Font(font.Name, font.Size, font.Style | FontStyle.underline);
+		this.hoverFont = gdi.Font(font.Name, font.Size, font.Style | FontStyle.Underline);
 		this.link_dimensions = this.updateDimensions();
 	}
 
