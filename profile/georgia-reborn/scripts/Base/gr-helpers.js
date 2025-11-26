@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    26-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -507,8 +507,8 @@ function MakeHttpRequest(type, url, successCB) {
  * @returns {string} The formatted domain name.
  */
 function WebsiteExtractDomainName(url) {
-	const domain = url.match(RegexPattern.WebDomain)[2];
-	return domain.charAt(0).toUpperCase() + domain.slice(1).replace(RegexPattern.WebTopLevelDomain, '');
+	const domain = url.match(/:\/\/(www\.)?([^/]+)/)[2];
+	return domain.charAt(0).toUpperCase() + domain.slice(1).replace(/\.[^/.]+$/, '');
 }
 
 
@@ -546,9 +546,9 @@ function WebsiteOpen(website, metadb, openAll = false) {
 		return index === -1 ? '' : metaInfo.MetaValue(index, 0);
 	};
 
-	const artist = getMetaValue('artist').replace(RegexPattern.SpaceAll, '+').replace(/&/g, '%26');
-	const album = getMetaValue('album').replace(RegexPattern.SpaceAll, '+');
-	const title = getMetaValue('title').replace(RegexPattern.SpaceAll, '+');
+	const artist = getMetaValue('artist').replace(/\s+/g, '+').replace(/&/g, '%26');
+	const album = getMetaValue('album').replace(/\s+/g, '+');
+	const title = getMetaValue('title').replace(/\s+/g, '+');
 	const searchQuery = artist || title;
 
 	const metadata = { artist, album, title };
@@ -569,7 +569,7 @@ function WebsiteOpen(website, metadb, openAll = false) {
 	const urls = {
 		google: `https://google.com/search?q=${searchQuery}`,
 		googleImages: `https://images.google.com/images?hl=en&q=${searchQuery}`,
-		wikipedia: `https://en.wikipedia.org/wiki/${artist.replace(RegexPattern.PunctPlus, '_')}`,
+		wikipedia: `https://en.wikipedia.org/wiki/${artist.replace(/\+/g, '_')}`,
 		youTube: `https://www.youtube.com/results?search_type=&search_query=${searchQuery}`,
 		lastfm: `https://www.last.fm/music/${searchQuery.replace('/', '%252F')}`,
 		allMusic: `https://www.allmusic.com/search/all/${searchQuery}`,
