@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    26-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2950,7 +2950,6 @@ class MainUI {
 			},
 			debug: () => {
 				this.debugTimingsArray = [];
-				SetDebugProfiler = {};
 			}
 		};
 
