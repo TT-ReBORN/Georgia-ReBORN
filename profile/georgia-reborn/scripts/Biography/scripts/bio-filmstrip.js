@@ -95,13 +95,13 @@ class BioFilmStrip {
 		const key = this.getLoadKey(image_path);
 		const o = this.cache[key];
 		if (o && o.img == 'called') this.cacheIt(image, key, o.style);
-    }
+	}
 
 	cacheIt(image, key, style) {
 		try {
 			if (image) {
 				if (bio.img.filter.size && bioSet.artistView && (!bioSet.imgFilterBothPx ? image.Width < bio.img.filter.minPx && image.Height < bio.img.filter.minPx : image.Width < bio.img.filter.minPx || image.Height < bio.img.filter.minPx) && bio.img.art.images.length > bio.img.filter.minNo) {
-					const image_path = key.replace(/^\d+/, '');
+					const image_path = key.replace(Regex.NumLeading, '');
 					const rem_ix = bio.img.art.images.findIndex(v => v == image_path);
 					if (rem_ix != -1) bio.img.art.images.splice(rem_ix, 1);
 					this.trimCache(image_path);
@@ -112,7 +112,7 @@ class BioFilmStrip {
 					return;
 				}
 				if (bio.img.filter.size && !bioSet.artistView && bio.img.artFolder && (!bioSet.imgFilterBothPx ? image.Width < bio.img.filter.minPx && image.Height < bio.img.filter.minPx : image.Width < bio.img.filter.minPx || image.Height < bio.img.filter.minPx) && bio.img.cov.images.length > bio.img.filter.minNo + 1) {
-					const image_path = key.replace(/^\d+/, '');
+					const image_path = key.replace(Regex.NumLeading, '');
 					const rem_ix = bio.img.cov.images.findIndex(v => v == image_path);
 					if (rem_ix != -1) {
 						bio.img.cov.list.splice(rem_ix, 1);
@@ -136,7 +136,7 @@ class BioFilmStrip {
 				};
 			}
 		} catch (e) {
-			const image_path = key.replace(/^\d+/, '');
+			const image_path = key.replace(Regex.NumLeading, '');
 			if (bioSet.artistView) {
 				const rem_ix = bio.img.art.images.findIndex(v => v == image_path);
 				if (rem_ix != -1) bio.img.art.images.splice(rem_ix, 1);

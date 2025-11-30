@@ -312,7 +312,7 @@ let bioProperties = [
 	['Panel Biography - Scrollbar Scroll Touch Flick Duration 0-5000 msec (Max)', 3000, 'durationTouchFlick'],
 	['Panel Biography - Scrollbar Scroll Touch Flick Distance 0-10', 0.8, 'flickDistance'],
 	['Panel Biography - Scrollbar Scroll: Smooth Scroll', true, 'smooth'],
-	['Panel Biography - Scrollbar Arrow Custom Icon', '\uE0A0', 'arrowSymbol'],
+	['Panel Biography - Scrollbar Arrow Custom Icon', RebornSymbols.ArrowUp4, 'arrowSymbol'],
 	['Panel Biography - Scrollbar Arrow Custom Icon: Vertical Offset (%)', -24, 'sbarButPad'],
 	['Panel Biography - Scrollbar Arrow Width', Math.round(11 * $Bio.scale), 'sbarArrowWidth'],
 	['Panel Biography - Scrollbar Button Type', 0, 'sbarButType'],

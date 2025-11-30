@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1734,7 +1734,7 @@ class Playlist extends BaseList {
 	 */
 	ctx_menu_playlist_stats(parent_menu) {
 		const playlistStatsMenu = new ContextMenu('Write playlist statistics to list');
-		const playlistName = ReplaceFileChars(plman.GetPlaylistName(plman.ActivePlaylist));
+		const playlistName = ReplaceIllegalChars(plman.GetPlaylistName(plman.ActivePlaylist));
 		const sortBy = plSet.playlist_stats_sort_by;
 		const sortDirection = plSet.playlist_stats_sort_direction;
 
@@ -1865,7 +1865,7 @@ class Playlist extends BaseList {
 	 */
 	ctx_menu_playlist_diagnostics(parent_menu) {
 		const playlistDiagnosticsMenu = new ContextMenu('Write playlist diagnostics to list');
-		const playlistName = ReplaceFileChars(plman.GetPlaylistName(plman.ActivePlaylist));
+		const playlistName = ReplaceIllegalChars(plman.GetPlaylistName(plman.ActivePlaylist));
 
 		// * Include album art menu
 		const includeAlbumArtMenu = [

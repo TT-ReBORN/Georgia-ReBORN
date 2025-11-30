@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -425,7 +425,7 @@ class MainUI {
 			gr.DrawImage(grCol.imgBlended, 0, 0, this.ww, this.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
 
-		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+		gr.SetSmoothingMode(SmoothingMode.HighQuality);
 	}
 
 	/**
@@ -529,9 +529,9 @@ class MainUI {
 			if (!this.displayLyrics) {
 				gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 				if (this.isStreaming) {
-					gr.DrawString('\uf130\nLIVE', grFont.noAlbumArtStub2, grCol.noAlbumArtStub, this.albumArtSize.x, 0, symbolWidth, symbolHeight, StringFormat(1, 1));
+					gr.DrawString(`${RebornSymbols.Microphone}\nLIVE`, grFont.noAlbumArtStub2, grCol.noAlbumArtStub, this.albumArtSize.x, 0, symbolWidth, symbolHeight, StringFormat(1, 1));
 				} else {
-					gr.DrawString('\uf001', grFont.noAlbumArtStub, grCol.noAlbumArtStub, this.albumArtSize.x, 0, symbolWidth, symbolHeight, StringFormat(1, 1));
+					gr.DrawString(RebornSymbols.MusicNote, grFont.noAlbumArtStub, grCol.noAlbumArtStub, this.albumArtSize.x, 0, symbolWidth, symbolHeight, StringFormat(1, 1));
 				}
 			}
 		}
@@ -713,7 +713,7 @@ class MainUI {
 		const ratingX = Math.round(textX + (textMaxWidth - starsTotalW) * 0.5);
 		for (const { str, font, rating } of textElements) {
 			textY = DrawMultilineString(gr, str, font, grCol.lyricsNormal, textX, textY, textMaxWidth, textPadding, StringFormat(1, 1));
-			this.drawRatingStars(gr, rating, grFont.lyricsInfoHeadline, ratingX, textY + textPadding, starSize, textPadding);
+			this.drawRatingStars(gr, rating, grFont.lyricsStars, ratingX, textY + textPadding, starSize, textPadding);
 			textY += starSize * 2 + textPadding * 2;
 		}
 	}
@@ -734,13 +734,13 @@ class MainUI {
 		const starFractional = rating % 1;
 
 		const getStarType = (index) => {
-			if (index < starFull) return Stars.full;
+			if (index < starFull) return RebornSymbols.StarFull;
 			if (index < rating) {
-				if (starFractional >= 0.75) return Stars.threeQ;
-				if (starFractional >= 0.50) return Stars.half;
-				if (starFractional >= 0.25) return Stars.quarter;
+				if (starFractional >= 0.75) return RebornSymbols.StarThreeQuarter;
+				if (starFractional >= 0.50) return RebornSymbols.StarHalf;
+				if (starFractional >= 0.25) return RebornSymbols.StarQuarter;
 			}
-			return Stars.empty;
+			return RebornSymbols.StarEmpty;
 		};
 
 		for (let i = 0; i < 5; i++) {
@@ -848,7 +848,7 @@ class MainUI {
 	drawShadows(gr) {
 		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> draw shadows');
 
-		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+		gr.SetSmoothingMode(SmoothingMode.Default);
 		this.drawAlbumArtShadows(gr);
 		this.drawPanelShadows(gr);
 
@@ -977,7 +977,7 @@ class MainUI {
 		}
 
 		// * Playback time, length, disc number
-		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+		gr.SetSmoothingMode(SmoothingMode.HighQuality);
 		if (grSet.showPlaybackTime_layout && (fb.PlaybackLength > 0 || grSet.panelBrowseMode && grStr.time !== grCfg.lowerBarStoppedTime)) { // * Playing track
 			gr.DrawString(grStr.disc, grFont.lowerBarDisc, grCol.lowerBarTitle, this.lowerBarDiscX, this.lowerBarDiscY, this.lowerBarDiscW, this.lowerBarDiscH, StringFormat(2, 0));
 			gr.DrawString(grStr.time, grFont.lowerBarTime, grCol.lowerBarTime, this.lowerBarTimeX, this.lowerBarTimeY, this.lowerBarTimeW, this.lowerBarTimeH, StringFormat(2, 0));
@@ -1393,7 +1393,7 @@ class MainUI {
 
 			lowerBarTrackNum:
 				this.lowerBarTwoLines && !grSet.showLowerBarTrackNum_layout ? '' :
-				fb.IsPlaying && this.lowerBarOneLine && (!grSet.showLowerBarTrackNum_layout || fb.PlaybackLength <= 0 && grStr.tracknum === '') ? '\u2013' :
+				fb.IsPlaying && this.lowerBarOneLine && (!grSet.showLowerBarTrackNum_layout || fb.PlaybackLength <= 0 && grStr.tracknum === '') ? `${Unicode.EnDash}` :
 				grStr.tracknum
 		};
 
@@ -1439,7 +1439,7 @@ class MainUI {
 		const baseTextHeight = SCALE(18);
 		const textHeightDiff = SCALE(grSet.lowerBarFontSize_layout) - baseTextHeight;
 
-		return grSet.layout === 'default' ? Math.round(this.wh - this.lowerBarHeight + ((this.lowerBarHeight - buttonSize) * 0.5) - this.lowerBarTextMargin * 0.5) :
+		return grSet.layout === 'default' ? Math.round(this.wh - this.lowerBarHeight + ((this.lowerBarHeight - buttonSize) * 0.5) - this.lowerBarTextMargin * 0.66) :
 											Math.round(this.wh - buttonSize - (this.edgeMargin * 0.85) + (buttonSize - baseButtonSize + textHeightDiff * SCALE(HD_4K(1, 0.66))));
 	}
 
@@ -1559,7 +1559,7 @@ class MainUI {
 		this.lowerBarFlagW        = this.getFlagSizeWidth('lowerBar');
 		this.lowerBarArtistW      = this.lowerBarFlagW + gr.MeasureString(!grSet.showLowerBarTrackNum_layout || this.isStreaming ? `  ${grStr.artistLower}` : `   ${grStr.artistLower}`, grFont.lowerBarArtist, 0, 0, 0, 0).Width;
 		this.lowerBarArtistH      = gr.CalcTextHeight(grStr.artistLower, grFont.lowerBarArtist);
-		this.lowerBarTrackNumW    = gr.CalcTextWidth(fb.IsPlaying && (!grSet.showLowerBarTrackNum_layout || fb.PlaybackLength <= 0 && grStr.tracknum === '') ? ' \u2013 ' : ` ${grStr.tracknum}`, grFont.lowerBarTitle);
+		this.lowerBarTrackNumW    = gr.CalcTextWidth(fb.IsPlaying && (!grSet.showLowerBarTrackNum_layout || fb.PlaybackLength <= 0 && grStr.tracknum === '') ? ` ${Unicode.EnDash} ` : ` ${grStr.tracknum}`, grFont.lowerBarTitle);
 		this.lowerBarTitleW       = this.lowerBarTrackNumW + gr.MeasureString(grStr.titleLower || 'Ag', grFont.lowerBarTitle, 0, 0, 0, 0).Width;
 		this.lowerBarTitleH       = gr.CalcTextHeight(grStr.titleLower || 'Ag', grFont.lowerBarTitle);
 		this.lowerBarArtistTitleW = this.lowerBarArtistW + this.lowerBarTitleW;
@@ -1744,7 +1744,7 @@ class MainUI {
 		/** @type {string[]} */
 		const fontList = [
 			grFont.fontDefault, grFont.fontSegoeUISymbol, grFont.fontTopMenu, grFont.fontTopMenuCaption,
-			grFont.fontGuiFx, grFont.fontAwesome, grFont.fontLowerBarArtist, grFont.fontLowerBarTitle, grFont.fontLowerBarDisc, grFont.fontLowerBarTime, grFont.fontLowerBarLength, grFont.fontLowerBarWave,
+			grFont.fontLowerBarArtist, grFont.fontLowerBarTitle, grFont.fontLowerBarDisc, grFont.fontLowerBarTime, grFont.fontLowerBarLength, grFont.fontLowerBarWave,
 			grFont.fontNotification, grFont.fontPopup, grFont.fontTooltip,
 			grFont.fontGridArtist, grFont.fontGridTitle, grFont.fontGridTitleBold, grFont.fontGridAlbum, grFont.fontGridKey, grFont.fontGridValue,
 			grFont.fontLibrary, grFont.fontBiography, grFont.fontLyrics
@@ -1821,8 +1821,9 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	initStreamingOrCD(metadb) {
-		this.isPlayingCD = metadb && metadb.RawPath.startsWith('cdda://');
-		this.isStreaming = metadb && /^(http:\/\/|https:\/\/)/.test(metadb.RawPath);
+		if (!metadb) return;
+		this.isPlayingCD = metadb.RawPath.startsWith('cdda://');
+		this.isStreaming = Regex.WebStreaming.test(metadb.RawPath);
 	}
 
 	/**
@@ -2136,7 +2137,7 @@ class MainUI {
 		if (customStyle.length && !customPreset.length) {
 			DebugLog('\n>>> initThemeTags => %GR_STYLE% loaded <<<');
 			this.resetStyle('all');
-			for (const style of customStyle.split(/[,; ]+/)) {
+			for (const style of customStyle.split(Regex.PunctCommaSemicolonSpace)) {
 				const setStyle = themeStyles[style];
 				if (setStyle) setStyle();
 			}
@@ -3107,8 +3108,7 @@ class MainUI {
 
 		// * TOP MENU BUTTONS * //
 		grFont.topMenu        = Font(grFont.fontTopMenu, grSet.menuFontSize_layout, 0);
-		grFont.topMenuCaption = Font(grFont.fontTopMenuCaption, grSet.menuCaptionFontSize_layout, 0);
-		grFont.topMenuCompact = Font(grFont.fontAwesome, grSet.menuFontSize_layout, 0);
+		grFont.topMenuCaption = Font(grFont.fontRebornSymbols, grSet.menuFontSize_layout, 0);
 
 		// * LOWER BAR * //
 		grFont.lowerBarArtist = Font(grFont.fontLowerBarArtist, grSet.lowerBarFontSize_layout, grSet.customThemeFonts ? FontStyle.Bold : 0);
@@ -3121,20 +3121,13 @@ class MainUI {
 		if (grCfg.updateHyperlink) grCfg.updateHyperlink.setFont(grFont.lowerBarTitle);
 
 		// * LOWER BAR TRANSPORT BUTTONS * //
-		grFont.guifx             = Font(grFont.fontGuiFx,   grSet.guiFxBtnFontSize_layout, 0);
-		grFont.pboDefault        = Font(grFont.fontGuiFx,   grSet.pboDefaultBtnFontSize_layout, 0);
-		grFont.pboRepeatPlaylist = Font(grFont.fontAwesome, grSet.pboReplayBtnFontSize_layout, 0);
-		grFont.pboRepeatTrack    = Font(grFont.fontAwesome, grSet.pboReplayBtnFontSize_layout, 0);
-		grFont.pboShuffle        = Font(grFont.fontGuiFx,   grSet.pboShuffleBtnFontSize_layout, 0);
-		grFont.guifxReload       = Font(grFont.fontGuiFx,   grSet.reloadBtnFontSize_layout, 0);
-		grFont.guifxAddTrack     = Font(grFont.fontGuiFx,   grSet.addTrackBtnFontSize_layout, 0);
-		grFont.guifxVolume       = Font(grFont.fontGuiFx,   grSet.volumeBtnFontSize_layout, 0);
+		grFont.lowerBarBtn       = Font(grFont.fontRebornSymbols, grSet.rebornSymbolsBtnFontSize_layout, 0);
 
 		// * MISC * //
-		grFont.noAlbumArtStub  = Font(grFont.fontAwesome, 160, 0);
-		grFont.noAlbumArtStub2 = Font(grFont.fontAwesome, 100, 0);
-		grFont.symbol          = Font(grFont.fontSegoeUISymbol, grSet.playlistFontSize_layout, 0);
+		grFont.noAlbumArtStub  = Font(grFont.fontRebornSymbols, 160, 0);
+		grFont.noAlbumArtStub2 = Font(grFont.fontRebornSymbols, 100, 0);
 		grFont.notification    = Font(grFont.fontNotification, grSet.notificationFontSize_layout, 0);
+		grFont.playlistHistory = Font(grFont.fontRebornSymbols, grSet.playlistFontSize_layout, 0);
 		grFont.popup           = Font(grFont.fontPopup, grSet.popupFontSize_layout, 0);
 		grFont.tooltip         = Font(grFont.fontTooltip, grSet.tooltipFontSize_layout, 0);
 
@@ -3159,6 +3152,7 @@ class MainUI {
 		grFont.lyricsHighlight    = Font(grFont.fontLyrics, grSet.lyricsFontSize_layout * 1.5, 1);
 		grFont.lyricsInfoRegular  = Font(grFont.fontLyrics, grSet.lyricsInfoFontSize_default, 0);
 		grFont.lyricsInfoHeadline = Font(grFont.fontLyrics, grSet.lyricsInfoFontSize_default * 1.5, 1);
+		grFont.lyricsStars        = Font(grFont.fontRebornSymbols, grSet.lyricsInfoFontSize_default * 1.5, 1);
 	}
 
 	/**
@@ -3752,7 +3746,7 @@ class MainUI {
 	 * @returns {GdiBitmap} The flag image object.
 	 */
 	loadFlagImage(country, metadb = undefined) {
-		const countryName = (ConvertIsoCountryCodeToFull(country) || country).trim().replace(/ /g, '-'); // In case we have a 2-digit country code
+		const countryName = (ConvertIsoCountryCodeToFull(country) || country).trim().replace(Regex.SpaceSingle, '-'); // In case we have a 2-digit country code
 		const path = `${$($Escape(grPath.flagsBase), metadb) + HD_4K('32\\', '64\\') + countryName}.png`;
 		return gdi.Image(path);
 	}
@@ -3862,8 +3856,7 @@ class MainUI {
 	 * @returns {boolean} - Returns `true` if the current album art matches the disc art pattern, otherwise `false`.
 	 */
 	checkAlbumArtFromListDiscArt() {
-		const pattern = /(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i;
-		const match = this.albumArtList[this.albumArtIndex].match(pattern);
+		const match = this.albumArtList[this.albumArtIndex].match(Regex.ArtDiscArtFilename);
 
 		this.discArtImageDisplayed = Boolean(match);
 		this.discArtImagePNG = match && match[3].toLowerCase() === 'png';

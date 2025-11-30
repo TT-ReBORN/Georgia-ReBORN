@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -208,12 +208,11 @@ const grPath = {
 /**
  * A collection of theme fonts that are assigned at runtime in the `createFonts` method.
  * @typedef  {object} grFont - The Georgia-ReBORN font object.
- * @property {string} fontDefault - The 'Segoe UI' font name.
+ * @property {string} fontRebornSymbols - The 'Reborn-Symbols' font name.
  * @property {string} fontSegoeUISymbol - The 'Segoe UI Symbol' font name.
+ * @property {string} fontDefault - The 'Segoe UI' font name.
  * @property {string} fontTopMenu - The 'Segoe UI Semibold' font name.
- * @property {string} fontTopMenuCaption - The 'Marlett' font name.
- * @property {string} fontGuiFx - The 'Guifx v2 Transports' font name.
- * @property {string} fontAwesome - The 'FontAwesome' font name.
+ * @property {string} fontTopMenuCaption - The 'Reborn-Symbols' font name.
  * @property {string} fontLowerBarArtist - The 'HelveticaNeueLT Pro 65 Md' font name.
  * @property {string} fontLowerBarTitle - The 'HelveticaNeueLT Pro 45 Lt' font name.
  * @property {string} fontLowerBarDisc - The 'HelveticaNeueLT Pro 45 Lt' font name.
@@ -233,24 +232,16 @@ const grPath = {
  * @property {string} fontBiography - The 'Segoe UI' font name.
  * @property {string} fontLyrics - The 'Segoe UI' font name.
  * @property {GdiFont} topMenu - The theme font 'Segoe UI Semibold' used for top menu buttons.
- * @property {GdiFont} topMenuCaption - The theme font 'Marlett' used for top menu 🗕 🗖 ✖ caption buttons.
- * @property {GdiFont} topMenuCompact - The theme font 'FontAwesome' used for the top menu compact button.
+ * @property {GdiFont} topMenuCaption - The theme font 'Reborn-Symbols' used for top menu 🗕 🗖 ✖ caption buttons.
+ * @property {GdiFont} topMenuCompact - The theme font 'Reborn-Symbols' used for the top menu compact button.
  * @property {GdiFont} lowerBarArtist - The theme artist font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
  * @property {GdiFont} lowerBarTitle - The theme title font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
  * @property {GdiFont} lowerBarDisc - The theme disc font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
  * @property {GdiFont} lowerBarTime - The theme time font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
  * @property {GdiFont} lowerBarLength - The theme length font 'HelveticaNeueLT Pro 45 Lt' used in lower bar.
  * @property {GdiFont} lowerBarWave - The theme waveform bar font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
- * @property {GdiFont} guifx - The theme font 'Guifx v2 Transports' used for the lower bar transport/playback buttons.
- * @property {GdiFont} pboDefault - The theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
- * @property {GdiFont} pboRepeatPlaylist - The theme font 'FontAwesome' used for the lower bar transport playback order button.
- * @property {GdiFont} pboRepeatTrack - The theme font 'FontAwesome' used for the lower bar transport playback order button.
- * @property {GdiFont} pboShuffle - The theme font 'Guifx v2 Transports' used for the lower bar transport playback order button.
- * @property {GdiFont} guifxReload - The theme font 'Guifx v2 Transports' used for the lower bar transport reload button.
- * @property {GdiFont} guifxAddTrack - The theme font 'Guifx v2 Transports' used for the lower bar transport add tracks button.
- * @property {GdiFont} guifxVolume - The theme font 'Guifx v2 Transports' used for the lower bar transport volume button.
- * @property {GdiFont} noAlbumArtStub - The theme font 'FontAwesome' used for no album art music note symbol.
- * @property {GdiFont} noAlbumArtStub2 - The theme font 'FontAwesome' used for no album art music radio symbol.
+ * @property {GdiFont} noAlbumArtStub - The theme font ''Reborn-Symbols' used for no album art music note symbol.
+ * @property {GdiFont} noAlbumArtStub2 - The theme font ''Reborn-Symbols' used for no album art music radio symbol.
  * @property {GdiFont} symbol - The panel font 'Segoe UI Symbol' used for special chars, scrollbar buttons, etc.
  * @property {GdiFont} notification - The theme font 'HelveticaNeueLT Pro 65 Md' used for notifications.
  * @property {GdiFont} popup - The theme font 'Segoe UI' used for popups.
@@ -268,13 +259,13 @@ const grPath = {
  */
 /** @global @type {grFont} */
 const grFont = {
-	fontDefault:        grSet.customThemeFonts ? grCfg.customFont.fontDefault : 'Segoe UI',
+	fontRebornSymbols:  'Reborn-Symbols',
 	fontSegoeUISymbol:  'Segoe UI Symbol',
-	fontTopMenu:        grSet.customThemeFonts ? grCfg.customFont.fontTopMenu : 'Segoe UI Semibold',
-	fontTopMenuCaption: 'Marlett',
 
-	fontGuiFx:          'Guifx v2 Transports',
-	fontAwesome:        'FontAwesome',
+	fontDefault:        grSet.customThemeFonts ? grCfg.customFont.fontDefault : 'Segoe UI',
+	fontTopMenu:        grSet.customThemeFonts ? grCfg.customFont.fontTopMenu : 'Segoe UI Semibold',
+	fontTopMenuCaption: 'Reborn-Symbols',
+
 	fontLowerBarArtist: grSet.customThemeFonts ? grCfg.customFont.fontLowerBarArtist : 'HelveticaNeueLT Pro 65 Md',
 	fontLowerBarTitle:  grSet.customThemeFonts ? grCfg.customFont.fontLowerBarTitle  : 'HelveticaNeueLT Pro 45 Lt',
 	fontLowerBarDisc:   grSet.customThemeFonts ? grCfg.customFont.fontLowerBarDisc   : 'HelveticaNeueLT Pro 45 Lt',

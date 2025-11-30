@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2115,7 +2115,7 @@ class TopMenuOptions {
 			const customDiscArtValues = [];
 			for (const key in grCfg.customDiscArtStub) {
 				if (Object.prototype.hasOwnProperty.call(grCfg.customDiscArtStub, key) && key.includes('Name')) {
-					const num = key.match(/\d+$/)[0]; // Extract the number from the key (e.g., "01" from "cdName01")
+					const num = key.match(Regex.NumTrailing)[0]; // Extract the number from the key (e.g., "01" from "cdName01")
 					const cdStubKey = `cdStub${num}`;
 					const vinylStubKey = `vinylStub${num}`;
 					if (key.startsWith('cdName') && grCfg.customDiscArtStub[cdStubKey]) {

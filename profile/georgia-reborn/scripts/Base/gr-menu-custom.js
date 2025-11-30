@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -54,7 +54,7 @@ class CustomMenu {
 		/** @protected @type {string} */
 		this.font = grFont.popup;
 		/** @protected @type {boolean} */
-		this.closeBtn = this.label === '\u2715';
+		this.closeBtn = this.label ===  RebornSymbols.Close2;
 
 		const gdiService = GdiService.getInstance();
 		/** @protected @type {GdiGraphics} */
@@ -326,12 +326,15 @@ class CustomMenuDropDown extends CustomMenu {
 		this.activeIndex = activeIndex || -1;
 		/** @private @constant @type {number} The padding between top and label and option and bottom line. */
 		this.padding = SCALE(5);
+
 		/** @private @type {number} */
 		this.labelW = this.calcTextWidth(label, this.font) + this.padding * 4;
 		/** @private @type {number} */
-		this.optionW = this.calcTextWidth(LongestString(this.labelArray), this.font) + this.padding * 4;
+		this.optionW = this.calcTextWidth(StringWidest(this.g, this.labelArray, this.font), this.font) + this.padding * 4;
+		/** @protected @type {number} */
+		this.w = this.labelW;
 		/** @private @type {number} */
-		this.w = Math.max(this.labelW, this.optionW);
+		this.dropW = Math.max(this.labelW, this.optionW);
 
 		/** @private @constant @type {number} */
 		this.labelHeight = Math.ceil(this.calcTextHeight('Ag', this.font));
@@ -340,8 +343,6 @@ class CustomMenuDropDown extends CustomMenu {
 		/** @private @type {number} */
 		this.h = this.labelHeight + this.padding * 2;
 
-		/** @private @constant */
-		this.borderPadding = SCALE(5);
 		/** @private @type {boolean} */
 		this.selectUp = false;
 		/** @private @type {number} The height of select up option. */
@@ -395,87 +396,96 @@ class CustomMenuDropDown extends CustomMenu {
 	/**
 	 * Displays and handles the color page of the panel in the custom menu.
 	 * @param {string} label - The current label of the menu item.
-	 * @param {string} labelArray - The panel color page to display.
+	 * @param {string[]} labelArray - The panel color page to display.
 	 * @param {number} activeIndex - The index of the currently selected item in the labelArray.
 	 * @private
 	 */
 	_buttonHandler(label, labelArray, activeIndex) {
-		const customThemeMenu = {
-			Main_Pre:        () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_pre'); },
-			Main_Bg:         () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bg'); },
-			Main_Bar:        () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar'); },
-			Main_Bar2:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar2'); },
-			Main_Bar3:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar3'); },
-			Main_Text:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_text'); },
-			Main_Btns:       () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_btns'); },
-			Main_Btns2:      () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_btns2'); },
-			Main_Style:      () => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_style'); },
-
-			Playlist_Bg:     () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Playlist_Text:   () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_text1'); },
-			Playlist_Text2:  () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_text2'); },
-			Playlist_Misc:   () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_misc'); },
-			Playlist_Btns:   () => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_btns'); },
-
-			Library_Bg:      () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_bg'); },
-			Library_Text:    () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_text'); },
-			Library_Node:    () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_node'); },
-			Library_Btns:    () => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_btns'); },
-
-			Biography_Bg:    () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_bg'); },
-			Biography_Text:  () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_text'); },
-			Biography_Misc:  () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_misc'); },
-			Biography_Btns:  () => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_btns'); },
-
-			Options_Info:    () => { grm.cthMenu.initCustomThemeMenu('info'); window.Repaint(); },
-			Options_Theme01: () => { grSet.theme = 'custom01'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme02: () => { grSet.theme = 'custom02'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme03: () => { grSet.theme = 'custom03'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme04: () => { grSet.theme = 'custom04'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme05: () => { grSet.theme = 'custom05'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme06: () => { grSet.theme = 'custom06'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme07: () => { grSet.theme = 'custom07'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme08: () => { grSet.theme = 'custom08'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme09: () => { grSet.theme = 'custom09'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Theme10: () => { grSet.theme = 'custom10'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
-			Options_Rename:  () => { grm.inputBox.renameCustomTheme(); },
-			Options_Reset:   () => { grm.ui.initCustomTheme(); grm.cthMenu.resetCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); }
+		const customThemeHandlers = {
+			Main: [
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_pre'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bg'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar2'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_bar3'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_text'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_btns'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_btns2'); },
+				() => { grm.ui.displayPanel('details', true); grm.cthMenu.initCustomThemeMenu('main', 'main_style'); }
+			],
+			Playlist: [
+				() => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_text1'); },
+				() => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_text2'); },
+				() => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_misc'); },
+				() => { grm.ui.displayPanel('playlist', true); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_btns'); }
+			],
+			Library: [
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_bg'); },
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_text'); },
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_node'); },
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_btns'); }
+			],
+			Biography: [
+				() => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_bg'); },
+				() => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_text'); },
+				() => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_misc'); },
+				() => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_btns'); }
+			],
+			Options: [
+				() => { grm.cthMenu.initCustomThemeMenu('info'); window.Repaint(); },
+				null, // Empty slot for spacing
+				() => { grSet.theme = 'custom01'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom02'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom03'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom04'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom05'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom06'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom07'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom08'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom09'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				() => { grSet.theme = 'custom10'; grm.ui.initCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); },
+				null, // Empty slot for spacing
+				() => { grm.inputBox.renameCustomTheme(); },
+				() => { grm.ui.initCustomTheme(); grm.cthMenu.resetCustomTheme(); grm.ui.initTheme(); grm.cthMenu.initCustomThemeMenu('playlist', 'pl_bg'); }
+			]
 		};
 
-		const metadataGridMenu = {
-			Page1: () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(1); },
-			Page2: () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(2); },
-			Page3: () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(3); },
-			Page4: () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(4); },
-			Info:  () => { grm.gridMenu.initMetadataGridMenu(false, true); window.Repaint(); },
-			Reset: () => { grm.gridMenu.resetMetadataGrid(); grm.gridMenu.initMetadataGridMenu(1); }
-		}
+		const metadataGridHandlers = {
+			'Page 1': () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(1); },
+			'Page 2': () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(2); },
+			'Page 3': () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(3); },
+			'Page 4': () => { CustomMenu.activeControl.isSelectUp = false; grm.gridMenu.initMetadataGridMenu(4); },
+			Options: [
+				() => { grm.gridMenu.initMetadataGridMenu(false, true); window.Repaint(); },
+				null, // Empty slot
+				() => { grm.gridMenu.resetMetadataGrid(); grm.gridMenu.initMetadataGridMenu(1); }
+			]
+		};
 
-		const closeBtn = {
-			Close: () => {
-				CustomMenu.activeControl.isSelectUp = false;
-				if (grm.ui.displayCustomThemeMenu) grm.ui.initCustomThemeMenuState();
-				if (grm.ui.displayMetadataGridMenu) grm.details.initGridMenuState();
-			}
-		}
-
-		const index    = labelArray[activeIndex];
-		const topIndex = label.replace(/\s/g, '');
-		const subIndex = `${label}_${index}`.replace(/\s/g, '');
+		const closeHandler = () => {
+			CustomMenu.activeControl.isSelectUp = false;
+			if (grm.ui.displayCustomThemeMenu) grm.ui.initCustomThemeMenuState();
+			if (grm.ui.displayMetadataGridMenu) grm.details.initGridMenuState();
+		};
 
 		// * Button handler
-		if (grm.ui.displayCustomThemeMenu && customThemeMenu[subIndex]) {
-			customThemeMenu[subIndex]();
-		}
-		else if (grm.ui.displayMetadataGridMenu && (metadataGridMenu[topIndex] || metadataGridMenu[index])) {
-			if (metadataGridMenu[index]) {
-				metadataGridMenu[index]();
-			} else {
-				metadataGridMenu[topIndex]();
+		if (grm.ui.displayCustomThemeMenu) {
+			const handlers = customThemeHandlers[label];
+			if (handlers && handlers[activeIndex]) {
+				handlers[activeIndex]();
+			}
+		} else if (grm.ui.displayMetadataGridMenu) {
+			const topHandlers = metadataGridHandlers[label];
+			const indexHandler = metadataGridHandlers[labelArray[activeIndex]];
+			if (indexHandler) {
+				indexHandler();
+			} else if (topHandlers && topHandlers[activeIndex]) {
+				topHandlers[activeIndex]();
 			}
 		}
-		else if (CustomMenu.activeControl.closeBtn) {
-			closeBtn.Close();
+		if (CustomMenu.activeControl.closeBtn) {
+			closeHandler();
 		}
 	}
 	// #endregion
@@ -494,29 +504,30 @@ class CustomMenuDropDown extends CustomMenu {
 		const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		const lineHeight = this.hovered || this.focus ? this.h : 1;
 		const optionH = this.optionHeight + this.padding * 2;
-		let   optionY = this.getFirstOptionY();
+		let optionY = this.getFirstOptionY();
 
 		gr.FillSolidRect(this.x, this.y, this.w, this.h, grCol.bg);
 
 		if (this.selectUp) {
 			gr.SetSmoothingMode(SmoothingMode.AntiAlias);
-			gr.FillSolidRect(this.x, this.y, this.w - 1, this.selectUpHeight + this.h, TintColor(grCol.bg, 10));
-			gr.DrawLine(this.x, optionY, this.x + this.w - 1, optionY, 2, ShadeColor(grCol.bg, 20));
+			gr.FillSolidRect(this.x, this.y + this.h, this.dropW - 1, this.selectUpHeight, TintColor(grCol.bg, 10));
+			gr.DrawLine(this.x, optionY, this.x + this.dropW - 1, optionY, 2, ShadeColor(grCol.bg, 20));
+
 			for (const [i, option] of this.labelArray.entries()) {
 				const isActive = this.activeIndex === i;
 				if (isActive || this.selectUpHoveredOption === i) {
 					const color = isActive ? grCol.progressBarFill : ShadeColor(grCol.bg, 10);
-					gr.FillSolidRect(this.x, optionY, this.w - 1, optionH, color);
+					gr.FillSolidRect(this.x, optionY, this.dropW - 1, optionH, color);
 				}
-				gr.DrawLine(this.x, optionY, this.x + this.w - 1, optionY, 1, ShadeColor(grCol.bg, 10));
-				gr.GdiDrawText(option, this.font, textColor, this.x + this.padding * 2, optionY + this.padding, this.w - this.padding * 4, optionH, StringFormat(0, 0, 4));
+				gr.DrawLine(this.x, optionY, this.x + this.dropW - 1, optionY, 1, ShadeColor(grCol.bg, 10));
+				gr.GdiDrawText(option, this.font, textColor, this.x + this.padding * 2, optionY + this.padding, this.dropW - this.padding * 4, optionH, StringFormat(0, 0, 4));
 				optionY += optionH;
 			}
 		}
 		else { // Line is not visible if select is up
 			gr.FillSolidRect(this.x, this.y + this.h - lineHeight, this.w - 1, lineHeight, TintColor(grCol.bg, 10));
 		}
-		gr.GdiDrawText(this.label, this.font, textColor, this.x + this.padding * 2, this.y + Math.ceil(this.padding / 2), this.w - this.padding * 2, this.h, StringFormat(1, 1));
+		gr.GdiDrawText(this.label, this.font, textColor, this.x + this.padding * 2, this.y + Math.ceil(this.padding / 2), this.w - this.padding * 4, this.h, StringFormat(1, 1));
 	}
 
 	/**
@@ -570,7 +581,7 @@ class CustomMenuDropDown extends CustomMenu {
 	 * @returns {number} The y-coordinate of the first option.
 	 */
 	getFirstOptionY() {
-		return this.y + this.labelHeight + this.padding * 2;
+		return this.y + this.h;
 	}
 
 	/**
@@ -580,14 +591,15 @@ class CustomMenuDropDown extends CustomMenu {
 	 * @returns {boolean} True or false.
 	 */
 	mouseInThis(x, y) {
-		let firstOptionY = 0;
+		let inOptions = false;
+		const inButton = x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
+
 		if (this.selectUp) {
-			firstOptionY = this.getFirstOptionY();
-			this.selectUpHoveredOption = y < firstOptionY || y > firstOptionY + this.selectUpHeight ? -1 : Math.floor((y - firstOptionY) / (this.optionHeight + this.padding * 2));
+			inOptions = x >= this.x && x <= this.x + this.dropW && y >= this.y + this.h && y <= this.y + this.h + this.selectUpHeight;
+			this.selectUpHoveredOption = y >= this.y + this.h ? Math.floor((y - (this.y + this.h)) / (this.optionHeight + this.padding * 2)) : -1;
 		}
-		return !this.disabled &&
-				((!this.selectUp && x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h) ||
-				  (this.selectUp && x >= this.x && x <= this.x + this.w && y >= firstOptionY && y <= firstOptionY + this.selectUpHeight));
+
+		return !this.disabled && (inOptions || inButton);
 	}
 
 	/**
@@ -626,7 +638,8 @@ class CustomMenuDropDown extends CustomMenu {
 	 */
 	repaint() {
 		const repaintY = Math.min(this.getFirstOptionY(), this.y);
-		window.RepaintRect(this.x - this.borderPadding, repaintY - this.borderPadding + this.borderPadding, this.w + this.borderPadding * 2, this.labelHeight + this.selectUpHeight + this.borderPadding * 3 + this.padding);
+		const repaintW = Math.max(this.w, this.dropW) + this.padding * 2;
+		window.RepaintRect(this.x - this.padding, repaintY - this.padding + this.padding, repaintW, this.labelHeight + this.selectUpHeight + this.padding * 4);
 	}
 	// #endregion
 }
@@ -1592,7 +1605,7 @@ class CustomMenuColorMarker extends CustomMenu {
 		/** @private @type {string} */
 		this.value = value;
 		/** @private @type {GdiFont} */
-		this.fontAwesome = Font(grFont.fontAwesome, grSet.popupFontSize_layout + 4, 0);
+		this.fontRebornSymbols = Font(grFont.fontRebornSymbols, grSet.popupFontSize_layout + 4, 0);
 		/** @private @type {number} */
 		this.x = x;
 		/** @private @type {number} */
@@ -1612,7 +1625,7 @@ class CustomMenuColorMarker extends CustomMenu {
 	draw(gr) {
 		const lineCol = this.focus ? grCol.lowerBarArtist : this.hovered ? RGB(150, 150, 150) : RGB(120, 120, 120);
 		gr.DrawRect(this.x - 2, this.y - 2, this.w + 4, this.h + 4, SCALE(1), lineCol);
-		gr.DrawString('\uF0EB', this.fontAwesome, RGB(0, 0, 0), this.x, this.y, this.w, this.h, StringFormat(1, 1, 4));
+		gr.DrawString(RebornSymbols.LightBulb, this.fontRebornSymbols, RGB(0, 0, 0), this.x, this.y, this.w, this.h, StringFormat(1, 1, 4));
 	}
 
 	/**
@@ -2141,7 +2154,7 @@ class CustomThemeMenu {
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Library',   ['Bg', 'Text', 'Node', 'Btns'], 0));
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Biography', ['Bg', 'Text', 'Misc', 'Btns'], 0));
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Options',   ['Info', '', 'Theme 01', 'Theme 02', 'Theme 03', 'Theme 04', 'Theme 05', 'Theme 06', 'Theme 07', 'Theme 08', 'Theme 09', 'Theme 10', '', 'Rename', 'Reset'], 0));
-		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, '\u2715',    ['']));
+		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, RebornSymbols.Close2,    ['']));
 		x = baseX;
 		y += menu.h + margin * 0.75;
 
@@ -2491,7 +2504,7 @@ class MetadataGridMenu {
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Page 3',  ['Page 3'], 0));
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Page 4',  ['Page 4'], 0));
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Options', ['Info', '', 'Reset'], 0));
-		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, '\u2715',  ['']));
+		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, RebornSymbols.Close2,  ['']));
 		x =  baseX;
 		y += menu.h + margin * 0.75;
 

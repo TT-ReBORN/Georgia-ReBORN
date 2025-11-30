@@ -221,7 +221,7 @@ class BioMenuItems {
 				break;
 			case false:
 				bio.panel.alb.list.forEach((v, i) => bioBMenu.newItem({
-					str: ((!i || v.type.includes('history') ? `${v.artist.replace(/&/g, '&&')} - ${v.album.replace(/&/g, '&&')}` : v.album.replace(/&/g, '&&')) + (!v.composition ? '' : ' [composition]')).replace(/^\s-\s/, ''),
+					str: ((!i || v.type.includes('history') ? `${v.artist.replace(/&/g, '&&')} - ${v.album.replace(/&/g, '&&')}` : v.album.replace(/&/g, '&&')) + (!v.composition ? '' : ' [composition]')).replace(Regex.TextDashLeading, ''),
 					func: () => this.lookUpAlbum(i),
 					flags: v.type != 'label' && v.album != bioLg['Album History:'] ? BIO_MF_STRING : BIO_MF_GRAYED,
 					checkRadio: i == bio.panel.alb.ix,

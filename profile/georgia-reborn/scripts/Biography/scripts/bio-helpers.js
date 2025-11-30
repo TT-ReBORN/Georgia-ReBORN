@@ -43,9 +43,9 @@ class BioHelpers {
 
 	abbreviate(n) {
 		let abb = '';
-		n.replace(/[[()\]]/g, '').split(' ').forEach(v => {
+		n.replace(Regex.PunctBracketsParens, '').split(' ').forEach(v => {
 			v.split('').forEach((w, i) => {
-				if (!i || w.match(/\d/)) abb += w;
+				if (!i || w.match(Regex.NumDigit)) abb += w;
 			});
 		});
 		return abb;
@@ -59,8 +59,8 @@ class BioHelpers {
 		let result; let tmpFileLoc = '';
 		let UNC = pth.startsWith('\\\\');
 		if (UNC) pth = pth.replace('\\\\', '');
-		const pattern = /(.*?)\\/gm;
-		while ((result = pattern.exec(pth))) {
+		Regex.PathSplitter.lastIndex = 0; // Reset index
+		while ((result = Regex.PathSplitter.exec(pth))) {
 			tmpFileLoc = tmpFileLoc.concat(result[0]);
 			if (UNC) {
 				tmpFileLoc = `\\\\${tmpFileLoc}`;
@@ -76,7 +76,7 @@ class BioHelpers {
 	}
 
 	clean(n) {
-		return n.replace(/[/\\|:]/g, '-').replace(/\*/g, 'x').replace(/"/g, "''").replace(/[<>]/g, '_').replace(/\?/g, '').replace(/^\./, '_').replace(/\.+$/, '').trim();
+		return n.replace(Regex.PathSeparators, '-').replace(Regex.PathWildcardAsterisk, 'x').replace(Regex.PunctQuoteDouble, "''").replace(Regex.PunctAngle, '_').replace(Regex.PunctQuestion, '').replace(Regex.EdgeDotLeading, '_').replace(Regex.EdgeDotTrailing, '').trim();
 	}
 
 	create(fo) {
@@ -263,11 +263,11 @@ class BioHelpers {
 	}
 
 	regexEscape(n) {
-		return n.replace(/[*+\-?^!:&"~${}()|[\]/\\]/g, '\\$&');
+		return n.replace(Regex.UtilRegexEscape, '\\$&');
 	}
 
 	removeDiacritics(str) {
-		return str.replace(/[^\u0000-\u007E]/g, n => this.diacriticsMap[n] || n);
+		return str.replace(Regex.TextNonAscii, n => this.diacriticsMap[n] || n);
 	}
 
 	removeNulls(o) {
@@ -356,14 +356,14 @@ class BioHelpers {
 	split(n, type) {
 		switch (type) {
 			case 0:
-				return n.replace(/\s+|^,+|,+$/g, '').split(',');
+				return n.replace(Regex.CommaTrim, '').split(',');
 			case 1:
-				return n.replace(/^[,\s]+|[,\s]+$/g, '').split(',');
+				return n.replace(Regex.CommaLeadingTrailing, '').split(',');
 		}
 	}
 
 	strip(n) {
-		return n.replace(/[.\u2026,!?:;'\u2019"\-_\u2010\s+]/g, '').toLowerCase();
+		return n.replace(Regex.PunctAllExtended, '').toLowerCase();
 	}
 
 	take(arr, ln) {
@@ -373,7 +373,7 @@ class BioHelpers {
 	}
 
 	tfEscape(n) {
-		return n.replace(/'/g, "''").replace(/[()[\],%]/g, "'$&'").replace(/\$/g, '\'$$$$\'');
+		return n.replace(/'/g, "''").replace(Regex.PunctListExtra, "'$&'").replace(Regex.PunctDollar, '\'$$$$\'');
 	}
 
 	throttle(e, i, t) {
@@ -393,8 +393,8 @@ class BioHelpers {
 	}
 
 	titlecase(n) {
-		return n.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-/]*/g, match => {
-			if (match.substr(1).search(/[A-Z]|\../) > -1) return match;
+		return n.replace(Regex.TextTitleWord, match => {
+			if (match.substr(1).search(Regex.PathUpperOrParent) > -1) return match;
 			return match.charAt(0).toUpperCase() + match.substr(1);
 		});
 	}

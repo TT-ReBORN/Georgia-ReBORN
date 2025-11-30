@@ -124,7 +124,7 @@ class BioUserInterface {
 		this.style.bg = false;
 		this.style.trans = false;
 		const set = (c, t) => {
-			c = c.replace(/[^0-9.,-]/g, '').split(/[,-]/);
+			c = c.replace(Regex.NumNonNumeric, '').split(Regex.PunctCommaDash);
 			if (c.length != 3 && c.length != 4) return '';
 			for (let i = 0; i < c.length; i++) {
 				c[i] = parseFloat(c[i]);
@@ -205,7 +205,7 @@ class BioUserInterface {
 	getAccentColour() {
 		let valid = false;
 		if (this.blur.dark && bioSet.text_hUse) {
-			const c = bioSet.text_h.replace(/[^0-9.,-]/g, '').split(/[,-]/);
+			const c = bioSet.text_h.replace(Regex.NumNonNumeric, '').split(Regex.PunctCommaDash);
 			if (c.length == 3 || c.length == 4) valid = true;
 		}
 		this.col.accent = !this.blur.dark || bioSet.text_hUse && valid ? this.col.text_h : bioSet.themed && bioSet.theme == 9 ? RGB(104, 225, 255) : RGB(128, 228, 27);
@@ -298,7 +298,7 @@ class BioUserInterface {
 		else if (this.dui) this.font.main = window.GetFontDUI(3);
 		else this.font.main = window.GetFontCUI(0);
 
-		if (!this.font.main || !grSet.customThemeFonts && DetectWine() && /tahoma/i.test(this.font.main.Name)) { // Windows: check still needed (test MS Serif or Modern, neither can be used); Wine: tahoma is default system font, but bold and some unicode characters don't work: if Wine + tahoma detected changed to Segoe UI (if that's not installed, tahoma is still used)
+		if (!this.font.main || !grSet.customThemeFonts && DetectWine() && Regex.UtilFontTahoma.test(this.font.main.Name)) { // Windows: check still needed (test MS Serif or Modern, neither can be used); Wine: tahoma is default system font, but bold and some unicode characters don't work: if Wine + tahoma detected changed to Segoe UI (if that's not installed, tahoma is still used)
 			this.font.main = gdi.Font(grFont.fontDefault, 16, 0);
 			$Bio.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead');
 		}
@@ -527,21 +527,21 @@ class BioUserInterface {
 		bio.panel.id.nowplayingSource = false;
 		bio.panel.id.propsSource = false;
 		for (let i = 0; i < 8; i++) {
-			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && bioSet[`pthTxtReader${i}`] && bioSet[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1]) && !/nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && bioSet[`pthTxtReader${i}`] && bioSet[`lyricsTxtReader${i}`] && !Regex.BioItemProperties.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1]) && !Regex.BioNowPlaying.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				bio.panel.id.lyricsSource = true;
 				bio.panel.id.focus = false;
 				break;
 			}
 		}
 		for (let i = 0; i < 8; i++) {
-			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && Regex.BioNowPlaying.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				bio.panel.id.nowplayingSource = true;
 				bio.panel.id.focus = false;
 				break;
 			}
 		}
 		for (let i = 0; i < 8; i++) {
-			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && Regex.BioItemProperties.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				bio.panel.id.propsSource = true;
 				break;
 			}

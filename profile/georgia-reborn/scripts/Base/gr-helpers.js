@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    28-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -255,6 +255,7 @@ function UIWAdjustWindowGeometry() {
 
 /**
  * Customizes the window's frame style and background color.
+ * @global
  */
 function UIWCustomizeWindowAppearance() {
 	if (!UIWizard) return;
@@ -269,6 +270,7 @@ function UIWCustomizeWindowAppearance() {
 
 /**
  * Configures window dragging and ESC key behavior.
+ * @global
  */
 function UIWConfigureWindowBehavior() {
 	if (!UIWizard) return;
@@ -289,6 +291,7 @@ function UIWConfigureWindowBehavior() {
 
 /**
  * Retrieves and logs display-related properties.
+ * @global
  */
 function UIWGetDisplayInfo() {
 	if (!UIWizard) return;
@@ -302,6 +305,7 @@ function UIWGetDisplayInfo() {
 
 /**
  * Manages window state transitions (e.g., fullscreen, maximized).
+ * @global
  */
 function UIWManageWindowState() {
 	if (!UIWizard) return;
@@ -507,8 +511,8 @@ function MakeHttpRequest(type, url, successCB) {
  * @returns {string} The formatted domain name.
  */
 function WebsiteExtractDomainName(url) {
-	const domain = url.match(/:\/\/(www\.)?([^/]+)/)[2];
-	return domain.charAt(0).toUpperCase() + domain.slice(1).replace(/\.[^/.]+$/, '');
+	const domain = url.match(Regex.WebDomain)[2];
+	return domain.charAt(0).toUpperCase() + domain.slice(1).replace(Regex.WebTopLevelDomain, '');
 }
 
 
@@ -546,9 +550,9 @@ function WebsiteOpen(website, metadb, openAll = false) {
 		return index === -1 ? '' : metaInfo.MetaValue(index, 0);
 	};
 
-	const artist = getMetaValue('artist').replace(/\s+/g, '+').replace(/&/g, '%26');
-	const album = getMetaValue('album').replace(/\s+/g, '+');
-	const title = getMetaValue('title').replace(/\s+/g, '+');
+	const artist = getMetaValue('artist').replace(Regex.SpaceAll, '+').replace(/&/g, '%26');
+	const album = getMetaValue('album').replace(Regex.SpaceAll, '+');
+	const title = getMetaValue('title').replace(Regex.SpaceAll, '+');
 	const searchQuery = artist || title;
 
 	const metadata = { artist, album, title };
@@ -569,7 +573,7 @@ function WebsiteOpen(website, metadb, openAll = false) {
 	const urls = {
 		google: `https://google.com/search?q=${searchQuery}`,
 		googleImages: `https://images.google.com/images?hl=en&q=${searchQuery}`,
-		wikipedia: `https://en.wikipedia.org/wiki/${artist.replace(/\+/g, '_')}`,
+		wikipedia: `https://en.wikipedia.org/wiki/${artist.replace(Regex.PunctPlus, '_')}`,
 		youTube: `https://www.youtube.com/results?search_type=&search_query=${searchQuery}`,
 		lastfm: `https://www.last.fm/music/${searchQuery.replace('/', '%252F')}`,
 		allMusic: `https://www.allmusic.com/search/all/${searchQuery}`,
@@ -935,6 +939,89 @@ function SetDebugProfile(condition, action, message) {
 }
 
 
+/**
+ * Mockup method to render all glyphs (symbols) side-by-side at a fixed baseline y-position (y=0 relative to the canvas).
+ * @param {GdiGraphics} gr - The graphics context to draw on.
+ * @param {number} [startX=25] - Starting x-position for the first glyph.
+ * @param {number} [spacing=25] - Horizontal spacing between glyphs.
+ * @param {number} [canvasHeight=50] - Height of the mockup canvas.
+ * @param {boolean} [showPerGlyphCenters=true] - If true, draws thin vertical lines at each glyph's horizontal center for per-icon alignment checks.
+ * @param {SmoothingMode} [SmoothRender=SmoothingMode.AntiAlias] - Smoothing mode for rendering.
+ * @param {TextRenderingHint} [TextRender=TextRenderingHint.ClearTypeGridFit] - Text rendering hint.
+ */
+function MockupGlyphAlignment(gr, startX = 25, spacing = 25, canvasHeight = 50, showPerGlyphCenters = true, SmoothRender = SmoothingMode.AntiAlias, TextRender = TextRenderingHint.ClearTypeGridFit) {
+	if (!grm.button.btnMap || IsEmpty(grm.button.btnMap)) {
+		grm.button.btnMap = grm.button._createButtonMap();
+	}
+
+	// Define the transport glyphs to test (extend as needed)
+	const glyphsToTest = [
+		{ key: 'Stop', ico: grm.button.btnMap.Stop.ico },
+		{ key: 'Previous', ico: grm.button.btnMap.Previous.ico },
+		{ key: 'Play', ico: grm.button.btnMap.Play.ico },
+		{ key: 'Pause', ico: grm.button.btnMap.Pause.ico },
+		{ key: 'Next', ico: grm.button.btnMap.Next.ico },
+		{ key: 'PlaybackDefault', ico: grm.button.btnMap.PlaybackDefault.ico },
+		{ key: 'PlaybackRepeatPlaylist', ico: grm.button.btnMap.PlaybackRepeatPlaylist.ico },
+		{ key: 'PlaybackRepeatTrack', ico: grm.button.btnMap.PlaybackRepeatTrack.ico },
+		{ key: 'PlaybackShuffle', ico: grm.button.btnMap.PlaybackShuffle.ico },
+		{ key: 'ShowVolume', ico: grm.button.btnMap.ShowVolume.ico },
+		{ key: 'Reload', ico: grm.button.btnMap.Reload.ico },
+		{ key: 'AddTracks', ico: grm.button.btnMap.AddTracks.ico }
+	];
+
+	const font = grFont.lowerBarBtn; // Use the transport button font
+	const color = grCol.transportIconNormal; // Default icon color
+	const baselineY = 0; // Fixed baseline y-position (relative to gr's origin)
+	let currentX = startX;
+	let totalWidth = 0; // Accumulate for accurate global center line
+
+	// Pre-compute box widths and totalWidth for precise centering
+	const boxWidths = glyphsToTest.map(({ ico }) => {
+		const measurements = gr.MeasureString(ico, font, 0, 0, Infinity, canvasHeight);
+		const glyphW = Math.ceil(measurements.Width);
+		return Math.max(glyphW + 4, 30); // Min width for visibility (outer box)
+	});
+
+	totalWidth = boxWidths.reduce((sum, bw) => sum + bw, 0) + spacing * (glyphsToTest.length - 1);
+	gr.SetSmoothingMode(SmoothRender);
+	gr.SetTextRenderingHint(TextRender);
+	gr.FillSolidRect(0, 0, grm.ui.ww, grm.ui.wh, RGB(0, 0, 0));
+
+	glyphsToTest.forEach(({ key, ico }, index) => {
+		const outerBoxW = boxWidths[index];
+		const glyphMeasurements = gr.MeasureString(ico, font, 0, 0, Infinity, canvasHeight);
+		const glyphW = Math.ceil(glyphMeasurements.Width);
+		const glyphH = Math.ceil(glyphMeasurements.Height);
+
+		// Draw a horizontal baseline line for reference (green, at vertical center of outer box)
+		const hCenter = canvasHeight / 2;
+
+		gr.DrawLine(currentX, baselineY + hCenter, currentX + outerBoxW, baselineY + hCenter, 1, RGBA(0, 255, 0, 180));
+		// Optional: Per-glyph vertical center line (purple, thin) for the outer box
+		if (showPerGlyphCenters) {
+		const vCenterX = currentX + outerBoxW / 2;
+			gr.DrawLine(vCenterX, baselineY, vCenterX, baselineY + canvasHeight, 1, RGBA(0, 255, 0, 100));
+		}
+
+		// Draw the glyph centered in the outer box
+		const drawX = currentX + 2;
+		const drawW = outerBoxW - 4;
+		gr.DrawString(ico, font, color, drawX, baselineY, drawW, canvasHeight, StringFormat(1, 1));
+
+		// Calculate tight inner bounding box position (centered within draw rect)
+		const innerBoxX = drawX + (drawW - glyphW) / 2;
+		const innerBoxY = baselineY + (canvasHeight - glyphH) / 2;
+		// Draw the new tight bounding box (wireframe, yellow) for exact glyph ink extents
+		gr.DrawRect(innerBoxX, innerBoxY, glyphW, glyphH, 1, RGB(255, 0, 0)); // Yellow outline for tight glyph bbox
+
+		// Draw label below for identification
+		gr.DrawString(key, gdi.Font('Segoe UI', 10, 0), color, currentX, baselineY + canvasHeight + 2, outerBoxW, 20, StringFormat(0, 0));
+		currentX += outerBoxW + spacing;
+	});
+}
+
+
 /////////////////
 // * PARSING * //
 /////////////////
@@ -1022,7 +1109,7 @@ function ParseJson(json, label, log) {
  * @returns {RegExp} The RegExp object.
  */
 function ParseStringToRegExp(patternStr) {
-	const match = patternStr.match(/^(!)?\/(.*?)\/([gimsuy]*)$/);
+	const match = patternStr.match(Regex.UtilRegexParser);
 	if (!match) return null;
 
 	const [, exclude, pattern, flags] = match;
@@ -1043,9 +1130,9 @@ function SanitizeJsonString(str) {
 	if (typeof str !== 'string') return '';
 
 	return str
-		.replace(/"/g, '')
-		.replace(/\\/g, '')
-		.replace(/\r?\n|\r/g, ' ')
+		.replace(Regex.PunctQuoteDouble, '')
+		.replace(Regex.PathBackslash, '')
+		.replace(Regex.BreakLine, ' ')
 		.trim();
 }
 
@@ -1067,7 +1154,7 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 	const singleComment = Symbol('singleComment');
 	const multiComment = Symbol('multiComment');
 	const stripWithoutWhitespace = () => '';
-	const stripWithWhitespace = (string, start, end) => string.slice(start, end).replace(/\S/g, ' ');
+	const stripWithWhitespace = (string, start, end) => string.slice(start, end).replace(Regex.SpaceNon, ' ');
 	const strip = options.whitespace === false ? stripWithoutWhitespace : stripWithWhitespace;
 
 	const isEscaped = (jsonString, quotePosition) => {
@@ -1144,19 +1231,20 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 // * FILE MANAGEMENT * //
 /////////////////////////
 /**
- * Cleans a given file path by replacing illegal characters, normalizing dashes, and removing unnecessary spaces.
+ * Cleans a given file path by replacing illegal characters, normalizing dashes, and removing unnecessary spaces and trailing dots/spaces.
  * @param {string} value - The file path to clean.
  * @returns {string} - The cleaned file path.
  */
 function CleanFilePath(value) {
 	if (!value || !value.length) return '';
-	const disk = (value.match(/^[a-zA-Z]:\\/g) || [''])[0];
+	const disk = (value.match(Regex.PathDrivePrefix) || [''])[0];
 	const pathWithoutDisk = value.replace(disk, '');
 
 	const cleanedParts = pathWithoutDisk.split('\\').map(part => part
-		.replace(/[<>:"/\\|?*]+/g, '_') // Replace illegal characters with '_'
-		.replace(/[|–‐—-]/g, '-') // Replace various dash characters with '-'
-		.replace(/(?! )\s/g, '') // Remove spaces not preceded by another space
+		.replace(Regex.PathIllegalFilename, '_')
+		.replace(Regex.TextDash, '-')
+		.replace(Regex.SpaceNonLeading, '')
+		.replace(Regex.EdgeDotSpaceTrailing, '')
 	);
 
 	return `${disk}${cleanedParts.join('\\')}`;
@@ -1249,7 +1337,9 @@ function DeleteFile(file, force = true) {
  */
 function DeleteFolder(folder, force = true) {
 	if (IsFolder(folder) || folder.includes('*')) {
-		folder = folder.replace(/^\.\\/, fb.FoobarPath).replace(/\\$/, '');
+		folder = folder
+			.replace(Regex.PathRelativeStartsWith, fb.FoobarPath)
+			.replace(Regex.PathBackslashEndsWith, '');
 
 		try {
 			fso.DeleteFolder(folder, force);
@@ -1324,7 +1414,7 @@ function FindFiles(filePath) {
 
 	// * Search for files that match the pattern
 	const result = [];
-	const regex = new RegExp(`^${filePattern.replace(/\*/g, '.*')}$`, 'i');
+	const regex = new RegExp(`^${filePattern.replace(Regex.PathWildcardAsterisk, '.*')}$`, 'i');
 
 	for (const file of files) {
 		if (regex.test(file.Name)) {
@@ -1377,10 +1467,10 @@ function NormalizePath(path) {
 
 	const needsEval = typeof path === 'string' && path.includes('%');
 	const raw = needsEval ? fb.TitleFormat(path).Eval(true) : path;
-	const normalized = String(raw).replace(/\//g, '\\');
+	const normalized = String(raw).replace(Regex.PathForwardSlash, '\\');
 	const absolute = fso.GetAbsolutePathName(normalized);
 
-	return `${absolute.replace(/\\+$/, '')}\\`;
+	return `${absolute.replace(Regex.PathBackslashTrailing, '')}\\`;
 }
 
 
@@ -2218,7 +2308,7 @@ function ColStringToRGB(colorStr) {
 		return parseInt(colorStr.slice(1), 16);
 	}
 	// If the color is in rgb format
-	const rgb = colorStr.match(/\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)/);
+	const rgb = colorStr.match(Regex.ColorRGBLoose);
 	if (rgb) return RGB(parseInt(rgb[1]), parseInt(rgb[2]), parseInt(rgb[3]));
 
 	return 0xff000000;
@@ -3061,7 +3151,7 @@ function CalcWrapSpace(gr, text, font, containerWidth, cache) {
 	let lineCount = 0; // Total number of lines
 	let totalWrapSpace = 0; // Sum of wrap space for all lines
 	const lineWrapSpaces = []; // Individual wrap space for each line
-	const words = text.match(/\S+/g) || []; // Split text into words
+	const words = text.match(Regex.TextWords) || []; // Split text into words
 
 	for (const word of words) {
 		// Test if adding the next word exceeds the container width
@@ -3234,10 +3324,8 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
  * @returns {GdiGraphics} The drawn text string with replaced Segoe UI Symbol font as fallback when the string contains special symbols.
  */
 function DrawString(gr, str, font, color, x, y, w, h, flags) {
-	const regex = DrawString.regex || (DrawString.regex =
-		/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u23F7\u23F9-\u25B5\u25B7-\u26FF]|\uD83E[\uDD10-\uDDFF]/
-	);
-	return gr.DrawString(str, regex.test(str) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font, color, x, y, w, h, flags);
+	const fontToUse = Regex.UtilFontNeedsSymbols.test(str) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font;
+	return gr.DrawString(str, fontToUse, color, x, y, w, h, flags);
 }
 
 
@@ -3409,7 +3497,7 @@ function IsObject(a) {
  * @returns {string} The type of object or array as it was.
  */
 function ToType(a) {
-	return ({}).toString.call(a).match(/([a-z]+)(:?\])/i)[1];
+	return ({}).toString.call(a).match(Regex.UtilObjectType)[1];
 }
 
 
@@ -3670,15 +3758,18 @@ function ToFixed(number, precision) {
  * Formats a title and returns the result.
  * @global
  * @param {string} titleFormatString - The title format string to evaluate.
- * @param {FbMetadbHandle} metadb - The handle to evaluate string with.
- * @param {boolean} [force] - An optional force evaluate.
- * @returns {string} The formatted title or an error message.
+ * @param {FbMetadbHandle|FbMetadbHandleList} [metadb] - The handle(s) to evaluate with (single or list).
+ * @param {boolean} [force] - An optional force evaluate (for no metadbs).
+ * @returns {string|Array<string>} The formatted title(s) or error message(s).
  */
 function $(titleFormatString, metadb = undefined, force = false) {
 	try {
-		return metadb ? fb.TitleFormat(titleFormatString).EvalWithMetadb(metadb) : fb.TitleFormat(titleFormatString).Eval(force);
-	} catch (e) {
-		return `${e} (Invalid metadb!)`;
+		const tf = fb.TitleFormat(titleFormatString);
+		return metadb ? typeof metadb.Count === 'undefined' ? tf.EvalWithMetadb(metadb) : tf.EvalWithMetadbs(metadb) : tf.Eval(force);
+	}
+	catch (e) {
+		const msg = `${e.message || e} (Invalid metadb!)`;
+		return metadb ? typeof metadb.Count === 'undefined' ? msg : new Array(metadb.Count).fill(msg) : msg;
 	}
 }
 
@@ -3693,8 +3784,8 @@ function $(titleFormatString, metadb = undefined, force = false) {
 function $Escape(string) {
 	return string
 		.replace(/'/g, "''")
-		.replace(/[()[\],%]/g, "'$&'")
-		.replace(/\$/g, "'$$$$'");
+		.replace(Regex.PunctListExtra, "'$&'")
+		.replace(Regex.PunctDollar, "'$$$$'");
 }
 
 
@@ -3718,7 +3809,7 @@ function AllEqual(str) {
  */
 function CapitalizeString(str, everyWord = false) {
 	if (!str) return '';
-	return everyWord ? str.replace(/\b\w/g, char => char.toUpperCase()) :
+	return everyWord ? str.replace(Regex.TextWordBoundary, char => char.toUpperCase()) :
 					   str[0].toUpperCase() + str.slice(1);
 }
 
@@ -3789,17 +3880,6 @@ function LeftPad(val, size, ch) {
 
 
 /**
- * Takes an array of strings as input and returns the string with the longest length.
- * @global
- * @param {Array} arr - The array to compare.
- * @returns {string} The longest string.
- */
-function LongestString(arr) {
-	return arr.reduce((a, b) => a.length > b.length ? a : b);
-}
-
-
-/**
  * Pads a number with zeros to a given length.
  * @global
  * @param {number} num - The number to be padded. Must be convertible to the specified base.
@@ -3825,45 +3905,13 @@ function Quotes(value) {
 
 
 /**
- * Replaces unicode characters such as apostrophes and multi-timestamps which will print as crap.
- * May not be needed when using UTF-8 code page.
- * @global
- * @param {string} rawString - The raw string that has certain characters that need to be replaced.
- * @returns {string} The modified string with replaced characters.
- */
-function ReplaceChars(rawString) {
-	return rawString.trim()
-	.replace(/&amp(;|)/g, '&')
-	.replace(/&gt(;|)/g, '>')
-	.replace(/&lt(;|)/g, '<')
-	.replace(/&nbsp(;|)/g, '')
-	.replace(/&quot(;|)/g, '"')
-	.replace(/<br>/gi, '')
-	.replace(/\uFF1A/g, ':')
-	.replace(/\uFF08/g, '(')
-	.replace(/\uFF09/g, ')')
-	.replace(/\u00E2\u20AC\u2122|\u2019|\uFF07|[\u0060\u00B4]|â€™(;|)|â€˜(;|)|&apos(;|)|&#39(;|)|(&#(?:039|8216|8217|8220|8221|8222|8223|x27);)/g, "'") // Apostrophe variants
-	.replace(/[\u2000-\u200F\u2028-\u202F\u205F-\u206F\u3000\uFEFF]/g, ' ') // Whitespace variants
-	.replace(/(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g, '$1$4'); // Fix enhanced LRC format
-}
-
-
-/**
- * Replaces special characters in filenames.
+ * Replaces illegal special characters in names.
  * @global
  * @param {string} s - The string to be replaced.
  * @returns {string} The modified string with replaced characters.
  */
-function ReplaceFileChars(s) {
-	return s.replace(/:/g, '_')
-			.replace(/\\/g, '-')
-			.replace(/\//g, '-')
-			.replace(/\?/g, '')
-			.replace(/</g, '')
-			.replace(/>/g, '')
-			.replace(/\*/g, '')
-			.replace(/"/g, '\'')
-			.replace(/\|/g, '-');
+function ReplaceIllegalChars(s) {
+	return s.replace(Regex.PathIllegalFilename, '');
 }
 
 
@@ -3883,6 +3931,43 @@ function StringFormat(h_align, v_align, trimming, flags) {
 	if (!flags) flags = 0;
 
 	return ((h_align << 28) | (v_align << 24) | (trimming << 20) | flags);
+}
+
+
+/**
+ * Takes an array of strings as input and returns the string with the longest length.
+ * @global
+ * @param {Array} arr - The array to compare.
+ * @returns {string} The longest string.
+ */
+function StringLongest(arr) {
+	return arr.reduce((a, b) => a.length > b.length ? a : b);
+}
+
+
+/**
+ * Takes an array of strings as input and returns the string with the widest rendered width.
+ * @global
+ * @param {GdiGraphics} gr - The GDI graphics object.
+ * @param {Array} arr - The array of strings to compare.
+ * @param {GdiFont} font - The font to use for calculating text widths.
+ * @returns {string} The widest string based on pixel width.
+ */
+function StringWidest(gr, arr, font) {
+	if (!arr || arr.length === 0) return '';
+
+	let widest = arr[0];
+	let maxWidth = gr.CalcTextWidth(widest, font);
+
+	for (let i = 1; i < arr.length; i++) {
+		const width = gr.CalcTextWidth(arr[i], font);
+		if (width > maxWidth) {
+			maxWidth = width;
+			widest = arr[i];
+		}
+	}
+
+	return widest;
 }
 
 

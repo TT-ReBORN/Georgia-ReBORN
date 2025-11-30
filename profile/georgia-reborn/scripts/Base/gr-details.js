@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -276,7 +276,6 @@ class Details {
 		gr.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 		gr.SetSmoothingMode(SmoothingMode.None);
 
-
 		if (grm.ui.isStreaming && grm.ui.noArtwork || !grm.ui.albumArt && grm.ui.noArtwork) {
 			gr.FillSolidRect(0, grm.ui.topMenuHeight, grm.ui.ww, grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight, grCol.detailsBg);
 		} else {
@@ -287,7 +286,7 @@ class Details {
 			gr.DrawImage(grCol.imgBlended, 0, 0, grm.ui.ww, grm.ui.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
 
-		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+		gr.SetSmoothingMode(SmoothingMode.HighQuality);
 	}
 
 	/**
@@ -347,7 +346,7 @@ class Details {
 
 		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> metadata grid');
 
-		gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+		gr.SetSmoothingMode(SmoothingMode.HighQuality);
 		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
 
 		this.setGridMetrics(gr);
@@ -384,6 +383,8 @@ class Details {
 			// * Columns key and value
 			this.drawGridColumns(gr);
 		}
+
+		gr.SetInterpolationMode(InterpolationMode.Default);
 
 		SetDebugProfile(false, 'print', 'on_paint -> metadata grid');
 	}
@@ -798,7 +799,7 @@ class Details {
 					gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
 					gr.FillSolidRect(labelX - leftEdgeWidth, topEdge - 20, grm.ui.ww - labelX + leftEdgeWidth, labelHeight + 40, grCol.detailsBg);
 					gr.DrawRect(labelX - leftEdgeWidth, topEdge - 20, grm.ui.ww - labelX + leftEdgeWidth, labelHeight + 40 - 1, 1, grCol.shadow);
-					gr.SetSmoothingMode(SmoothingMode.AntiAliasGridFit);
+					gr.SetSmoothingMode(SmoothingMode.HighQuality);
 				}
 				for (let i = 0; i < labels.length; i++) {
 					// allLabelsWidth can never be greater than 200, so if a label image is 161 pixels wide, never draw it wider than 161
@@ -1102,7 +1103,7 @@ class Details {
 		if (grSet.showGridChannelLogo_layout === 'textlogo') {
 			return channel.string;
 		} else if (grSet.showGridChannelLogo_layout === false) {
-			return `${channel.number} \u00B7 ${channel.string}`;
+			return `${channel.number} ${Unicode.MiddleDot} ${channel.string}`;
 		} else {
 			return '';
 		}
@@ -2127,16 +2128,16 @@ class Details {
 		let path;
 
 		const albumArtists = GetMetaValues('%album artist%', metadb);
-		const trackArtist = ReplaceFileChars($('[%track artist%]', metadb));
+		const trackArtist = ReplaceIllegalChars($('[%track artist%]', metadb));
 		const artists = GetMetaValues('%artist%', metadb);
 
 		const artistList = [
 			...albumArtists.flatMap(artist => [
-				ReplaceFileChars(artist), ReplaceFileChars(artist).replace(/^[Tt]he /, '')
+				ReplaceIllegalChars(artist), ReplaceIllegalChars(artist).replace(Regex.TextPrefixThe, '')
 			]),
 			trackArtist,
 			...artists.flatMap(artist => [
-				ReplaceFileChars(artist), ReplaceFileChars(artist).replace(/^[Tt]he /, '')
+				ReplaceIllegalChars(artist), ReplaceIllegalChars(artist).replace(Regex.TextPrefixThe, '')
 			])
 		];
 		const uniqueArtistList = [...new Set(artistList)];
@@ -2192,18 +2193,16 @@ class Details {
 		const date = new Date();
 		const lastSearchYear = date.getFullYear();
 		let dir = grPath.labelsBase;
-		let labelStr = ReplaceFileChars(publisherString);
+		let labelStr = ReplaceIllegalChars(publisherString);
 		let recordLabel = null;
 
 		if (!labelStr) return recordLabel;
 
 		// * Clean up the label string
-		const cleanLabelString = (str) => {
-			const cleanedStr = str
-				.replace(/ (Records|Recordings|Music)$/, '')
-				.replace(/[\u2010\u2013\u2014]/g, '-'); // Hyphen, endash, emdash
-			return str.endsWith('.') ? `${cleanedStr}.` : cleanedStr;
-		};
+		const cleanLabelString = (str) => str
+			.replace(Regex.ArtImageLabelSuffix, '')
+			.replace(Regex.EdgeDotSpaceTrailing, '')
+			.replace(Regex.TextDash, '-');
 
 		// * Check for label folders by year
 		const checkLabelFolders = (label) => {
@@ -2234,7 +2233,7 @@ class Details {
 		}
 
 		// * Reinitialize to original string for file search
-		labelStr = ReplaceFileChars(publisherString);
+		labelStr = ReplaceIllegalChars(publisherString);
 
 		// * Get the file path for the initial label string
 		const searchFile = (label) => `${dir}${label}.png`;

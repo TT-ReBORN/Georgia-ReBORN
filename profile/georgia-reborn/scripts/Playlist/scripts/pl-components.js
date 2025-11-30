@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -340,13 +340,12 @@ class PlaylistBatchProcessor {
 	_cacheAlbumDirs() {
 		const albumDirCache = new Map();
 		const items = pl.playlist.playlist_items_array;
-		const multiDiscPattern = /\\(CD|Vinyl|Disc|Bonus|Vol\.?|Volume)\s*(\d+|I{1,3}|IV|V(?:I{0,3}|X)?|X{0,3})$/i;
 
 		for (let i = 0; i < items.length; i++) {
 			const item = items[i];
 			let albumPath = item.Path.substring(0, item.Path.lastIndexOf('\\'));
 
-			if (multiDiscPattern.test(albumPath)) {
+			if (Regex.PathMultiDisc.test(albumPath)) {
 				// If the path ends with a recognized pattern, consider the parent directory as the album directory
 				albumPath = albumPath.substring(0, albumPath.lastIndexOf('\\'));
 			}
@@ -952,8 +951,6 @@ class PlaylistScrollbar {
 			return;
 		}
 
-		const fontSegoeUI = pl.font.scrollbar;
-
 		const ico_back_colors =
 		[
 			pl.col.bg,
@@ -973,14 +970,14 @@ class PlaylistScrollbar {
 		const btn =
 			{
 				lineUp:   {
-					ico:  '\uE010',
-					font: fontSegoeUI,
+					ico:  RebornSymbols.ArrowUp,
+					font: pl.font.scrollbar,
 					w:    this.w,
 					h:    this.w
 				},
 				lineDown: {
-					ico:  '\uE011',
-					font: fontSegoeUI,
+					ico:  RebornSymbols.ArrowDown,
+					font: pl.font.scrollbar,
 					w:    this.w,
 					h:    this.w
 				}
@@ -2071,14 +2068,14 @@ class PlaylistRating {
 	draw(gr, color) {
 		const cur_rating = this.get_rating();
 		let cur_rating_x = this.x;
-		const y = this.y - HD_4K(1, 3);
+		const y = this.y + HD_4K(1, 3);
 
 		for (let j = 0; j < 5; j++) {
 			if (j < cur_rating) {
-				gr.DrawString('\u2605', pl.font.rating_set, grm.ui.loadingThemeComplete ? RGBA(0, 0, 0, 100) : color, cur_rating_x, y, this.btn_w + 1, this.h + 2, Stringformat.Align_Center);
-				gr.DrawString('\u2605', pl.font.rating_set, color, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
+				gr.DrawString(RebornSymbols.StarFull, pl.font.rating_set, grm.ui.loadingThemeComplete ? RGBA(0, 0, 0, 100) : color, cur_rating_x, y, this.btn_w + 1, this.h + 2, Stringformat.Align_Center);
+				gr.DrawString(RebornSymbols.StarFull, pl.font.rating_set, color, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
 			} else if (grSet.showPlaylistRatingGrid) {
-				gr.DrawString('\u2219', pl.font.rating_not_set, pl.col.row_title_normal, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
+				gr.DrawString(RebornSymbols.BulletOperator, pl.font.rating_not_set, pl.col.row_title_normal, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
 			}
 			cur_rating_x += this.btn_w;
 		}
@@ -2101,7 +2098,7 @@ class PlaylistRating {
 		let ratingUpdated = ratingCurrent;
 
 		if (plSet.use_rating_from_tags) {
-			if (!this.metadb.RawPath.startsWith('http')) {
+			if (!Regex.WebStreaming.test(this.metadb.RawPath)) {
 				const handle = new FbMetadbHandleList();
 				handle.Add(this.metadb);
 				const newValue = (ratingCurrent === ratingNew) ? '' : ratingNew;
@@ -2464,17 +2461,9 @@ class PlaylistManager {
 		gr.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 		if (plman.ActivePlaylist !== -1 && plman.IsPlaylistLocked(plman.ActivePlaylist)) {
-			// Position above scrollbar for eye candy
-			// const sbar_x = x + w - pl.geo.scrollbar_w - pl.geo.scrollbar_right_pad;
 			const lock_x = grm.ui.ww - SCALE(29);
-			const lock_text = '\uf023';
-			const lock_w = Math.ceil(
-				/** @type {!number} */
-				gr.MeasureString(lock_text, pl.font.font_awesome, 0, 0, 0, 0).Width
-			);
-			gr.DrawString(lock_text, pl.font.font_awesome, text_color, lock_x, y, lock_w, h, Stringformat.Align_Center);
-
-			// right_pad += lock_w;  // Deactivated -> PLM text should be always centered
+			const lock_w = Math.ceil(gr.MeasureString(RebornSymbols.Lock, pl.font.lock, 0, 0, 0, 0).Width);
+			gr.DrawString(RebornSymbols.Lock, pl.font.lock, text_color, lock_x, y, lock_w, h, Stringformat.Align_Center);
 		}
 
 		const centralPoint = y + h * 0.5;
@@ -3284,8 +3273,8 @@ class PlaylistMetaProvider {
 	 * @returns {string} The Peak Loudness Ratio.
 	 */
 	get_PLR(gain, peak) {
-		const lufs = -2300 - (Number(gain.replace(/[^0-9+-]/g, '')) - 500);
-		const tpfs = Number(peak.replace(/[^0-9+-]/g, ''));
+		const lufs = -2300 - (Number(gain.replace(Regex.NumNonNumericStrict, '')) - 500);
+		const tpfs = Number(peak.replace(Regex.NumNonNumericStrict, ''));
 		const plr = tpfs - lufs;
 		const plr_value = plr % 100 > 49 ? plr + 100 : plr;
 
@@ -3349,13 +3338,13 @@ class PlaylistMetaManager {
 				patterns: ['folder', 'cover', 'front'],
 				paths: grCfg.imgPaths,
 				checks: { albumArt: ['local', 'embedded'], albumArtLocal: ['local'], albumArtEmbedded: ['embedded'] },
-				regex: /(\*|\b(folder|cover|front)\b)\.\*/g
+				regex: Regex.ArtAlbumArtWildcard
 			},
 			discArt: {
 				files: ['cd.png', 'disc.png', 'vinyl.png'],
 				patterns: ['cd', 'disc', 'vinyl'],
 				paths: grCfg.discArtPaths,
-				regex: /(\*|\b(cd|disc|vinyl)\b)\.\*/g
+				regex: Regex.ArtDiscArtWildcard
 			}
 		};
 
@@ -3526,7 +3515,7 @@ class PlaylistMetaManager {
 			const country = PlaylistMetaManager.initMetaValue(settings.includeCountry, metadata.country);
 
 			const includeParts = [year, genre, label, country].filter(part => part !== '');
-			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const include = includeParts.length > 0 ? ` (${includeParts.join(` ${Unicode.MiddleDot} `)})` : '';
 
 			const albumTracksRating =
 				settings.includeTrack && metadata.tracks ? `\n${metadata.tracks.map(trackRating =>
@@ -3606,7 +3595,7 @@ class PlaylistMetaManager {
 			const country = PlaylistMetaManager.initMetaValue(settings.includeCountry, metadata.country);
 
 			const includeParts = [year, genre, label, country].filter(part => part !== '');
-			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const include = includeParts.length > 0 ? ` (${includeParts.join(` ${Unicode.MiddleDot} `)})` : '';
 
 			const rating    = settings.includeStats ? `: ${metadata.rating}` : '';
 			const playcount = settings.includeStats ? `: ${metadata.playcount}` : '';
@@ -3632,31 +3621,31 @@ class PlaylistMetaManager {
 		let list = '';
 
 		list += 'Total statistics:\n'
-			+ ` \u00B7 Artists: ${metadata.totalArtists}\n`
-			+ ` \u00B7 Albums: ${metadata.totalAlbums}\n`
-			+ ` \u00B7 Tracks: ${metadata.totalTracks}\n`
-			+ ` \u00B7 Years: ${metadata.totalYears}\n`
-			+ ` \u00B7 Genres: ${metadata.totalGenres}\n`
-			+ ` \u00B7 Labels: ${metadata.totalLabels}\n`
-			+ ` \u00B7 Countries: ${metadata.totalCountries}\n`
-			+ (rating ? ` \u00B7 Ratings: ${metadata.totalRatings}\n` : '')
-			+ (playcount ? ` \u00B7 Playcounts: ${metadata.totalPlaycounts}\n` : '') + '\n';
+			+ ` ${Unicode.MiddleDot} Artists: ${metadata.totalArtists}\n`
+			+ ` ${Unicode.MiddleDot} Albums: ${metadata.totalAlbums}\n`
+			+ ` ${Unicode.MiddleDot} Tracks: ${metadata.totalTracks}\n`
+			+ ` ${Unicode.MiddleDot} Years: ${metadata.totalYears}\n`
+			+ ` ${Unicode.MiddleDot} Genres: ${metadata.totalGenres}\n`
+			+ ` ${Unicode.MiddleDot} Labels: ${metadata.totalLabels}\n`
+			+ ` ${Unicode.MiddleDot} Countries: ${metadata.totalCountries}\n`
+			+ (rating ? ` ${Unicode.MiddleDot} Ratings: ${metadata.totalRatings}\n` : '')
+			+ (playcount ? ` ${Unicode.MiddleDot} Playcounts: ${metadata.totalPlaycounts}\n` : '') + '\n';
 
 		if (topStatsType === 'topRated') {
 			list += 'Top statistics:\n'
-				+ ` \u00B7 Best rated artist: ${metadata.bestRatedArtist}\n`
-				+ ` \u00B7 Best rated album: ${metadata.bestRatedAlbum}\n`
-				+ ` \u00B7 Best rated track: ${metadata.bestRatedTrack}\n\n\n`;
+				+ ` ${Unicode.MiddleDot} Best rated artist: ${metadata.bestRatedArtist}\n`
+				+ ` ${Unicode.MiddleDot} Best rated album: ${metadata.bestRatedAlbum}\n`
+				+ ` ${Unicode.MiddleDot} Best rated track: ${metadata.bestRatedTrack}\n\n\n`;
 		}
 
 		if (topStatsType === 'topPlayed') {
 			list += 'Top statistics:\n'
-				+ ` \u00B7 Most played artist: ${metadata.mostPlayedArtist} - ${metadata.artistPlaycount} plays (${metadata.artistPercentage.toFixed(2)}%)\n`
-				+ ` \u00B7 Most played album: ${metadata.mostPlayedAlbum} - ${metadata.albumPlaycount} plays (${metadata.albumPercentage.toFixed(2)}%)\n`
-				+ ` \u00B7 Most played track: ${metadata.mostPlayedTrack} - ${metadata.trackPlaycount} plays (${metadata.trackPercentage.toFixed(2)}%)\n`
-				+ ` \u00B7 Most played genre: ${metadata.mostPlayedGenre} - ${metadata.genrePlaycount} plays (${metadata.genrePercentage.toFixed(2)}%)\n`
-				+ ` \u00B7 Most played label: ${metadata.mostPlayedLabel} - ${metadata.labelPlaycount} plays (${metadata.labelPercentage.toFixed(2)}%)\n`
-				+ ` \u00B7 Most played country: ${metadata.mostPlayedCountry} - ${metadata.countryPlaycount} plays (${metadata.countryPercentage.toFixed(2)}%)\n\n\n`;
+				+ ` ${Unicode.MiddleDot} Most played artist: ${metadata.mostPlayedArtist} - ${metadata.artistPlaycount} plays (${metadata.artistPercentage.toFixed(2)}%)\n`
+				+ ` ${Unicode.MiddleDot} Most played album: ${metadata.mostPlayedAlbum} - ${metadata.albumPlaycount} plays (${metadata.albumPercentage.toFixed(2)}%)\n`
+				+ ` ${Unicode.MiddleDot} Most played track: ${metadata.mostPlayedTrack} - ${metadata.trackPlaycount} plays (${metadata.trackPercentage.toFixed(2)}%)\n`
+				+ ` ${Unicode.MiddleDot} Most played genre: ${metadata.mostPlayedGenre} - ${metadata.genrePlaycount} plays (${metadata.genrePercentage.toFixed(2)}%)\n`
+				+ ` ${Unicode.MiddleDot} Most played label: ${metadata.mostPlayedLabel} - ${metadata.labelPlaycount} plays (${metadata.labelPercentage.toFixed(2)}%)\n`
+				+ ` ${Unicode.MiddleDot} Most played country: ${metadata.mostPlayedCountry} - ${metadata.countryPlaycount} plays (${metadata.countryPercentage.toFixed(2)}%)\n\n\n`;
 		}
 
 		return list;
@@ -3694,7 +3683,7 @@ class PlaylistMetaManager {
 		const getArtistDetails = (artist) => {
 			const country = settings.includeCountry ? Array.from(data.artistCountry.get(artist) || []).join(', ') : '';
 			const genre = settings.includeGenre ? Array.from(data.artistGenre.get(artist) || []).join(', ') : '';
-			const include = country || genre ? ` (${country}${country && genre ? ' \u00B7 ' : ''}${genre})` : '';
+			const include = country || genre ? ` (${country}${country && genre ? ` ${Unicode.MiddleDot} ` : ''}${genre})` : '';
 			const average = data.artistRatings.get(artist) / data.artistCounts.get(artist);
 			const stats = settings.includeStats ? `: ${average.toFixed(2)}` : '';
 			return `${artist}${include}${stats}`;
@@ -3707,7 +3696,7 @@ class PlaylistMetaManager {
 			const labelSet = data.albumLabel.get(album);
 			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
 			const includeParts = [year, genre, label].filter(part => part !== '');
-			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const include = includeParts.length > 0 ? ` (${includeParts.join(` ${Unicode.MiddleDot} `)})` : '';
 			const artist = settings.includeArtist && data.albumArtist.get(album) ? ` - ${data.albumArtist.get(album)}` : '';
 			const average = data.albumRatings.get(album) / data.albumCounts.get(album);
 			const stats = settings.includeStats ? `: ${average.toFixed(2)}` : '';
@@ -3722,7 +3711,7 @@ class PlaylistMetaManager {
 			const labelSet = data.trackLabel.get(track);
 			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
 			const includeParts = [year, genre, label].filter(part => part !== '');
-			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const include = includeParts.length > 0 ? ` (${includeParts.join(` ${Unicode.MiddleDot} `)})` : '';
 			const artist = settings.includeArtist && data.trackArtist.get(track) ? ` - ${data.trackArtist.get(track)}` : '';
 			const average = data.trackRatings.get(track);
 			const stats = settings.includeStats ? `: ${average.toFixed(2)}` : '';
@@ -3771,7 +3760,7 @@ class PlaylistMetaManager {
 		const getArtistDetails = (artist) => {
 			const country = settings.includeCountry ? Array.from(data.artistCountry.get(artist) || []).join(', ') : '';
 			const genre = settings.includeGenre ? Array.from(data.artistGenre.get(artist) || []).join(', ') : '';
-			const include = country || genre ? ` (${country}${country && genre ? ' \u00B7 ' : ''}${genre})` : '';
+			const include = country || genre ? ` (${country}${country && genre ? ` ${Unicode.MiddleDot} ` : ''}${genre})` : '';
 			const playcount = data.artistPlaycounts.get(artist);
 			const percentage = (playcount / data.totalArtistPlays) * 100;
 			const stats = settings.includeStats ? ` - ${playcount} plays (${percentage.toFixed(2)}%)` : '';
@@ -3785,7 +3774,7 @@ class PlaylistMetaManager {
 			const labelSet = data.albumLabel.get(album);
 			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
 			const includeParts = [year, genre, label].filter(part => part !== '');
-			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const include = includeParts.length > 0 ? ` (${includeParts.join(` ${Unicode.MiddleDot} `)})` : '';
 			const artist = settings.includeArtist && data.albumArtist.get(album) ? ` - ${data.albumArtist.get(album)}` : '';
 			const playcount = data.albumPlaycounts.get(album);
 			const percentage = (playcount / data.totalAlbumPlays) * 100;
@@ -3801,7 +3790,7 @@ class PlaylistMetaManager {
 			const labelSet = data.trackLabel.get(track);
 			const label = settings.includeLabel && labelSet && labelSet.size > 0 ? Array.from(labelSet).join(', ') : '';
 			const includeParts = [year, genre, label].filter(part => part !== '');
-			const include = includeParts.length > 0 ? ` (${includeParts.join(' \u00B7 ')})` : '';
+			const include = includeParts.length > 0 ? ` (${includeParts.join(` ${Unicode.MiddleDot} `)})` : '';
 			const artist = settings.includeArtist && data.trackArtist.get(track) ? ` - ${data.trackArtist.get(track)}` : '';
 			const playcount = data.trackPlaycounts.get(track);
 			const percentage = (playcount / data.totalTrackPlays) * 100;
@@ -3866,7 +3855,7 @@ class PlaylistMetaManager {
 	 * @returns {object} - The object containing a boolean `hasArtwork` indicating if artwork was found, and the `path` to the artwork file if found, or the original track path if not.
 	 */
 	check_missing_artwork(metadata, metadataPathIndex, artworkType) {
-		const artworkPath = metadata.path.replace(/[^/\\]*$/, '');
+		const artworkPath = metadata.path.replace(Regex.PathFilenameExtract, '');
 		const imageConfig = this.artworkConfig[artworkType.includes('albumArt') ? 'albumArt' : 'discArt'];
 		const artworkCheck = imageConfig.checks ? imageConfig.checks[artworkType] : ['local'];
 
@@ -3877,7 +3866,7 @@ class PlaylistMetaManager {
 			const imagePathList = [];
 			const imageFileExtensions = new Map(imageConfig.files.map(file => [file, file.split('.').pop()]));
 			const rawImagePathList = $(imageConfig.paths, trackHandle).split(',')
-				.map(path => artworkType === 'discArt' ? path.replace(/\*/g, '') : path.trim());
+				.map(path => artworkType === 'discArt' ? path.replace(Regex.PathWildcardAsterisk, '') : path.trim());
 
 			// * Process each raw image path to handle cases where paths are split by commas
 			for (const rawPath of rawImagePathList) {
@@ -4001,7 +3990,7 @@ class PlaylistMetaManager {
 
 		const metadataStats = this.meta_provider.get_metadata_stats(metadata);
 		const playlistStats = settings.includeStats ? this._generate_total_top_stats(metadataStats, statsType, metadataType) : '\n';
-		const playlistName  = ReplaceFileChars(plman.GetPlaylistName(plman.ActivePlaylist));
+		const playlistName  = ReplaceIllegalChars(plman.GetPlaylistName(plman.ActivePlaylist));
 		const playlistTitle = `${playlistName} - ${statsName} statistics${metadataType.startsWith('top') ? '' : ` - sorted by ${statsType}`}`;
 		const playlistData  = `${WriteFancyHeader(playlistTitle)}\n\n${playlistStats}`;
 
@@ -4086,7 +4075,7 @@ class PlaylistMetaManager {
 		};
 
 		const generateList = (list, type) => {
-			const header = WriteFancyHeader(`Missing ${type.replace(/_/g, ' ')}`);
+			const header = WriteFancyHeader(`Missing ${type.replace(Regex.PunctUnderscore, ' ')}`);
 			const listItems = Array.from(list.values(), item => item.path);
 			return [header, ...listItems, '\n\n'].join('\n');
 		};

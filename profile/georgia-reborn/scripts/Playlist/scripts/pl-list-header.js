@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -337,7 +337,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		let query = PlaylistHeader.grouping_handler.get_query();
 
 		if (showDiscHeader && query && PlaylistHeader.grouping_handler.show_disc()) {
-			query = query.replace(/%discnumber%/, '').replace(/%totaldiscs%/, '').replace(/%subtitle%/, '');
+			query = query.replace(Regex.TFPlDiscNumberTotalDiscsSubtitle, '');
 		}
 
 		const profiler = grm.ui.traceListPerformance && fb.CreateProfiler();
@@ -404,7 +404,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			hyperlinks[property + i].x -= offset;
 		}
 	}
-	//#endregion
+	// #endregion
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
@@ -560,7 +560,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 						cache_header = false; // Don't cache until artwork is loaded
 					}
 					else { // null
-						const is_radio = this.metadb.RawPath.startsWith('http') || this.metadb.Path.startsWith('spotify');
+						const is_radio = Regex.WebStreaming.test(this.metadb.RawPath);
 						grClip.DrawString(grm.ui.isStreaming && is_radio ? 'LIVE\n ON AIR' : 'NO COVER', pl.font.cover, this.is_playing() ? artist_color : pl.col.row_title_normal, art_box_x, art_box_y, art_box_size, art_box_size, Stringformat.Align_Center);
 					}
 
@@ -583,7 +583,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 			//************************************************************//
 
-			const is_radio = this.metadb.RawPath.startsWith('http') || this.metadb.Path.startsWith('spotify');
+			const is_radio = Regex.WebStreaming.test(this.metadb.RawPath);
 
 			// * Part1: Artist
 			// * Part2: Album + line + Date OR line
@@ -640,7 +640,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 						let artist_hyperlink;
 						while (this.hyperlinks[`artist${i}`]) {
 							if (i > 0) {
-								grClip.DrawString(' \u2022 ', artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, SCALE(20), artist_h);
+								grClip.DrawString(` ${Unicode.Bullet} `, artist_font, artist_color, artist_hyperlink.x + artist_hyperlink.getWidth(), artist_h * 0.25, SCALE(20), artist_h);
 							}
 							artist_hyperlink = this.hyperlinks[`artist${i}`];
 							artist_hyperlink.draw(grClip, artist_color);
@@ -706,7 +706,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 				let genreX = info_x;
 				if (!is_radio && this.grouping_handler.get_query_name() !== 'artist') {
 					if (!this.hyperlinks.genre0) {
-						const genre_text = $('[%genre%]', this.metadb).replace(/, /g, ' \u2022 ');
+						const genre_text = $('[%genre%]', this.metadb).replace(Regex.CommaSpace, ` ${Unicode.Bullet} `);
 						genre_text_w = Math.ceil(gr.MeasureString(genre_text, pl.font.info, 0, 0, 0, 0).Width + extraGenreSpacing);
 						grClip.DrawString(genre_text, pl.font.info, info_color, genreX, info_y, info_w, info_h, info_text_format);
 					} else {
@@ -714,7 +714,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 						let genre_hyperlink;
 						while (this.hyperlinks[`genre${i}`]) {
 							if (i > 0) {
-								grClip.DrawString(' \u2022 ', pl.font.info, info_color, genre_hyperlink.x + genre_hyperlink.getWidth() + SCALE(2), info_y, SCALE(20), info_h);
+								grClip.DrawString(` ${Unicode.Bullet} `, pl.font.info, info_color, genre_hyperlink.x + genre_hyperlink.getWidth() + SCALE(2), info_y, SCALE(20), info_h);
 							}
 							genre_hyperlink = this.hyperlinks[`genre${i}`];
 							genre_hyperlink.draw(grClip, info_color);
@@ -731,7 +731,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 				// * Record labels
 				if (!this.hyperlinks.label0) {
-					const label_string = $('$if2(%label%,[%publisher%])', this.metadb).replace(/, /g, ' \u2022 ');
+					const label_string = $('$if2(%label%,[%publisher%])', this.metadb).replace(Regex.CommaSpace, ` ${Unicode.Bullet} `);
 					const label_w = Math.ceil(gr.MeasureString(label_string, pl.font.info, 0, 0, 0, 0).Width + 10);
 					if (info_w > label_w + info_text_w) {
 						grClip.DrawString(label_string, pl.font.info, info_color, this.w - label_w - 10, info_y, label_w, info_h, Stringformat.H_Align_Far);
@@ -744,7 +744,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 						const label_hyperlink = this.hyperlinks[`label${i}`];
 						if (label_hyperlink.x > genreX + genre_text_w + info_text_w) {
 							if (drawCount > 0) {
-								grClip.DrawString(' \u2022', pl.font.info, info_color, lastLabel.x + lastLabel.getWidth(), info_y, SCALE(20), info_h);
+								grClip.DrawString(` ${Unicode.Bullet}`, pl.font.info, info_color, lastLabel.x + lastLabel.getWidth(), info_y, SCALE(20), info_h);
 							}
 							label_hyperlink.draw(grClip, info_color);
 							drawCount++;
@@ -869,7 +869,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 		//************************************************************//
 
-		const is_radio = this.metadb.RawPath.startsWith('http');
+		const is_radio = Regex.WebStreaming.test(this.metadb.RawPath);
 
 		const left_pad = SCALE(20);
 		let right_pad = 0;
@@ -1050,8 +1050,8 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		const left_pad = SCALE(20);
 		const right_edge = SCALE(20);
 		const part_h = this.h / 3;
-		const separatorWidth = gr.MeasureString(' \u2020', pl.font.info, 0, 0, 0, 0).Width;
-		const bulletWidth = Math.ceil(gr.MeasureString('\u2020', pl.font.info, 0, 0, 0, 0).Width);
+		const separatorWidth = gr.MeasureString(` ${Unicode.Bullet}`, pl.font.info, 0, 0, 0, 0).Width;
+		const bulletWidth = Math.ceil(gr.MeasureString(`${Unicode.Bullet}`, pl.font.info, 0, 0, 0, 0).Width);
 		const spaceWidth = Math.ceil(separatorWidth - bulletWidth) + SCALE(1);
 		const truncatedWidth = art_box_x + art_box_size * ((this.art === null && plSet.auto_album_art ? 1 : plSet.show_album_art ? 2 : 1) + (grSet.showPlaylistFullDate ? 0.5 : 0));
 
@@ -1069,7 +1069,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 
 		// * Artist
 		const albumArtist = grSet.headerFlipRows ? this.grouping_handler.get_sub_title_query() : this.grouping_handler.get_title_query();
-		const is_radio = this.metadb.RawPath.startsWith('http');
+		const is_radio = Regex.WebStreaming.test(this.metadb.RawPath);
 		let artist_text = [];
 		let artist_x = left_pad;
 		let artist_w;
@@ -1235,7 +1235,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		}
 		else if (['dts', 'ac3', 'atsc a/52'].includes(codecLower)) {
 			codec += `${meta.channel_addon} kbps`;
-			codec = codec.replace(/atsc a\/52/i, 'Dolby Digital');
+			codec = codec.replace(Regex.TextCodecAtscA52, 'Dolby Digital');
 		}
 		else if (meta.encoding === 'lossy') {
 			codec += meta.lossy_addon;
@@ -1500,7 +1500,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 	 * @static
 	 */
 	static prepare_disc_header_data(rows_to_process, rows_metadb) {
-		const tfo = fb.TitleFormat(`$ifgreater(%totaldiscs%,1,[Disc %discnumber% $if(${grTF.disc_subtitle}, \u2014 ,) ],)[${grTF.disc_subtitle}]`);
+		const tfo = fb.TitleFormat(`$ifgreater(%totaldiscs%,1,[Disc %discnumber% $if(${grTF.disc_subtitle}, ${Unicode.EmDash} ,) ],)[${grTF.disc_subtitle}]`);
 		const disc_data = tfo.EvalWithMetadbs(rows_metadb);
 
 		return Zip(rows_to_process, disc_data);
@@ -1589,7 +1589,7 @@ class PlaylistDiscHeader extends PlaylistBaseHeader {
 		}
 
 		const disc_header_text_format = Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap;
-		const disc_text = this.disc_title; // $('[Disc %discnumber% $if('+ tf.disc_subtitle+', \u2014 ,) ]['+ tf.disc_subtitle +']', that.sub_items[0].metadb);
+		const disc_text = this.disc_title; // $(`[Disc %discnumber% $if('+ tf.disc_subtitle+', ${Unicode.EmDash} ,) ]['+ tf.disc_subtitle +']`, that.sub_items[0].metadb);
 		gr.DrawString(disc_text, title_font, title_color, cur_x, this.y, this.w, this.h, disc_header_text_format);
 		const disc_w = Math.ceil(gr.MeasureString(disc_text, title_font, 0, 0, 0, 0).Width + 14);
 

@@ -228,7 +228,7 @@ class LibCallbacks {
 
 	on_notify_data(name, info) {
 		if (libSet.libSource == 2 && name != 'bio_imgChange') {
-			const panelSelectionPlaylists = libSet.panelSelectionPlaylist.split(/\s*\|\s*/);
+			const panelSelectionPlaylists = libSet.panelSelectionPlaylist.split(Regex.DelimPipeSpace);
 			panelSelectionPlaylists.some(v => {
 				if (name == v) {
 					lib.lib.list = new FbMetadbHandleList(info);

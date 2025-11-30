@@ -528,7 +528,7 @@ class BioDldWikipedia {
 				const key = Object.keys(json);
 				if (!key.length) { this.save(); break; }
 				const source = bio.infobox.cleanText($Bio.getProp(json, `${key[0]}.revisions.0.slots.main.*`, ''), this.site);
-				if (!source || /#REDIRECT/i.test(source)) { this.save(); break; }
+				if (!source || Regex.WikiRedirect.test(source)) { this.save(); break; }
 				this.info = bio.infobox.getValues(this.type, source, this.site);
 				this.save();
 				break;
@@ -537,13 +537,13 @@ class BioDldWikipedia {
 	}
 
 	tidy(n) {
-		return n.replace(/<span([\s\S]+?)>/g, '').replace(/<\/span>/g, '');
+		return n.replace(Regex.HtmlTagSpanOpenCapture, '').replace(Regex.HtmlTagSpanClose, '');
 	}
 
 	checkTypeOf() {
 		if (this.type > 2) return;
-		this.info.genre = $Bio.isArray(this.info.genre) ? this.info.genre.join('\u200b, ') : '';
-		this.genres = $Bio.isArray(this.genres) ? this.genres.join('\u200b, ') : '';
+		this.info.genre = $Bio.isArray(this.info.genre) ? this.info.genre.join(`${Unicode.ZeroWidthSpace}, `) : '';
+		this.genres = $Bio.isArray(this.genres) ? this.genres.join(`${Unicode.ZeroWidthSpace}, `) : '';
 	}
 
 	doFallbackSearch() {
@@ -556,7 +556,7 @@ class BioDldWikipedia {
 	}
 
 	formatWiki(source) {
-		const disambPage = /^.*may refer to:$/.test(source.split('\n')[0]); // disambiguation flag en only
+		const disambPage = Regex.WikiDisambiguationPage.test(source.split('\n')[0]); // disambiguation flag en only
 		if (disambPage || source == 'nicks') { // nicks = redirected en only
 			this.wiki = '';
 			return;
@@ -605,9 +605,9 @@ class BioDldWikipedia {
 
 	getHeadings(text) {
 		let match;
-		const headingPattern = /==+(?:(?!\n)\s?)(?:(?!==|\n)[^])+(?:(?!\n)\s?)==+/g;
 		const matches = [];
-		while ((match = headingPattern.exec(text)) !== null) {
+		Regex.WikiSectionHeading.lastIndex = 0; // Reset index
+		while ((match = Regex.WikiSectionHeading.exec(text)) !== null) {
 			matches.push({
 				title: match[0].trim(),
 				start: match.index,
@@ -630,9 +630,9 @@ class BioDldWikipedia {
 	}
 
 	includesArtist(text) {
-		text = text.replace(/ and /gi, ' & ');
-		const altArtist = this.artist.length > 6 && !/^The The$/i.test(this.artist) ? this.artist.replace(/^The /i, '') : '';
-		const arr = [...new Set([this.artist, this.related_artist, this.alias, altArtist, $Bio.removeDiacritics(this.artist)].map(v => v.replace(/ and /gi, ' & ')).filter(Boolean))];
+		text = text.replace(Regex.TextAndConnector, ' & ');
+		const altArtist = this.artist.length > 6 && !Regex.TextPrefixTheThe.test(this.artist) ? this.artist.replace(Regex.TextPrefixThe, '') : '';
+		const arr = [...new Set([this.artist, this.related_artist, this.alias, altArtist, $Bio.removeDiacritics(this.artist)].map(v => v.replace(Regex.TextAndConnector, ' & ')).filter(Boolean))];
 		if (this.artist == 'Various Artists') arr.push('compilation');
 		return arr.some(v => {
 			const w = $Bio.regexEscape(v);
@@ -723,10 +723,9 @@ class BioDldWikipedia {
 	}
 
 	tidyWiki(n, en) {
-		n = en ? n.replace(/\.\n+/g, '.\r\n\r\n') : n.replace(/\n+/g, '\r\n\r\n');
-		n = n.replace(/\(\)/g, '').replace(/\(;\s/g, '(').replace(/^thumb\r\n\r\n/i, '').replace(/\."([^\s"])/g, '. "$1').replace(/[.,]:\s\d+/g, '.').replace(/Ph\.D\./g, 'PhD');
-		const tidyFullStop = /([^A-Z.\s])\.([^a-z\s\d.'"\u201d,;/)[\]])/g;
-		n = en ? n.replace(tidyFullStop, '$1.\r\n\r\n$2').replace(/t\.\r\n\r\nA.T.u./g, 't.A.T.u.') : n.replace(tidyFullStop, '$1. $2');
+		n = en ? n.replace(Regex.BreakDotNewline, '.\r\n\r\n') : n.replace(Regex.BreakMultipleNewline, '\r\n\r\n');
+		n = n.replace(Regex.PunctEmptyParen, '').replace(Regex.PunctParenSemicolon, '(').replace(Regex.WikiThumb, '').replace(Regex.EdgeDotQuote, '. "$1').replace(Regex.PunctColonDigit, '.').replace(Regex.TextPhD, 'PhD');
+		n = en ? n.replace(Regex.EdgeFullStop, '$1.\r\n\r\n$2').replace(Regex.TextTatu, 't.A.T.u.') : n.replace(Regex.EdgeFullStop, '$1. $2');
 		return n.trim();
 	}
 }
@@ -740,60 +739,54 @@ class BioInfobox {
 	}
 
 	checkDateFormat(date) {
-			return date.replace(RegExp(`(${this.months})\\s+(\\d+),?\\s+((19|20)\\d{2})`, 'g'), '$3 $1 $4');
+		return date.replace(Regex.DateMonthDayYear, '$3 $1 $4');
 	}
 
 	cleanLists(n) {
-		return n.replace(/{{Flat\s?list\|/i, '')
-		.replace(/{{hlist\|/i, '')
-		.replace(/{{plain\s?list\|/i, '')
-		.replace(/{{ubl\|/i, '')
-		.replace(/{{unbulleted\s?list\|/i, '')
-		.replace(/{{flagicon\|([^}]+)}}/gi, '$1, ')
-		.replace(/\s*\*\s*/g, ', ')
-		.replace(/}}}{{/g, '}}, {{')
-		.replace(/{{start\s?date\|/gi, '')
-		.replace(/{{end\s?date\|/gi, '')
-		.replace(/df=yes\|/i, '')
-		.replace(/df=y\|/i, '');
+		return n.replace(Regex.WikiFlatList, '')
+		.replace(Regex.WikiHList, '')
+		.replace(Regex.WikiPlainList, '')
+		.replace(Regex.WikiUbl, '')
+		.replace(Regex.WikiUnbulletedList, '')
+		.replace(Regex.WikiFlagIcon, '$1, ')
+		.replace(Regex.PunctAsteriskPadding, ', ')
+		.replace(Regex.WikiBraceCloseOpen, '}}, {{')
+		.replace(Regex.WikiStartDate, '')
+		.replace(Regex.WikiEndDate, '')
+		.replace(Regex.WikiDfYes, '')
+		.replace(Regex.WikiDfY, '');
 	}
 
 	cleanStr(n) {
 		n = this.cleanLists(n)
-		.replace(/\]\]\s+\[\[/g, ']], [[')
-		.replace(/\[\[[^\]]+?\|/g, '')
-		.replace(/[[\]]/g, '')
-		.replace(/{{-}}/g, '')
-		.replace(/{{ref\|a}}/g, '')
-		.replace(/{{refn/g, '')
-		.replace(/\(see below\)/g, '')
-		.replace(/[{}]/g, '');
+		.replace(Regex.WikiDoubleBracketSpace, ']], [[')
+		.replace(Regex.WikiLinkPipe, '')
+		.replace(Regex.PunctBracket, '')
+		.replace(Regex.WikiDash, '')
+		.replace(Regex.WikiRefA, '')
+		.replace(Regex.WikiRefn, '')
+		.replace(Regex.WikiSeeBelow, '')
+		.replace(Regex.PunctBrace, '');
 		return this.tidyPunctuation(n);
 	}
 
 	cleanText(text, site) {
-		text = text.replace(/<ref[\s\S]+?(<\/ref>|\/>)/g, '').replace(/{{citation needed[^}]+}}/g, '').replace(/\[https:[^\]]+\]/g, '').replace(/'''?/g, '').replace(/\|display=inline/g, '').replace(/<\/?br\s?\/?>/gi, ',').replace(/&minus;/g, '-').replace(/<sup>/g, '^').replace(/{{sfn\|([^}]+)}}/g, '').replace(/{{efn\|([^}]+)}}/g, '').replace(/\u2212/g, '-').replace(/<\/?nowiki\/>/g, '').replace(/<\/?small>/g, '').replace(/<\/sup>/g, '').replace(/{{\s*nowrap\s*\|([^\n}]+)}}/gi, '$1');
-		if (site == 'pt') text = text.replace(/\s*(title|t\u00edtulo)[^[]+\[\[/gi, '[[').replace(/\n\|\d\s*=\s*[^[]+\[\[/g, '* [[');
-		return text.replace(/<!--([\s\S]*?)-->/g, '').replace(/&nbsp;|{{nbsp}}/g, ' ').replace(/&ndash;|mdash|{{ndash}}/gi, '\u2013').replace("|''See list''", '').replace(/{{small\|([^}]+)}}/gi, '$1');
+		text = text.replace(Regex.HtmlTagRef, '').replace(Regex.WikiCitationNeeded, '').replace(Regex.WikiExternalLink, '').replace(Regex.WikiBoldItalic, '').replace(Regex.WikiDisplayInline, '').replace(Regex.HtmlTagBrVariants, ',').replace(Regex.HtmlEntityMinus, '-').replace(Regex.HtmlTagSupOpen, '^').replace(Regex.WikiSfn, '').replace(Regex.WikiEfn, '').replace(Regex.UniMinus, '-').replace(Regex.HtmlTagNowiki, '').replace(Regex.HtmlTagSmall, '').replace(Regex.HtmlTagSupClose, '').replace(Regex.WikiNowrap, '$1');
+		if (site == 'pt') text = text.replace(Regex.WikiTitlePt, '[[').replace(Regex.WikiNumberedListPt, '* [[');
+		return text.replace(Regex.HtmlTagComment, '').replace(Regex.HtmlEntityNbspVariant, ' ').replace(Regex.HtmlEntityNdash, Unicode.EnDash).replace(Regex.WikiSeeList, '').replace(Regex.WikiSmall, '$1');
 	}
 
 	durationPattern(n) {
-		const duration1 = /{{Duration\|(\d+:)?\d+:\d+}}/i;
-		const duration2 = /{{Duration\|(h=)?(\d+)?\|?m=(\d+)\|s=(\d+)}}/i;
-
-		const globalDuration1 = /{{Duration\|((\d+:)?\d+:\d+)}}/gi;
-		const globalDuration2 = /{{Duration\|(h=)?(\d+)?\|?m=(\d+)\|s=(\d+)}}/gi;
-
-		if (duration1.test(n)) {
+		if (Regex.WikiDurationColon.test(n)) {
 			return {
-				pattern: globalDuration1,
+				pattern: Regex.WikiDurationColonGlobal,
 				replacer: '$1'
 			};
 		}
 
-		if (duration2.test(n)) {
+		if (Regex.WikiDurationHMS.test(n)) {
 			return {
-				pattern: globalDuration2,
+				pattern: Regex.WikiDurationHMSGlobal,
 				replacer: '$2:$3:$4'
 			};
 		}
@@ -853,8 +846,8 @@ class BioInfobox {
 			w = w[1] || w[0];
 			n.push(item == 'genre' ? $Bio.titlecase(w) : w);
 		});
-		if (!n.length) n = m[0].split(/\|/); // plain text
-		return n.filter(v => !/[[\]{}]/.test(v)); // disallow unrecognised
+		if (!n.length) n = m[0].split(Regex.DelimPipeSingle); // plain text
+		return n.filter(v => !Regex.WikiSpecialChars.test(v)); // disallow unrecognised
 	}
 
 	getKeys(item, site) {
@@ -884,21 +877,21 @@ class BioInfobox {
 
 	getKeyValuePairs(str, sep) {
 		const index = str.indexOf(sep);
-		if (index < 0 || /Short description/i.test(str)) return null;
+		if (index < 0 || Regex.BioShortDescription.test(str)) return null;
 
 		const key = str.slice(0, index).replace('|', '').trim().toLowerCase();
-		if (/module/i.test(key) && /embed/i.test(key)) return null;
+		if (Regex.WikiModule.test(key) && Regex.WikiEmbed.test(key)) return null;
 
 		let value = str.slice(index + sep.length).trim();
 
-		while (/\|[^=]+=($|\}\})/.test(value)) { // remove empty: | recorded   =
-			value = value.replace(/\|[^=|]+=($|\}\})/, '');
+		while (Regex.WikiParamEmpty.test(value)) { // remove empty: | recorded   =
+			value = value.replace(Regex.WikiParamNoValue, '');
 		}
 
-		if (/\}\}$/.test(value)) { // handle infobox w/o wrapper
+		if (Regex.WikiTrailingBrace.test(value)) { // handle infobox w/o wrapper
 			const leadingCount = value.split('{').length - 1;
 			const trailingCount = value.split('}').length - 1;
-			if (leadingCount != trailingCount) value = value.replace(/\}\}$/, '');
+			if (leadingCount != trailingCount) value = value.replace(Regex.WikiTrailingBrace, '');
 		}
 
 		return { [key]: value };
@@ -914,27 +907,28 @@ class BioInfobox {
 		if (duration) {
 			n  =
 			this.cleanLists(len[0])
-			.replace(duration.pattern, duration.replacer).replace(/^:/g, '').replace(/([^\d]):/g, '$1')
-			.replace(/\[\[[^\]]+?\|/g, '').replace(/[[\]]/g, '').replace(/[{}]/g, '')
-			.replace(/\|/g, ', ')
-			.replace(/^,/, '')
-			.replace(/,(?=\S)/g, ', ')
-			.replace(/:(\d([^\d]|$))/g, ':0$1').replace(/(^|[^\d])0(\d)(:\d\d$)/g, '$2$3')
+			.replace(duration.pattern, duration.replacer).replace(Regex.EdgeColonLeading, '').replace(Regex.EdgeNonDigitColon, '$1')
+			.replace(Regex.WikiLinkPipe, '').replace(Regex.PunctBracket, '').replace(Regex.PunctBrace, '')
+			.replace(Regex.DelimPipe, ', ')
+			.replace(Regex.CommaLeading, '')
+			.replace(Regex.CommaNoSpace, ', ')
+			.replace(Regex.TimeSingleDigit, ':0$1').replace(Regex.TimeLeadingZero, '$2$3')
 			.trim();
 			if (this.isValidLength(n)) return this.tidyPunctuation(n);
 		}
 
 		n = [];
 		if (this.isValidLength(len[0])) {
-			let m = len[0].replace(/\[\[[^\]]+?\|/g, '').replace(/[[\]]/g, '').replace(/\s*\*\s*/g, ', ');
-			m = /{{([^}]+)}}/i.exec(m);
+			let m = len[0].replace(Regex.WikiLinkPipe, '').replace(Regex.PunctBracket, '').replace(Regex.PunctAsteriskPadding, ', ');
+			Regex.WikiTemplate.lastIndex = 0; // Reset index
+			m = Regex.WikiTemplate.exec(m);
 			if (m) {
 				m[1].split('|').forEach(v => {
 					if (this.isValidLength(v)) n.push(v);
 				});
 			}
 		}
-		if (n.length) return n.join(', ').replace(/^,/, '').trim();
+		if (n.length) return n.join(', ').replace(Regex.CommaLeading, '').trim();
 		return this.getStr(item, list);
 	}
 
@@ -943,7 +937,7 @@ class BioInfobox {
 		let m = this.find('death_date', list);
 
 		if (m) {
-			m = m[0].match(/(\d+)\s*\|(\d+)\s*\|(\d+)\s*\|(\d+)\s*\|?(\d+)?\s*\|?(\d+)?\s*/);
+			m = m[0].match(Regex.WikiDeathDateAndAge);
 		}
 
 		if (m) {
@@ -960,13 +954,12 @@ class BioInfobox {
 			};
 		} else {
 			let m = this.find('birth_date', list);
-			const birthDateGlobalPattern = /{{birth\sdate([^}]+)}}/gi;
 
 			if (m) {
-				const count = m[0].match(birthDateGlobalPattern);
+				const count = m[0].match(Regex.WikiBirthDate);
 				if (count && count.length > 1) return {}; // N/A if > 1 artist
-				const origin = m[0].replace(birthDateGlobalPattern, '').split('{{')[0].replace(/[[\]]/g, '').replace(/^,/, '').trim();
-				m = m[0].match(/(\d+)\s*\|(\d+)\s*\|(\d+)\s*/);
+				const origin = m[0].replace(Regex.WikiBirthDate, '').split('{{')[0].replace(Regex.PunctBracket, '').replace(Regex.CommaLeading, '').trim();
+				m = m[0].match(Regex.DatePipeThreeDigits);
 				if (m) {
 					const results = m;
 					const [, year, month, day] = results;
@@ -1014,11 +1007,11 @@ class BioInfobox {
 		const m = this.find(item, list) || '';
 		let d = '';
 
-		if (/{{start\s?date\|/i.test(m[0])) {
-			const dates = m[0].match(/{{start\s?date\|([^}]+?)\}\}/gi);
+		if (Regex.WikiStartDate.test(m[0])) {
+			const dates = m[0].match(Regex.WikiStartDateFull);
 			if (dates) {
 				const map = dates.map(v => {
-					const d1 = v.replace(/}/g, '').split('|').filter(v => /\d/.test(v));
+					const d1 = v.replace(/}/g, '').split('|').filter(v => Regex.NumDigit.test(v));
 					const type = d1.length;
 					let date = d1.join('-');
 					date = new Date(date);
@@ -1027,9 +1020,9 @@ class BioInfobox {
 				});
 				d = m[0];
 				dates.forEach((v, i) => {
-					d = d.replace(/{{start\s?date\|[^}]+\}\}/i, map[i].d);
+					d = d.replace(Regex.WikiStartDateReplace, map[i].d);
 				});
-				d = d.replace(/\s*\*\s*/g, ', ');
+				d = d.replace(Regex.PunctAsteriskPadding, ', ');
 				d = this.cleanStr(this.checkDateFormat(d));
 			}
 		}
@@ -1079,14 +1072,14 @@ class BioInfobox {
 			if (foundedIn) foundedIn = prefix + foundedIn;
 
 			o.active = this.getYearsActive('years_active', list);
-			o.active = o.active ? `Years Active: ${o.active.replace(/\u2013/g, ' \u2013 ').replace(/\s{2}/g, '')}` : '';
+			o.active = o.active ? `Years Active: ${o.active.replace(Regex.UniEnDash, ` ${Unicode.EnDash} `).replace(Regex.SpaceDoubleAny, '')}` : '';
 			o.end = date.end ? date.end : '';
 			o.foundedIn = foundedIn;
 			o.start = date.born ? date.born : '';
 		}
 
 		if (type > 0) {
-			o.length = this.getLength('length', list).replace(/\(see length variations\)/gi, '').replace(/\u2013/g, ' \u2013 ').replace(/ {2}/g, ' ');
+			o.length = this.getLength('length', list).replace(Regex.WikiSeeLengthVariations, '').replace(Regex.UniEnDash, ` ${Unicode.EnDash} `).replace(Regex.SpaceDouble, ' ');
 			if (type < 3 && o.length) o.length = `Length: ${o.length}`;
 		}
 
@@ -1108,10 +1101,10 @@ class BioInfobox {
 	}
 
 	instancesPattern(n) {
-		const hlc = /{{hlist-comma\s*/i.test(n);
+		const hlc = Regex.WikiHlistComma.test(n);
 		return {
-			global: !hlc ? /\[\[[^\]]+\]\]/g : /(\[\[|{{)[^\]}]+(}}|\]\])/g,
-			pattern: !hlc ? /(\[\[)([^\]]+)\]\]/ : /(\[\[|{{)([^\]}]+)(}}|\]\])/
+			global: !hlc ? Regex.WikiLink : Regex.WikiLinkOrTemplate,
+			pattern: !hlc ? Regex.WikiLinkPattern : Regex.WikiHlistPattern
 		};
 	}
 
@@ -1120,20 +1113,20 @@ class BioInfobox {
 	}
 
 	isFullDate(date) {
-		return RegExp(`^\\d+\\s+${this.months}\\s+(19|20)\\d{2}$`, 'i').test(date);
+		return Regex.DateFull.test(date);
 	}
 
 	isList(n) {
-		return /{{(hlist|flat\s?list|plain\s?list|unbulleted\s?list)[^|]*\|[^[\]}]+}}/i.test(n) || /start\s?date/i.test(n);
+		return Regex.WikiListTemplates.test(n) || Regex.WikiStartDatePattern.test(n);
 	}
 
 	isValidLength(n) {
-		return /\d+:\d+/.test(n) || /\d+\s*min\s*36|s*sec/i.test(n);
+		return Regex.TimeColonFormat.test(n) || Regex.TimeMinSec.test(n);
 	}
 
 	keyValue(source) {
 		const list = {};
-		const div = source.replace(/\n/g, '').replace(/(\s*\|[^|=]+=[\s*[{])/g, '\n$1').split('\n');
+		const div = source.replace(Regex.BreakNewline, '').replace(Regex.WikiParamStart, '\n$1').split('\n');
 		div.forEach(v => {
 			const pair = this.getKeyValuePairs(v, '=');
 			if (pair) Object.assign(list, pair);
@@ -1142,8 +1135,7 @@ class BioInfobox {
 	}
 
 	parse(source) {
-		const infoBoxStartPattern = /{{\w*box/;
-		const startMatch = source.match(infoBoxStartPattern);
+		const startMatch = source.match(Regex.WikiInfoboxStart);
 		if (!startMatch) { // use whole source if no infobox wrapper
 			return { data: source, remainder: null };
 		}
@@ -1154,7 +1146,7 @@ class BioInfobox {
 		}
 		const data = start.substring(0, outerIndex);
 		const remainder = source.substring(outerIndex);
-		const remainderHasMatch = !!remainder.match(infoBoxStartPattern);
+		const remainderHasMatch = !!remainder.match(Regex.WikiInfoboxStart);
 		return {
 			data,
 			remainder: remainderHasMatch ? remainder : null
@@ -1163,19 +1155,19 @@ class BioInfobox {
 
 	tidyPunctuation(n) {
 		return n
-		.replace(/;/g, ',')
-		.replace(/^,/, '')
-		.replace(/\|,?/g, ', ')
-		.replace(/, ,?/g, ',')
-		.replace(/,+/g, ', ')
-		.replace(/ , /g, ', ')
-		.replace(/ ?,(?=\S)/g, ', ')
-		.replace(/([^A-Z])\.$/, '$1')
-		.replace(/:,/g, ':')
-		.replace(/(\w)\(/g, '$1 (')
-		.replace(/\)(?=\w)/g, ') ')
-		.replace(/ {2,}/g, ' ')
+		.replace(Regex.DelimSemicolon, ',')
+		.replace(Regex.CommaLeading, '')
+		.replace(Regex.DelimPipeComma, ', ')
+		.replace(Regex.CommaSpaceOptional, ',')
+		.replace(Regex.CommaMultiple, ', ')
+		.replace(Regex.CommaSpaced, ', ')
+		.replace(Regex.CommaPadded, ', ')
+		.replace(Regex.EdgeDotAfterNonUpper, '$1')
+		.replace(Regex.DelimColonComma, ':')
+		.replace(Regex.PunctWordParen, '$1 (')
+		.replace(Regex.PunctParenWord, ') ')
+		.replace(Regex.SpaceMultiple, ' ')
 		.trim()
-		.replace(/,$/, '') || '';
+		.replace(Regex.CommaTrailing, '') || '';
 	}
 }

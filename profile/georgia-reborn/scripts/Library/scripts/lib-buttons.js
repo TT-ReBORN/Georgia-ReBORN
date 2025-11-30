@@ -217,10 +217,10 @@ class LibButtons {
 				this.scr.iconFontName = 'Segoe UI Symbol';
 				this.scr.iconFontStyle = 0;
 				if (!lib.ui.sbar.type) {
-					this.scr.arrow = lib.ui.sbar.but_w < Math.round(14 * $Lib.scale) ? '\uE018' : '\uE0A0';
+					this.scr.arrow = lib.ui.sbar.but_w < Math.round(14 * $Lib.scale) ? RebornSymbols.ArrowUp3 : RebornSymbols.ArrowUp4;
 					this.scr.pad = lib.ui.sbar.but_w < Math.round(15 * $Lib.scale) ? -0.3 : -0.22;
 				} else {
-					this.scr.arrow = lib.ui.sbar.but_w < Math.round(14 * $Lib.scale) ? '\uE018' : '\uE0A0';
+					this.scr.arrow = lib.ui.sbar.but_w < Math.round(14 * $Lib.scale) ? RebornSymbols.ArrowUp3 : RebornSymbols.ArrowUp4;
 					this.scr.pad = lib.ui.sbar.but_w < Math.round(14 * $Lib.scale) ? -0.26 : -0.22;
 				}
 				break;
@@ -495,7 +495,7 @@ class LibBtn {
 		// gr.SetSmoothingMode(0);
 		gr.SetInterpolationMode(2);
 		if (this.item.normal) gr.DrawImage(this.item.normal, this.p1, lib.ui.y + SCALE(18), this.p3, this.p3, 0, 0, this.item.normal.Width, this.item.normal.Height, 0, a);
-		// gr.SetInterpolationMode(0); // Causes ugly rendering of lower bar flags when switching to Library
+		gr.SetInterpolationMode(0);
 	}
 
 	drawSettings(gr) {

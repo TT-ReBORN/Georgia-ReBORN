@@ -61,7 +61,7 @@ class BioDldLastfm {
 	}
 
 	analyse(saveOnly) {
-		const noWiki = n => /wiki|vikimiz|\u0412\u0438\u043A\u0438|\u7EF4\u57FA/i.test(n);
+		const noWiki = n => Regex.WikiStubDetector.test(n);
 		if (!saveOnly) {
 			bioDoc.open();
 			const div = bioDoc.createElement('div');
@@ -101,7 +101,7 @@ class BioDldLastfm {
 					});
 					j = 0;
 					$Bio.htmlParse(div.getElementsByTagName('abbr'), 'className', 'intabbr js-abbreviated-counter', v => {
-						this.counts[j] = `${$Bio.titlecase(v.innerText.trim())} \u200b| ${v.title.trim()}`;
+						this.counts[j] = `${$Bio.titlecase(v.innerText.trim())} ${Unicode.ZeroWidthSpace}| ${v.title.trim()}`;
 						j++;
 					});
 					i = 0;
@@ -109,8 +109,8 @@ class BioDldLastfm {
 						this.topTracks.push($Bio.titlecase(v.innerText.trim()));
 						i++;
 					});
-					this.topTracks = this.topTracks.length ? topTracks[bioCfg.lang.ix] + this.topTracks.join('\u200b, ') : '';
-					this.tags = this.tags.length ? `Top Tags: ${this.tags.join('\u200b, ')}` : '';
+					this.topTracks = this.topTracks.length ? topTracks[bioCfg.lang.ix] + this.topTracks.join(`${Unicode.ZeroWidthSpace}, `) : '';
+					this.tags = this.tags.length ? `Top Tags: ${this.tags.join(`${Unicode.ZeroWidthSpace}, `)}` : '';
 					if (this.itemValue[1].length) {
 						r1.forEach((v, i) => itemName[1] = itemName[1].replace(RegExp(v, 'i'), r2[i]));
 						this.pop = `\r\n\r\n${itemName[1]}: ${this.itemValue[1]}`;
@@ -121,7 +121,7 @@ class BioDldLastfm {
 						}
 						this.pop += `${(this.itemValue[1].length ? '; ' : '\r\n\r\n') + $Bio.titlecase(itemName[0])}: ${this.itemValue[0]}`;
 					}
-					this.simArtists = this.simArtists.length ? bio.server.similar[bioCfg.lang.ix] + this.simArtists.join('\u200b, ') : '';
+					this.simArtists = this.simArtists.length ? bio.server.similar[bioCfg.lang.ix] + this.simArtists.join(`${Unicode.ZeroWidthSpace}, `) : '';
 					bioDoc.close();
 					this.searchBio = 1;
 					return this.search(this.artist, this.fo_bio, this.pth_bio);
@@ -135,7 +135,7 @@ class BioDldLastfm {
 					});
 					$Bio.htmlParse(div.getElementsByTagName('li'), 'className', 'factbox-item', v => {
 						factbox = '';
-						factbox = bio.server.format(v.innerHTML.replace(/<\/H4>/gi, ': ').replace(/\s*<\/LI>\s*/gi, ', ').replace(/\s*Show all members\u2026\s*/gi, '')).replace(/\s+/g, ' ').replace(/,$/, '');
+						factbox = bio.server.format(v.innerHTML.replace(Regex.HtmlTagH4Close, ': ').replace(Regex.HtmlTagLiClosePadded, ', ').replace(Regex.BioShowAllMembers, '')).replace(Regex.SpaceAll, ' ').replace(Regex.CommaTrailing, '');
 						this.con = bio.txt.add([factbox], this.con);
 					});
 					bioDoc.close();
@@ -163,7 +163,7 @@ class BioDldLastfm {
 					}
 					this.topAlbums = [...new Set(this.topAlbums)];
 					this.topAlbums.length = Math.min(6, this.topAlbums.length);
-					this.topAlbums = this.topAlbums.length ? topAlb[bioCfg.lang.ix] + this.topAlbums.join('\u200b, ') : '';
+					this.topAlbums = this.topAlbums.length ? topAlb[bioCfg.lang.ix] + this.topAlbums.join(`${Unicode.ZeroWidthSpace}, `) : '';
 					if (this.itemValue[0]) {
 						this.searchBio = 3;
 						return this.search(this.artist, this.fo_bio, this.pth_bio);
@@ -422,7 +422,7 @@ class BioLfmAlbum {
 			URL = bio.server.url.lfm;
 			if (this.rev && !bio.server.lfm.def_EN && !this.retry) URL += `&lang=${bioCfg.language.toLowerCase()}`;
 			URL += `&method=album.getInfo&artist=${encodeURIComponent(this.albumArtist)}&album=${encodeURIComponent(this.rev || this.retry ? this.album : this.albm)}&autocorrect=${bio.server.auto_corr}`;
-		} else URL = `https://${bio.server.lfm.server}/music/${encodeURIComponent(this.albumArtist)}/${encodeURIComponent(this.album.replace(/\+/g, '%2B'))}`;
+		} else URL = `https://${bio.server.lfm.server}/music/${encodeURIComponent(this.albumArtist)}/${encodeURIComponent(this.album.replace(Regex.PunctPlus, '%2B'))}`;
 		this.func = null;
 		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
 		this.func = this.analyse;
@@ -451,10 +451,10 @@ class BioLfmAlbum {
 				}
 				if (!this.stats.length) return $Bio.trace(`last.fm album review: ${this.album} / ${this.albumArtist}: not found`, true);
 			} else {
-				wiki = wiki.replace(/<[^>]+>/ig, '');
+				wiki = wiki.replace(Regex.HtmlTagGeneric, '');
 				const f = wiki.indexOf(' Read more on Last.fm');
 				if (f != -1) wiki = wiki.slice(0, f);
-				wiki = wiki.replace(/\n/g, '\r\n').replace(/(\r\n)(\r\n)+/g, '\r\n\r\n').trim();
+				wiki = wiki.replace(Regex.BreakNewline, '\r\n').replace(Regex.BreakMultipleCRLF, '\r\n\r\n').trim();
 			}
 			wiki = wiki ? wiki + this.tags + this.stats : this.tags + this.stats;
 			wiki = wiki.trim();
@@ -486,7 +486,7 @@ class BioLfmAlbum {
 			$Bio.htmlParse(div.getElementsByTagName('dd'), 'className', 'catalogue-metadata-description', v => {
 				if (!j) {
 					const trck = v.innerText.split(',');
-					if (trck[0] && !/\d\d\d\d/.test(trck[0])) tr = trck[0].trim().replace(/\b1 tracks/, '1 track');
+					if (trck[0] && !Regex.DateYearPlain.test(trck[0])) tr = trck[0].trim().replace(/\b1 tracks/, '1 track');
 					if (trck[1]) length = trck[1].trim();
 				}
 				else {
@@ -502,18 +502,18 @@ class BioLfmAlbum {
 			});
 			j = 0;
 			$Bio.htmlParse(div.getElementsByTagName('abbr'), 'className', 'intabbr js-abbreviated-counter', v => {
-				counts[j] = j != 2 ? `${$Bio.titlecase(v.innerText.trim())} \u200b| ${v.title.trim()}` : $Bio.titlecase(v.innerText.trim());
+				counts[j] = j != 2 ? `${$Bio.titlecase(v.innerText.trim())} ${Unicode.ZeroWidthSpace}| ${v.title.trim()}` : $Bio.titlecase(v.innerText.trim());
 				j++
 			});
 			bioDoc.close();
 			if (this.tags.length) {
 				this.tags = [...new Set(this.tags)];
 				this.tags.length = Math.min(5, this.tags.length);
-				this.tags = `\r\n\r\nTop Tags: ${this.tags.join('\u200b, ')}`;
+				this.tags = `\r\n\r\nTop Tags: ${this.tags.join(`${Unicode.ZeroWidthSpace}, `)}`;
 			} else this.tags = '';
 
-			if (rd_n && rd && /\d\d\d\d/.test(rd)) this.stats += (`\r\n\r\n${rd_n}: ${rd}${tr ? ` | ${tr}` : ''}`);
-			if (length_n && length && /\d+:\d+/.test(length)) this.stats += (`\r\n\r\n${length_n}: ${length}`);
+			if (rd_n && rd && Regex.DateYearPlain.test(rd)) this.stats += (`\r\n\r\n${rd_n}: ${rd}${tr ? ` | ${tr}` : ''}`);
+			if (length_n && length && Regex.TimeColonFormat.test(length)) this.stats += (`\r\n\r\n${length_n}: ${length}`);
 			if (scrobbles[1].length && counts[1].length || scrobbles[0].length && counts[0].length) this.stats += (`\r\n\r\nLast.fm: ${counts[1].length ? `${scrobbles[1]} ${counts[1]}; ` : ''}${counts[1].length ? `${scrobbles[0]} ${counts[0]}` : ''}`);
 			if (scrobbles[2] && counts[2] && scrobbles[2] != scrobbles[0] && scrobbles[1] != scrobbles[0]) this.stats += (`\r\n\r\nRating: ${scrobbles[2]}: ${counts[2]}`);
 
@@ -620,7 +620,7 @@ class BioLfmTrack {
 				if (this.text[this.track].s) this.src = this.text[this.track].s;
 				return this.revSave();
 			}
-			const formatName = n => n.replace(/[\s/]/g, '-').replace(/[.,!?:;'\u2019"_\u2010+()[\]&]/g, '').replace(/\$/g, 's').replace(/-+/g, '-').toLowerCase();
+			const formatName = n => n.replace(Regex.PunctSpaceSlash, '-').replace(Regex.PunctAllExtended2, '').replace(Regex.PunctDollar, 's').replace(Regex.TextDashMultiple, '-').toLowerCase();
 			if (this.getIDs && (!this.text.ids.ids_update || this.text.ids.ids_update < Date.now() - bio.server.exp * 3 || this.force)) URL = `${bio.server.url.lfm_sf}songs/${formatName(this.artist)}`;
 			else if (this.text.ids[bio.server.tidy(this.track)]) {
 				this.getIDs = false;
@@ -654,10 +654,10 @@ class BioLfmTrack {
 			if (!this.getStats) {
 				this.wiki = $Bio.jsonParse(this.xmlhttp.responseText, '', 'get', 'track.wiki.content');
 				if (this.wiki) {
-					this.wiki = this.wiki.replace(/<[^>]+>/ig, '');
+					this.wiki = this.wiki.replace(Regex.HtmlTagGeneric, '');
 					const f = this.wiki.indexOf(' Read more on Last.fm');
 					if (f != -1) this.wiki = this.wiki.slice(0, f);
-					this.wiki = this.wiki.replace(/\n/g, '\r\n').replace(/(\r\n)(\r\n)+/g, '\r\n\r\n').replace(/\[edit\]\s*$/i, '').trim();
+					this.wiki = this.wiki.replace(Regex.BreakNewline, '\r\n').replace(Regex.BreakMultipleCRLF, '\r\n\r\n').replace(Regex.WikiEdit, '').trim();
 				}
 				const tags = $Bio.jsonParse(this.xmlhttp.responseText, [], 'get', 'track.toptags.tag');
 				this.tags = tags.map(v => $Bio.titlecase(v.name));
@@ -698,7 +698,7 @@ class BioLfmTrack {
 				if (!bioCfg.lang.ix && !feat) {
 					$Bio.htmlParse(div.getElementsByTagName('p'), 'className', 'more-link-fullwidth-right', v => {
 						feat = v.innerText.trim();
-						feat = /^\d+/.test(feat) ? feat.replace(/\D/g, '') : '';
+						feat = Regex.NumLeading.test(feat) ? feat.replace(Regex.NumNonDigits, '') : '';
 						return true;
 					});
 				}
@@ -714,12 +714,12 @@ class BioLfmTrack {
 				});
 				bioDoc.close();
 				if (from && this.album.length) {
-					this.album = [...new Set(this.album)].join('\u200b, ');
-					this.releases += `${from}\u200b: ${this.album}`;
+					this.album = [...new Set(this.album)].join(`${Unicode.ZeroWidthSpace}, `);
+					this.releases += `${from}${Unicode.ZeroWidthSpace}: ${this.album}`;
 				}
 				if (feat) {
 					const rel = feat != '1' ? 'releases' : 'release';
-					feat = ` \u200band ${feat} other ${rel}`;
+					feat = ` ${Unicode.ZeroWidthSpace}and ${feat} other ${rel}`;
 					this.releases += feat;
 				}
 				if (this.releases) this.releases += '.';

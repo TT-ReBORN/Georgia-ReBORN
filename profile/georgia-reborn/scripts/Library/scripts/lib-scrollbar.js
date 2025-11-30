@@ -272,14 +272,14 @@ class LibScrollbar {
 			const ix = libImg.style.vertical ? (Math.ceil((lib.panel.m.y + lib.sbar.delta - libImg.panel.y) / libImg.row.h) - 1) * (!libSet.albumArtFlowMode ? libImg.columns : 1) : Math.ceil((lib.panel.m.x + lib.sbar.delta - libImg.panel.x) / libImg.columnWidth) - 1;
 			if (ix < 0 || ix > lib.pop.tree.length - 1) return;
 			let letter = lib.panel.lines == 1 || !libSet.albumArtFlipLabels ? lib.pop.tree[ix].grp : lib.pop.tree[ix].lot;
-			if (lib.panel.colMarker) letter = letter.replace(/@!#.*?@!#/g, '');
+			if (lib.panel.colMarker) letter = letter.replace(Regex.LibMarkerColor, '');
 			if (libImg.letter.no != 0) {
 				if (libImg.letter.albumArtYearAuto) {
 					let sub = letter.substring(0, 4);
-					if (/\d{4}/.test(sub)) letter = sub;
+					if (Regex.DateYearPlain.test(sub)) letter = sub;
 					else {
 						sub = letter.substring(0, 6);
-						letter = /(\[|\()\d{4}(\]|\))/.test(sub) ? sub : letter.substring(0, libImg.letter.no);
+						letter = Regex.DateYearBracketed.test(sub) ? sub : letter.substring(0, libImg.letter.no);
 					}
 				} else letter = letter.substring(0, libImg.letter.no);
 			}

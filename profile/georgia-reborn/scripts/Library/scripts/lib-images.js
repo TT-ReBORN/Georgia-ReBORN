@@ -279,8 +279,8 @@ class LibImages {
 
 	checkTooltip(gr, item, x, y1, y2, y3, w, tt1, tt2, tt3, font1, font2, font3) {
 		if (lib.panel.colMarker) {
-			if (tt1) tt1 = tt1.replace(/@!#.*?@!#/g, '');
-			if (tt2) tt2 = tt2.replace(/@!#.*?@!#/g, '');
+			if (tt1) tt1 = tt1.replace(Regex.LibMarkerColor, '');
+			if (tt2) tt2 = tt2.replace(Regex.LibMarkerColor, '');
 		}
 		let text = tt1 || '';
 		if (tt2 && (lib.panel.lines == 2 || lib.panel.lines == 1 && this.labels.statistics)) text += `\n${tt2}`;
@@ -1008,7 +1008,7 @@ class LibImages {
 			if (!lib.pop.tree[0]) return;
 			if (!this.groupField) this.groupField = 'Item';
 			const plurals = this.groupField.split(' ').map(v => pluralize(v));
-			const pluralField = plurals.join(' ').replace(/(album|artist|top|track)s\s/gi, '$1 ').replace(/(similar artist)\s/gi, '$1s ').replace(/years - albums/gi, 'Year - Albums');
+			const pluralField = plurals.join(' ').replace(Regex.LibTypesPlural, '$1 ').replace(Regex.LibSimilarArtist, '$1s ').replace(Regex.LibYearsAlbums, 'Year - Albums');
 			lib.pop.tree[0].key = lib.pop.tree[0].name;
 			const ln1 = lib.pop.tree.length - 1;
 			const ln2 = lib.panel.list.Count;

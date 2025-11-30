@@ -91,7 +91,7 @@ class BioPanel {
 		};
 
 		for (let i = 0; i < 8; i++) {
-			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && bioSet[`pthTxtReader${i}`] && bioSet[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1]) && !/nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && bioSet[`pthTxtReader${i}`] && bioSet[`lyricsTxtReader${i}`] && !Regex.BioItemProperties.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1]) && !Regex.BioNowPlaying.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				this.id.lyricsSource = true;
 				this.id.focus = false;
 				break;
@@ -99,7 +99,7 @@ class BioPanel {
 		}
 
 		for (let i = 0; i < 8; i++) {
-			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /nowplaying/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && Regex.BioNowPlaying.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				this.id.nowplayingSource = true;
 				this.id.focus = false;
 				break;
@@ -107,7 +107,7 @@ class BioPanel {
 		}
 
 		for (let i = 0; i < 8; i++) {
-			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && /item_properties/i.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
+			if (bioSet.txtReaderEnable && bioSet[`useTxtReader${i}`] && Regex.BioItemProperties.test(utils.SplitFilePath(bioSet[`pthTxtReader${i}`])[1])) {
 				this.id.propsSource = true;
 				break;
 			}
@@ -374,7 +374,7 @@ class BioPanel {
 
 	cleanPth(pth, item, type, artist, album, bio) {
 		if (!pth) return '';
-		pth = pth.trim().replace(/\//g, '\\');
+		pth = pth.trim().replace(Regex.PathForwardSlash, '\\');
 		pth = bioCfg.expandPath(pth);
 		switch (type) {
 			case 'remap':
@@ -399,17 +399,16 @@ class BioPanel {
 		if (!pth.endsWith('\\')) pth += '\\';
 
 		const c_pos = pth.indexOf(':');
-		const dotPathRegEx = /([/\\]).((?:foobar2000|fb2k)[^/\\]*|cache|local)([/\\])/g;
-		const dotPath = dotPathRegEx.test(pth);
 		pth = type != 'lyr' ?
-			pth.replace(/[/|:]/g, '-').replace(/\*/g, 'x').replace(/"/g, "''").replace(/[<>]/g, '_').replace(/\?/g, '').replace(/\\\./g, '\\_').replace(/\.+\\/, '\\').replace(/\s*\\\s*/g, '\\') :
-			pth.replace(/[/|:*"<>?]/g, '_');
+			pth.replace(Regex.PunctSeparatorsExtra, '-').replace(Regex.PathWildcardAsterisk, 'x').replace(Regex.PunctQuoteDouble, "''").replace(Regex.PunctAngle, '_').replace(Regex.PunctQuestion, '').replace(Regex.PathEscapedDot, '\\_').replace(Regex.PathMultipleDotBackslash, '\\').replace(Regex.PathBackslashPadded, '\\') :
+			pth.replace(Regex.PathIllegalFilename, '_');
 		if (c_pos < 3 && c_pos != -1) pth = $Bio.replaceAt(pth, c_pos, ':');
 
-		if (dotPath) { // Allow some special folders with dots
-			pth = pth.replace(dotPathRegEx, (_, p1, p2, p3) => `${p1}.${p2}${p3}`);
+		Regex.PathHiddenSystem.lastIndex = 0; // Reset index
+		if (Regex.PathHiddenSystem.test(pth)) { // Allow some special folders with dots
+			pth = pth.replace(Regex.PathHiddenSystem, (_, p1, p2, p3) => `${p1}.${p2}${p3}`);
 		}
-		while (pth.includes('\\\\')) pth = pth.replace(/\\\\/g, '\\_\\');
+		while (pth.includes('\\\\')) pth = pth.replace(Regex.PathDoubleBackslash, '\\_\\');
 		if (UNC) pth = `\\\\${pth}`;
 		return pth.trim();
 	}
@@ -1599,15 +1598,15 @@ class BioPanel {
 	}
 
 	tfBio(n, artist, focus) {
-		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, '$&#@!%path%#@!').replace(/%bio_artist%/gi, $Bio.tfEscape(artist)).replace(/%bio_album%/gi, bioCfg.tf.album).replace(/%bio_title%/gi, bioCfg.tf.title);
+		n = n.replace(Regex.TFBioArtistConditional, '$&#@!%path%#@!').replace(Regex.TFBioArtist, $Bio.tfEscape(artist)).replace(Regex.TFBioAlbum, bioCfg.tf.album).replace(Regex.TFBioTitle, bioCfg.tf.title);
 		n = $Bio.eval(n, focus);
-		return n.replace(/#@!.*?#@!/g, '');
+		return n.replace(Regex.BioMarkerTFProtected, '');
 	}
 
 	tfRev(n, albumArtist, album, focus) {
-		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*(%bio_albumartist%|%bio_album%)/gi, '$&#@!%path%#@!').replace(/%bio_albumartist%/gi, $Bio.tfEscape(albumArtist)).replace(/%bio_album%/gi, $Bio.tfEscape(album)).replace(/%bio_title%/gi, bioCfg.tf.title);
+		n = n.replace(Regex.TFBioAlbumArtistConditional, '$&#@!%path%#@!').replace(Regex.TFBioAlbumArtist, $Bio.tfEscape(albumArtist)).replace(Regex.TFBioAlbum, $Bio.tfEscape(album)).replace(Regex.TFBioTitle, bioCfg.tf.title);
 		n = $Bio.eval(n, focus);
-		return n.replace(/#@!.*?#@!/g, '');
+		return n.replace(Regex.BioMarkerTFProtected, '');
 	}
 
 	text_paint() {

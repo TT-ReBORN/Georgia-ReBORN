@@ -357,7 +357,7 @@ class BioText {
 				this.rev.summaryEnd = 0;
 				let v = this.rev.text[k];
 				if (bio.panel.style.inclTrackRev && !$Bio.isArray(v)) {
-					const ti = v.match(/!\u00a6.+?$/gm);
+					const ti = v.match(Regex.BioMarkerTrackIdentifier);
 					if (ti) {
 						ti.forEach(w => {
 							if (g.CalcTextWidth(w, bio.ui.font.subHeadTrack) > bio.panel.text.w) {
@@ -370,7 +370,7 @@ class BioText {
 						});
 					}
 				}
-				if (!bio.panel.summary.show || !v.includes('\u00a6End\u00a6')) {
+				if (!bio.panel.summary.show || !v.includes(`${Unicode.BrokenBar}End${Unicode.BrokenBar}`)) {
 					if (!$Bio.isArray(v)) {
 						if (v) {
 							l = g.EstimateLineWrap(v, font, bio.panel.text.w);
@@ -380,13 +380,13 @@ class BioText {
 						arr = arr.concat(JSON.parse(JSON.stringify(v)));
 					}
 				} else {
-					const revText = v.split('\u00a6End\u00a6');
+					const revText = v.split(`${Unicode.BrokenBar}End${Unicode.BrokenBar}`);
 					const revSummary = revText[0].trim();
 					const revMain = revText[1].trim();
 					if (revSummary) {
 						l = g.EstimateLineWrap(revSummary, bio.ui.font.summary, bio.panel.text.w);
 						for (let i = 0; i < l.length; i += 2) arr.push({ text: l[i].trim() });
-						for (let i = 0; i < arr.length; i++) arr[i].text = arr[i].text.replace(/^\u2219\s|^\|\s+/, '').replace(/\s*\|$/, '');
+						for (let i = 0; i < arr.length; i++) arr[i].text = arr[i].text.replace(Regex.EdgeBulletPipeLeading, '').replace(Regex.DelimPipeTrailing, '');
 						this.rev.summaryEnd = arr.length;
 						if (revMain) arr.push({ text: '' });
 					}
@@ -429,7 +429,7 @@ class BioText {
 							v[`${w}LineRatingX`] = bio.panel.text.l + v_w;
 						}
 					});
-					if (v.text.startsWith('!\u00a6')) {
+					if (v.text.startsWith(`!${Unicode.BrokenBar}`)) {
 						v.col = bio.ui.col.track;
 						v.font = bio.ui.font.subHeadTrack;
 						v.song = true;
@@ -440,7 +440,7 @@ class BioText {
 							v.songX1 = bio.panel.text.l + v_w;
 							v.songX2 = Math.max(v.songX1, bio.panel.text.l + bio.panel.text.w);
 						}
-						v.text = v.text.replace('!\u00a6', '');
+						v.text = v.text.replace(`!${Unicode.BrokenBar}`, '');
 					}
 					if ((this.rev.loaded.wiki || bioSet.sourceAll) && (v.text.startsWith('==') || v.text.endsWith('=='))) {
 						v.font = bio.ui.font.subHeadWiki;
@@ -514,8 +514,8 @@ class BioText {
 		this.mod.amBio = $Bio.lastModified(aBio) || 0;
 		if (this.mod.amBio == this.mod.curAmBio) return;
 		this.bio.am = $Bio.open(aBio).trim();
-		this.bio.am = this.bio.am.replace(/, Jr\./g, ' Jr.');
-		this.bio.am = this.formatText('amBio', this.bio.am, bio.panel.summary.genre ? { limit: 6, list: true, key: 'Genre: ' } : {}, !bio.panel.summary.other ? {} : { list: true, key: 'Group Members: ', prefix: true, suffix: true }, bio.panel.summary.date ? { key: 'Formed: |Born: ' } : {}, bio.panel.summary.date ? { key: 'Died: ' } : {}, bio.panel.summary.date ? { key: 'Active: ' } : {}).replace(/(?:\s*\r\n){3,}/g, '\r\n\r\n');
+		this.bio.am = this.bio.am.replace(Regex.TextJunior, ' Jr.');
+		this.bio.am = this.formatText('amBio', this.bio.am, bio.panel.summary.genre ? { limit: 6, list: true, key: 'Genre: ' } : {}, !bio.panel.summary.other ? {} : { list: true, key: 'Group Members: ', prefix: true, suffix: true }, bio.panel.summary.date ? { key: 'Formed: |Born: ' } : {}, bio.panel.summary.date ? { key: 'Died: ' } : {}, bio.panel.summary.date ? { key: 'Active: ' } : {}).replace(Regex.BreakMultipleThreeNewline, '\r\n\r\n');
 		this.newText = true;
 		this.mod.curAmBio = this.mod.amBio;
 	}
@@ -583,7 +583,7 @@ class BioText {
 					const o = trackRev[trk];
 					let releaseYear = $Bio.getProp(o, 'date', '');
 					if (releaseYear) releaseYear = `Release Year: ${releaseYear}`;
-					let composer = $Bio.getProp(o, 'composer', []).join('\u200b, ');
+					let composer = $Bio.getProp(o, 'composer', []).join(`${Unicode.ZeroWidthSpace}, `);
 					if (composer) {
 						writer = o.composer.length > 1 ? 'Composers: ' : 'Composer: ';
 						composer = writer + composer;
@@ -595,7 +595,7 @@ class BioText {
 						const get = (item) => {
 							const it2 = $Bio.titlecase(item);
 							const it1 = it2.slice(0, -1);
-							const items = $Bio.getProp(o, item, []).join('\u200b, ');
+							const items = $Bio.getProp(o, item, []).join(`${Unicode.ZeroWidthSpace}, `);
 							if (items) return (o[item].length > 1 ? `Track ${it2}: ` : `Track ${it1}: `) + items;
 							return items;
 						};
@@ -607,7 +607,7 @@ class BioText {
 						if (bioSet.trackHeading == 1 && (this.rev.amAlb || !bioSet.heading) || bioSet.trackHeading == 2) {
 							this.rev.amTrackHeading = false;
 							if (this.rev.amAlb) {
-								trackRev =  `!\u00a6${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${wiki}`;
+								trackRev =  `!${Unicode.BrokenBar}${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${wiki}`;
 							} else {
 								trackRev = wiki;
 								needTrackSubHeading = true;
@@ -625,8 +625,8 @@ class BioText {
 				}
 			}
 		} else this.rev.amTrackHeading = false;
-		this.rev.am = this.formatText('amRev', this.rev.am, bio.panel.summary.genre ? { limit: 6, list: true, key: this.rev.amAlb ? 'Album Genres: ' : 'Track Genres: ' } : {}, !bio.panel.summary.other ? {} : { limit: 6, list: true, key: this.rev.amAlb ? 'Album Moods: ' : 'Track Moods: ', prefix: true }, bio.panel.summary.date ? { key: this.rev.amAlb ? 'Release Date: ' : 'Release Year: ' } : {}, { str: this.rating.amStr }).replace(/(?:\s*\r\n){3,}/g, '\r\n\r\n');
-		if (needTrackSubHeading) this.rev.am = `!\u00a6${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${this.rev.am}`;
+		this.rev.am = this.formatText('amRev', this.rev.am, bio.panel.summary.genre ? { limit: 6, list: true, key: this.rev.amAlb ? 'Album Genres: ' : 'Track Genres: ' } : {}, !bio.panel.summary.other ? {} : { limit: 6, list: true, key: this.rev.amAlb ? 'Album Moods: ' : 'Track Moods: ', prefix: true }, bio.panel.summary.date ? { key: this.rev.amAlb ? 'Release Date: ' : 'Release Year: ' } : {}, { str: this.rating.amStr }).replace(Regex.BreakMultipleThreeNewline, '\r\n\r\n');
+		if (needTrackSubHeading) this.rev.am = `!${Unicode.BrokenBar}${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${this.rev.am}`;
 		if (!this.rev.am) bio.but.check();
 	}
 
@@ -642,7 +642,7 @@ class BioText {
 			this.bio.summaryEnd = 0;
 			let arr = [];
 			$Bio.gr(1, 1, false, g => {
-				if (!bio.panel.summary.show || !v.includes('\u00a6End\u00a6')) {
+				if (!bio.panel.summary.show || !v.includes(`${Unicode.BrokenBar}End${Unicode.BrokenBar}`)) {
 					if (!$Bio.isArray(v)) {
 						if (v) {
 							l = g.EstimateLineWrap(v, font, bio.panel.text.w);
@@ -652,13 +652,13 @@ class BioText {
 						arr = arr.concat(JSON.parse(JSON.stringify(v)));
 					}
 				} else {
-					const bioText = v.split('\u00a6End\u00a6');
+					const bioText = v.split(`${Unicode.BrokenBar}End${Unicode.BrokenBar}`);
 					const bioSummary = bioText[0].trim();
 					const bioMain = bioText[1].trim();
 					if (bioSummary) {
 						l = g.EstimateLineWrap(bioSummary, bio.ui.font.summary, bio.panel.text.w);
 						for (let i = 0; i < l.length; i += 2) arr.push({ text: l[i].trim() });
-						for (let i = 0; i < arr.length; i++) arr[i].text = arr[i].text.replace(/^\u2219\s|^\|\s+/, '').replace(/\s*\|$/, '');
+						for (let i = 0; i < arr.length; i++) arr[i].text = arr[i].text.replace(Regex.EdgeBulletPipeLeading, '').replace(Regex.DelimPipeTrailing, '');
 						this.bio.summaryEnd = arr.length;
 						if (bioMain) arr.push({ text: '' });
 					}
@@ -987,7 +987,7 @@ class BioText {
 				if (li) {
 					let list = `${w.label}\r\n`;
 					li.forEach((v, i, arr) => {
-						let nm = (en ? `${i + 1}. ` : '\u2022 ') + v;
+						let nm = (en ? `${i + 1}. ` : `${Unicode.Bullet} `) + v;
 							if (g.CalcTextWidth(nm, bio.ui.font.main) > bio.panel.text.w) {
 								const availableWidth = bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.main);
 								if (availableWidth > 0) {
@@ -1007,22 +1007,22 @@ class BioText {
 	}
 
 	findFile(v, n) {
-		const type = /_\.(lrc|txt)$/.test(v.pth) ? 0 : /\.(lrc|txt)$/.test(v.pth) ? 1 : 2;
+		const type = Regex.LyricsFilesUnderscore.test(v.pth) ? 0 : Regex.LyricsFiles.test(v.pth) ? 1 : 2;
 		let pth = '';
-		let item = n == 'bio' ? v.pth.replace(/%BIO_ARTIST%|%BIO_ALBUMARTIST%/gi, '%BIO_ARTIST%') : v.pth.replace(/%BIO_ALBUMARTIST%|%BIO_ARTIST%/gi, '%BIO_ALBUMARTIST%');
+		let item = n == 'bio' ? v.pth.replace(Regex.TFBioArtistAndAlbumArtist, '%BIO_ARTIST%') : v.pth.replace(Regex.TFBioAlbumArtistAndArtist, '%BIO_ALBUMARTIST%');
 
 		const a = $Bio.tfEscape(bio.name.artist(!v.lyrics ? bio.panel.id.focus : false, !!v.lyrics));
 		const aa = $Bio.tfEscape(bio.name.albumArtist(!v.lyrics ? bio.panel.id.focus : false, !!v.lyrics));
 		const l = $Bio.tfEscape(bio.name.album(!v.lyrics ? bio.panel.id.focus : false, !!v.lyrics));
 		const tr = $Bio.tfEscape(bio.name.title(!v.lyrics ? bio.panel.id.focus : false, !!v.lyrics));
 		item = item // substitue bio var + check advanced radio stream parser (tfBio & tfRev do lookUps not parser)
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, a ? '$&#@!%path%#@!' : '$&').replace(/%bio_artist%/gi, a)
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_albumartist%/gi, aa ? '$&#@!%path%#@!' : '$&').replace(/%bio_albumartist%/gi, aa)
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_album%/gi, l ? '$&#@!%path%#@!' : '$&').replace(/%bio_album%/gi, l)
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_title%/gi, tr ? '$&#@!%path%#@!' : '$&').replace(/%bio_title%/gi, tr);
+			.replace(Regex.TFBioArtistConditional, a ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioArtist, a)
+			.replace(Regex.TFBioAlbumArtistConditionalStrict, aa ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioAlbumArtist, aa)
+			.replace(Regex.TFBioAlbumConditional, l ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioAlbum, l)
+			.replace(Regex.TFBioTitleConditional, tr ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioTitle, tr);
 
 		const cleanFileName = (path) => { // WilB, move this helper to helpers.js for common usage!?
-			const stripReservedChars = (filename) => filename.replace(/[<>:"/\\|?*]+/g, '_');
+			const stripReservedChars = (filename) => filename.replace(Regex.PathIllegalFilename, '_');
 			const lastSlash = path.lastIndexOf('\\');
 			const dirPath = path.substring(0, lastSlash + 1);
 			const fileName = path.substring(lastSlash + 1);
@@ -1032,17 +1032,17 @@ class BioText {
 		item = cleanFileName(item);
 
 		switch (type) {
-			case 0: pth = item.replace(/_\.(lrc|txt)$/, '.$1'); break;
-			case 1: pth = item.replace(/\.(lrc|txt)$/, '_.$1'); break;
+			case 0: pth = item.replace(Regex.LyricsFilesUnderscore, '.$1'); break;
+			case 1: pth = item.replace(Regex.LyricsFiles, '_.$1'); break;
 		}
 		const pths = !v.lyrics ? [item] : [item, pth];
 		return pths.some(w => {
-			const wildCard = /[*?]/.test(w);
+			const wildCard = Regex.PunctWildcard.test(w);
 			if (!wildCard) {
-				this[n].readerItem = bio.panel.cleanPth(w, !v.lyrics ? bio.panel.id.focus : false, !v.lyrics ? '' : 'lyr').slice(0, -1).replace(/#@!.*?#@!/g, '');
+				this[n].readerItem = bio.panel.cleanPth(w, !v.lyrics ? bio.panel.id.focus : false, !v.lyrics ? '' : 'lyr').slice(0, -1).replace(Regex.BioMarkerTFProtected, '');
 			} else {
-				let p = bio.panel.cleanPth(w.replace(/\*/g, '@!@').replace(/\?/g, '!@!'), !v.lyrics ? bioSet.focus : false, !v.lyrics ? '' : 'lyr').slice(0, -1);
-				p = p.replace(/@!@/g, '*').replace(/!@!/g, '?').replace(/#@!.*?#@!/g, '');
+				let p = bio.panel.cleanPth(w.replace(Regex.PathWildcardAsterisk, '@!@').replace(Regex.PunctQuestion, '!@!'), !v.lyrics ? bioSet.focus : false, !v.lyrics ? '' : 'lyr').slice(0, -1);
+				p = p.replace(Regex.BioMarkerShortAtExclAt, '*').replace(Regex.BioMarkerShortExclAtExcl, '?').replace(Regex.BioMarkerTFProtected, '');
 				const arr = utils.Glob(p);
 				if (!arr.length) return false;
 				this[n].readerItem = arr[0];
@@ -1072,25 +1072,25 @@ class BioText {
 
 	formatList(type, text, s, sub, n, limit, lines, prefix, suffix) {
 		if (sub[n]) {
-			sub[n] = sub[n].replace(RegExp(s[n].key), '').replace(/, /g, ' \u2219 ');
+			sub[n] = sub[n].replace(RegExp(s[n].key), '').replace(Regex.CommaSpace, ` ${Unicode.BulletOperator} `);
 			if (sub[n]) {
 				let composersFound = false;
 				let membersFound = false;
 				if (prefix) {
 					$Bio.gr(1, 1, false, g => {
-						sub[n] = s[n].key.replace(/(Album\s|Track\s)Moods: /g, 'Moods: ').replace(/Group Members: /g, 'Members: ') + sub[n];
+						sub[n] = s[n].key.replace(Regex.BioMoodsAlbumTrack, 'Moods: ').replace(Regex.BioGroupMembers, 'Members: ') + sub[n];
 						const availableWidth = bio.panel.text.w - g.CalcTextWidth('... ', bio.ui.font.summary);
 
 						if (bioSet.summaryCompact) {
 							if (type == 'amBio') {
 								let tt_needed = false;
 								let members = '';
-								if (/^Members:\s/.test(sub[n])) {
+								if (Regex.BioMembersLeading.test(sub[n])) {
 									membersFound = true;
 									tt_needed = g.CalcTextWidth(sub[n], bio.ui.font.summary, true) > bio.panel.text.w;
 									if (tt_needed && availableWidth > 0) {
 										members = g.EstimateLineWrap(sub[n], bio.ui.font.summary, availableWidth)[0];
-										members = `${members.replace(/\u2219\s?$/, '')}...`;
+										members = `${members.replace(Regex.EdgeBulletTrailing, '')}...`;
 									}
 								}
 								this.bio.membersTooltip = tt_needed ? sub[n] : '';
@@ -1099,12 +1099,12 @@ class BioText {
 							if (type == 'wikiRev') {
 								let tt_needed = false;
 								let composers = '';
-								if (bio.panel.style.inclTrackRev && /^Composers:\s/.test(sub[n])) {
+								if (bio.panel.style.inclTrackRev && Regex.BioComposersLeading.test(sub[n])) {
 									composersFound = true;
 									tt_needed = g.CalcTextWidth(sub[n], bio.ui.font.summary, true) > bio.panel.text.w;
 									if (tt_needed && availableWidth > 0) {
 										composers = g.EstimateLineWrap(sub[n], bio.ui.font.summary, availableWidth)[0];
-										composers = `${composers.replace(/\u2219\s?$/, '')}...`;
+										composers = `${composers.replace(Regex.EdgeBulletTrailing, '')}...`;
 									}
 								}
 								this.rev.composersTooltip = tt_needed ? sub[n] : '';
@@ -1138,7 +1138,7 @@ class BioText {
 	}
 
 	formatListeners(sub, i) {
-		return sub[i].replace(/^Last(\.|-)fm:.*?;/g, '').split('|')[0].trim().replace(/\s/g, ': ');
+		return sub[i].replace(Regex.WebLastFmVariant, '').split('|')[0].trim().replace(Regex.SpaceEach, ': ');
 	}
 
 	formatText(type, text, s0 = {}, s1 = {}, s2 = {}, s3 = {}, s4 = {}, s5 = {}, s6 = {}, singleGenre) {
@@ -1180,7 +1180,7 @@ class BioText {
 			}
 
 			if (type == 'wikiRev' && sub[3]) {
-				sub[3] = sub[3].replace(/^Duration:\s/g, 'Length: ');
+				sub[3] = sub[3].replace(Regex.BioDurationLeading, 'Length: ');
 				if (this.rev.wikiAlb) sub[3] = this.checkNewLine(sub, 3);
 			}
 
@@ -1198,18 +1198,18 @@ class BioText {
 			}
 		}
 		if (bioSet.expandLists) text = this.expandLists(type, text);
-		text = text.replace(/\u200b/g, '');
+		text = text.replace(Regex.UniZeroWidth, '');
 
 		switch (type) {
 			case 'amBio': text = text.replace('Genre: ', 'Genres: '); break;
-			case 'amRev':  text = text.replace(/(Album|Track)\s(Genre|Mood|Theme)(s|):\s/g, '$2$3: '); break;
+			case 'amRev':  text = text.replace(Regex.BioGenreMoodTheme, '$2$3: '); break;
 			case 'lfmBio': if (bioCfg.lang.ix > 3) text = text.replace('Top Tags: ', `${this.topTags[bioCfg.lang.ix]}: `); break;
 			case 'lfmRev':
 				if (bioCfg.lang.ix > 3) text = text.replace('Top Tags: ', `${this.topTags[bioCfg.lang.ix]}: `);
-				text = text.replace('Track Tags: ', !bioCfg.lang.ix ? 'Top Tags: ' : `${this.topTags[bioCfg.lang.ix]}: `).replace(/Last-fm:/g, 'Last.fm:');
+				text = text.replace('Track Tags: ', !bioCfg.lang.ix ? 'Top Tags: ' : `${this.topTags[bioCfg.lang.ix]}: `).replace(Regex.WebLastFmHyphen, 'Last.fm:');
 				break;
 			case 'wikiBio': if (!singleGenre) text = text.replace('Genre: ', 'Genres: '); break;
-			case 'wikiRev': text = text.replace(/Album\sGenres:\s/, singleGenre ? 'Genre: ' : 'Genres: ').replace(/Track\sGenre/, 'Genre').replace(/Track\sGenre/, 'Genre').replace(/Duration:\s/g, 'Length: '); break;
+			case 'wikiRev': text = text.replace(Regex.BioAlbumGenres, singleGenre ? 'Genre: ' : 'Genres: ').replace(Regex.BioTrackGenre, 'Genre').replace(Regex.BioDuration, 'Length: '); break;
 		}
 
 		if (bio.panel.summary.show) {
@@ -1217,7 +1217,7 @@ class BioText {
 				str = str.trim();
 			}
 			const summary = sub[0] + (str) + (sub[0] || str ? '\r\n' : '');
-			text = `${summary}\u00a6End\u00a6${text.trim()}`;
+			text = `${summary}${Unicode.BrokenBar}End${Unicode.BrokenBar}${text.trim()}`;
 		}
 		return text;
 	}
@@ -1248,7 +1248,7 @@ class BioText {
 				let str = '';
 				if (bin) {
 					const count = bin.split(',').length - 1;
-					const bornIn = count > 2 ? bin.replace(/,[^,]+,/, ',') : bin;
+					const bornIn = count > 2 ? bin.replace(Regex.CommaEnclosed, ',') : bin;
 					str = bi.label + bornIn;
 					source = source.replace(RegExp($Bio.regexEscape(str)), '');
 				}
@@ -1259,14 +1259,14 @@ class BioText {
 		const b = bio.tag.getTag(source, this.bio.born, true);
 		const bn = b.tag;
 		const count = bin.split(',').length - 1;
-		const bornIn = count > 2 ? bin.replace(/,[^,]+,/, ',') : bin;
+		const bornIn = count > 2 ? bin.replace(Regex.CommaEnclosed, ',') : bin;
 		let bornStr = '';
 		let born = '';
 		if (bn && bornIn) {
-			let age = bn.match(/\s\(.*?\)/);
+			let age = bn.match(Regex.SpaceParenContent);
 			age = age ? age[0] : '';
 			born = bn.replace(age, '');
-			bornStr = b.label + born + (bio.panel.summary.locale  ? ` \u2219 ${bornIn}` : '') + (age ? (bio.panel.summary.locale  ? ` \u2219${$Bio.titlecase(age.replace(/[()]/g, ''))}` : $Bio.titlecase(age)) : '');
+			bornStr = b.label + born + (bio.panel.summary.locale  ? ` ${Unicode.BulletOperator} ${bornIn}` : '') + (age ? (bio.panel.summary.locale  ? ` ${Unicode.BulletOperator}${$Bio.titlecase(age.replace(Regex.PunctParen, ''))}` : $Bio.titlecase(age)) : '');
 			source = source.replace(RegExp($Bio.regexEscape(b.label + bn)), '');
 			source = source.replace(RegExp($Bio.regexEscape(bi.label + bin)), '');
 		}
@@ -1308,7 +1308,7 @@ class BioText {
 		const f = bio.tag.getTag(source, this.bio.foundedIn, true);
 		const loc = f.tag;
 		const count = loc.split(',').length - 1;
-		let foundedIn = count > 2 ? loc.replace(/,[^,]+,/, ',') : loc;
+		let foundedIn = count > 2 ? loc.replace(Regex.CommaEnclosed, ',') : loc;
 		if (foundedIn) foundedIn = f.label + foundedIn;
 		if (f.tag) source = source.replace(RegExp($Bio.regexEscape(f.label + f.tag)), '');
 		return { foundedIn, source };
@@ -1358,7 +1358,7 @@ class BioText {
 			$Bio.trace('item_properties: invalid JSON');
 			return;
 		}
-		const fields = n => n.replace(/\$Bio.*?\(/gi, '').replace(/(,(|\s+)\d+)/gi, '').replace(/[,()[\]%]/gi, '|').split('|');
+		const fields = n => n.replace(Regex.TFBioOpenCapture, '').replace(Regex.CommaSpaceDigits, '').replace(Regex.DelimListPunct, '|').split('|');
 		const keys = Object.keys(data);
 		const showEmpty = data.showEmpty;
 		item = [];
@@ -1370,14 +1370,14 @@ class BioText {
 			arr = [];
 			if (v != 'showEmpty' && v != '*****HELP*****' && v != 'uppercase' && data[v].show) {
 				switch (true) {
-				case !/Metadata\*|General\*|Other\*/i.test(v):
+				case !Regex.BioMetadataGeneralOther.test(v):
 					properties.forEach(w => {
 						if (!w.name || !w.titleformat) return;
-						w.titleformat = w.titleformat.replace(/%BIO_ALBUMARTIST%/gi, bioCfg.tfAlbumArtist).replace(/%BIO_ARTIST%/gi, bioCfg.tfArtist).replace(/%BIO_ALBUM%/gi, bioCfg.tfAlbum).replace(/%BIO_TITLE%/gi, bioCfg.tfTitle);
+						w.titleformat = w.titleformat.replace(Regex.TFBioAlbumArtist, bioCfg.tfAlbumArtist).replace(Regex.TFBioArtist, bioCfg.tfArtist).replace(Regex.TFBioAlbum, bioCfg.tfAlbum).replace(Regex.TFBioTitle, bioCfg.tfTitle);
 						let value = this.formatValue(showEmpty ? $Bio.eval(`$trim(${w.titleformat})`, bio.panel.id.focus) : $Bio.eval(`[$trim(${w.titleformat})]`, bio.panel.id.focus));
 						names = names.concat(fields(w.titleformat.toUpperCase()).filter(v => v.trim()));
 						if (typeof w.titleformat == 'string' && w.titleformat.toLowerCase().includes('%album rating allmusic%')) value /= 2;
-						if (value && /like count|dislike count|view count/i.test(w.name)) {
+						if (value && Regex.BioCountsLikeDislikeView.test(w.name)) {
 							value = parseInt(value);
 							value = !isNaN(value) ? value.toLocaleString() : '';
 						}
@@ -1401,7 +1401,7 @@ class BioText {
 					});
 					item = this.setSectionHeading(item, v, arr);
 					break;
-				case /Metadata\*/i.test(v):
+				case Regex.BioMetadata.test(v):
 					arr = [];
 					if (handle) {
 						const f = handle.GetFileInfo();
@@ -1410,7 +1410,7 @@ class BioText {
 							names.push(name.toUpperCase())
 							const values = [];
 							for (let j = 0; j < f.MetaValueCount(i); j++) {
-								values.push(this.formatValue(f.MetaValue(i, j).replace(/\s{2,}/g, ' ')));
+								values.push(this.formatValue(f.MetaValue(i, j).replace(Regex.SpaceMultipleAny, ' ')));
 							}
 							const value = values.join(', ');
 							name = this.upperCaseFirst(name);
@@ -1419,7 +1419,7 @@ class BioText {
 						item = this.setSectionHeading(item, v.replace('*', ' '), arr);
 					}
 					break;
-				case /General\*/i.test(v):
+				case Regex.BioGeneral.test(v):
 					arr = [];
 					if (handle) {
 						const f = handle.GetFileInfo();
@@ -1431,18 +1431,18 @@ class BioText {
 						for (let i = 0; i < f.InfoCount; i++) {
 							names.push(f.InfoName(i).toUpperCase())
 
-							let name = f.InfoName(i).replace(/\s{2,}/g, ' ');
+							let name = f.InfoName(i).replace(Regex.SpaceMultipleAny, ' ');
 							name = this.upperCaseFirst(name);
 
 							const value = this.formatValue(f.InfoValue(i));
-							if (!/foo_youtube/i.test(name)) {
+							if (!Regex.BioFooYoutube.test(name)) {
 								arr.push({ text: '', name, value, property: true });
 							}
 						}
 						item = this.setSectionHeading(item, v.replace('*', ''), arr);
 					}
 					break;
-				case /Other\*/i.test(v):
+				case Regex.BioOther.test(v):
 					if (handle) {
 						const f = handle.GetFileInfo();
 						arr = [];
@@ -1471,7 +1471,7 @@ class BioText {
 			this.reader.w.spaceCol = g.CalcTextWidth(' ', bio.ui.font.main) * 5;
 			if (bioSet.sourceAll && bioSet.sourceHeading || bioSet.sourceHeading == 2) this.reader.w.nameCol = g.CalcTextWidth(this[n].subhead.txt[0], bio.ui.font.subHeadSource) + this.reader.w.spaceCol;
 			item.forEach(v => {
-				v.name = v.name.replace(/\basin\b|\bbpm\b|\bid\b|\bisrc\b|\bcue_|\bmcn\b|\bmd5\b|\bmp3_|\burl\b/i, (m) => m.toUpperCase());
+				v.name = v.name.replace(Regex.BioTagsExclude, (m) => m.toUpperCase());
 				v.name = v.name.replace(RegExp(`\\b(${data.uppercase})\\b`, 'i'), (m) => m.toUpperCase());
 				v.name_w = g.CalcTextWidth(v.name, bio.ui.font.main, true);
 				this.reader.w.nameCol = !bioSet.fieldWidth ? Math.max(v.name_w, this.reader.w.nameCol) : bio.panel.text.w * bioSet.fieldWidth / 100;
@@ -1488,15 +1488,15 @@ class BioText {
 
 	getLine(sub, limit, suffix) {
 		if (limit) {
-			const p = this.getPosition(sub, '\u2219', limit);
+			const p = this.getPosition(sub, Unicode.BulletOperator, limit);
 			if (p != -1) sub = sub.slice(0, p).trim();
 		}
 		let end = '';
 		let w = 0;
 		$Bio.gr(1, 1, false, g => {
 			w = g.CalcTextWidth(sub, bio.ui.font.summary);
-			while (w > bio.panel.text.w && sub.includes('\u2219')) {
-				const f = sub.lastIndexOf('\u2219'); // limit genres to 1 line
+			while (w > bio.panel.text.w && sub.includes(Unicode.BulletOperator)) {
+				const f = sub.lastIndexOf(Unicode.BulletOperator); // limit genres to 1 line
 				if (f != -1) sub = sub.slice(0, f).trim();
 				w = g.CalcTextWidth(suffix ? `${sub} ...` : sub, bio.ui.font.summary);
 				end = ' ...';
@@ -1555,19 +1555,19 @@ class BioText {
 	getNowplaying(item, n) {
 		if (!item || typeof item !== 'string') return;
 		const focus = fb.IsPlaying ? false : bio.panel.id.focus;
-		item = item.replace(/\r\n|\r|\n/g, '');
+		item = item.replace(Regex.BreakLine, '');
 		const a = $Bio.tfEscape(bio.name.artist(focus, true));
 		const aa = $Bio.tfEscape(bio.name.albumArtist(focus, true));
 		const l = $Bio.tfEscape(bio.name.album(focus, true));
 		const tr = $Bio.tfEscape(bio.name.title(focus, true));
 		item = item
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, a ? '$&#@!%path%#@!' : '$&').replace(/%bio_artist%/gi, a)
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_albumartist%/gi, aa ? '$&#@!%path%#@!' : '$&').replace(/%bio_albumartist%/gi, aa)
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_album%/gi, l ? '$&#@!%path%#@!' : '$&').replace(/%bio_album%/gi, l)
-			.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_title%/gi, tr ? '$&#@!%path%#@!' : '$&').replace(/%bio_title%/gi, tr);
-		this.reader[n].perSec = /%playback_time|%bitrate%|\$progress/i.test(item);
+			.replace(Regex.TFBioArtistConditional, a ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioArtist, a)
+			.replace(Regex.TFBioAlbumArtistConditionalStrict, aa ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioAlbumArtist, aa)
+			.replace(Regex.TFBioAlbumConditional, l ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioAlbum, l)
+			.replace(Regex.TFBioTitleConditional, tr ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioTitle, tr);
+		this.reader[n].perSec = Regex.TFBioTextReaderStubInfo.test(item);
 		item = fb.IsPlaying ? (!this.reader[n].perSec ? $Bio.eval(`[$trim(${item})]`, false) : FbTitleFormat(item).Eval()) : $Bio.eval(`[$trim(${item})]`, bio.panel.id.focus);
-		return item.replace(/#@!.*?#@!/g, '');
+		return item.replace(Regex.BioMarkerTFProtected, '');
 	}
 
 	getPlainTxtLyrics(item) {
@@ -1640,7 +1640,7 @@ class BioText {
 
 		if (this.ratingPos.text) return;
 
-		this.rev[`${site}Alb`] = this.rev[`${site}Alb`].replace(/>>\sAlbum\srating:\s(.*?)\s<<\s{2}/, '');
+		this.rev[`${site}Alb`] = this.rev[`${site}Alb`].replace(Regex.BioAlbumRatingCapture, '');
 		this.rating[`${site}Str`] = '';
 		switch (true) {
 			case this.ratingPos.summary:
@@ -1767,7 +1767,7 @@ class BioText {
 
 			const type = types[source];
 			if (this[n].source[type]) {
-				if ((bioSet.sourceAll && bioSet.sourceHeading || bioSet.sourceHeading == 2) && this[n][type] && type == 'lfm') this[n][type] = this[n][type].replace(/Last\.fm: /g, '');
+				if ((bioSet.sourceAll && bioSet.sourceHeading || bioSet.sourceHeading == 2) && this[n][type] && type == 'lfm') this[n][type] = this[n][type].replace(Regex.WebLastFmDotSpace, '');
 
 				this[n].loaded = {
 					am: false,
@@ -1915,7 +1915,7 @@ class BioText {
 	}
 
 	increment(n) {
-		const num = parseInt(n.replace(/\D/g, ''));
+		const num = parseInt(n.replace(Regex.NumNonDigits, ''));
 		n = n.replace(new RegExp(num), num + 1);
 		if (num == 1) n += 's';
 		return n;
@@ -1935,11 +1935,11 @@ class BioText {
 
 	isSynced(n, lines) {
 		if (!n || !bio.lyrics) return false;
-		return lines ? n.some(line => bio.lyrics.leadingTimestamps.test(line)) : n.match(RegExp(bio.lyrics.leadingTimestamps, 'm'));
+		return lines ? n.some(line => Regex.LyricsTimestampLeading.test(line)) : n.match(RegExp(Regex.LyricsTimestampLeading, 'm'));
 	}
 
 	isTag(n) {
-		return n && !/\\/.test(n);
+		return n && !Regex.PathBackslashSingle.test(n);
 	}
 
 	isTrackRevAvail(source, o) {
@@ -1967,14 +1967,14 @@ class BioText {
 			const f = this.bio.lfm.indexOf('Last.fm: ');
 			if (f != -1) this.bio.lfm = this.bio.lfm.slice(0, f).trim();
 		}
-		this.bio.lfm = this.bio.lfm.replace(/\s\u200b\|[\d.,\s]*?;/g, ';').replace(/\u200b\|[\d.,\s]*?$/gm, '').replace(/, Jr\./g, ' Jr.');
+		this.bio.lfm = this.bio.lfm.replace(Regex.DelimZeroWidthPipe, ';').replace(Regex.DelimZeroWidthPipeMulti, '').replace(Regex.TextJunior, ' Jr.');
 		const b = this.getBornStr(this.bio.lfm);
 		bornStr = b.bornStr;
 		this.bio.lfm = b.source;
 		const o = this.getFoundedIn(this.bio.lfm);
 		foundedIn = o.foundedIn;
 		this.bio.lfm = o.source;
-		this.bio.lfm = this.formatText('lfmBio', this.bio.lfm, { limit: 6, list: true, key: bio.panel.summary.genre ? 'Top Tags: ' : '' }, { str: foundedIn }, { str: bornStr }, bio.panel.summary.date ? { key: this.bio.died } : {}, bio.panel.summary.date ? { key: this.bio.yrsActive } : {}, !bio.panel.summary.other ? {} : { key: 'Last.fm: ' }, bio.panel.summary.popNow ? { key: this.bio.popNow } : '').replace(/(?:\s*\r\n){3,}/g, '\r\n\r\n');
+		this.bio.lfm = this.formatText('lfmBio', this.bio.lfm, { limit: 6, list: true, key: bio.panel.summary.genre ? 'Top Tags: ' : '' }, { str: foundedIn }, { str: bornStr }, bio.panel.summary.date ? { key: this.bio.died } : {}, bio.panel.summary.date ? { key: this.bio.yrsActive } : {}, !bio.panel.summary.other ? {} : { key: 'Last.fm: ' }, bio.panel.summary.popNow ? { key: this.bio.popNow } : '').replace(Regex.BreakMultipleThreeNewline, '\r\n\r\n');
 		this.newText = true;
 		this.mod.curLfmBio = this.mod.lfmBio;
 	}
@@ -2004,7 +2004,7 @@ class BioText {
 		if (this.mod.lfmRev == this.mod.curLfmRev) return;
 		this.rev.lfmAlb = '';
 		if (bio.panel.style.inclTrackRev != 2) this.rev.lfmAlb = $Bio.open(lRev).trim();
-		this.rev.lfmAlb = this.rev.lfmAlb.replace(/\s\u200b\|[\d.,\s]*?;/g, ';').replace(/\u200b\|[\d.,\s]*?$/gm, '');
+		this.rev.lfmAlb = this.rev.lfmAlb.replace(Regex.DelimZeroWidthPipe, ';').replace(Regex.DelimZeroWidthPipeMulti, '');
 		this.newText = true;
 		this.mod.curLfmRev = this.mod.lfmRev;
 		this.rating.lfm = -1;
@@ -2012,7 +2012,7 @@ class BioText {
 			if (bioSet.lfmRating) {
 				const b = this.rev.lfmAlb.indexOf('Rating: ');
 				if (b != -1) {
-					this.rating.lfm = this.rev.lfmAlb.substring(b).replace(/\D/g, '');
+					this.rating.lfm = this.rev.lfmAlb.substring(b).replace(Regex.NumNonDigits, '');
 					this.rating.lfm = Math.min(((Math.floor(0.1111 * this.rating.lfm + 0.3333) / 2)), 5);
 					this.rev.lfmAlb = `>> Album rating: ${this.rating.lfm} <<  ${this.rev.lfmAlb}`;
 					this.rating.lfm *= 2;
@@ -2021,7 +2021,7 @@ class BioText {
 			} else {
 				this.rating.lfmStr = '';
 			}
-			this.rev.lfmAlb = bioSet.score ? this.rev.lfmAlb.replace('Rating: ', '') : this.rev.lfmAlb.replace(/^Rating: .*$/m, '').trim();
+			this.rev.lfmAlb = bioSet.score ? this.rev.lfmAlb.replace('Rating: ', '') : this.rev.lfmAlb.replace(Regex.BioRatingLeading, '').trim();
 		}
 
 		this.rev.lfm = this.rev.lfmAlb;
@@ -2033,12 +2033,12 @@ class BioText {
 				let wiki = '';
 				releases = $Bio.getProp(o, 'releases', '');
 				if (!bio.panel.summary.date) wiki = this.add([releases], wiki);
-				releases = releases.replace(/\.$/, '');
-				if (releases.includes('\u200b')) {
-					const chk = releases.split(/\u200b:\s|\u200b,\s|\s\u200band\s/);
+				releases = releases.replace(Regex.EdgeDotSingleTrailing, '');
+				if (releases.includes(Unicode.ZeroWidthSpace)) {
+					const chk = releases.split(Regex.DelimZeroWidthColonCommaAnd);
 					if (chk.length > 2) {
 						const onlyOneNamedAlbum = false;
-						const tidy = n => n.replace(/\([^)]+\)/g, '').toLowerCase().trim();
+						const tidy = n => n.replace(Regex.PunctParenthesized, '').toLowerCase().trim();
 						if (tidy(chk[1]) == tidy(chk[2]) || onlyOneNamedAlbum) {
 							if (chk[3]) chk[3] = this.increment(chk[3]);
 							releases = `${chk[0]}: ${chk[1]}${chk[3] ? ` and ${chk[3]}` : ''}`;
@@ -2049,7 +2049,7 @@ class BioText {
 				const showGenres = !bioSet.autoOptimiseText || !this.rev.lfmAlb;
 				let tags = '';
 				if (showGenres) {
-					tags = $Bio.getProp(o, 'tags', []).join('\u200b, ');
+					tags = $Bio.getProp(o, 'tags', []).join(`${Unicode.ZeroWidthSpace}, `);
 					if (tags) tags = `Track Tags: ${tags}`;
 				}
 				const length = $Bio.getProp(o, 'length', '');
@@ -2064,7 +2064,7 @@ class BioText {
 					if (bioSet.trackHeading == 1 && (this.rev.lfmAlb || !bioSet.heading) || bioSet.trackHeading == 2) {
 						this.rev.lfmTrackHeading = false;
 						if (this.rev.lfmAlb) {
-							trackRev = `!\u00a6${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${wiki}`;
+							trackRev = `!${Unicode.BrokenBar}${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${wiki}`;
 						} else {
 							trackRev = wiki;
 							needTrackSubHeading = true;
@@ -2073,7 +2073,7 @@ class BioText {
 						this.rev.lfmTrackHeading = true;
 						trackRev = wiki;
 					}
-					if (bio.panel.summary.other) trackRev = trackRev.replace(/^Last\.fm:\s/gm, 'Last-fm: ');
+					if (bio.panel.summary.other) trackRev = trackRev.replace(Regex.WebLastFmPrefix, 'Last-fm: ');
 					this.rev.lfm = this.add([trackRev], this.rev.lfmAlb);
 				} else {
 					this.rev.lfmTrackHeading = bio.panel.style.inclTrackRev == 2;
@@ -2083,12 +2083,12 @@ class BioText {
 			}
 		}
 		if (!bioSet.stats) {
-			this.rev.lfm = this.rev.lfm.replace(/^Last\.fm: .*$(\n)?/gm, '').trim();
+			this.rev.lfm = this.rev.lfm.replace(Regex.WebLastFmLine, '').trim();
 		}
 
 		this.rev.lfm = this.formatText('lfmRev', this.rev.lfm, bio.panel.summary.genre ? { limit: 6, list: true, key: this.rev.lfmAlb ? 'Top Tags: ' : 'Track Tags: ' } : {}, bio.panel.summary.date ? { key: this.rev.releaseDate } : {}, !bio.panel.summary.date || this.rev.lfmAlb ? {} : { str: releases }, !bio.panel.summary.other ? {} : { key: this.rev.lfmAlb ? 'Last.fm: ' : 'Last-fm: ' }, { str: this.rating.lfmStr });
-		if (bio.panel.summary.show || !bioSet.stats) this.rev.lfm = this.rev.lfm.replace(/(?:\s*\r\n){3,}/g, '\r\n\r\n');
-		if (needTrackSubHeading) this.rev.lfm = `!\u00a6${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${this.rev.lfm}`;
+		if (bio.panel.summary.show || !bioSet.stats) this.rev.lfm = this.rev.lfm.replace(Regex.BreakMultipleThreeNewline, '\r\n\r\n');
+		if (needTrackSubHeading) this.rev.lfm = `!${Unicode.BrokenBar}${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${this.rev.lfm}`;
 		if (!this.rev.lfm) bio.but.check();
 	}
 
@@ -2133,10 +2133,10 @@ class BioText {
 			const item = bioSet[`useTxtReader${i}`] ? bioSet[`pthTxtReader${i}`] : '';
 			this.reader.items.push({
 				view: i < 4 ? 'bio' : 'rev',
-				lyrics: bioSet[`lyricsTxtReader${i}`] && !/item_properties/i.test(utils.SplitFilePath(item)[1]),
+				lyrics: bioSet[`lyricsTxtReader${i}`] && !Regex.BioItemProperties.test(utils.SplitFilePath(item)[1]),
 				name: bioSet[`nmTxtReader${i}`],
-				nowplaying: /nowplaying/i.test(utils.SplitFilePath(item)[1]),
-				props: /item_properties/i.test(utils.SplitFilePath(item)[1]),
+				nowplaying: Regex.BioNowPlaying.test(utils.SplitFilePath(item)[1]),
+				props: Regex.BioItemProperties.test(utils.SplitFilePath(item)[1]),
 				pth: item,
 				tag: this.isTag(item)
 			});
@@ -2375,33 +2375,35 @@ class BioText {
 
 	tf(n, artistView, trackreview) {
 		if (!n) return '';
-		if (bio.panel.lock) n = n.replace(/%artist%|\$meta\(artist,0\)/g, '#\u00a6#\u00a6#%artist%#\u00a6#\u00a6#').replace(/%title%|\$meta\(title,0\)/g, '#!#!#%title%#!#!#');
+		if (bio.panel.lock) n = n.replace(Regex.TFBioArtistOrMeta, '#\u00a6#\u00a6#%artist%#\u00a6#\u00a6#').replace(Regex.TFBioTitleOrMeta, '#!#!#%title%#!#!#');
 		const b = artistView ? 'bio' : 'rev';
 		const a = this[b].loaded.txt && (this.reader[b].lyrics || this.reader[b].props || this.reader[b].nowplaying) ? $Bio.tfEscape(bio.name.artist(bio.panel.id.focus)) : $Bio.tfEscape(artistView ? this.artist : (!trackreview ? (bio.panel.alb.ix ? this.albumartist : this.artist) : this.trackartist));
 		const aa = this[b].loaded.txt && (this.reader[b].lyrics || this.reader[b].props || this.reader[b].nowplaying) || bio.panel.isRadio(bio.panel.id.focus) && !bio.panel.alb.ix ? $Bio.tfEscape(bio.name.albumArtist(bio.panel.id.focus)) : $Bio.tfEscape(artistView ? (bio.panel.art.ix ? this.artist : this.albumartist) : (!trackreview ? this.albumartist : this.trackartist));
 		const composition = this.isCompositionLoaded();
 		const l = composition ? $Bio.tfEscape(this.composition.replace('Album Unknown', '')) : $Bio.tfEscape(this.album.replace('Album Unknown', ''));
 		const tr = $Bio.tfEscape(this.track);
-		if (composition) n = n.replace(/%bio_album%/gi, bioCfg.tf.composition);
-		n = n.replace(/%lookup_item%/gi, bio.panel.simTagTopLookUp() ? '$&#@!%path%#@!' : '$&');
-		n = n.replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi, a ? '$&#@!%path%#@!' : '$&').replace(/%bio_artist%/gi, a).replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_albumartist%/gi, aa ? '$&#@!%path%#@!' : '$&').replace(/%bio_albumartist%/gi, aa).replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_album%/gi, l ? '$&#@!%path%#@!' : '$&').replace(/%bio_album%/gi, l).replace(/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_title%/gi, tr ? '$&#@!%path%#@!' : '$&').replace(/%bio_title%/gi, tr);
+		if (composition) n = n.replace(Regex.TFBioAlbum, bioCfg.tf.composition);
+		n = n.replace(Regex.TFBioLookupItem, bio.panel.simTagTopLookUp() ? '$&#@!%path%#@!' : '$&');
+		n = n.replace(Regex.TFBioArtistConditional, a ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioArtist, a).replace(Regex.TFBioAlbumArtistConditionalStrict, aa ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioAlbumArtist, aa).replace(Regex.TFBioAlbumConditional, l ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioAlbum, l).replace(Regex.TFBioTitleConditional, tr ? '$&#@!%path%#@!' : '$&').replace(Regex.TFBioTitle, tr);
 		n = $Bio.eval(n, bio.panel.id.focus);
-		if (bio.panel.lock) n = n.replace(/#\u00a6#\u00a6#.*?#\u00a6#\u00a6#/g, this.trackartist).replace(/#!#!#.*?#!#!#/g, this.track);
-		return n.replace(/#@!.*?#@!/g, '') || 'No Selection';
+		if (bio.panel.lock) n = n.replace(Regex.BioMarkerArtistLocked, this.trackartist).replace(Regex.BioMarkerMultiProcessWrapped, this.track);
+		return n.replace(Regex.BioMarkerTFProtected, '') || 'No Selection';
 	}
 
 	tidyLyrics(n) {
-		return n.replace(/&amp(;|)/g, '&')
-		.replace(/&gt(;|)/g, '>')
-		.replace(/&lt(;|)/g, '<')
-		.replace(/&nbsp(;|)/g, '')
-		.replace(/&quot(;|)/g, '"')
-		.replace(/<br>/gi, '')
-		.replace(/\uFF1A/g, ':')
-		.replace(/\uFF08/g, '(')
-		.replace(/\uFF09/g, ')')
-		.replace(/\u00E2\u20AC\u2122|\u2019|\uFF07|[\u0060\u00B4]|â€™(;|)|â€˜(;|)|&#39(;|)|&apos(;|)/g, "'")
-		.replace(/[\u2000-\u200F\u2028-\u202F\u205F-\u206F\u3000\uFEFF]/g, ' ')
+		return n
+		.replace(Regex.HtmlEntityAmp, '&')
+		.replace(Regex.HtmlEntityGt, '>')
+		.replace(Regex.HtmlEntityLt, '<')
+		.replace(Regex.HtmlEntityNbsp, '')
+		.replace(Regex.HtmlEntityQuot, '"')
+		.replace(Regex.HtmlTagBr, '')
+		.replace(Regex.UniColon, ':')
+		.replace(Regex.UniParenLeft, '(')
+		.replace(Regex.UniParenRight, ')')
+		.replace(Regex.TextApostrophe, "'")
+		.replace(Regex.SpaceInvisible, ' ')
+		.replace(Regex.LyricsTimestampEnhanced, '$1$4')
 		.trim();
 	}
 
@@ -2411,8 +2413,8 @@ class BioText {
 		let i = arr.length;
 		while (i--) {
 			const v = arr[i];
-			if (/^=+$/.test(v.text)) arr.splice(i, 1);
-			else v.text = v.text.replace(/=/g, '').trim();
+			if (Regex.DelimEqualsLine.test(v.text)) arr.splice(i, 1);
+			else v.text = v.text.replace(Regex.DelimEquals, '').trim();
 		}
 	}
 
@@ -2493,7 +2495,7 @@ class BioText {
 			return;
 		} else {
 			let item = !this.reader[n].lyrics ? $Bio.open(this[n].readerItem).trim() : utils.ReadTextFile(this[n].readerItem, 65001);
-			if (this.reader[n].lyrics && item.includes('\ufffd')) item = $Bio.open(this[n].readerItem);
+			if (this.reader[n].lyrics && item.includes(Unicode.ReplacementCharacter)) item = $Bio.open(this[n].readerItem);
 			if (this.reader[n].lyrics) item = this.tidyLyrics(item);
 			this.checkLyrics(n, item);
 			if (this.reader[n].lyrics) {
@@ -2549,7 +2551,7 @@ class BioText {
 		if (!$Bio.file(wBio) && !$Bio.file(lBio)) return;
 		this.mod.wikiBio = ($Bio.lastModified(wBio) || 0) + (bio.panel.summary.show ? ($Bio.lastModified(lBio) || 0) : 0);
 		if (this.mod.wikiBio == this.mod.curWikiBio) return;
-		this.bio.wiki = $Bio.open(wBio).replace(/\u200b/g, '').trim();
+		this.bio.wiki = $Bio.open(wBio).replace(Regex.UniZeroWidth, '').trim();
 		const checkGenre = this.checkGenre(this.bio.wiki);
 		const en = this.bio.wiki.includes('Wikipedia language: EN');
 		const bioLfm = $Bio.open(lBio);
@@ -2589,8 +2591,8 @@ class BioText {
 				this.bio.wiki = this.add([genre], this.bio.wiki.slice(0, f).trim());
 			}
 		}
-		this.bio.wiki = this.bio.wiki.replace(/Wikipedia language:\s[A-Z]{2}/, '');
-		this.bio.wiki = this.formatText('wikiBio', this.bio.wiki, bio.panel.summary.genre ? { limit: 6, list: true, key: 'Genre: ' } : {}, { str: foundedIn }, { str: bornStr }, bio.panel.summary.date ? { key: this.bio.died } : {}, bio.panel.summary.date ? (en ? { key: this.bio.yrsActive } : { str: active }) : {}, '', bio.panel.summary.latest ? { str: latest } : '', checkGenre.singleGenre).replace(/(?:\s*\r\n){3,}/g, '\r\n\r\n');
+		this.bio.wiki = this.bio.wiki.replace(Regex.WikiLanguagePrefix, '');
+		this.bio.wiki = this.formatText('wikiBio', this.bio.wiki, bio.panel.summary.genre ? { limit: 6, list: true, key: 'Genre: ' } : {}, { str: foundedIn }, { str: bornStr }, bio.panel.summary.date ? { key: this.bio.died } : {}, bio.panel.summary.date ? (en ? { key: this.bio.yrsActive } : { str: active }) : {}, '', bio.panel.summary.latest ? { str: latest } : '', checkGenre.singleGenre).replace(Regex.BreakMultipleThreeNewline, '\r\n\r\n');
 		this.newText = true;
 		this.mod.curWikiBio = this.mod.wikiBio;
 	}
@@ -2636,8 +2638,8 @@ class BioText {
 		this.rev.wikiAlb = '';
 		let revLfm = '';
 		if (bio.panel.style.inclTrackRev != 2 || foundComp) {
-			this.rev.wikiAlb = $Bio.open(wRev).replace(/\u200b/g, '').trim();
-			if (!foundComp) revLfm = $Bio.open(lRev).replace(/\u200b/g, '').trim();
+			this.rev.wikiAlb = $Bio.open(wRev).replace(Regex.UniZeroWidth, '').trim();
+			if (!foundComp) revLfm = $Bio.open(lRev).replace(Regex.UniZeroWidth, '').trim();
 		}
 
 		const checkGenre = this.checkGenre(this.rev.wikiAlb);
@@ -2699,7 +2701,7 @@ class BioText {
 					const o = trackRev[trk];
 					let releaseDate = $Bio.getProp(o, 'date', '');
 					if (releaseDate) releaseDate = `Release Date: ${releaseDate}`;
-					let composer = $Bio.getProp(o, 'composer', []).join('\u200b, ');
+					let composer = $Bio.getProp(o, 'composer', []).join(`${Unicode.ZeroWidthSpace}, `);
 					if (composer) {
 						writer = o.composer.length > 1 ? 'Composers: ' : 'Composer: ';
 						composer = writer + composer;
@@ -2727,7 +2729,7 @@ class BioText {
 						let genres = $Bio.getProp(o, 'genre', []);
 						if (genres.length) {
 							if (genres.length > 1) genrePrefix = 'Track Genres: ';
-							genres = genrePrefix + genres.join('\u200b, ');
+							genres = genrePrefix + genres.join(`${Unicode.ZeroWidthSpace}, `);
 							wiki = this.add([genres], wiki);
 						}
 					}
@@ -2743,7 +2745,7 @@ class BioText {
 						if (bioSet.trackHeading == 1 && (this.rev.wikiAlb || !bioSet.heading) || bioSet.trackHeading == 2) {
 							this.rev.wikiTrackHeading = false;
 							if (this.rev.wikiAlb) {
-								trackRev = `!\u00a6${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${wiki}`;
+								trackRev = `!${Unicode.BrokenBar}${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${wiki}`;
 							} else {
 								trackRev = wiki;
 								needTrackSubHeading = true;
@@ -2776,9 +2778,9 @@ class BioText {
 			this.rev.wikiTrackHeading = false;
 		}
 
-		this.rev.wiki = this.rev.wiki.replace(/Wikipedia language:\s[A-Z]{2}/, '');
-		this.rev.wiki = this.formatText('wikiRev', this.rev.wiki, bio.panel.summary.genre ? { limit: 6, list: true, key: this.rev.wikiAlb ? 'Album Genres: ' : genrePrefix } : {}, bio.panel.summary.other && !this.rev.wikiAlb ? { list: true, key: writer, prefix: true, suffix: true } : {}, bio.panel.summary.date ? (this.rev.wikiAlb ? (albReleaseDate ? { str: albReleaseDate } : (eng ? { key: this.rev.releaseDate } : '')) : { key: this.rev.releaseDate }) : {}, bio.panel.summary.other && !this.rev.wikiAlb ? (length ? { str: length } : {}) : { str: albLength }, '', '', '', checkGenre.singleGenre).replace(/(?:\s*\r\n){3,}/g, '\r\n\r\n');
-		if (needTrackSubHeading) this.rev.wiki = `!\u00a6${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${this.rev.wiki}`;
+		this.rev.wiki = this.rev.wiki.replace(Regex.WikiLanguagePrefix, '');
+		this.rev.wiki = this.formatText('wikiRev', this.rev.wiki, bio.panel.summary.genre ? { limit: 6, list: true, key: this.rev.wikiAlb ? 'Album Genres: ' : genrePrefix } : {}, bio.panel.summary.other && !this.rev.wikiAlb ? { list: true, key: writer, prefix: true, suffix: true } : {}, bio.panel.summary.date ? (this.rev.wikiAlb ? (albReleaseDate ? { str: albReleaseDate } : (eng ? { key: this.rev.releaseDate } : '')) : { key: this.rev.releaseDate }) : {}, bio.panel.summary.other && !this.rev.wikiAlb ? (length ? { str: length } : {}) : { str: albLength }, '', '', '', checkGenre.singleGenre).replace(Regex.BreakMultipleThreeNewline, '\r\n\r\n');
+		if (needTrackSubHeading) this.rev.wiki = `!${Unicode.BrokenBar}${this.tf(bioSet.trackSubHeading, bioSet.artistView, true)}\r\n\r\n${this.rev.wiki}`;
 		if (!this.rev.wiki) bio.but.check();
 	}
 }

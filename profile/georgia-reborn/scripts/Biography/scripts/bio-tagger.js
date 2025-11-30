@@ -127,15 +127,15 @@ class BioTagger {
 					};
 				}
 				if (listeners) {
-					const m1 = v.match(/\u200b\|[\d.,\s]*;/g);
-					const m2 = v.match(/\u200b\|[\d.,\s]*$/gm);
-					const playcount = m1 ? m1[0].replace(/\u200b\|/, '').slice(0, -1).trim() : '';
-					const lis = m2 ? m2[0].replace(/\u200b\|/, '').trim() : '';
-					const pcNum = parseInt(playcount.replace(/[,.\s]/g, ''));
-					const lisNum = parseInt(lis.replace(/[,.\s]/g, ''));
+					const m1 = v.match(Regex.DelimZeroWidthPipeNumbersSemicolon);
+					const m2 = v.match(Regex.DelimZeroWidthPipeNumbersEnd);
+					const playcount = m1 ? m1[0].replace(Regex.UniZeroWidthPipe, '').slice(0, -1).trim() : '';
+					const lis = m2 ? m2[0].replace(Regex.UniZeroWidthPipe, '').trim() : '';
+					const pcNum = parseInt(playcount.replace(Regex.PunctCommaDotSpace, ''));
+					const lisNum = parseInt(lis.replace(Regex.PunctCommaDotSpace, ''));
 					v = pcNum && lisNum ? ['Playcount', playcount, 'Listeners', lis, 'Score', this.getScore(pcNum, lisNum, type)] : '';
 				} else {
-					v = v.includes('\u200b') ? v.split(/\u200b,\s/) : v.split(/,\s/);
+					v = v.includes(Unicode.ZeroWidthSpace) ? v.split(Regex.DelimZeroWidthComma) : v.split(Regex.CommaWhitespace);
 				}
 			}
 		}
@@ -292,8 +292,8 @@ class BioTagger {
 						const aBio = $Bio.open(amBio);
 						artGenre_am[i] = this.getTag(aBio, 'Genre: ').tag;
 						const localeTag = this.getTag(aBio, 'Formed: |Born: ').tag;
-						if (localeTag.length && !/\s*in\s/.test(localeTag[0])) localeTag.shift();
-						if (localeTag.length && /\s*in\s/.test(localeTag[0])) localeTag[0] = localeTag[0].split(/\s*in\s/)[1].trim();
+						if (localeTag.length && !Regex.TextInPadded.test(localeTag[0])) localeTag.shift();
+						if (localeTag.length && Regex.TextInPadded.test(localeTag[0])) localeTag[0] = localeTag[0].split(Regex.TextInPadded)[1].trim();
 						if (!locale[i] && notify) locale[i] = localeTag;
 						if (!locale[i] || !locale[i].length) locale[i] = '';
 					}

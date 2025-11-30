@@ -473,7 +473,7 @@ class BioSettings {
 		} else {
 			bioRevItems.forEach(v => {
 				this.remap[v] = this[v];
-				this.remap[v] = v.endsWith('Rev') ? this.remap[v].replace(/%BIO_ALBUMARTIST%|%BIO_ARTIST%/gi, '%BIO_ALBUMARTIST%') : this.remap[v].replace(/%BIO_ARTIST%|%BIO_ALBUMARTIST%/gi, '%BIO_ARTIST%');
+				this.remap[v] = v.endsWith('Rev') ? this.remap[v].replace(Regex.TFBioAlbumArtistAndArtist, '%BIO_ALBUMARTIST%') : this.remap[v].replace(Regex.TFBioArtistAndAlbumArtist, '%BIO_ARTIST%');
 			});
 		}
 
@@ -489,11 +489,11 @@ class BioSettings {
 						this.sup[v] = this.sup[v].replace(RegExp(w, 'gi'), arr2[j]);
 					});
 				}
-				this.sup[v] = v.endsWith('Rev') ? this.sup[v].replace(/%BIO_ALBUMARTIST%|%BIO_ARTIST%/gi, '%BIO_ALBUMARTIST%') : this.sup[v].replace(/%BIO_ARTIST%|%BIO_ALBUMARTIST%/gi, '%BIO_ARTIST%');
+				this.sup[v] = v.endsWith('Rev') ? this.sup[v].replace(Regex.TFBioAlbumArtistAndArtist, '%BIO_ALBUMARTIST%') : this.sup[v].replace(Regex.TFBioArtistAndAlbumArtist, '%BIO_ARTIST%');
 			});
 		}
 
-		const fields = n => n.replace(/\$.*?\(/gi, '').replace(/(,(|\s+)\d+)/gi, '').replace(/[,()[\]%]/gi, '|').split('|');
+		const fields = n => n.replace(Regex.TextDollarParen, '').replace(Regex.CommaSpaceDigits, '').replace(Regex.DelimListPunct, '|').split('|');
 		this.albartFields = fields(this.tf.albumArtist).filter(v => v.trim());
 		this.artFields = fields(this.tf.artist).filter(v => v.trim());
 		this.albFields = fields(this.tf.album).filter(v => v.trim());
@@ -511,8 +511,8 @@ class BioSettings {
 	}
 
 	expandPath(pth) {
-		if (/%profile%\\/i.test(pth) && /%storage_folder%\\/i.test(pth)) pth = pth.replace(/%profile%\\/gi, '');
-		return pth.replace(/^%profile%\\?/i, $Bio.tfEscape(fb.ProfilePath)).replace(/^%storage_folder%\\?/i, $Bio.tfEscape(bioCfg.storageFolder));
+		if (Regex.PathProfileDir.test(pth) && Regex.PathStorageDir.test(pth)) pth = pth.replace(Regex.PathProfileDirGlobal, '');
+		return pth.replace(Regex.PathProfileDirStart, $Bio.tfEscape(fb.ProfilePath)).replace(Regex.PathStorageDirStart, $Bio.tfEscape(bioCfg.storageFolder));
 	}
 
 	preview(n, tfAll, excludeStream, sFind, sReplace, artistView, trackReview) {
@@ -520,8 +520,7 @@ class BioSettings {
 		if (excludeStream) {
 			const handle = $Bio.handle(bio.panel.id.focus, true);
 			if (!handle) return;
-			const covCanBeSaved = !handle.RawPath.startsWith('fy+') && !handle.RawPath.startsWith('3dydfy:') && !handle.RawPath.startsWith('http');
-			if (!covCanBeSaved) return 'Stream: Covers Not Saved';
+			if (Regex.WebStreaming.test(handle.RawPath)) return 'Stream: Covers Not Saved';
 		}
 		n = this.expandPath(n);
 		const tf = tfAll.split('~#~');
@@ -536,12 +535,12 @@ class BioSettings {
 				n = this.foLfmBio;
 				arr1.forEach((v, i) => n = n.replace(RegExp(v, 'gi'), arr2[i]));
 			} else n = 'Invalid find and replace';
-			n = n.replace(/%BIO_ARTIST%|%BIO_ALBUMARTIST%/gi, '%BIO_ARTIST%');
+			n = n.replace(Regex.TFBioArtistAndAlbumArtist, '%BIO_ARTIST%');
 		}
 		tfNames.forEach((v, i) => n = n.replace(RegExp(v, 'gi'), tf[i]));
 
-		const wildCard = /[*?]/.test(n);
-		return !wildCard ? bio.panel.cleanPth(n, false) : bio.panel.cleanPth(n.replace(/\*/g, '@!@').replace(/\?/g, '!@!'), false).replace(/@!@/g, '*').replace(/!@!/g, '?');
+		const wildCard = Regex.PunctWildcard.test(n);
+		return !wildCard ? bio.panel.cleanPth(n, false) : bio.panel.cleanPth(n.replace(Regex.PathWildcardAsterisk, '@!@').replace(Regex.PunctQuestion, '!@!'), false).replace(Regex.BioMarkerShortAtExclAt, '*').replace(Regex.BioMarkerShortExclAtExcl, '?');
 	}
 
 	move(n) {
@@ -924,8 +923,8 @@ let bio_item_properties =
 
 /** @global @type {object} */
 let bio_item_properties_alternative_grouping = bio_item_properties
-.replace(/("Metadata\*":\s{\s*?"show":\s)false/, `$1${true}`)
-.replace(/(("Metadata"|"Popularity"|"AllMusic"|"Last.fm"|"Wikipedia"):\s{\s*?"show":\s)true/g, `$1${false}`);
+.replace(Regex.BioMetadataShowFalse, `$1${true}`)
+.replace(Regex.BioSectionsShowTrue, `$1${false}`);
 
 /** @global @type {string} */
 let bioNowplaying = `Artist: %BIO_ARTIST%$crlf()

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -82,8 +82,8 @@ class ConfigDefaults {
 		// #region ARTWORK IMAGE FORMATS
 		/** @public @type {object} Allowed artwork image formats. */
 		this.artworkImageFormatsDefaults = {
-			albumArt: '/\\.(jpg|png|webp)$/i',
-			bgImage: '/\\.(jpg|png|webp)$/i'
+			albumArt: `${Regex.ArtAlbumArtExtensions}`,
+			bgImage: `${Regex.ArtAlbumArtExtensions}`
 		};
 
 		/** @public @type {object} Artwork file formats config name description. */
@@ -106,10 +106,10 @@ class ConfigDefaults {
 		// #region ARTWORK PATTERNs
 		/** @public @type {object} Artwork patterns to filter out artwork images. */
 		this.artworkPatternsDefaults = {
-			albumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i',
-			playlistBgAlbumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i',
-			libraryBgAlbumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i',
-			lyricsBgAlbumArt: '!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i'
+			albumArt: `!${Regex.ArtDiscArtFilename}`,
+			playlistBgAlbumArt: `!${Regex.ArtDiscArtFilename}`,
+			libraryBgAlbumArt: `!${Regex.ArtDiscArtFilename}`,
+			lyricsBgAlbumArt: `!${Regex.ArtDiscArtFilename}`
 		};
 
 		/** @public @type {object} Artwork patterns config name description. */
@@ -1359,29 +1359,29 @@ class ConfigDefaults {
 		 */
 		/** @public @type {MetadataGridEntry[]} Metadata grid default entries and values. */
 		this.metadataGridDefaults = [
-			{ label: 'Disc',            val: `$if(${this.titleFormatDefaults.disc_subtitle},[Disc %discnumber% \u2013 ]${this.titleFormatDefaults.disc_subtitle})` },
+			{ label: 'Disc',            val: `$if(${this.titleFormatDefaults.disc_subtitle},[Disc %discnumber% ${Unicode.EnDash} ]${this.titleFormatDefaults.disc_subtitle})` },
 			{ label: 'Rel. Type',       val: '$if($stricmp(%releasetype%,Album),,[%releasetype%])' },
 			{ label: 'Year',            val: `$puts(d,${this.titleFormatDefaults.date})$if($strcmp($year($get(d)),$get(d)),$get(d),)`, comment: '\'Year\' is shown if the date format is YYYY' },
 			{ label: 'Rel. Date',       val: `$puts(d,${this.titleFormatDefaults.date})$if($strcmp($year($get(d)),$get(d)),,$get(d))`, age: true, comment: '\'Release Date\' is shown if the date format is YYYY-MM-DD' },
 			{ label: 'Edition',         val: this.titleFormatDefaults.edition },
-			{ label: 'Label',           val: '[$if($meta(label),$meta_sep(label, \u00B7 ),$if3(%publisher%,%discogs_label%,))]', comment: 'The label(s) or publisher(s) that released the album.' },
+			{ label: 'Label',           val: `[$if($meta(label),$meta_sep(label, ${Unicode.MiddleDot} ),$if3(%publisher%,%discogs_label%,))]`, comment: 'The label(s) or publisher(s) that released the album.' },
 			{ label: 'Catalog',         val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),$get(cn)[ / ${this.titleFormatDefaults.releaseCountry}],)]` },
 			{ label: 'Rel. Country',    val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),,$replace(${this.titleFormatDefaults.releaseCountry},XW,))]`, comment: 'Only shown if %catalognumber% or %discogs_catalog% is not present. If release country is entire world (\'XW\') value is hidden.' },
 			{ label: 'Track',           val: '$if(%tracknumber%,$num(%tracknumber%,1)$if(%totaltracks%,/$num(%totaltracks%,1))$ifgreater(%totaldiscs%,1,   CD %discnumber%/$num(%totaldiscs%,1),)' },
-			{ label: 'Genre',           val: '[$meta_sep(genre, \u00B7 )]' },
-			{ label: 'Style',           val: '[$meta_sep(style, \u00B7 )]' },
+			{ label: 'Genre',           val: `[$meta_sep(genre, ${Unicode.MiddleDot} )]` },
+			{ label: 'Style',           val: `$meta_sep(style, ${Unicode.MiddleDot} )]` },
 			{ label: 'Release',         val: '[%release%]' },
 			{ label: 'Codec',           val: '[%codec%]' },
 			{ label: 'Channels',        val: '[%channels%]' },
-			{ label: 'Source',          val: '[%codec_profile%$if(%__bitspersample%, \u00B7 )]$if($strcmp(%__encoding%,lossless),%__bitspersample% bit)$ifgreater(%samplerate%,44100,$if($if2(%codec_profile%,%__bitspersample%), \u00B7 )$div(%samplerate%,1000)$replace($insert($right($div(%samplerate%,100),1),.,0),.0,) kHz,)[ \u00B7 $if3(%media%,%mediatype%,%media type%)]' },
-			{ label: 'Data',            val: '%__bitrate% kbps \u00B7 $div(%filesize%,1048576).$num($div($mul($mod(%filesize%,1048576),10),1048576),0) MB' },
+			{ label: 'Source',          val: `[%codec_profile%$if(%__bitspersample%, ${Unicode.MiddleDot} )]$if($strcmp(%__encoding%,lossless),%__bitspersample% bit)$ifgreater(%samplerate%,44100,$if($if2(%codec_profile%,%__bitspersample%), ${Unicode.MiddleDot} )$div(%samplerate%,1000)$replace($insert($right($div(%samplerate%,100),1),.,0),.0,) kHz,)[ ${Unicode.MiddleDot} $if3(%media%,%mediatype%,%media type%)]` },
+			{ label: 'Data',            val: `%__bitrate% kbps ${Unicode.MiddleDot} $div(%filesize%,1048576).$num($div($mul($mod(%filesize%,1048576),10),1048576),0) MB` },
 			{ label: 'Added',           val: '[$if2(%added_enhanced%,%added%)]', age: true },
 			{ label: 'Last Played',     val: `[${this.titleFormatDefaults.last_played}]`, age: true },
 			{ label: 'Hotness',         val: "$puts(X,5)$puts(Y,$div(%_dynamic_rating%,400))$repeat($repeat(I,$get(X))   ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))$ifgreater(%_dynamic_rating%,0,   $replace($div(%_dynamic_rating%,1000)'.'$mod($div(%_dynamic_rating%,100),10),0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9),)" },
 			{ label: 'View Count',      val: '[%fy_view_count%]' },
-			{ label: 'Likes',           val: '[$if(%fy_like_count%,%fy_like_count% \u25B2 / %fy_dislike_count% \u25BC,)]' },
+			{ label: 'Likes',           val: `[$if(%fy_like_count%,%fy_like_count% ${Unicode.BlackUpTriangle} / %fy_dislike_count% ${Unicode.BlackDownTriangle},)]` },
 			{ label: 'Play Count',      val: '$if($or(%play_count%,%lastfm_play_count%),$puts(X,5)$puts(Y,$max(%play_count%,%lastfm_play_count%))$ifgreater($get(Y),30,,$repeat($repeat(I,$get(X)) ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))   )$get(Y))' },
-			{ label: 'Rating',          val: '$if(%rating%,$repeat(\u2605 ,%rating%))' },
+			{ label: 'Rating',          val: `$if(%rating%,$repeat(${Unicode.BlackStar} ,%rating%))` },
 			{ label: 'Mood',            val: '$if(%mood%,$puts(X,5)$puts(Y,$mul(5,%mood%))$repeat($repeat(I,$get(X))   ,$div($get(Y),$get(X)))$repeat(I,$mod($get(Y),$get(X)))$replace(%mood%,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9))' },
 			{ label: 'Playing List',    val: this.titleFormatDefaults.playing_playlist },
 			{ label: 'Blank 01',        val: '' },

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-11-2024                                              * //
+// * Last change:    30-11-2024                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -58,65 +58,6 @@ class Color {
 		this._listeners = {};
 		// #endregion
 
-		// * PATTERNS * //
-		// #region PATTERNS
-		/**
-		 * Regular expression to test for a valid hex color.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.isHex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
-
-		/**
-		 * Regular expression to test for a valid HSL(A) color.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.isHSL = /^hsla?\((\d{1,3}?),\s*(\d{1,3}%),\s*(\d{1,3}%)(,\s*[01]?\.?\d*)?\)$/;
-
-		/**
-		 * Regular expression to test for a valid RGB(A) color.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.isRGB = /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*[01]?\.?\d*)?\)$/;
-
-		/**
-		 * Regular expression to test for a value with a percentage.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.isPercent = /^\d+(\.\d+)*%$/;
-
-		/**
-		 * Regular expression to match individual hex digits.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.hexBit = /([0-9a-f])/gi;
-
-		/**
-		 * Regular expression to match the leading hash symbol in hex colors.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.leadHex = /^#/;
-
-		/**
-		 * Regular expression to test and capture groups in HSL(A) strings.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.matchHSL = /^hsla?\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%(,\s*([01]?\.?\d*))?\)$/;
-
-		/**
-		 * Regular expression to test and capture groups in RGB(A) strings.
-		 * @type {RegExp}
-		 * @private
-		 */
-		this.matchRGB = /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*([01]?\.?\d*))?\)$/;
-		// #endregion
-
 		// * HELPERS * //
 		// #region HELPERS
 		/**
@@ -141,7 +82,7 @@ class Color {
 		 * @returns {number} The corresponding value between 0 and 255 if the input is a percentage, otherwise the parsed integer value of the input.
 		 * @private
 		 */
-		this._perToVal = (p) => this.isPercent.test(p) ? this._absRound(parseInt(p) * 2.55) : parseInt(p);
+		this._perToVal = (p) => Regex.ColorPercent.test(p) ? this._absRound(parseInt(p) * 2.55) : parseInt(p);
 		// #endregion
 
 		// * INITIALIZATION * //
@@ -837,26 +778,26 @@ class Color {
 			this.broadcast(Color.Events.PARSED);
 		}
 		else if (typeof value === 'string') {
-			if (this.isHex.test(value)) {
-				let stripped = value.replace(this.leadHex, '');
+			if (Regex.ColorHex.test(value)) {
+				let stripped = value.replace(Regex.ColorHexLeading, '');
 				if (stripped.length === 3) {
-					stripped = stripped.replace(this.hexBit, '$1$1');
+					stripped = stripped.replace(Regex.ColorHexDigit, '$1$1');
 				}
 				this.decimal(parseInt(stripped, 16));
 				this.broadcast(Color.Events.PARSED);
 			}
-			else if (this.isRGB.test(value)) {
-				const partsRGB = value.match(this.matchRGB);
+			else if (Regex.ColorRGB.test(value)) {
+				const partsRGB = value.match(Regex.ColorRGBCapture);
 				this.red(this._perToVal(partsRGB[1]));
 				this.green(this._perToVal(partsRGB[2]));
 				this.blue(this._perToVal(partsRGB[3]));
 				const alphaRGB = parseFloat(partsRGB[5]);
 				this.alpha(isNaN(alphaRGB) ? 1 : alphaRGB);
-				this.output = (this.isPercent.test(partsRGB[1]) ? 2 : 1) + (partsRGB[5] ? 2 : 0);
+				this.output = (Regex.ColorPercent.test(partsRGB[1]) ? 2 : 1) + (partsRGB[5] ? 2 : 0);
 				this.broadcast(Color.Events.PARSED);
 			}
-			else if (this.isHSL.test(value)) {
-				const partsHSL = value.match(this.matchHSL);
+			else if (Regex.ColorHSL.test(value)) {
+				const partsHSL = value.match(Regex.ColorHSLCapture);
 				this.hue = parseInt(partsHSL[1]);
 				this.saturation = parseInt(partsHSL[2]);
 				this.lightness = parseInt(partsHSL[3]);

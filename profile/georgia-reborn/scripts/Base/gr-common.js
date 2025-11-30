@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -329,6 +329,10 @@ const Stringformat = {
 	No_Clip: 0x00004000
 };
 
+
+///////////////
+// * FONTS * //
+///////////////
 /**
  * A set of font style settings used when creating font objects.
  * @typedef  {object} FontStyle
@@ -350,147 +354,1125 @@ const FontStyle = {
 };
 
 /**
- * A set of font mapping settings for the 'Guifx v2 Transports' font used for button symbols.
- * @typedef  {object} Guifx
- * @property {string} name - The name of the font.
- * @property {number} play - The play button symbol.
- * @property {number} pause - The pause button symbol.
- * @property {number} stop - The stop button symbol.
- * @property {number} record - The record button symbol.
- * @property {number} rewind - The rewind button symbol.
- * @property {number} fast_forward - The fast forward button symbol.
- * @property {number} previous - The previous button symbol.
- * @property {number} next - The next button symbol.
- * @property {number} replay - The replay button symbol.
- * @property {number} refresh - The refresh button symbol.
- * @property {string} mute - The mute button symbol.
- * @property {string} mute2 - The alternative mute button symbol.
- * @property {string} volume_down - The volume down button symbol.
- * @property {string} volume_up - The volume up button symbol.
- * @property {string} thumbs_down - The thumbs down button symbol.
- * @property {string} thumbs_up - The thumbs up button symbol.
- * @property {string} shuffle - The shuffle button symbol.
- * @property {string} repeat - The repeat button symbol.
- * @property {string} repeat1 - The repeat one button symbol.
- * @property {string} zoom - The zoom button symbol.
- * @property {string} zoom_out - The zoom out button symbol.
- * @property {string} zoom_in - The zoom in button symbol.
- * @property {string} minus - The minus button symbol.
- * @property {string} plus - The plus button symbol.
- * @property {string} up - The up button symbol.
- * @property {string} down - The down button symbol.
- * @property {string} left - The left button symbol.
- * @property {string} right - The right button symbol.
- * @property {string} up2 - The alternative up button symbol.
- * @property {string} down2 - The alternative down button symbol.
- * @property {string} left2 - The alternative left button symbol.
- * @property {string} right2 - The alternative right button symbol.
- * @property {string} start - The start button symbol.
- * @property {string} end - The end button symbol.
- * @property {string} top - The top button symbol.
- * @property {string} bottom - The bottom button symbol.
- * @property {string} jump_backward - The jump backward button symbol.
- * @property {string} jump_forward - The jump forward button symbol.
- * @property {string} slow_backward - The slow backward button symbol.
- * @property {string} slow_forward - The slow forward button symbol.
- * @property {string} eject - The eject button symbol.
- * @property {string} reject - The reject button symbol.
- * @property {string} up3 - The third alternative up button symbol.
- * @property {string} down3 - The third alternative down button symbol.
- * @property {string} left3 - The third alternative left button symbol.
- * @property {string} right3 - The third alternative right button symbol.
- * @property {string} screen_up - The screen up button symbol.
- * @property {string} screen_down - The screen down button symbol.
- * @property {string} guifx - The Guifx button symbol.
- * @property {string} power - The power button symbol.
- * @property {string} checkmark - The checkmark button symbol.
- * @property {string} close - The close button symbol.
- * @property {string} hourglass - The hourglass button symbol.
- * @property {string} heart - The heart button symbol.
- * @property {string} star - The star button symbol.
- * @property {string} fire - The fire button symbol.
- * @property {string} medical - The medical button symbol.
- * @property {string} police - The police button symbol.
+ * A set of icon mapping settings for the 'Reborn-Symbols' font used for UI symbols like transports, windows, and media controls.
+ * @typedef {object} RebornSymbols
+ * @property {string} Play - The play button symbol.
+ * @property {string} Pause - The pause button symbol.
+ * @property {string} Stop - The stop button symbol.
+ * @property {string} Next - The next button symbol.
+ * @property {string} Prev - The previous button symbol.
+ * @property {string} Next2 - The alternative next button symbol.
+ * @property {string} Prev2 - The alternative previous button symbol.
+ * @property {string} Power - The power button symbol.
+ *
+ * @property {string} PlaybackDefault - The default playback symbol.
+ * @property {string} PlaybackRepeatPlaylist - The repeat playlist symbol.
+ * @property {string} PlaybackRepeatTrack - The repeat single track symbol.
+ * @property {string} PlaybackShuffle - The shuffle playback symbol.
+ *
+ * @property {string} Volume - The volume/speaker symbol.
+ * @property {string} VolumeDown - The volume down symbol.
+ * @property {string} VolumeUp - The volume up symbol.
+ *
+ * @property {string} Hamburger - The hamburger menu symbol.
+ * @property {string} Minimize - The minimize window symbol.
+ * @property {string} Maximize - The maximize window symbol.
+ * @property {string} Close - The close window symbol.
+ * @property {string} Close2 - The close thinner symbol.
+ *
+ * @property {string} PlusLarge - The large plus symbol.
+ * @property {string} MinusLarge - The large minus symbol.
+ * @property {string} ThreeDotEllipsis - The Three Dot Ellipsis symbol.
+ *
+ * @property {string} ArrowLeft - The smaller backward arrow symbol.
+ * @property {string} ArrowRight - The smaller forward arrow symbol.
+ * @property {string} ArrowUp - The smaller upward arrow symbol.
+ * @property {string} ArrowDown - The smaller downward arrow symbol.
+ *
+ * @property {string} ArrowLeft2 - The large thinner backward arrow symbol.
+ * @property {string} ArrowRight2 - The large thinner forward arrow symbol.
+ * @property {string} ArrowUp2 - The large thinner upward arrow symbol.
+ * @property {string} ArrowDown2 - The large thinner downward arrow symbol.
+ *
+ * @property {string} ArrowLeft3 - The large thicker backward arrow symbol.
+ * @property {string} ArrowRight3 - The large thicker forward arrow symbol.
+ * @property {string} ArrowUp3 - The large thicker upward arrow symbol.
+ * @property {string} ArrowDown3 - The large thicker downward arrow symbol.
+ *
+ * @property {string} ArrowLeft4 - The middle backward arrow symbol.
+ * @property {string} ArrowRight4 - The middle forward arrow symbol.
+ * @property {string} ArrowUp4 - The middle upward arrow symbol.
+ * @property {string} ArrowDown4 - The middle downward arrow symbol.
+ *
+ * @property {string} AngleLeft - The thinner backward arrow symbol.
+ * @property {string} AngleRight - The thinner forward arrow symbol.
+ * @property {string} AngleUp - The thinner upward arrow symbol.
+ * @property {string} AngleDown - The thinner downward arrow symbol.
+ *
+ * @property {string} CaretLeft - The filled rounded left triangle symbol.
+ * @property {string} CaretRight - The filled rounded right triangle symbol.
+ * @property {string} CaretUp - The filled rounded up triangle symbol.
+ * @property {string} CaretDown - The filled rounded down triangle symbol.
+ *
+ * @property {string} BrokenBar - The Broken Bar symbol.
+ * @property {string} Bullet - The Bullet symbol.
+ * @property {string} BulletOperator - The Bullet Operator symbol.
+ * @property {string} NotSign - The Not Sign symbol.
+ *
+ * @property {string} StarEmpty - The empty star symbol.
+ * @property {string} StarQuarter - The quarter-filled star symbol.
+ * @property {string} StarHalf - The half-filled star symbol.
+ * @property {string} StarThreeQuarter - The three-quarter filled star symbol.
+ * @property {string} StarFull - The full star symbol.
+ * @property {string} Heart - The heart symbol.
+ *
+ * @property {string} Lastfm - The lastfm symbol.
+ * @property {string} Wikipedia - The Wikipedia symbol.
+ *
+ * @property {string} BlackSquare - The black square symbol in 1 em size.
+ * @property {string} LightBulb - The light bulb symbol.
+ * @property {string} Lock - The lock symbol.
+ * @property {string} Medical - The medical cross symbol.
+ * @property {string} Microphone - The microphone symbol.
+ * @property {string} MusicNote - The music note symbol.
  */
-/** @global @enum @type {Guifx} */
-const Guifx = {
-	name: 'Guifx v2 Transports',
-	play: 1,
-	pause: 2,
-	stop: 3,
-	record: 4,
-	rewind: 5,
-	fast_forward: 6,
-	previous: 7,
-	next: 8,
-	replay: 9,
-	refresh: 0,
-	mute: '!',
-	mute2: '@',
-	volume_down: '#',
-	volume_up: '$',
-	thumbs_down: '%',
-	thumbs_up: '^',
-	shuffle: '&',
-	repeat: '*',
-	repeat1: '(',
-	zoom: ')',
-	zoom_out: '_',
-	zoom_in: '+',
-	minus: '-',
-	plus: '=',
-	up: 'W',
-	down: 'S',
-	left: 'A',
-	right: 'D',
-	up2: 'w',
-	down2: 's',
-	left2: 'a',
-	right2: 'd',
-	start: '{',
-	end: '}',
-	top: '?',
-	bottom: '/',
-	jump_backward: '[',
-	jump_forward: ']',
-	slow_backward: ':',
-	slow_forward: '\'',
-	eject: '\'',
-	reject: ';',
-	up3: '.',
-	down3: ',',
-	left3: '<',
-	right3: '>',
-	screen_up: '|',
-	screen_down: '\\',
-	guifx: 'g',
-	power: 'q',
-	checkmark: 'z',
-	close: 'x',
-	hourglass: 'c',
-	heart: 'v',
-	star: 'b',
-	fire: 'i',
-	medical: 'o',
-	police: 'p'
+/** @global @enum @type {RebornSymbols} */
+const RebornSymbols = {
+	// Playback buttons
+	Play: '\u25B6',
+	Pause: '\u23F8',
+	Stop: '\u23F9',
+	Next: '\u23E9',
+	Prev: '\u23EA',
+	Next2: '\u23FD',
+	Prev2: '\u23EE',
+	Power: '\u23FB',
+
+	// Playback Mode Indicators
+	PlaybackDefault: '\uF2F0',
+	PlaybackRepeatPlaylist: '\uF2F9',
+	PlaybackRepeatTrack: '\uF2F1',
+	PlaybackShuffle: '\uF074',
+
+	// Volume Controls
+	Volume: '\uF026',
+	VolumeDown: '\uF027',
+	VolumeUp: '\uF028',
+
+	// Window & Layout Controls
+	Hamburger: '\u2630',
+	Minimize: '\uF2D1',
+	Maximize: '\uF2D0',
+	Close: '\uF2D2',
+	Close2: '\u2715',
+
+	// Navigation controls
+	PlusLarge: '\uE109',
+	MinusLarge: '\uE108',
+	ThreeDotEllipsis: '\uE10C',
+
+	// Arrows & Carets - Small thin arrows
+	ArrowLeft: '\uE00E',
+	ArrowRight: '\uE00F',
+	ArrowUp: '\uE010',
+	ArrowDown: '\uE011',
+
+	// Arrows & Carets - Large thin arrows
+	ArrowLeft2: '\uE012',
+	ArrowRight2: '\uE013',
+	ArrowUp2: '\uE014',
+	ArrowDown2: '\uE015',
+
+	// Arrows & Carets - Large thick arrows
+	ArrowLeft3: '\uE016',
+	ArrowRight3: '\uE017',
+	ArrowUp3: '\uE018',
+	ArrowDown3: '\uE019',
+
+	// Arrows & Carets - Medium arrows
+	ArrowLeft4: '\uE09E',
+	ArrowRight4: '\uE09F',
+	ArrowUp4: '\uE0A0',
+	ArrowDown4: '\uE0A1',
+
+	// Arrows & Carets - Angles
+	AngleLeft: '\uF104',
+	AngleRight: '\uF105',
+	AngleUp: '\uF106',
+	AngleDown: '\uF107',
+
+	// Arrows & Carets - Filled caret triangles
+	CaretLeft: '\uF0D9',
+	CaretRight: '\uF0DA',
+	CaretUp: '\uF0D8',
+	CaretDown: '\uF0D7',
+
+	// Separators & Dividers
+	BrokenBar: '\u00A6',
+	Bullet: '\u2022',
+	BulletOperator: '\u2219',
+	NotSign: '\u00AC',
+
+	// Ratings & Favorites
+	StarEmpty: '\u25CB',
+	StarQuarter: '\u25D0',
+	StarHalf: '\u25D1',
+	StarThreeQuarter: '\u25D2',
+	StarFull: '\u25CF',
+	Star: '\u2605',
+	Heart: '\u2764',
+
+	// Logos
+	Lastfm: '\uF202',
+	Wikipedia: '\uF266',
+
+	// Misc Utilities
+	BlackSquare: '\uE002',
+	LightBulb: '\uF0EB',
+	Lock: '\uF023',
+	Medical: '\u271A',
+	Microphone: '\uF130',
+	MusicNote: '\uF001',
+
+	// Library Explorer
+	Add: '\uF0CA',
+	Artist: '\uF007',
+	Details: '\uF044',
+	Edit: '\uF4FF',
+	Links: '\uF08E',
+	Missing: '\uF51F',
+	Now: '\uF001',
+	Similar: '\uF500',
+	Sort: '\uF0DC',
+	Stats: '\uF201',
+	ChevronLeft: '\uF053',
+	ChevronRight: '\uF054',
+	ChevronUp: '\uF057',
+	ChevronDown: '\uF058',
+	External: '\uF360'
 };
 
 /**
- * A set of various star symbols mainly used for ratings.
- * @typedef  {object} Stars
- * @property {string} empty - The empty star symbol.
- * @property {string} quarter - The quarter star symbol.
- * @property {string} half - The half star symbol.
- * @property {string} threeQ - The three-quarter star symbol.
- * @property {string} full - The full star symbol.
+ * A set of icon mapping unicodes.
+ * @typedef {object} Unicode
+ * @property {string} Apostrophe - '\u0027' `'` The Apostrophe.
+ * @property {string} BeamedEighthNotes - '\u266B' `♫` The Beamed Eighth Notes.
+ * @property {string} BlackSmallSquare - '\u25AA' `▪` The Black Small Square.
+ * @property {string} BlackStar - '\u2605' `★` The Black Star.
+ * @property {string} BlackUpTriangle - '\u25B2' `▲` The Black Up-Pointing Triangle.
+ * @property {string} BlackDownTriangle - '\u25BC' `▼` The Black Down-Pointing Triangle.
+ * @property {string} BrokenBar - '\u00A6' `¦` The Bullet.
+ * @property {string} Bullet - '\u2022' `•` The Bullet.
+ * @property {string} BulletOperator - '\u2219' `∙` The Bullet Operator.
+ * @property {string} NotSign - '\u00AC' `¬` The Not Sign.
+ * @property {string} Hyphen - '\u2010' `-` The Hyphen.
+ * @property {string} SoftHyphen - '\u00AD' ` ` The Soft Hyphen.
+ * @property {string} ArmenianHyphen - '\u058A' `֊` The Armenian Hyphen.
+ * @property {string} NonBreakingHyphen - '\u2011' `‑` The Non-Breaking Hyphen.
+ * @property {string} FigureDash - '\u2012' `‒` The Figure Dash.
+ * @property {string} EnDash - '\u2013' `–` The En Dash.
+ * @property {string} EmDash - '\u2014' `—` The Em Dash.
+ * @property {string} SmallEmDash - '\uFE58' `﹘` The Small Em Dash.
+ * @property {string} InformationSeparatorOne - '\u001F' `﹘` The Information Separator One.
+ * @property {string} ReplacementCharacter - '\uFFFD' `�` The Replacement Character.
+ * @property {string} MiddleDot - '\u00B7' `·` The Middle Dot.
+ * @property {string} ZeroWidthSpace - '\u200B' `﹘` The Zero Width Space.
  */
-/** @global @enum @type {Stars} */
-const Stars = {
-	empty:   '\u2606',
-	quarter: '\u2606',
-	half:    '\u272B',
-	threeQ:  '\u2605',
-	full:    '\u2605'
+/** @global @enum @type {Unicode} */
+const Unicode = {
+	Apostrophe: '\u0027',
+	BeamedEighthNotes: '\u266B',
+	BlackSmallSquare: '\u25AA',
+	BlackStar: '\u2605',
+	BlackUpTriangle: '\u25B2',
+	BlackDownTriangle: '\u25BC',
+	BrokenBar: '\u00A6',
+	Bullet: '\u2022',
+	BulletOperator: '\u2219',
+	NotSign: '\u00AC',
+	Hyphen: '\u2010',
+	SoftHyphen: '\u00AD',
+	ArmenianHyphen: '\u058A',
+	NonBreakingHyphen: '\u2011',
+	FigureDash: '\u2012',
+	EnDash: '\u2013',
+	EmDash: '\u2014',
+	SmallEmDash: '\uFE58',
+	InformationSeparatorOne:'\u001F',
+	ReplacementCharacter: '\uFFFD',
+	MiddleDot: '\u00B7',
+	ZeroWidthSpace: '\u200B'
+};
+
+
+////////////////
+// * REGEXP * //
+////////////////
+/**
+ * A centralized collection of pre-compiled regular expressions used throughout Georgia-ReBORN.
+ * ! Warning: Patterns with /g or /gi flags maintain state via lastIndex.
+ * ! Always reset before using .exec() or .test(): `Regex.SomePattern.lastIndex = 0;`
+ * ! Safe alternatives: .match(), .replace(), .search(), .split() handle state automatically.
+ * ? Note: When adding new patterns, avoid the sequence `*` plus `/` in documentation as it closes JSDoc comments.
+ * ? Ensure the flags (/g, /gi) are placed outside the backticks to prevent parsing issues.
+ * @typedef {object} Regex
+ *
+ * @property {RegExp} ArtAlbumArtExtensions - Matches album art extensions `/\.(jpg|png|webp)$/i`.
+ * @property {RegExp} ArtAlbumArtWildcard - Matches album art path wildcards `/(\*|\b(folder|cover|front)\b)\.\*`/g. Captures: wildcard or keyword.
+ * @property {RegExp} ArtDiscArtFilename - Matches disc art filenames `/(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i`. Captures: base, suffix.
+ * @property {RegExp} ArtDiscArtWildcard - Matches disc art path wildcards `/(\*|\b(cd|disc|vinyl)\b)\.\*`/g. Captures: wildcard or keyword.
+ * @property {RegExp} ArtImageExtensions - Matches common image extensions `/(?:jpe?g|png|webp|gif|bmp)$/i`.
+ * @property {RegExp} ArtImageFileSortNumber - Matches _number.jpg|png|webp in filenames `/_(\d+)\.(jpe?g|png|webp)$/i`. Captures: number.
+ * @property {RegExp} ArtImageLabelSuffix - Matches trailing label suffixes `/ (Records|Recordings|Music)$/`.
+ *
+ * @property {RegExp} PathBackslash - Matches single backslashes `/\\/g`.
+ * @property {RegExp} PathBackslashEndsWith - Matches paths ending with a single backslash `/\\$/`.
+ * @property {RegExp} PathBackslashPadded - Matches backslash with optional surrounding spaces `/\s*\\\s*`/g.
+ * @property {RegExp} PathBackslashSingle - Matches a single backslash `/\\/`.
+ * @property {RegExp} PathBackslashTrailing - Matches one or more trailing backslashes `/\\+$/`.
+ * @property {RegExp} PathDoubleBackslash - Matches double backslashes `/\\\\/g`.
+ * @property {RegExp} PathDrivePrefix - Matches Windows drive prefixes `/^[a-zA-Z]:\\/g`.
+ * @property {RegExp} PathEscapedDot - Matches escaped dot "\." `/\\\./g`.
+ * @property {RegExp} PathFileExtension - Matches file extensions `/\.\w+$/`.
+ * @property {RegExp} PathFilenameExtract - Matches and extracts filename from full path `/[^/\\]*$/`.
+ * @property {RegExp} PathFilenameStrict - Matches and extracts filename (requires at least one char) `/[^\\\/]+$/`.
+ * @property {RegExp} PathForwardSlash - Matches all forward slashes `/\//g`.
+ * @property {RegExp} PathGlobSpecials - Matches glob special chars for escaping `/[\.\+\^\$\(\)\{\}\|\[\]\\\?-]/g`.
+ * @property {RegExp} PathHiddenSystem - Matches hidden/system paths `/([/\\]).((?:foobar2000|fb2k)[^/\\]*|cache|local)([/\\])/g`. Captures: sep, segment, sep.
+ * @property {RegExp} PathIllegalFilename - Matches illegal Windows/NTFS chars in filenames `/[<>:"\/\\|?*]+/g`.
+ * @property {RegExp} PathMultiDisc - Matches multi-disc directories `/\\(CD|Vinyl|Disc|Bonus|Vol\.?|Volume)\s*(\d+|I{1,3}|IV|V(?:I{0,3}|X)?|X{0,3})$/i`. Captures: prefix, number.
+ * @property {RegExp} PathMultipleDotBackslash - Matches "..\" or "..\ " etc. `/\.+\\/`.
+ * @property {RegExp} PathProfileDir - Matches profile placeholder directory with backslash `/%profile%\\/i`.
+ * @property {RegExp} PathProfileDirGlobal - Matches profile placeholder directory with backslash globally `/%profile%\\/gi`.
+ * @property {RegExp} PathProfileDirStart - Matches profile placeholder at start with optional backslash `/^%profile%\\?/i`.
+ * @property {RegExp} PathRelativeStartsWith - Matches relative paths starting with `.\` `/^\.\\/`.
+ * @property {RegExp} PathSeparators - Matches path separators `/[/\\|:]/g`.
+ * @property {RegExp} PathSplitter - Splits paths into segments `/(.*?)\\/gm`. Captures: segment.
+ * @property {RegExp} PathStorageDir - Matches storage directory placeholder with backslash `/%storage_folder%\\/i`.
+ * @property {RegExp} PathStorageDirStart - Matches storage placeholder at start with optional backslash `/^%storage_folder%\\?/i`.
+ * @property {RegExp} PathUpperOrParent - Matches uppercase letter or parent dir `/[A-Z]|\../`.
+ * @property {RegExp} PathWildcardAsterisk - Matches asterisk wildcards `/\*`/g.
+ *
+ * @property {RegExp} ColorHex - Matches and validates hex colors `/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i`. Captures: hex digits.
+ * @property {RegExp} ColorHexDigit - Matches single hex digits `/([0-9a-f])/gi`. Captures: digit.
+ * @property {RegExp} ColorHexLeading - Matches leading `#` `/^#/`.
+ * @property {RegExp} ColorHSL - Matches and validates hsl/hsla() `/^hsla?\((\d{1,3}?),\s*(\d{1,3}%),\s*(\d{1,3}%)(,\s*[01]?\.?\d*)?\)$/`.
+ * @property {RegExp} ColorHSLCapture - Matches and captures H, S, L, optional A from hsl/hsla() `/^hsla?\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%(,\s*([01]?\.?\d*))?\)$/`.
+ * @property {RegExp} ColorPercent - Matches percentage values `/^\d+(\.\d+)*%$/`.
+ * @property {RegExp} ColorRGB - Matches and validates rgb/rgba() `/^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*[01]?\.?\d*)?\)$/`.
+ * @property {RegExp} ColorRGBCapture - Matches and captures R, G, B, optional A from rgb/rgba() `/^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*([01]?\.?\d*))?\)$/`.
+ * @property {RegExp} ColorRGBLoose - Matches loose RGB tuples `/\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)/`. Captures: R, G, B.
+ *
+ * @property {RegExp} DateFull - Matches full date format like "1 January 2000" `/^\d+\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(19|20)\d{2}$/i`.
+ * @property {RegExp} DateMonthDayYear - Matches and captures month day year like "January 1, 2000" `/(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d+),?\s+((19|20)\d{2})/g`. Captures: month, day, year.
+ * @property {RegExp} DatePipeCapture - Matches and captures pipe-prefixed year/date tags `/(\|\s*)(.*?(%year%|%date%))/g`. Captures: pipe+space, tag.
+ * @property {RegExp} DatePipeCheck - Matches pipe-separated %year%/%date% tags `/\|.*?(%year%|%date%)/`.
+ * @property {RegExp} DatePipeThreeDigits - Matches three digits separated by pipes with optional spaces `/(\d+)\s*\|(\d+)\s*\|(\d+)\s*`/.
+ * @property {RegExp} DateYearBracketed - Matches bracketed years `/(\[|\()\d{4}(\]|\))/`. Captures: open, close.
+ * @property {RegExp} DateYearLeading - Matches leading year prefixes `/^\s*[[({]?\d{4}[\])}]?\s*[-.]\s*`/.
+ * @property {RegExp} DateYearPlain - Matches standalone 4-digit years `/\d{4}/`.
+ *
+ * @property {RegExp} TimeColonFormat - Matches time in mm:ss format `/\d+:\d+/`.
+ * @property {RegExp} TimeLeadingZero - Matches leading zeros in times `/(^|[^\d])0(\d)(:\d\d$)/g`. Captures: prefix, digit, suffix.
+ * @property {RegExp} TimeMinSec - Matches time in 'min sec' format `/\d+\s*min\s*\d+\s*sec/i`.
+ * @property {RegExp} TimeRange - Matches time ranges `/^\s*(\d+)\s*-\s*(\d+)\s*$/`. Captures: start, end.
+ * @property {RegExp} TimeSingleDigit - Matches single digits after `:` in times `/:(\d([^\d]|$))/g`. Captures: digit, suffix.
+ *
+ * @property {RegExp} NumDigit - Matches single digit `/\d/`.
+ * @property {RegExp} NumLeading - Matches digits at start `/^\d+/`.
+ * @property {RegExp} NumNonDigits - Matches non-digits `/\D/g`.
+ * @property {RegExp} NumNonNumeric - Matches non-numeric `/[^0-9.,-]/g`.
+ * @property {RegExp} NumNonNumericStrict - Matches anything not a digit, + or - `/[^0-9+-]/g`.
+ * @property {RegExp} NumTrailing - Matches digits at end `/\d+$/`.
+ *
+ * @property {RegExp} CommaEnclosed - Matches ",something," (enclosed content) `/,[^,]+,/`.
+ * @property {RegExp} CommaLeading - Matches leading `,` `/^,/`.
+ * @property {RegExp} CommaLeadingTrailing - Matches leading/trailing `,` and spaces `/^[,\s]+|[,\s]+$/g`.
+ * @property {RegExp} CommaMultiple - Matches 2+ consecutive `,` `/,+/g`.
+ * @property {RegExp} CommaNoSpace - Matches `,` without following space `/,(?=\S)/g`.
+ * @property {RegExp} CommaPadded - Matches space before `,` without following space `/ ?,(?=\S)/g`.
+ * @property {RegExp} CommaSpace - Matches comma followed by space `/, /g`.
+ * @property {RegExp} CommaSpaceDigits - Matches `,` (space?) digits `/(,(|\s+)\d+)/gi`. Captures: match, space.
+ * @property {RegExp} CommaSpaceOptional - Matches `, ,?` `/, ,?/g`.
+ * @property {RegExp} CommaSpaced - Matches ` , ` `/ , /g`.
+ * @property {RegExp} CommaTrailing - Matches trailing `,` `/,$/`.
+ * @property {RegExp} CommaTrim - Matches spaces and edge `,` for trimming `/\s+|^,+|,+$/g`.
+ * @property {RegExp} CommaWhitespace - Matches comma followed by any whitespace `/,\s/`.
+ *
+ * @property {RegExp} DelimColonComma - Matches `:, ` `/:,/g`.
+ * @property {RegExp} DelimEquals - Matches all equals signs `/=/g`.
+ * @property {RegExp} DelimEqualsLine - Matches entire lines consisting of one or more equals signs `/^=+$/`.
+ * @property {RegExp} DelimListPunct - Matches list punctuation (comma, parens, brackets, percent) `/[,()[\]%]/gi`.
+ * @property {RegExp} DelimPipe - Matches `| ` `/\|/g`.
+ * @property {RegExp} DelimPipeComma - Matches `|` with optional `,` `/\|,?/g`.
+ * @property {RegExp} DelimPipeSingle - Matches a single pipe character `/\|/`.
+ * @property {RegExp} DelimPipeSpace - Matches pipes with optional spaces `/\s*\|\s*`/.
+ * @property {RegExp} DelimPipeTrailing - Matches trailing `|` with padding `/\s*\|$/`.
+ * @property {RegExp} DelimSemicolon - Matches `;` `/;/g`.
+ * @property {RegExp} DelimZeroWidthColonCommaAnd - Matches zero-width space with colon/comma or " and " `/\u200b:\s|\u200b,\s|\s\u200band\s/`.
+ * @property {RegExp} DelimZeroWidthComma - Matches zero-width space followed by comma and space `/\u200b,\s/`.
+ * @property {RegExp} DelimZeroWidthPipe - Matches zero-width `|` patterns `/\s\u200b\|[\d.,\s]*?;/g`.
+ * @property {RegExp} DelimZeroWidthPipeMulti - Matches multiline zero-width `|` patterns `/\u200b\|[\d.,\s]*?$/gm`.
+ * @property {RegExp} DelimZeroWidthPipeNumbersEnd - Matches zero-width space pipe followed by numbers at line end `/\u200b\|[\d.,\s]*$/gm`.
+ * @property {RegExp} DelimZeroWidthPipeNumbersSemicolon - Matches zero-width space pipe followed by numbers and semicolon `/\u200b\|[\d.,\s]*;/g`.
+ *
+ * @property {RegExp} EdgeBulletTrailing - Matches trailing bullet `•` with optional space `/\u2219\s?$/`.
+ * @property {RegExp} EdgeBulletPipeLeading - Matches bullet or pipe at line start with space `/^\u2219\s|^\|\s+/`.
+ * @property {RegExp} EdgeColonLeading - Matches leading `: ` `/^:/g`.
+ * @property {RegExp} EdgeDashTrailingPadded - Matches trailing " - " (dash + optional spaces) `/-\s*$/g`.
+ * @property {RegExp} EdgeDotAfterNonUpper - Matches `.` after non-uppercase `/([^A-Z])\.$/`. Captures: letter.
+ * @property {RegExp} EdgeDotLeading - Matches leading `.` `/^\./`.
+ * @property {RegExp} EdgeDotQuote - Matches dot before quote without space `/\."([^\s"])/g`. Captures: next char.
+ * @property {RegExp} EdgeDotSingleTrailing - Matches single trailing dot `/\.$/`.
+ * @property {RegExp} EdgeDotSpaceTrailing - Matches trailing `./spaces` `/[\.\s]+$/g`.
+ * @property {RegExp} EdgeDotTrailing - Matches trailing `.` `/\.+$/`.
+ * @property {RegExp} EdgeFullStop - Matches periods needing line breaks `/([^A-Z.\s])\.([^a-z\s\d.'"\u201d,;/)[\]])/g`. Captures: prev, next.
+ * @property {RegExp} EdgeNonDigitColon - Matches non-digit before `:` `/([^\d]):/g`. Captures: non-digit.
+ *
+ * @property {RegExp} PunctAll - Matches extended punctuation `/[.,!?:;'\u2019"\u201C\u201D\-_()[\]\u2010\s+]/g`.
+ * @property {RegExp} PunctAllExtended - Matches extended punctuation set including ellipsis `/[.\u2026,!?:;'\u2019"\-_\u2010\s+]/g`.
+ * @property {RegExp} PunctAllExtended2 - Matches extended punctuation set including "&" `/[.,!?:;'\u2019"_\u2010+()[\]&]/g`.
+ * @property {RegExp} PunctAngle - Matches `< > ` `/[<>]/g`.
+ * @property {RegExp} PunctAsteriskPadding - Matches spaces around `*` `/\s*\*\s*`/g.
+ * @property {RegExp} PunctBackslash - Matches forward or back slash `/[\\/]/g`.
+ * @property {RegExp} PunctBasic - Matches basic punctuation `/[^\w\s]/g`.
+ * @property {RegExp} PunctBrace - Matches `{ } ` `/[{}]/g`.
+ * @property {RegExp} PunctBracket - Matches `[ ] ` `/[[\]]/g`.
+ * @property {RegExp} PunctBracketed - Matches content in `[ ]` `/\[.*?\]/g`.
+ * @property {RegExp} PunctBracketsParens - Matches brackets and parentheses together `/[[()\]]/g`.
+ * @property {RegExp} PunctColonDigit - Matches punctuation colon space digit `/[.,]:\s\d+/g`.
+ * @property {RegExp} PunctCommaDash - Matches comma or dash `/[,-]/`.
+ * @property {RegExp} PunctCommaDotSpace - Matches commas, dots, or spaces `/[,.\s]/g`.
+ * @property {RegExp} PunctCommaSemicolonSpace - Matches one or more comma, semicolon, or space `/[,; ]+/`.
+ * @property {RegExp} PunctDollar - Matches `$` `/\$/g`.
+ * @property {RegExp} PunctEmptyContainers - Matches empty () or [] (with optional internal spaces) `/\(\s*\)|\[\s*\]/g`.
+ * @property {RegExp} PunctEmptyParen - Matches empty parentheses `/\(\)/g`.
+ * @property {RegExp} PunctListExtra - Matches additional list punctuation including % `/[()[\],%]/g`.
+ * @property {RegExp} PunctNumberParen - Matches parenthesized numbers like "(12)" `/\(\d+\)/`.
+ * @property {RegExp} PunctParen - Matches parentheses only `/[()]/g`.
+ * @property {RegExp} PunctParenSemicolon - Matches paren semicolon space `/\(;\s/g`.
+ * @property {RegExp} PunctParenWord - Matches `)` before word `/\)(?=\w)/g`.
+ * @property {RegExp} PunctParenthesized - Matches content in `( )` `/\([^)]+\)/g`.
+ * @property {RegExp} PunctPlus - Matches plus sign `/\+/g`.
+ * @property {RegExp} PunctQuestion - Matches `? ` `/\?/g`.
+ * @property {RegExp} PunctQuoteBracket - Matches `" [ ]` `/["[\]]/`.
+ * @property {RegExp} PunctQuoteDouble - Matches `" ` `/"/g`.
+ * @property {RegExp} PunctSeparatorsExtra - Matches slash, pipe or colon `/[/|:]/g`.
+ * @property {RegExp} PunctSpaceSlash - Matches space or forward slash `/[\s/]/g`.
+ * @property {RegExp} PunctUnderscore - Matches underscore `/_/g`.
+ * @property {RegExp} PunctWildcard - Matches asterisk or question mark `/[*?]/`.
+ * @property {RegExp} PunctWordParen - Matches word before `(` `/(\w)\(/g`. Captures: word.
+ *
+ * @property {RegExp} BreakCarriage - Matches `\r ` `/\r/g`.
+ * @property {RegExp} BreakDotNewline - Matches dot followed by newlines `/\.\n+/g`.
+ * @property {RegExp} BreakLine - Matches `\r?\n|\r ` `/\r?\n|\r/g`.
+ * @property {RegExp} BreakLineMulti - Matches line breaks `/(\r\n|\n|\r)/gm`. Captures: break.
+ * @property {RegExp} BreakMultipleCRLF - Matches multiple CRLF `/(\r\n)(\r\n)+/g`.
+ * @property {RegExp} BreakMultipleNewline - Matches multiple newlines `/\n+/g`.
+ * @property {RegExp} BreakMultipleThreeNewline - Matches three or more spaced CRLF `/(?:\s*\r\n){3,}/g`.
+ * @property {RegExp} BreakNewline - Matches `\n ` `/\n/g`.
+ *
+ * @property {RegExp} SpaceAll - Matches 1+ whitespace `/\s+/g`.
+ * @property {RegExp} SpaceDouble - Matches exactly two consecutive space characters `/ {2}/g`.
+ * @property {RegExp} SpaceDoubleAny - Matches exactly two consecutive whitespace characters `/\s{2}/g`.
+ * @property {RegExp} SpaceEach - Matches every individual whitespace character `/\s/g`.
+ * @property {RegExp} SpaceInvisible - Matches Unicode invisible/zero-width characters `/[\u2000-\u200F\u2028-\u202F\u205F-\u206F\u3000\uFEFF]/g`.
+ * @property {RegExp} SpaceLeading - Matches leading whitespace (1+) `/^\s+/`.
+ * @property {RegExp} SpaceLeadingMultiline - Matches leading spaces per line `/^ +/gm`.
+ * @property {RegExp} SpaceLeadingSingle - Matches one leading whitespace `/^\s/`.
+ * @property {RegExp} SpaceLeadingTrailing - Matches leading/trailing whitespace `/^\s+|\s+$/g`.
+ * @property {RegExp} SpaceMultiple - Matches 2+ spaces `/ {2,}/g`.
+ * @property {RegExp} SpaceMultipleAny - Matches 2+ whitespace `/\s{2,}/g`.
+ * @property {RegExp} SpaceMultipleTwo - Matches two or more consecutive whitespace `/\s\s+/g`.
+ * @property {RegExp} SpaceNon - Matches non-whitespace `/\S/g`.
+ * @property {RegExp} SpaceNonLeading - Matches internal spaces `/(?! )\s/g`.
+ * @property {RegExp} SpaceParenContent - Matches a space followed by parenthesized content `/\s\(.*?\)/`.
+ * @property {RegExp} SpaceSingle - Matches single space characters `/ /g`.
+ * @property {RegExp} SpaceSingleWithBoundary - Matches a space followed by a word boundary `/ \b/`.
+ * @property {RegExp} SpaceTrailing - Matches trailing whitespace (1+) `/\s+$/`.
+ * @property {RegExp} SpaceTrailingSingle - Matches one trailing whitespace `/\s$/`.
+ *
+ * @property {RegExp} TextAlbumDisc - Matches album disc suffixes `/CD(\s*\d|\.0\d)|CD\s*(One|Two|Three)|Dis(c|k)\s*\d|Dis(c|k)\s*(III|II|I|One|Two|Three)\b/gi`.
+ * @property {RegExp} TextAlbumEdition - Matches album edition suffixes `/CD(\s*\d|\.0\d)|CD\s*(One|Two|Three)|Dis(c|k)\s*\d|Dis(c|k)\s*(III|II|I|One|Two|Three)\b|(Bonus\s*Track|Collector's|(Digital\s*|Super\s*|)Deluxe|Digital|Expanded|Limited|Platinum|Reissue|Special)\s*(Edition|Version)|(Bonus\s*(CD|Disc))|\d\d\w\w\s*Anniversary\s*(Expanded\s*|Re(-|)master\s*|)(Edition|Re(-|)master|Version)|((19|20)\d\d(\s*|\s*-\s*)|)(Digital(ly|)\s*|)(Re(-|)master(ed|)|Re(-|)recorded)(\s*Edition|\s*Version|)|\(Deluxe\)|\(Mono\)|\(Reissue\)|\(Revisited\)|\(Stereo\)|\(Web\)|\[Deluxe\]|\[Mono\]|\[Reissue\]|\[Revisited\]|\[Stereo\]|\[Web\]/gi`.
+ * @property {RegExp} TextAmpersand - Matches `and` or `/` for replacement with `&` `/\band\b|\//gi`.
+ * @property {RegExp} TextAndConnector - Matches " and " with spaces `/ and /gi`.
+ * @property {RegExp} TextApostrophe - Matches apostrophe/quote variants `/\u00E2\u20AC\u2122|\u2019|\uFF07|[\u0060\u00B4]|â€™(?:;|)|â€˜(?:;|)|&apos(?:;|)|&#39(?:;|)|(?:&#(?:039|8216|8217|8220|8221|8222|8223|x27);)/g`.
+ * @property {RegExp} TextCodecAtscA52 - Matches Dolby Digital codecs `/atsc a\/52/i`.
+ * @property {RegExp} TextDash - Matches dash/hyphen variants `/[\u2010\u2011\u2012\u2013\u2014]/g`.
+ * @property {RegExp} TextDashLeading - Matches leading ` - ` `/^\s-\s/`.
+ * @property {RegExp} TextDashMultiple - Matches one or more consecutive dashes `/-+/g`.
+ * @property {RegExp} TextDashPadded - Matches padded dash `/ - /`.
+ * @property {RegExp} TextDollarParen - Matches `$` to `(` for replacements `/\$.*?\(/gi`.
+ * @property {RegExp} TextInPadded - Matches "in" with optional spaces `/\s*in\s/`.
+ * @property {RegExp} TextJunior - Matches ", Jr." suffix `/, Jr\./g`.
+ * @property {RegExp} TextNonAscii - Matches non-ASCII characters `/[^\u0000-\u007E]/g`.
+ * @property {RegExp} TextPhD - Matches 'Ph.D.' `/Ph\.D\./g`.
+ * @property {RegExp} TextPrefixThe - Matches leading `The ` (case-insens.) `/^[Tt]he\s+/i`.
+ * @property {RegExp} TextPrefixTheThe - Matches exact string "The The" case-insensitively `/^The The$/i`.
+ * @property {RegExp} TextTatu - Matches "t.A.T.u." typo `/t\.\r\n\r\nA.T.u./g`.
+ * @property {RegExp} TextTitleWord - Matches words for title-casing `/[A-Za-z0-9\u00C0-\u00FF]+[^\s-/]*`/g.
+ * @property {RegExp} TextWordBoundary - Matches word-start chars `/\b\w/g`.
+ * @property {RegExp} TextWords - Matches all word sequences `/\S+/g`.
+ *
+ * @property {RegExp} UniBrokenPipe - Matches broken pipe `¦` or normal pipe `| ` `/[\u00a6|]/g`.
+ * @property {RegExp} UniColon - Matches full-width `：` `/\uFF1A/g`.
+ * @property {RegExp} UniEnDash - Matches en dash `/\u2013/g`.
+ * @property {RegExp} UniMinus - Matches minus sign `/\u2212/g`.
+ * @property {RegExp} UniMultiply - Matches `×` `/\u00D7/g`.
+ * @property {RegExp} UniParenLeft - Matches `/\uFF08/g`.
+ * @property {RegExp} UniParenRight - Matches `/\uFF09/g`.
+ * @property {RegExp} UniZeroWidth - Matches zero-width spaces `/\u200b/g`.
+ * @property {RegExp} UniZeroWidthPipe - Matches zero-width space followed by pipe `/\u200b\|/`.
+ *
+ * @property {RegExp} HtmlEntityAmp  - Matches `&amp` (with/without `;`) `/&amp(?:;|)/g`.
+ * @property {RegExp} HtmlEntityGt - Matches `&gt` (with/without `;`) `/&gt(?:;|)/g`.
+ * @property {RegExp} HtmlEntityLt - Matches `&lt` (with/without `;`) `/&lt(?:;|)/g`.
+ * @property {RegExp} HtmlEntityMinus - Matches `&minus;` `/&minus;/g`.
+ * @property {RegExp} HtmlEntityNbsp - Matches `&nbsp` (with/without `;`) `/&nbsp(?:;|)/g`.
+ * @property {RegExp} HtmlEntityNbspVariant - Matches `&nbsp;` or `{{nbsp}}` `/&nbsp;|{{nbsp}}/g`.
+ * @property {RegExp} HtmlEntityNdash - Matches `&ndash;`, `mdash`, or `{{ndash}}` `/&ndash;|mdash|{{ndash}}/gi`.
+ * @property {RegExp} HtmlEntityQuot - Matches `&quot` (with/without `;`) `/&quot(?:;|)/g`.
+ * @property {RegExp} HtmlTagAny - Matches any HTML tag `/<[^<>]*>/g`.
+ * @property {RegExp} HtmlTagBr - Matches `<br>` `/<br>/gi`.
+ * @property {RegExp} HtmlTagBrVariants - Matches br tag variants `/<\/?br\s?\/?>/gi`.
+ * @property {RegExp} HtmlTagComment - Matches HTML comments `/<!--([\s\S]*?)-->/g`. Captures: comment content.
+ * @property {RegExp} HtmlTagGeneric - Matches any HTML tag (strict) `/<[^>]+>/ig`.
+ * @property {RegExp} HtmlTagH2Close - Matches closing H2 tag `/<\/h2>/i`.
+ * @property {RegExp} HtmlTagH3Close - Matches closing H3 tag `/<\/h3>/i`.
+ * @property {RegExp} HtmlTagH4Close - Matches closing H4 tag `/<\/H4>/gi`.
+ * @property {RegExp} HtmlTagLiClosePadded - Matches padded closing LI tag `/\s*<\/LI>\s*`/gi.
+ * @property {RegExp} HtmlTagNowiki - Matches nowiki tags `/<\/?nowiki\/>/g`.
+ * @property {RegExp} HtmlTagParaClose - Matches closing p tag `/<\/p>/gi`.
+ * @property {RegExp} HtmlTagParaEmpty - Matches empty p tags `/<P><\/P>/gi`.
+ * @property {RegExp} HtmlTagParaOpen - Matches opening p tag with attributes `/<p[^>]*>/gi`.
+ * @property {RegExp} HtmlTagRef - Matches reference tags `/<ref[\s\S]+?(<\/ref>|\/>)/g`.
+ * @property {RegExp} HtmlTagSmall - Matches small tags `/<\/?small>/g`.
+ * @property {RegExp} HtmlTagSpanClose - Matches closing span tag `/<\/span>/g`.
+ * @property {RegExp} HtmlTagSpanOpenCapture - Matches opening span tag with attributes `/<span([\s\S]+?)>/g`. Captures: attributes.
+ * @property {RegExp} HtmlTagSupClose - Matches closing sup tag `/<\/sup>/g`.
+ * @property {RegExp} HtmlTagSupOpen - Matches opening sup tag `/<sup>/g`.
+ *
+ * @property {RegExp} WebAllMusicDataReleaseYear - Matches data-releaseyear attribute `/data-releaseyear=\s*"\s*\d+\s*"/i`.
+ * @property {RegExp} WebAllMusicRating - Matches AllMusic rating class `/allmusicRating ratingAllmusic(\d)/i`. Captures: digit.
+ * @property {RegExp} WebDomain - Matches domain from URL `/:\/\/(www\.)?([^/]+)/`. Captures: optional www., domain.
+ * @property {RegExp} WebLastFmDotSpace - Matches "Last.fm: " variant `/Last\.fm: /g`.
+ * @property {RegExp} WebLastFmHyphen - Matches "Last-fm:" variant `/Last-fm:/g`.
+ * @property {RegExp} WebLastFmImg - Matches Last.fm image URLs `/https:\/\/lastfm\.freetls\.fastly\.net\/i\/u\/(avatar170s)\/[a-f0-9]+(\.(jpg|png|webp))? /gi`. Captures: size, hash, optional ext.
+ * @property {RegExp} WebLastFmLine - Matches full Last.fm lines with optional newline `/^Last\.fm: .*$(\n)?/gm`.
+ * @property {RegExp} WebLastFmPrefix - Matches Last.fm prefix with space `/^Last\.fm:\s/gm`.
+ * @property {RegExp} WebLastFmVariant - Matches Last.fm variants ending with semicolon `/^Last(\.|-)fm:.*?;/g`.
+ * @property {RegExp} WebStreaming - Matches streaming sources `/^(http|fy\+|3dydfy:|spotify)/`.
+ * @property {RegExp} WebTopLevelDomain - Matches top-level domain `/\.[^/.]+$/`.
+ *
+ * @property {RegExp} WikiBirthDate - Matches birth date template `/{{birth\sdate([^}]+)}}/gi`.
+ * @property {RegExp} WikiBoldItalic - Matches wiki bold/italic markup `/'''?/g`.
+ * @property {RegExp} WikiBraceCloseOpen - Matches closing then opening braces `/}}}{{/g`.
+ * @property {RegExp} WikiCitationNeeded - Matches citation needed template `/{{citation needed[^}]+}}/g`.
+ * @property {RegExp} WikiDash - Matches wiki dash template `/{{-}}/g`.
+ * @property {RegExp} WikiDeathDateAndAge - Matches wiki death date and age template parameters `/(\d+)\s*\|(\d+)\s*\|(\d+)\s*\|(\d+)\s*\|?(\d+)?\s*\|?(\d+)?\s*`/.
+ * @property {RegExp} WikiDfY - Matches date format y parameter `/df=y\|/i`.
+ * @property {RegExp} WikiDfYes - Matches date format yes parameter `/df=yes\|/i`.
+ * @property {RegExp} WikiDisambiguationPage - Matches first line of wiki disambiguation pages `/^.*may refer to:$/`.
+ * @property {RegExp} WikiDisplayInline - Matches display inline parameter `/\|display=inline/g`.
+ * @property {RegExp} WikiDoubleBracketSpace - Matches spaced double brackets `/\]\]\s+\[\[/g`.
+ * @property {RegExp} WikiDurationColon - Matches wiki duration template in colon format `/{{Duration\|(\d+:)?\d+:\d+}}/i`. Captures: optional hours.
+ * @property {RegExp} WikiDurationColonGlobal - Matches all wiki duration templates in colon format `/{{Duration\|((\d+:)?\d+:\d+)}}/gi`. Captures: full time, optional hours.
+ * @property {RegExp} WikiDurationHMS - Matches wiki duration template in HMS format `/{{Duration\|(h=)?(\d+)?\|?m=(\d+)\|s=(\d+)}}/i`. Captures: optional h=, optional hours, minutes, seconds.
+ * @property {RegExp} WikiDurationHMSGlobal - Matches all wiki duration templates in HMS format `/{{Duration\|(h=)?(\d+)?\|?m=(\d+)\|s=(\d+)}}/gi`. Captures: optional h=, optional hours, minutes, seconds.
+ * @property {RegExp} WikiEdit - Matches edit link `/\[edit\]\s*$/i`.
+ * @property {RegExp} WikiEfn - Matches efn template `/{{efn\|([^}]+)}}/g`.
+ * @property {RegExp} WikiEmbed - Matches embed for wiki keys `/embed/i`.
+ * @property {RegExp} WikiEndDate - Matches end date template `/{{end\s?date\|/gi`.
+ * @property {RegExp} WikiExternalLink - Matches external links `/\[https:[^\]]+\]/g`.
+ * @property {RegExp} WikiFlagIcon - Matches flagicon template `/{{flagicon\|([^}]+)}}/gi`.
+ * @property {RegExp} WikiFlatList - Matches flat list template `/{{Flat\s?list\|/i`.
+ * @property {RegExp} WikiHList - Matches hlist template `/{{hlist\|/i`.
+ * @property {RegExp} WikiHlistComma - Matches hlist comma template `/{{hlist-comma\s*`/i.
+ * @property {RegExp} WikiHlistPattern - Matches hlist patterns `/(\[\[|{{)([^\]}]+)(}}|\]\]) /`.
+ * @property {RegExp} WikiInfoboxStart - Matches start of wiki infobox templates `/{{\w*box/`.
+ * @property {RegExp} WikiLanguagePrefix - Matches Wikipedia language prefix `/Wikipedia language:\s[A-Z]{2}/`.
+ * @property {RegExp} WikiLink - Matches wiki links `/\[\[[^\]]+\]\]/g`.
+ * @property {RegExp} WikiLinkOrTemplate - Matches links or templates `/(\[\[|{{)[^\]}]+(}}|\]\])/g`.
+ * @property {RegExp} WikiLinkPattern - Matches wiki link patterns `/(\[\[)([^\]]+)\]\]/`.
+ * @property {RegExp} WikiLinkPipe - Matches wiki links with pipe `/\[\[[^\]]+?\|/g`.
+ * @property {RegExp} WikiListTemplates - Matches various list templates `/{{(hlist|flat\s?list|plain\s?list|unbulleted\s?list)[^|]*\|[^[\]}]+}}/i`.
+ * @property {RegExp} WikiModule - Matches module for wiki keys `/module/i`.
+ * @property {RegExp} WikiNowrap - Matches nowrap template `/{{\s*nowrap\s*\|([^\n}]+)}}/gi`.
+ * @property {RegExp} WikiNumberedListPt - Matches numbered list in pt `/\n\|\d\s*=\s*[^[]+\[\[/g`.
+ * @property {RegExp} WikiParamEmpty - Matches empty params `/\|[^=]+=($|\}\})/`.
+ * @property {RegExp} WikiParamNoValue - Matches params without value `/\|[^=|]+=($|\}\})/`.
+ * @property {RegExp} WikiParamStart - Matches param starts `/(\s*\|[^|=]+=[\s*[{])/g`.
+ * @property {RegExp} WikiPlainList - Matches plain list template `/{{plain\s?list\|/i`.
+ * @property {RegExp} WikiRedirect - Matches wiki redirect directives `/#REDIRECT/i`.
+ * @property {RegExp} WikiRefA - Matches ref a template `/{{ref\|a}}/g`.
+ * @property {RegExp} WikiRefn - Matches refn template `/{{refn/g`.
+ * @property {RegExp} WikiSectionHeading - Matches wiki section headings `/==+(?:(?!\n)\s?)(?:(?!==|\n)[^])+(?:(?!\n)\s?)==+/g`.
+ * @property {RegExp} WikiSeeBelow - Matches (see below) for removal `/\(see below\)/g`.
+ * @property {RegExp} WikiSeeLengthVariations - Matches (see length variations) for removal `/\(see length variations\)/gi`.
+ * @property {RegExp} WikiSeeList - Matches see list for removal `/\|''See list''/g`.
+ * @property {RegExp} WikiSfn - Matches sfn template `/{{sfn\|([^}]+)}}/g`.
+ * @property {RegExp} WikiSmall - Matches small template `/{{small\|([^}]+)}}/gi`.
+ * @property {RegExp} WikiSpecialChars - Matches wiki special chars `/[[\]{}]/`.
+ * @property {RegExp} WikiStartDate - Matches start date template `/{{start\s?date\|/i`.
+ * @property {RegExp} WikiStartDateFull - Matches full start date template `/{{start\s?date\|([^}]+?)\}\}/gi`.
+ * @property {RegExp} WikiStartDatePattern - Matches plain start date text `/start\s?date/i`.
+ * @property {RegExp} WikiStartDateReplace - Matches start date for replacement `/{{start\s?date\|[^}]+\}\}/i`.
+ * @property {RegExp} WikiStubDetector - Matches Last.fm placeholder text `/wiki|vikimiz|\u0412\u0438\u043A\u0438|\u7EF4\u57FA/i`.
+ * @property {RegExp} WikiTemplate - Matches wiki templates `/{{([^}]+)}}/`.
+ * @property {RegExp} WikiThumb - Matches leading thumb newlines `/^thumb\r\n\r\n/i`.
+ * @property {RegExp} WikiTitlePt - Matches title in pt `/\s*(title|t\u00edtulo)[^[]+\[\[/gi`.
+ * @property {RegExp} WikiTrailingBrace - Matches trailing braces `/\}\}$/`.
+ * @property {RegExp} WikiUbl - Matches ubl template `/{{ubl\|/i`.
+ * @property {RegExp} WikiUnbulletedList - Matches unbulleted list template `/{{unbulleted\s?list\|/i`.
+ *
+ * @property {RegExp} TFAlbum - Matches album percent placeholder `/%album%/g`.
+ * @property {RegExp} TFAlbumMulti - Matches album multi-value placeholder `/%<album>%/i`.
+ * @property {RegExp} TFAlbumArtist - Matches album artist placeholder `/%<album artist>%/i`.
+ * @property {RegExp} TFArtistMulti - Matches artist multi-value placeholder `/%<artist>%/i`.
+ * @property {RegExp} TFBioAlbum - Matches bio album placeholder `/%bio_album%/gi`.
+ * @property {RegExp} TFBioAlbumConditional - Matches conditional expressions around `%bio_album%` `/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_album%/gi`.
+ * @property {RegExp} TFBioAlbumArtist - Matches bio album artist placeholder `/%bio_albumartist%/gi`.
+ * @property {RegExp} TFBioAlbumArtistAndArtist - Matches bio album artist variants `/%BIO_ALBUMARTIST%|%BIO_ARTIST%/gi`.
+ * @property {RegExp} TFBioAlbumArtistConditional - Matches conditional expressions around `%bio_albumartist%` or `%bio_album%` `/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*(%bio_albumartist%|%bio_album%)/gi`.
+ * @property {RegExp} TFBioAlbumArtistConditionalStrict - Matches strict conditional expressions around `%bio_albumartist%` `/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_albumartist%/gi`.
+ * @property {RegExp} TFBioArtist - Matches bio artist placeholder `/%bio_artist%/gi`.
+ * @property {RegExp} TFBioArtistAndAlbumArtist - Matches bio artist variants `/%BIO_ARTIST%|%BIO_ALBUMARTIST%/gi`.
+ * @property {RegExp} TFBioArtistConditional - Matches conditional expressions around `%bio_artist%` `/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi`.
+ * @property {RegExp} TFBioArtistOrMeta - Matches %artist% or $meta(artist,0) placeholders `/%artist%|\$meta\(artist,0\)/g`.
+ * @property {RegExp} TFBioLookupItem - Matches %lookup_item% placeholder `/%lookup_item%/gi`.
+ * @property {RegExp} TFBioOpenCapture - Matches `$Bio...(` patterns `/\$Bio.*?\(/gi`. Captures: content.
+ * @property {RegExp} TFBioTextReaderStubInfo - Matches %playback_time, %bitrate% or $progress `/%playback_time|%bitrate%|\$progress/i`.
+ * @property {RegExp} TFBioTitle - Matches bio title placeholder `/%bio_title%/gi`.
+ * @property {RegExp} TFBioTitleConditional - Matches conditional expressions around `%bio_title%` `/((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_title%/gi`.
+ * @property {RegExp} TFBioTitleOrMeta - Matches %title% or $meta(title,0) placeholders `/%title%|\$meta\(title,0\)/g`.
+ * @property {RegExp} TFPlDiscNumberTotalDiscsSubtitle - Matches %discnumber%, %totaldiscs% or %subtitle% placeholders `/%discnumber%|%totaldiscs%|%subtitle%/g`.
+ * @property {RegExp} TFLibColour - Matches colour function `/\$colour{.*?}/g`.
+ * @property {RegExp} TFLibNowPlaying - Matches nowplaying function with capture `/\$nowplaying{(.+?)}/`. Captures: content.
+ * @property {RegExp} TFLibSearchText - Matches searchtext function `/\$searchtext/g`.
+ * @property {RegExp} TFLibSelected - Matches selected function with capture `/\$selected{(.+?)}/`. Captures: content.
+ * @property {RegExp} TFLibStripBranchPrefix - Matches strip branch prefix open `/\$stripbranchprefix{/`.
+ * @property {RegExp} TFLibSwapBranchPrefix - Matches swap branch prefix open `/\$swapbranchprefix{/`.
+ * @property {RegExp} TFLibViewName - Matches %view_name% placeholder `/%view_name%/i`.
+ * @property {RegExp} TFLibYearOrDate - Matches %year% or %date% placeholders `/%year%|%date%/`.
+ *
+ * @property {RegExp} TrackHasNumber - Matches leading 1-2 digit number + non-space `/^\d{1,2} \S/`.
+ * @property {RegExp} TrackHasSeparator- Matches track separators `/[-._]/`.
+ * @property {RegExp} TrackNumberLeading - Matches leading track numbers with sep `/^\d{1,2}([-.]\d{1,2})?([-. _]+)(?=\S)/`. Captures: main, sub-num, sep.
+ *
+ * @property {RegExp} BioActive - Matches active dates prefix `/Active/i`.
+ * @property {RegExp} BioAlbumGenres - Matches album genres prefix `/Album\sGenres:\s/`.
+ * @property {RegExp} BioAlbumRatingCapture - Matches and captures album rating with delimiters `/>>\sAlbum\srating:\s(.*?)\s<<\s{2}/`.
+ * @property {RegExp} BioBorn - Matches born prefix `/Born/i`.
+ * @property {RegExp} BioComposersLeading - Matches leading composers line `/^Composers:\s/`.
+ * @property {RegExp} BioCountsLikeDislikeView - Matches like/dislike/view count fields `/like count|dislike count|view count/i`.
+ * @property {RegExp} BioDied - Matches died prefix `/Died/i`.
+ * @property {RegExp} BioDisbanded - Matches disbanded prefix `/Disbanded/i`.
+ * @property {RegExp} BioDuration - Matches duration prefix with space `/Duration:\s/g`.
+ * @property {RegExp} BioDurationLeading - Matches leading duration line `/^Duration:\s/g`.
+ * @property {RegExp} BioFooYoutube - Matches foo_youtube field `/foo_youtube/i`.
+ * @property {RegExp} BioFormed - Matches formed prefix `/Formed/i`.
+ * @property {RegExp} BioGeneral - Matches general wildcard field `/General\*`/i.
+ * @property {RegExp} BioGenreMoodTheme - Matches album/track genre/mood/theme with captures `/(Album|Track)\s(Genre|Mood|Theme)(s|):\s/g`. Captures: type, category, plural.
+ * @property {RegExp} BioGroupMembers - Matches group members prefix `/Group Members: /g`.
+ * @property {RegExp} BioItemProperties - Matches item properties field `/item_properties/i`.
+ * @property {RegExp} BioMarkerArtistLocked - Matches locked artist markers `/#\u00a6#\u00a6#.*?#\u00a6#\u00a6#/g`.
+ * @property {RegExp} BioMarkerMultiProcessWrapped - Matches wrapped multi-value processing markers `/#!#!#.*?#!#!#/g`.
+ * @property {RegExp} BioMarkerShortAtExclAt - Matches short marker `/@!@/g`.
+ * @property {RegExp} BioMarkerShortExclAtExcl - Matches short marker `/!@!/g`.
+ * @property {RegExp} BioMarkerTFProtected - Matches protected title formatting markers `/#@!.*?#@!/g`.
+ * @property {RegExp} BioMarkerTrackIdentifier - Matches lines starting with `!\u00a6` to end of line `/!\u00a6.+?$/gm`.
+ * @property {RegExp} BioMembersLeading - Matches leading members line `/^Members:\s/`.
+ * @property {RegExp} BioMetadata - Matches metadata wildcard field `/Metadata\*`/i.
+ * @property {RegExp} BioMetadataGeneralOther - Matches metadata/general/other wildcards `/Metadata\*|General\*|Other\*`/i.
+ * @property {RegExp} BioMetadataShowFalse - Matches and captures metadata show false `/("Metadata\*":\s{\s*?"show":\s)false/`. Captures: prefix.
+ * @property {RegExp} BioMoodsAlbumTrack - Matches album/track moods prefix `/(Album\s|Track\s)Moods: /g`.
+ * @property {RegExp} BioNowPlaying - Matches nowplaying field `/nowplaying/i`.
+ * @property {RegExp} BioOther - Matches sentencia other wildcard field `/Other\*`/i.
+ * @property {RegExp} BioRatingLeading - Matches leading rating line with any content `/^Rating: .*$/m`.
+ * @property {RegExp} BioReleaseDate - Matches release date field `/Release Date/i`.
+ * @property {RegExp} BioSectionsShowTrue - Matches and captures sections show true `/(("Metadata"|"Popularity"|"AllMusic"|"Last.fm"|"Wikipedia"):\s{\s*?"show":\s)true/g`. Captures: prefix, section.
+ * @property {RegExp} BioShortDescription - Matches short description field `/Short description/i`.
+ * @property {RegExp} BioShowAllMembers - Matches show all members with ellipsis and padding `/\s*Show all members\u2026\s*`/gi.
+ * @property {RegExp} BioTagsExclude - Matches excluded tags like asin, bpm, etc. `/\basin\b|\bbpm\b|\bid\b|\bisrc\b|\bcue_|\bmcn\b|\bmd5\b|\bmp3_|\burl\b/i`.
+ * @property {RegExp} BioTrackGenre - Matches track genre prefix `/Track\sGenre/`.
+ *
+ * @property {RegExp} LibMarkerColor - Matches color formatting tags `/@!#.*?@!#/g`.
+ * @property {RegExp} LibMarkerDoubleTildeHash - Matches library multi-process marker `/~~#!#/g`.
+ * @property {RegExp} LibMarkerDoubleTildePercent - Matches library marker `/~~%/`.
+ * @property {RegExp} LibMarkerExcl - Matches exclamation tags `/<!>/g`.
+ * @property {RegExp} LibMarkerImgView - Matches image view separator `/\^@\^/g`.
+ * @property {RegExp} LibMarkerMultiPercent - Matches multi-value processing tags `/(~~%<|~%<|%<).*?>%/g`.
+ * @property {RegExp} LibMarkerMultiProcess - Matches multi-value separator `/#!#/g`.
+ * @property {RegExp} LibMarkerNoDisplay - Matches inline hide marker `/#@#/g`.
+ * @property {RegExp} LibMarkerNoDisplayContent - Matches no-display content between markers `/#@#.*?#@#/g`.
+ * @property {RegExp} LibMarkerPercent - Matches conditional processing tags `/%<.*?>%/g`.
+ * @property {RegExp} LibMarkerPercentClose - Matches closing percent marker `/>%/g`.
+ * @property {RegExp} LibMarkerPercentOpen - Matches opening percent marker `/%</g`.
+ * @property {RegExp} LibMarkerSharpClose - Matches temporary sharp close marker `/#>/g`.
+ * @property {RegExp} LibMarkerSharpOpen - Matches temporary sharp open marker `/<#/g`.
+ * @property {RegExp} LibMarkerSingleTildeHash - Matches library marker `/~#!#/g`.
+ * @property {RegExp} LibMarkerTildeHash - Matches tilde hash marker `/~#~/g`.
+ * @property {RegExp} LibMarkerTildePercent - Matches tilde percent marker `/~%/`.
+ * @property {RegExp} LibPlayCountRating - Matches play count or auto rating fields `/play(_|)count|auto(_|)rating/`.
+ * @property {RegExp} LibSimilarArtist - Matches similar artist with space `/(similar artist)\s/gi`.
+ * @property {RegExp} LibTypesPlural - Matches plural types like albums, artists `/(album|artist|top|track)s\s/gi`.
+ * @property {RegExp} LibViewBy - Matches view by or leading by `/view by|^by\b/i`.
+ * @property {RegExp} LibYearsAlbums - Matches years albums `/years - albums/gi`.
+ *
+ * @property {RegExp} LyricsFiles - Matches lyric/text files `/\.(lrc|txt)$/`.
+ * @property {RegExp} LyricsFilesUnderscore - Matches underscored lyric/text files `/_\.(lrc|txt)$/`.
+ * @property {RegExp} LyricsOffset - Matches `[offset:±ms]` `/^\s*\[offset\s*:(.*)\]\s*$/`. Captures: value.
+ * @property {RegExp} LyricsTimestamp - Matches `[mm:ss.xx]` `/(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}])(\s*)/g`. Captures: space, optional min, sec+ms, space.
+ * @property {RegExp} LyricsTimestampEnhanced - Matches `<mm:ss.xx>` `/(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g`. Captures: space, optional min, sec+ms, space.
+ * @property {RegExp} LyricsTimestampLeading - Matches 1+ timestamps at line start `/^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/`. Captures: full.
+ *
+ * @property {RegExp} UtilFontDescenders - Matches letters with descenders `/[gjpqy]/`.
+ * @property {RegExp} UtilFontNeedsSymbols - Matches symbols/emojis needing fallback `/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u23F7\u23F9-\u25B5\u25B7-\u26FF]|\uD83E[\uDD10-\uDDFF]/`.
+ * @property {RegExp} UtilFontTahoma - Matches tahoma field `/tahoma/i`.
+ * @property {RegExp} UtilObjectType - Matches type extraction from toString() `/([a-z]+)(:?\])/i`. Captures: type, optional `:]`.
+ * @property {RegExp} UtilRegexEscape - Matches chars needing RegExp escape `/[.*+?^${}()|[\]\\-]/g`.
+ * @property {RegExp} UtilRegexParser - Matches stringified regex `/^(!)?\/(.*?)\/([gimsuy]*)$/`. Captures: neg, pat, flags.
+ */
+/** @global @enum @type {Regex} */
+const Regex = {
+	// * ARTWORK & IMAGES * //
+	ArtAlbumArtExtensions: /\.(jpg|png|webp)$/i,
+	ArtAlbumArtWildcard: /(\*|\b(folder|cover|front)\b)\.\*/g,
+	ArtDiscArtFilename: /(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i,
+	ArtDiscArtWildcard: /(\*|\b(cd|disc|vinyl)\b)\.\*/g,
+	ArtImageExtensions: /(?:jpe?g|png|webp|gif|bmp)$/i,
+	ArtImageFileSortNumber: /_(\d+)\.(jpe?g|png|webp)$/i,
+	ArtImageLabelSuffix: / (Records|Recordings|Music)$/,
+
+	// * PATHS & FILESYSTEM * //
+	PathBackslash: /\\/g,
+	PathBackslashEndsWith: /\\$/,
+	PathBackslashPadded: /\s*\\\s*/g,
+	PathBackslashSingle: /\\/,
+	PathBackslashTrailing: /\\+$/,
+	PathDoubleBackslash: /\\\\/g,
+	PathDrivePrefix: /^[a-zA-Z]:\\/g,
+	PathEscapedDot: /\\\./g,
+	PathFileExtension: /\.\w+$/,
+	PathFilenameExtract: /[^/\\]*$/,
+	PathFilenameStrict: /[^\\\/]+$/,
+	PathForwardSlash: /\//g,
+	PathGlobSpecials: /[\.\+\^\$\(\)\{\}\|\[\]\\\?-]/g,
+	PathHiddenSystem: /([/\\]).((?:foobar2000|fb2k)[^/\\]*|cache|local)([/\\])/g,
+	PathIllegalFilename: /[<>:"\/\\|?*]+/g,
+	PathMultiDisc: /\\(CD|Vinyl|Disc|Bonus|Vol\.?|Volume)\s*(\d+|I{1,3}|IV|V(?:I{0,3}|X)?|X{0,3})$/i,
+	PathMultipleDotBackslash: /\.+\\/,
+	PathProfileDir: /%profile%\\/i,
+	PathProfileDirGlobal: /%profile%\\/gi,
+	PathProfileDirStart: /^%profile%\\?/i,
+	PathRelativeStartsWith: /^\.\\/,
+	PathSeparators: /[/\\|:]/g,
+	PathSplitter: /(.*?)\\/gm,
+	PathStorageDir: /%storage_folder%\\/i,
+	PathStorageDirStart: /^%storage_folder%\\?/i,
+	PathUpperOrParent: /[A-Z]|\../,
+	PathWildcardAsterisk: /\*/g,
+
+	// * COLORS * //
+	ColorHex: /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i,
+	ColorHexDigit: /([0-9a-f])/gi,
+	ColorHexLeading: /^#/,
+	ColorHSL: /^hsla?\((\d{1,3}?),\s*(\d{1,3}%),\s*(\d{1,3}%)(,\s*[01]?\.?\d*)?\)$/,
+	ColorHSLCapture: /^hsla?\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%(,\s*([01]?\.?\d*))?\)$/,
+	ColorPercent: /^\d+(\.\d+)*%$/,
+	ColorRGB: /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*[01]?\.?\d*)?\)$/,
+	ColorRGBCapture: /^rgba?\((\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)(,\s*([01]?\.?\d*))?\)$/,
+	ColorRGBLoose: /\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)/,
+
+	// * DATE * //
+	DateFull: /^\d+\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(19|20)\d{2}$/i,
+	DateMonthDayYear: /(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d+),?\s+((19|20)\d{2})/g,
+	DatePipeCapture: /(\|\s*)(.*?(%year%|%date%))/g,
+	DatePipeCheck: /\|.*?(%year%|%date%)/,
+	DatePipeThreeDigits: /(\d+)\s*\|(\d+)\s*\|(\d+)\s*/,
+	DateYearBracketed: /(\[|\()\d{4}(\]|\))/,
+	DateYearLeading: /^\s*[[({]?\d{4}[\])}]?\s*[-.]\s*/,
+	DateYearPlain: /\d{4}/,
+
+	// * TIME * //
+	TimeColonFormat: /\d+:\d+/,
+	TimeLeadingZero: /(^|[^\d])0(\d)(:\d\d$)/g,
+	TimeMinSec: /\d+\s*min\s*\d+\s*sec/i,
+	TimeRange: /^\s*(\d+)\s*-\s*(\d+)\s*$/,
+	TimeSingleDigit: /:(\d([^\d]|$))/g,
+
+	// * NUMERIC * //
+	NumDigit: /\d/,
+	NumLeading: /^\d+/,
+	NumNonDigits: /\D/g,
+	NumNonNumeric: /[^0-9.,-]/g,
+	NumNonNumericStrict: /[^0-9+-]/g,
+	NumTrailing: /\d+$/,
+
+	// * COMMAS * //
+	CommaEnclosed: /,[^,]+,/,
+	CommaLeading: /^,/,
+	CommaLeadingTrailing: /^[,\s]+|[,\s]+$/g,
+	CommaMultiple: /,+/g,
+	CommaNoSpace: /,(?=\S)/g,
+	CommaPadded: / ?,(?=\S)/g,
+	CommaSpace: /, /g,
+	CommaSpaceDigits: /(,(|\s+)\d+)/gi,
+	CommaSpaceOptional: /, ,?/g,
+	CommaSpaced: / , /g,
+	CommaTrailing: /,$/,
+	CommaTrim: /\s+|^,+|,+$/g,
+	CommaWhitespace: /,\s/,
+
+	// * DELIMITERS * //
+	DelimColonComma: /:,/g,
+	DelimEquals: /=/g,
+	DelimEqualsLine: /^=+$/,
+	DelimListPunct: /[,()[\]%]/gi,
+	DelimPipe: /\|/g,
+	DelimPipeComma: /\|,?/g,
+	DelimPipeSingle: /\|/,
+	DelimPipeSpace: /\s*\|\s*/,
+	DelimPipeTrailing: /\s*\|$/,
+	DelimSemicolon: /;/g,
+	DelimZeroWidthColonCommaAnd: /\u200b:\s|\u200b,\s|\s\u200band\s/,
+	DelimZeroWidthComma: /\u200b,\s/,
+	DelimZeroWidthPipe: /\s\u200b\|[\d.,\s]*?;/g,
+	DelimZeroWidthPipeMulti: /\u200b\|[\d.,\s]*?$/gm,
+	DelimZeroWidthPipeNumbersEnd: /\u200b\|[\d.,\s]*$/gm,
+	DelimZeroWidthPipeNumbersSemicolon: /\u200b\|[\d.,\s]*;/g,
+
+	// * EDGE CHARACTERS* //
+	EdgeBulletTrailing: /\u2219\s?$/,
+	EdgeBulletPipeLeading: /^\u2219\s|^\|\s+/,
+	EdgeColonLeading: /^:/g,
+	EdgeDashTrailingPadded: /-\s*$/g,
+	EdgeDotAfterNonUpper: /([^A-Z])\.$/,
+	EdgeDotLeading: /^\./,
+	EdgeDotQuote: /\."([^\s"])/g,
+	EdgeDotSingleTrailing: /\.$/,
+	EdgeDotSpaceTrailing: /[\.\s]+$/g,
+	EdgeDotTrailing: /\.+$/,
+	EdgeFullStop: /([^A-Z.\s])\.([^a-z\s\d.'"\u201d,;/)[\]])/g,
+	EdgeNonDigitColon: /([^\d]):/g,
+
+	// * PUNCTUATION * //
+	PunctAll: /[.,!?:;'\u2019"\u201C\u201D\-_()[\]\u2010\s+]/g,
+	PunctAllExtended: /[.\u2026,!?:;'\u2019"\-_\u2010\s+]/g,
+	PunctAllExtended2: /[.,!?:;'\u2019"_\u2010+()[\]&]/g,
+	PunctAngle: /[<>]/g,
+	PunctAsteriskPadding: /\s*\*\s*/g,
+	PunctBackslash: /[\\/]/g,
+	PunctBasic: /[^\w\s]/g,
+	PunctBrace: /[{}]/g,
+	PunctBracket: /[[\]]/g,
+	PunctBracketed: /\[.*?\]/g,
+	PunctBracketsParens: /[[()\]]/g,
+	PunctColonDigit: /[.,]:\s\d+/g,
+	PunctCommaDash: /[,-]/,
+	PunctCommaDotSpace: /[,.\s]/g,
+	PunctCommaSemicolonSpace: /[,; ]+/,
+	PunctDollar: /\$/g,
+	PunctEmptyContainers: /\(\s*\)|\[\s*\]/g,
+	PunctEmptyParen: /\(\)/g,
+	PunctListExtra: /[()[\],%]/g,
+	PunctNumberParen: /\(\d+\)/,
+	PunctParen: /[()]/g,
+	PunctParenSemicolon: /\(;\s/g,
+	PunctParenWord: /\)(?=\w)/g,
+	PunctParenthesized: /\([^)]+\)/g,
+	PunctPlus: /\+/g,
+	PunctQuestion: /\?/g,
+	PunctQuoteBracket: /["[\]]/,
+	PunctQuoteDouble: /"/g,
+	PunctSeparatorsExtra: /[/|:]/g,
+	PunctSpaceSlash: /[\s/]/g,
+	PunctUnderscore: /_/g,
+	PunctWildcard: /[*?]/,
+	PunctWordParen: /(\w)\(/g,
+
+	// * LINE BREAKS * //
+	BreakCarriage: /\r/g,
+	BreakDotNewline: /\.\n+/g,
+	BreakLine: /\r?\n|\r/g,
+	BreakLineMulti: /(\r\n|\n|\r)/gm,
+	BreakMultipleCRLF: /(\r\n)(\r\n)+/g,
+	BreakMultipleNewline: /\n+/g,
+	BreakMultipleThreeNewline: /(?:\s*\r\n){3,}/g,
+	BreakNewline: /\n/g,
+
+	// * WHITESPACE * //
+	SpaceAll: /\s+/g,
+	SpaceDouble: / {2}/g,
+	SpaceDoubleAny: /\s{2}/g,
+	SpaceEach: /\s/g,
+	SpaceInvisible: /[\u2000-\u200F\u2028-\u202F\u205F-\u206F\u3000\uFEFF]/g,
+	SpaceLeading: /^\s+/,
+	SpaceLeadingMultiline: /^ +/gm,
+	SpaceLeadingSingle: /^\s/,
+	SpaceLeadingTrailing: /^\s+|\s+$/g,
+	SpaceMultiple: / {2,}/g,
+	SpaceMultipleAny: /\s{2,}/g,
+	SpaceMultipleTwo: /\s\s+/g,
+	SpaceNon: /\S/g,
+	SpaceNonLeading: /(?! )\s/g,
+	SpaceParenContent: /\s\(.*?\)/,
+	SpaceSingle: / /g,
+	SpaceSingleWithBoundary: / \b/,
+	SpaceTrailing: /\s+$/,
+	SpaceTrailingSingle: /\s$/,
+
+	// * TEXT FORMATTING * //
+	TextAlbumDisc: /CD(\s*\d|\.0\d)|CD\s*(One|Two|Three)|Dis(c|k)\s*\d|Dis(c|k)\s*(III|II|I|One|Two|Three)\b/gi,
+	TextAlbumEdition: /CD(\s*\d|\.0\d)|CD\s*(One|Two|Three)|Dis(c|k)\s*\d|Dis(c|k)\s*(III|II|I|One|Two|Three)\b|(Bonus\s*Track|Collector's|(Digital\s*|Super\s*|)Deluxe|Digital|Expanded|Limited|Platinum|Reissue|Special)\s*(Edition|Version)|(Bonus\s*(CD|Disc))|\d\d\w\w\s*Anniversary\s*(Expanded\s*|Re(-|)master\s*|)(Edition|Re(-|)master|Version)|((19|20)\d\d(\s*|\s*-\s*)|)(Digital(ly|)\s*|)(Re(-|)master(ed|)|Re(-|)recorded)(\s*Edition|\s*Version|)|\(Deluxe\)|\(Mono\)|\(Reissue\)|\(Revisited\)|\(Stereo\)|\(Web\)|\[Deluxe\]|\[Mono\]|\[Reissue\]|\[Revisited\]|\[Stereo\]|\[Web\]/gi,
+	TextAmpersand: /\band\b|\//gi,
+	TextAndConnector: / and /gi,
+	TextApostrophe: /\u00E2\u20AC\u2122|\u2019|\uFF07|[\u0060\u00B4]|â€™(?:;|)|â€˜(?:;|)|&apos(?:;|)|&#39(?:;|)|(?:&#(?:039|8216|8217|8220|8221|8222|8223|x27);)/g,
+	TextCodecAtscA52: /atsc a\/52/i,
+	TextDash: /[\u2010\u2011\u2012\u2013\u2014]/g,
+	TextDashLeading: /^\s-\s/,
+	TextDashMultiple: /-+/g,
+	TextDashPadded: / - /,
+	TextDollarParen: /\$.*?\(/gi,
+	TextInPadded: /\s*in\s/,
+	TextJunior: /, Jr\./g,
+	TextNonAscii: /[^\u0000-\u007E]/g,
+	TextPhD: /Ph\.D\./g,
+	TextPrefixThe: /^[Tt]he\s+/i,
+	TextPrefixTheThe: /^The The$/i,
+	TextTatu: /t\.\r\n\r\nA.T.u./g,
+	TextTitleWord: /[A-Za-z0-9\u00C0-\u00FF]+[^\s-/]*/g,
+	TextWordBoundary: /\b\w/g,
+	TextWords: /\S+/g,
+
+	// * UNICODE * //
+	UniBrokenPipe: /[\u00a6|]/g,
+	UniColon: /\uFF1A/g,
+	UniEnDash: /\u2013/g,
+	UniMinus: /\u2212/g,
+	UniMultiply: /\u00D7/g,
+	UniParenLeft: /\uFF08/g,
+	UniParenRight: /\uFF09/g,
+	UniZeroWidth: /\u200b/g,
+	UniZeroWidthPipe: /\u200b\|/,
+
+	// * HTML * //
+	HtmlEntityAmp: /&amp(?:;|)/g,
+	HtmlEntityGt: /&gt(?:;|)/g,
+	HtmlEntityLt: /&lt(?:;|)/g,
+	HtmlEntityMinus: /&minus;/g,
+	HtmlEntityNbsp: /&nbsp(?:;|)/g,
+	HtmlEntityNbspVariant: /&nbsp;|{{nbsp}}/g,
+	HtmlEntityNdash: /&ndash;|mdash|{{ndash}}/gi,
+	HtmlEntityQuot: /&quot(?:;|)/g,
+	HtmlTagAny: /<[^<>]*>/g,
+	HtmlTagBr: /<br>/gi,
+	HtmlTagBrVariants: /<\/?br\s?\/?>/gi,
+	HtmlTagComment: /<!--([\s\S]*?)-->/g,
+	HtmlTagGeneric: /<[^>]+>/ig,
+	HtmlTagH2Close: /<\/h2>/i,
+	HtmlTagH3Close: /<\/h3>/i,
+	HtmlTagH4Close: /<\/H4>/gi,
+	HtmlTagLiClosePadded: /\s*<\/LI>\s*/gi,
+	HtmlTagNowiki: /<\/?nowiki\/>/g,
+	HtmlTagParaClose: /<\/p>/gi,
+	HtmlTagParaEmpty: /<P><\/P>/gi,
+	HtmlTagParaOpen: /<p[^>]*>/gi,
+	HtmlTagRef: /<ref[\s\S]+?(<\/ref>|\/>)/g,
+	HtmlTagSmall: /<\/?small>/g,
+	HtmlTagSpanClose: /<\/span>/g,
+	HtmlTagSpanOpenCapture: /<span([\s\S]+?)>/g,
+	HtmlTagSupClose: /<\/sup>/g,
+	HtmlTagSupOpen: /<sup>/g,
+
+	// * WEB * //
+	WebAllMusicDataReleaseYear: /data-releaseyear=\s*"\s*\d+\s*"/i,
+	WebAllMusicRating: /allmusicRating ratingAllmusic(\d)/i,
+	WebDomain: /:\/\/(www\.)?([^/]+)/,
+	WebLastFmDotSpace: /Last\.fm: /g,
+	WebLastFmHyphen: /Last-fm:/g,
+	WebLastFmImg: /https:\/\/lastfm\.freetls\.fastly\.net\/i\/u\/(avatar170s)\/[a-f0-9]+(\.(jpg|png|webp))? /gi,
+	WebLastFmLine: /^Last\.fm: .*$(\n)?/gm,
+	WebLastFmPrefix: /^Last\.fm:\s/gm,
+	WebLastFmVariant: /^Last(\.|-)fm:.*?;/g,
+	WebStreaming: /^(http|fy\+|3dydfy:|spotify)/,
+	WebTopLevelDomain: /\.[^/.]+$/,
+
+	// * WIKI * //
+	WikiBirthDate: /{{birth\sdate([^}]+)}}/gi,
+	WikiBoldItalic: /'''?/g,
+	WikiBraceCloseOpen: /}}}{{/g,
+	WikiCitationNeeded: /{{citation needed[^}]+}}/g,
+	WikiDash: /{{-}}/g,
+	WikiDeathDateAndAge: /(\d+)\s*\|(\d+)\s*\|(\d+)\s*\|(\d+)\s*\|?(\d+)?\s*\|?(\d+)?\s*/,
+	WikiDfY: /df=y\|/i,
+	WikiDfYes: /df=yes\|/i,
+	WikiDisambiguationPage: /^.*may refer to:$/,
+	WikiDisplayInline: /\|display=inline/g,
+	WikiDoubleBracketSpace: /\]\]\s+\[\[/g,
+	WikiDurationColon: /{{Duration\|(\d+:)?\d+:\d+}}/i,
+	WikiDurationColonGlobal: /{{Duration\|((\d+:)?\d+:\d+)}}/gi,
+	WikiDurationHMS: /{{Duration\|(h=)?(\d+)?\|?m=(\d+)\|s=(\d+)}}/i,
+	WikiDurationHMSGlobal: /{{Duration\|(h=)?(\d+)?\|?m=(\d+)\|s=(\d+)}}/gi,
+	WikiEdit: /\[edit\]\s*$/i,
+	WikiEfn: /{{efn\|([^}]+)}}/g,
+	WikiEmbed: /embed/i,
+	WikiEndDate: /{{end\s?date\|/gi,
+	WikiExternalLink: /\[https:[^\]]+\]/g,
+	WikiFlagIcon: /{{flagicon\|([^}]+)}}/gi,
+	WikiFlatList: /{{Flat\s?list\|/i,
+	WikiHList: /{{hlist\|/i,
+	WikiHlistComma: /{{hlist-comma\s*/i,
+	WikiHlistPattern: /(\[\[|{{)([^\]}]+)(}}|\]\]) /,
+	WikiInfoboxStart: /{{\w*box/,
+	WikiLanguagePrefix: /Wikipedia language:\s[A-Z]{2}/,
+	WikiLink: /\[\[[^\]]+\]\]/g,
+	WikiLinkOrTemplate: /(\[\[|{{)[^\]}]+(}}|\]\])/g,
+	WikiLinkPattern: /(\[\[)([^\]]+)\]\]/,
+	WikiLinkPipe: /\[\[[^\]]+?\|/g,
+	WikiListTemplates: /{{(hlist|flat\s?list|plain\s?list|unbulleted\s?list)[^|]*\|[^[\]}]+}}/i,
+	WikiModule: /module/i,
+	WikiNowrap: /{{\s*nowrap\s*\|([^\n}]+)}}/gi,
+	WikiNumberedListPt: /\n\|\d\s*=\s*[^[]+\[\[/g,
+	WikiParamEmpty: /\|[^=]+=($|\}\})/,
+	WikiParamNoValue: /\|[^=|]+=($|\}\})/,
+	WikiParamStart: /(\s*\|[^|=]+=[\s*[{])/g,
+	WikiPlainList: /{{plain\s?list\|/i,
+	WikiRedirect: /#REDIRECT/i,
+	WikiRefA: /{{ref\|a}}/g,
+	WikiRefn: /{{refn/g,
+	WikiSectionHeading: /==+(?:(?!\n)\s?)(?:(?!==|\n)[^])+(?:(?!\n)\s?)==+/g,
+	WikiSeeBelow: /\(see below\)/g,
+	WikiSeeLengthVariations: /\(see length variations\)/gi,
+	WikiSeeList: /\|''See list''/g,
+	WikiSfn: /{{sfn\|([^}]+)}}/g,
+	WikiSmall: /{{small\|([^}]+)}}/gi,
+	WikiSpecialChars: /[[\]{}]/,
+	WikiStartDate: /{{start\s?date\|/i,
+	WikiStartDateFull: /{{start\s?date\|([^}]+?)\}\}/gi,
+	WikiStartDatePattern: /start\s?date/i,
+	WikiStartDateReplace: /{{start\s?date\|[^}]+\}\}/i,
+	WikiStubDetector: /wiki|vikimiz|\u0412\u0438\u043A\u0438|\u7EF4\u57FA/i,
+	WikiTemplate: /{{([^}]+)}}/,
+	WikiThumb: /^thumb\r\n\r\n/i,
+	WikiTitlePt: /\s*(title|t\u00edtulo)[^[]+\[\[/gi,
+	WikiTrailingBrace: /\}\}$/,
+	WikiUbl: /{{ubl\|/i,
+	WikiUnbulletedList: /{{unbulleted\s?list\|/i,
+
+	// * TITLE FORMAT * //
+	TFAlbum: /%album%/g,
+	TFAlbumMulti: /%<album>%/i,
+	TFAlbumArtist: /%<album artist>%/i,
+	TFArtistMulti: /%<artist>%/i,
+	TFBioAlbum: /%bio_album%/gi,
+	TFBioAlbumConditional: /((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_album%/gi,
+	TFBioAlbumArtist: /%bio_albumartist%/gi,
+	TFBioAlbumArtistAndArtist: /%BIO_ALBUMARTIST%|%BIO_ARTIST%/gi,
+	TFBioAlbumArtistConditional: /((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*(%bio_albumartist%|%bio_album%)/gi,
+	TFBioAlbumArtistConditionalStrict: /((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_albumartist%/gi,
+	TFBioArtist: /%bio_artist%/gi,
+	TFBioArtistAndAlbumArtist: /%BIO_ARTIST%|%BIO_ALBUMARTIST%/gi,
+	TFBioArtistConditional: /((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_artist%/gi,
+	TFBioArtistOrMeta: /%artist%|\$meta\(artist,0\)/g,
+	TFBioLookupItem: /%lookup_item%/gi,
+	TFBioOpenCapture: /\$Bio.*?\(/gi,
+	TFBioTextReaderStubInfo: /%playback_time|%bitrate%|\$progress/i,
+	TFBioTitle: /%bio_title%/gi,
+	TFBioTitleConditional: /((\$if|\$and|\$or|\$not|\$xor)(|\d)\(|\[)[^$%]*%bio_title%/gi,
+	TFBioTitleOrMeta: /%title%|\$meta\(title,0\)/g,
+	TFPlDiscNumberTotalDiscsSubtitle: /%discnumber%|%totaldiscs%|%subtitle%/g,
+	TFLibColour: /\$colour{.*?}/g,
+	TFLibNowPlaying: /\$nowplaying{(.+?)}/,
+	TFLibSearchText: /\$searchtext/g,
+	TFLibSelected: /\$selected{(.+?)}/,
+	TFLibStripBranchPrefix: /\$stripbranchprefix{/,
+	TFLibSwapBranchPrefix: /\$swapbranchprefix{/,
+	TFLibViewName: /%view_name%/i,
+	TFLibYearOrDate: /%year%|%date%/,
+
+	// * TRACK METADATA * //
+	TrackHasNumber: /^\d{1,2} \S/,
+	TrackHasSeparator: /[-._]/,
+	TrackNumberLeading: /^\d{1,2}([-.]\d{1,2})?([-. _]+)(?=\S)/,
+
+	// * BIOGRAPHY * //
+	BioActive: /Active/i,
+	BioAlbumGenres: /Album\sGenres:\s/,
+	BioAlbumRatingCapture: />>\sAlbum\srating:\s(.*?)\s<<\s{2}/,
+	BioBorn: /Born/i,
+	BioComposersLeading: /^Composers:\s/,
+	BioCountsLikeDislikeView: /like count|dislike count|view count/i,
+	BioDied: /Died/i,
+	BioDisbanded: /Disbanded/i,
+	BioDuration: /Duration:\s/g,
+	BioDurationLeading: /^Duration:\s/g,
+	BioFooYoutube: /foo_youtube/i,
+	BioFormed: /Formed/i,
+	BioGeneral: /General\*/i,
+	BioGenreMoodTheme: /(Album|Track)\s(Genre|Mood|Theme)(s|):\s/g,
+	BioGroupMembers: /Group Members: /g,
+	BioItemProperties: /item_properties/i,
+	BioMarkerArtistLocked: /#\u00a6#\u00a6#.*?#\u00a6#\u00a6#/g,
+	BioMarkerMultiProcessWrapped: /#!#!#.*?#!#!#/g,
+	BioMarkerShortAtExclAt: /@!@/g,
+	BioMarkerShortExclAtExcl: /!@!/g,
+	BioMarkerTFProtected: /#@!.*?#@!/g,
+	BioMarkerTrackIdentifier: /!\u00a6.+?$/gm,
+	BioMembersLeading: /^Members:\s/,
+	BioMetadata: /Metadata\*/i,
+	BioMetadataGeneralOther: /Metadata\*|General\*|Other\*/i,
+	BioMetadataShowFalse: /("Metadata\*":\s{\s*?"show":\s)false/,
+	BioMoodsAlbumTrack: /(Album\s|Track\s)Moods: /g,
+	BioNowPlaying: /nowplaying/i,
+	BioOther: /Other\*/i,
+	BioRatingLeading: /^Rating: .*$/m,
+	BioReleaseDate: /Release Date/i,
+	BioSectionsShowTrue: /(("Metadata"|"Popularity"|"AllMusic"|"Last.fm"|"Wikipedia"):\s{\s*?"show":\s)true/g,
+	BioShortDescription: /Short description/i,
+	BioShowAllMembers: /\s*Show all members\u2026\s*/gi,
+	BioTagsExclude: /\basin\b|\bbpm\b|\bid\b|\bisrc\b|\bcue_|\bmcn\b|\bmd5\b|\bmp3_|\burl\b/i,
+	BioTrackGenre: /Track\sGenre/,
+
+	// * LIBRARY * //
+	LibMarkerColor: /@!#.*?@!#/g,
+	LibMarkerDoubleTildeHash: /~~#!#/g,
+	LibMarkerDoubleTildePercent: /~~%/,
+	LibMarkerExcl: /<!>/g,
+	LibMarkerImgView: /\^@\^/g,
+	LibMarkerMultiPercent: /(~~%<|~%<|%<).*?>%/g,
+	LibMarkerMultiProcess: /#!#/g,
+	LibMarkerNoDisplay: /#@#/g,
+	LibMarkerNoDisplayContent: /#@#.*?#@#/g,
+	LibMarkerPercent: /%<.*?>%/g,
+	LibMarkerPercentClose: />%/g,
+	LibMarkerPercentOpen: /%</g,
+	LibMarkerSharpClose: /#>/g,
+	LibMarkerSharpOpen: /<#/g,
+	LibMarkerSingleTildeHash: /~#!#/g,
+	LibMarkerTildeHash: /~#~/g,
+	LibMarkerTildePercent: /~%/,
+	LibPlayCountRating: /play(_|)count|auto(_|)rating/,
+	LibSimilarArtist: /(similar artist)\s/gi,
+	LibTypesPlural: /(album|artist|top|track)s\s/gi,
+	LibViewBy: /view by|^by\b/i,
+	LibYearsAlbums: /years - albums/gi,
+
+	// * LYRICS * //
+	LyricsFiles: /\.(lrc|txt)$/,
+	LyricsFilesUnderscore: /_\.(lrc|txt)$/,
+	LyricsOffset: /^\s*\[offset\s*:(.*)\]\s*$/,
+	LyricsTimestamp: /(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}])(\s*)/g,
+	LyricsTimestampEnhanced: /(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g,
+	LyricsTimestampLeading: /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/,
+
+	// * UTILITY * //
+	UtilFontDescenders: /[gjpqy]/,
+	UtilFontNeedsSymbols: /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u23F7\u23F9-\u25B5\u25B7-\u26FF]|\uD83E[\uDD10-\uDDFF]/,
+	UtilFontTahoma: /tahoma/i,
+	UtilObjectType: /([a-z]+)(:?\])/i,
+	UtilRegexEscape: /[.*+?^${}()|[\]\\-]/g,
+	UtilRegexParser: /^(!)?\/(.*?)\/([gimsuy]*)$/,
 };
 
 

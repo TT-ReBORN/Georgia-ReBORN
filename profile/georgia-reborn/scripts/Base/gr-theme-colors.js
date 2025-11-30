@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -763,6 +763,14 @@ class BaseColors {
 
 		return lightBrightness || lightBlend || noAlbumArt || grSet.theme === 'cream';
 	}
+
+	/**
+	 * Determines if the Reborn Fusion styles are being currently used.
+	 * @returns {boolean} - Returns true if any reborn fusion style is active.
+	 */
+	isRebornFusion() {
+		return grSet.theme === 'reborn' && (grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
+	}
 	// #endregion
 
 	// * PUBLIC METHODS - SET THEME COLORS * //
@@ -835,11 +843,41 @@ class BaseColors {
 	}
 
 	/**
+	 * Sets a new primary theme color either from a provided color or by restoring the previously saved one.
+	 * This updates `grCol.primary` and triggers a full theme refresh with `initTheme`.
+	 * Use this for propagating color changes from external modules (e.g., library explorer artwork overrides).
+	 * @param {number} [primaryColor] - The new primary color to apply (RGB value). Ignored if `restore` is true.
+	 * @param {number} [primaryAltColor] - The new secondary primary color to apply (RGB value). Ignored if `restore` is true.
+	 * @param {boolean} [restore] - If true, restores the saved primary color (`grCol.primary_saved`) instead of using `primaryColor`.
+	 */
+	setPrimaryColor(primaryColor, primaryAltColor = undefined, restore = false) {
+		// Re-entrancy guard: Prevents recursive loop from initTheme > initLibraryColors > setArtworkColor > back here.
+		if (grm.ui.initThemeRunning) return;
+
+		grCol.primary = restore ? grCol.primary_saved : primaryColor;
+		const themeColor = new Color(grCol.primary);
+		const newPrimary = this.createThemeColorObject(themeColor);
+
+		// New or original primary color passed to Georgia-ReBORN main
+		if (this.isRebornFusion()) {
+			grCol.primary_alt = restore ? grCol.primary_alt_saved : primaryAltColor;
+			const themeColor2 = new Color(grCol.primary_alt);
+			const newPrimary2 = this.createThemeColorObject(themeColor, themeColor2);
+			this.setTheme(newPrimary, newPrimary2, true);
+		} else {
+			this.setTheme(newPrimary, undefined, true);
+		}
+
+		grm.ui.initTheme();
+	}
+
+	/**
 	 * Sets primary and optional secondary theme color as well as accents.
 	 * @param {number} color - The primary color.
 	 * @param {number} color2 - The secondary color.
+	 * @param {boolean} [newPrimary] - The new primary color generated from external source and not from main.
 	 */
-	setTheme(color, color2) {
+	setTheme(color, color2, newPrimary = false) {
 		if (color2 === undefined) color2 = color;
 		let themeCol = new Color(color.primary);
 		const customThemes = grSet.theme.startsWith('custom');
@@ -851,8 +889,6 @@ class BaseColors {
 			color.accent = TintColor(color.primary, 10);
 			themeCol = new Color(color.primary);
 		}
-		grCol.primary = color.primary;
-		grCol.primary_alt = color2.primary_alt;
 
 		if (ColorDistance(color.primary, grCol.progressBar, true) < (themeCol.isCloseToGrayscale ? 60 : 45)) {
 			// Progress bar fill is too close in color to bg
@@ -866,7 +902,7 @@ class BaseColors {
 			grm.details.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 		}
 
-		grCol.primary     = color.primary;
+		grCol.primary = color.primary;
 		grCol.primary_alt = color2.primary_alt;
 
 		// * Reborn/Random theme main tone palette
@@ -906,6 +942,13 @@ class BaseColors {
 		// * Change col.primary if too bright or too dark
 		if (grSet.theme === 'white' && (ColorDistance(grCol.primary, grCol.progressBar)) < 60) {
 			grCol.primary = grCol.darkAccent;
+		}
+
+		// * Saves the internal original now playing primary color from main
+		// * Can be used to restore the main primary color in external scripts after color manipulations
+		if (!newPrimary) {
+			grCol.primary_saved = grCol.primary;
+			grCol.primary_alt_saved = grCol.primary_alt;
 		}
 	}
 
@@ -1290,7 +1333,7 @@ class BaseColors {
 	 */
 	getThemeColors(image) {
 		const debugThemeLog = grCfg.settings.showDebugThemeLog;
-		const rebornFusion = grSet.theme === 'reborn' && (grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
+		const rebornFusion = this.isRebornFusion();
 		const val = $('[%GR_THEMECOLOR%]');
 		const val2 = $('[%GR_THEMECOLOR2%]');
 		let color;

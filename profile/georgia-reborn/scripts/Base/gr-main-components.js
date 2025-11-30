@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1692,7 +1692,7 @@ class InputBox {
 	 * @throws Will throw an error if the new value is not a string.
 	 */
 	addTracksPlaylist() {
-		const inputBoxOldValue = JSON.stringify(grCfg.themeControls.addTracksPlaylist).replace(/"/g, '');
+		const inputBoxOldValue = JSON.stringify(grCfg.themeControls.addTracksPlaylist).replace(Regex.PunctQuoteDouble, '');
 		this.inputBoxNewValue = '';
 		this.inputBoxUserValue = '';
 
@@ -1757,14 +1757,14 @@ class InputBox {
 		const customDirSchema = dirInfo.schema || '';
 		this.customDirString = dirInfo.string || '';
 
-		const inputBoxOldValue = JSON.stringify(customDirPath).replace(/["[\]]/g, '').replace(/\\\\/g, '\\');
+		const inputBoxOldValue = JSON.stringify(customDirPath).replace(Regex.PunctQuoteBracket, '').replace(Regex.PathDoubleBackslash, '\\');
 		this.inputBoxNewValue = '';
 		this.inputBoxUserValue = '';
 
 		try {
 			const msg = grm.msg.getMessage('inputBox', 'customCacheDir');
 			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', inputBoxOldValue, true);
-			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue.replace(/[\\/]/g, '\\\\')}"`);
+			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue.replace(Regex.PunctBackslash, '\\\\')}"`);
 			if (typeof this.inputBoxNewValue !== 'string') {
 				throw new Error('Invalid type');
 			}
@@ -1854,7 +1854,7 @@ class InputBox {
 	 * @throws Will throw an error if the new value is not a string.
 	 */
 	playlistCustomHeaderInfo() {
-		const inputBoxOldValue = JSON.stringify(grCfg.settings.playlistCustomHeaderInfo).replace(/"/g, '');
+		const inputBoxOldValue = JSON.stringify(grCfg.settings.playlistCustomHeaderInfo).replace(Regex.PunctQuoteDouble, '');
 		this.inputBoxNewValue = '';
 		this.inputBoxUserValue = '';
 
@@ -1881,8 +1881,8 @@ class InputBox {
 	 * @throws Will throw an error if the new values are not strings.
 	 */
 	playlistCustomTrackRow() {
-		const inputBoxOldValue1 = JSON.stringify(grCfg.settings.playlistCustomTitle).replace(/"/g, '');
-		const inputBoxOldValue2 = JSON.stringify(grCfg.settings.playlistCustomTitleNoHeader).replace(/"/g, '');
+		const inputBoxOldValue1 = JSON.stringify(grCfg.settings.playlistCustomTitle).replace(Regex.PunctQuoteDouble, '');
+		const inputBoxOldValue2 = JSON.stringify(grCfg.settings.playlistCustomTitleNoHeader).replace(Regex.PunctQuoteDouble, '');
 		this.inputBoxNewValue = '';
 		this.inputBoxNewValue2 = '';
 		this.inputBoxUserValue = '';
@@ -1916,7 +1916,7 @@ class InputBox {
 	 * @throws Will throw an error if the new value is not a string.
 	 */
 	playlistSortCustom() {
-		const inputBoxOldValue = JSON.stringify(grCfg.settings.playlistSortCustom).replace(/"/g, '');
+		const inputBoxOldValue = JSON.stringify(grCfg.settings.playlistSortCustom).replace(Regex.PunctQuoteDouble, '');
 		this.inputBoxNewValue = '';
 		this.inputBoxUserValue = '';
 
@@ -1950,8 +1950,7 @@ class InputBox {
 			const msg = grm.msg.getMessage('inputBox', 'themeDayNightModeCustom');
 			this.inputBoxNewValue = utils.InputBox(msg, 'Georgia-ReBORN', inputBoxOldValue, true);
 
-			const validFormat = /^\s*(\d+)\s*-\s*(\d+)\s*$/; // Regex to match a valid input format
-			const match = this.inputBoxNewValue.match(validFormat);
+			const match = this.inputBoxNewValue.match(Regex.TimeRange);
 			if (!match) throw new Error('Invalid format');
 
 			const startTime = Number(match[1]);
@@ -2294,9 +2293,9 @@ class Hyperlink {
 		switch (this.type) {
 			case 'update': RunCmd('https://github.com/TT-ReBORN/Georgia-ReBORN/releases'); break;
 			case 'date':   query = grSet.showPlaylistFullDate ? `"${grTF.date}" IS ${this.text}` : `"$year(%date%)" IS ${this.text}`; break;
-			case 'artist': query = grSet.headerFlipRows ? `Album HAS "${this.text.replace(/"/g, '')}"` : `Artist HAS "${this.text.replace(/"/g, '')}" OR Album Artist HAS "${this.text.replace(/"/g, '')}" OR ARTISTFILTER HAS "${this.text.replace(/"/g, '')}"`; break;
-			case 'album':  query = grSet.headerFlipRows ? `Artist HAS "${this.text.replace(/"/g, '')}" OR Album Artist HAS "${this.text.replace(/"/g, '')}" OR ARTISTFILTER HAS "${this.text.replace(/"/g, '')}"` : `Album HAS "${this.text.replace(/"/g, '')}"`; break;
-			case 'label':  query = `Label HAS "${this.text.replace(/"/g, '')}" OR Publisher HAS "${this.text.replace(/"/g, '')}"`; break;
+			case 'artist': query = grSet.headerFlipRows ? `Album HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}"` : `Artist HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}" OR Album Artist HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}" OR ARTISTFILTER HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}"`; break;
+			case 'album':  query = grSet.headerFlipRows ? `Artist HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}" OR Album Artist HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}" OR ARTISTFILTER HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}"` : `Album HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}"`; break;
+			case 'label':  query = `Label HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}" OR Publisher HAS "${this.text.replace(Regex.PunctQuoteDouble, '')}"`; break;
 			default:       query = `${this.type} IS "${this.text}"`; break;
 		}
 
@@ -2452,7 +2451,7 @@ class JumpSearch {
 
 		// * Playlist advance
 		if (focusIndex >= 0 && focusIndex < search.length && (grm.ui.displayPlaylist || grm.ui.displayLibrarySplit(true))) {
-			const char = search[focusIndex].replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
+			const char = search[focusIndex].replace(Regex.LibMarkerColor, '').charAt(0).toLowerCase();
 			if (char === text && AllEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
 				advance = true;
@@ -2460,7 +2459,7 @@ class JumpSearch {
 		}
 		// * Library advance
 		else if (lib.panel.pos >= 0 && lib.panel.pos < lib.pop.tree.length && !grm.ui.displayLibrarySplit(true)) {
-			const char = lib.pop.tree[lib.panel.pos].name.replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
+			const char = lib.pop.tree[lib.panel.pos].name.replace(Regex.LibMarkerColor, '').charAt(0).toLowerCase();
 			if (lib.pop.tree[lib.panel.pos].sel && char === text && AllEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
 				advance = true;
@@ -2477,7 +2476,7 @@ class JumpSearch {
 					// * Playlist advance
 					if (grm.ui.displayPlaylist || grm.ui.displayLibrarySplit(true)) {
 						for (const [i] of playlistItems.Convert().entries()) {
-							const name = search[i].replace(/@!#.*?@!#/g, '');
+							const name = search[i].replace(Regex.LibMarkerColor, '');
 							init = name.charAt().toLowerCase();
 							if (cur !== init && !this.initials[init]) {
 								this.initials[init] = [i];
@@ -2491,7 +2490,7 @@ class JumpSearch {
 					else {
 						for (const [i, v] of lib.pop.tree.entries()) {
 							if (!v.root) {
-								const nm = v.name.replace(/@!#.*?@!#/g, '');
+								const nm = v.name.replace(Regex.LibMarkerColor, '');
 								init = nm.charAt().toLowerCase();
 								if (cur !== init && !this.initials[init]) {
 									this.initials[init] = [i];
@@ -2579,7 +2578,7 @@ class JumpSearch {
 				lib.timer.jsearch1.id = setTimeout(() => {
 					// * First search in the Playlist
 					playlistItems.Convert().some((v, i) => {
-						const name = search[i].replace(/@!#.*?@!#/g, '');
+						const name = search[i].replace(Regex.LibMarkerColor, '');
 						if (name.substring(0, this.jSearch.length).toLowerCase() === this.jSearch.toLowerCase()) {
 							foundInPlaylist = true;
 							pos = i;
@@ -2594,7 +2593,7 @@ class JumpSearch {
 					// * If no Playlist results found, try search query in the Library
 					if (!foundInPlaylist && grSet.jumpSearchIncludeLibrary && grSet.layout !== 'compact') {
 						lib.pop.tree.some((v, i) => {
-							const name = v.name.replace(/@!#.*?@!#/g, '');
+							const name = v.name.replace(Regex.LibMarkerColor, '');
 							if (name !== lib.panel.rootName && name.substring(0, this.jSearch.length).toLowerCase() === this.jSearch.toLowerCase()) {
 								foundInPlaylist = false;
 								foundInLibrary = true;

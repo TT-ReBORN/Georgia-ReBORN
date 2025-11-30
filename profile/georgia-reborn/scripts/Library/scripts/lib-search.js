@@ -311,7 +311,7 @@ class LibSearch {
 				break;
 			case lib.vk.paste:
 				text = $Lib.getClipboardData() || '';
-				text = text.replace(/(\r\n|\n|\r)/gm, ' '); // fall through
+				text = text.replace(Regex.BreakLineMulti, ' '); // fall through
 			default:
 				this.record();
 				if (this.start == this.end) {
@@ -425,12 +425,12 @@ class LibSearch {
 					const initial = lib.panel.search.txt.length;
 					const leftSide = lib.panel.search.txt.slice(0, this.cx);
 					const rightSide = lib.panel.search.txt.slice(this.cx, lib.panel.search.txt.length).trimStart();
-					const idx = rightSide.search(/ \b/);
+					const idx = rightSide.search(Regex.SpaceSingleWithBoundary);
 					const boundary = idx == -1 ? rightSide.length : idx + 1;
 					let newRightSide = rightSide.slice(boundary);
-					if (newRightSide.length && !/\s$/.test(leftSide) && !/^\s/.test(newRightSide)) newRightSide = ` ${newRightSide}`;
+					if (newRightSide.length && !Regex.SpaceTrailingSingle.test(leftSide) && !Regex.SpaceLeadingSingle.test(newRightSide)) newRightSide = ` ${newRightSide}`;
 					lib.panel.search.txt = leftSide + newRightSide;
-					this.cx = !/\s$/.test(leftSide) ? leftSide.length + 1 : leftSide.length;
+					this.cx = !Regex.SpaceTrailingSingle.test(leftSide) ? leftSide.length + 1 : leftSide.length;
 					if (this.offset > 0) {
 						this.offset -= initial - lib.panel.search.txt.length;
 					}
@@ -539,7 +539,7 @@ class LibFind {
 
 		// * Library advance
 		if (lib.panel.pos >= 0 && lib.panel.pos < lib.pop.tree.length) {
-			const char = lib.pop.tree[lib.panel.pos].name.replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
+			const char = lib.pop.tree[lib.panel.pos].name.replace(Regex.LibMarkerColor, '').charAt(0).toLowerCase();
 			if (lib.pop.tree[lib.panel.pos].sel && char == text && this.allEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
 				advance = true;
@@ -547,7 +547,7 @@ class LibFind {
 		}
 		// * Playlist advance
 		else if (focusIndex >= 0 && focusIndex < search.length && (grm.ui.displayPlaylist || grm.ui.displayLibrarySplit(true))) {
-			const char = search[focusIndex].replace(/@!#.*?@!#/g, '').charAt(0).toLowerCase();
+			const char = search[focusIndex].replace(Regex.LibMarkerColor, '').charAt(0).toLowerCase();
 			if (char === text && this.allEqual(this.jSearch)) {
 				this.jSearch = this.jSearch.slice(0, 1);
 				advance = true;
@@ -565,7 +565,7 @@ class LibFind {
 					if (!grm.ui.displayPlaylist || !grm.ui.displayLibrarySplit(true)) {
 						lib.pop.tree.forEach((v, i) => {
 							if (!v.root) {
-								const nm = v.name.replace(/@!#.*?@!#/g, '');
+								const nm = v.name.replace(Regex.LibMarkerColor, '');
 								init = nm.charAt().toLowerCase();
 								if (cur != init && !this.initials[init]) {
 									this.initials[init] = [i];
@@ -579,7 +579,7 @@ class LibFind {
 					// * Playlist advance
 					else {
 						playlistItems.Convert().forEach((v, i) => {
-							const name = search[i].replace(/@!#.*?@!#/g, '');
+							const name = search[i].replace(Regex.LibMarkerColor, '');
 							init = name.charAt().toLowerCase();
 							if (cur !== init && !this.initials[init]) {
 								this.initials[init] = [i];
@@ -666,7 +666,7 @@ class LibFind {
 				lib.timer.jsearch1.id = setTimeout(() => {
 					// * First search in the Library
 					lib.pop.tree.some((v, i) => {
-						const name = v.name.replace(/@!#.*?@!#/g, '');
+						const name = v.name.replace(Regex.LibMarkerColor, '');
 						if (name !== lib.panel.rootName && name.substring(0, this.jSearch.length).toLowerCase() === this.jSearch.toLowerCase()) {
 							foundInLibrary = true;
 							pos = i;
@@ -682,7 +682,7 @@ class LibFind {
 					// * If no Library results found, try search query in the Playlist
 					if (!foundInLibrary && grSet.jumpSearchIncludePlaylist) {
 						playlistItems.Convert().some((v, i) => {
-							const name = search[i].replace(/@!#.*?@!#/g, '');
+							const name = search[i].replace(Regex.LibMarkerColor, '');
 							if (name !== lib.panel.rootName && name.substring(0, this.jSearch.length).toLowerCase() === this.jSearch.toLowerCase()) {
 								foundInPlaylist = true;
 								foundInLibrary = false;

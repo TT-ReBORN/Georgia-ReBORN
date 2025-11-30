@@ -43,8 +43,8 @@ class LibHelpers {
 		let result; let tmpFileLoc = '';
 		let UNC = pth.startsWith('\\\\');
 		if (UNC) pth = pth.replace('\\\\', '');
-		const pattern = /(.*?)\\/gm;
-		while ((result = pattern.exec(pth))) {
+		Regex.PathSplitter.lastIndex = 0; // Reset index
+		while ((result = Regex.PathSplitter.exec(pth))) {
 			tmpFileLoc = tmpFileLoc.concat(result[0]);
 			if (UNC) {
 				tmpFileLoc = `\\\\${tmpFileLoc}`;
@@ -183,7 +183,7 @@ class LibHelpers {
 	}
 
 	regexEscape(n) {
-		return n.replace(/[*+\-?^!:&"~${}()|[\]/\\]/g, '\\$&');
+		return n.replace(Regex.UtilRegexEscape, '\\$&');
 	}
 
 	replaceAt(str, pos, chr) {
@@ -245,9 +245,9 @@ class LibHelpers {
 	split(n, type) {
 		switch (type) {
 			case 0:
-				return n.replace(/\s+|^,+|,+$/g, '').split(',');
+				return n.replace(Regex.CommaTrim, '').split(',');
 			case 1:
-				return n.replace(/^[,\s]+|[,\s]+$/g, '').split(/[,-]/);
+				return n.replace(Regex.CommaLeadingTrailing, '').split(Regex.PunctCommaDash);
 		}
 	}
 
@@ -268,8 +268,8 @@ class LibHelpers {
 	}
 
 	titlecase(n) {
-		return n.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-/]*/g, match => {
-			if (match.substr(1).search(/[A-Z]|\../) > -1) return match;
+		return n.replace(Regex.TextTitleWord, match => {
+			if (match.substr(1).search(Regex.PathUpperOrParent) > -1) return match;
 			return match.charAt(0).toUpperCase() + match.substr(1);
 		});
 	}

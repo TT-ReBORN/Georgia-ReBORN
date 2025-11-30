@@ -36,7 +36,7 @@ class BioRequestAllmusic {
 		return new Promise((resolve, reject) => {
 			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#bypassing_the_cache
 			// Add ('&' + new Date().getTime()) to URLS to avoid caching
-			const fullUrl = URL + (bypassCache ? (/\?/.test(URL) ? '&' : '?') + new Date().getTime() : '');
+			const fullUrl = URL + (bypassCache ? (URL.includes('?') ? '&' : '?') + new Date().getTime() : '');
 			this.request = new ActiveXObject('WinHttp.WinHttpRequest.5.1');
 			this.request.Open(method, fullUrl, true);
 
@@ -354,7 +354,7 @@ class BioDldAllmusicRev {
 						const dv = div.getElementsByTagName('div');
 						const module = this.dn_type == 'track' ? 'songContentSubModule' : this.dn_type.includes('composition') ? 'compositionContentSubModule' : 'albumContentSubModule';
 						$Bio.htmlParse(dv, 'className', module, v => this.review = v.innerHTML);
-						this.review = this.dn_type != 'track' && !this.dn_type.includes('composition') ? this.review.split(/<\/h3>/i) : this.review.split(/<\/h2>/i);
+						this.review = this.dn_type != 'track' && !this.dn_type.includes('composition') ? this.review.split(Regex.HtmlTagH3Close) : this.review.split(Regex.HtmlTagH2Close);
 						if (this.review.length == 2) {
 							this.reviewAuthor = bio.server.format(this.review[0]);
 							this.review = bio.server.format(this.review[1]);
@@ -389,19 +389,19 @@ class BioDldAllmusicRev {
 						$Bio.htmlParse(a, false, false, v => {
 							if (v.href.startsWith('about:/mood/')) {
 								const tm = v.innerText.trim();
-								if (tm) reviewMood.push(tm.replace(/\(\d+\)/, '').trim());
+								if (tm) reviewMood.push(tm.replace(Regex.PunctNumberParen, '').trim());
 							}
 							if (v.href.startsWith('about:/theme/')) {
 								const tth = v.innerText.trim();
-								if (tth) reviewTheme.push(tth.replace(/\(\d+\)/, '').trim());
+								if (tth) reviewTheme.push(tth.replace(Regex.PunctNumberParen, '').trim());
 							}
 						});
 						if (reviewMood.length) {
-							if (this.dn_type != 'track') this.reviewMood = `Album Moods: ${reviewMood.join('\u200b, ')}`;
+							if (this.dn_type != 'track') this.reviewMood = `Album Moods: ${reviewMood.join(`${Unicode.ZeroWidthSpace}, `)}`;
 							else this.songMood = reviewMood;
 						}
 						if (reviewTheme.length) {
-							if (this.dn_type != 'track') this.reviewTheme = `Album Themes: ${reviewTheme.join('\u200b, ')}`
+							if (this.dn_type != 'track') this.reviewTheme = `Album Themes: ${reviewTheme.join(`${Unicode.ZeroWidthSpace}, `)}`
 							else this.songTheme = reviewTheme;
 						}
 						bioDoc.close();
@@ -430,15 +430,15 @@ class BioDldAllmusicRev {
 						const reviewGenre = [];
 						let tg = '';
 						if (this.dn_type != 'track') {
-							$Bio.htmlParse(dv, 'className', 'release-date', v => this.releaseDate = v.innerText.replace(/Release Date/i, 'Release Date: ').trim());
+							$Bio.htmlParse(dv, 'className', 'release-date', v => this.releaseDate = v.innerText.replace(Regex.BioReleaseDate, 'Release Date: ').trim());
 							$Bio.htmlParse(a, false, false, v => {
 								if (v.href.includes('www.allmusic.com/genre') || v.href.includes('www.allmusic.com/style')) {
 									tg = v.innerText.trim();
 									if (tg) reviewGenre.push(tg);
 								}
 							});
-							if (reviewGenre.length) this.reviewGenre = `Genre: ${reviewGenre.join('\u200b, ')}`;
-							const match = response.match(/allmusicRating ratingAllmusic(\d)/i);
+							if (reviewGenre.length) this.reviewGenre = `Genre: ${reviewGenre.join(`${Unicode.ZeroWidthSpace}, `)}`;
+							const match = response.match(Regex.WebAllMusicRating);
 							if (match && match.length == 2) this.rating = match[1] != 0 ? match[1] / 2 + 0.5 : 0;
 							this.saveAlbumReview();
 						} else {
@@ -460,9 +460,9 @@ class BioDldAllmusicRev {
 									if (a[i].innerText) this.songGenre.push(a[i].innerText);
 								}
 							});
-							const m = response.match(/data-releaseyear=\s*"\s*\d+\s*"/i);
+							const m = response.match(Regex.WebAllMusicDataReleaseYear);
 							if (m) {
-								this.songReleaseYear = m[0].replace(/\D/g, '').trim();
+								this.songReleaseYear = m[0].replace(Regex.NumNonDigits, '').trim();
 							}
 							this.saveTrackReview();
 						}
@@ -584,9 +584,9 @@ class BioParse {
 		div.innerHTML = responseText;
 		const dv = div.getElementsByTagName('div');
 		let tg = '';
-		$Bio.htmlParse(dv, 'className', 'birth', v => that.start = bio.server.format(v.innerHTML).replace(/Born/i, 'Born:').replace(/Formed/i, 'Formed:'));
-		$Bio.htmlParse(dv, 'className', 'death', v => that.end = bio.server.format(v.innerHTML).replace(/Died/i, 'Died:').replace(/Disbanded/i, 'Disbanded:'));
-		$Bio.htmlParse(dv, 'className', 'activeDates', v => that.active = v.innerText.replace(/Active/i, 'Active: ').trim());
+		$Bio.htmlParse(dv, 'className', 'birth', v => that.start = bio.server.format(v.innerHTML).replace(Regex.BioBorn, 'Born:').replace(Regex.BioFormed, 'Formed:'));
+		$Bio.htmlParse(dv, 'className', 'death', v => that.end = bio.server.format(v.innerHTML).replace(Regex.BioDied, 'Died:').replace(Regex.BioDisbanded, 'Disbanded:'));
+		$Bio.htmlParse(dv, 'className', 'activeDates', v => that.active = v.innerText.replace(Regex.BioActive, 'Active: ').trim());
 
 		$Bio.htmlParse(div.getElementsByTagName('a'), false, false, v => {
 			if (v.href.includes('www.allmusic.com/genre') || v.href.includes('www.allmusic.com/style')) {
@@ -602,8 +602,8 @@ class BioParse {
 			}
 		});
 
-		that.biographyGenre = that.biographyGenre.length ?  `Genre: ${that.biographyGenre.join('\u200b, ')}` : '';
-		that.groupMembers = that.groupMembers.length ? `Group Members: ${that.groupMembers.join('\u200b, ')}` : '';
+		that.biographyGenre = that.biographyGenre.length ?  `Genre: ${that.biographyGenre.join(`${Unicode.ZeroWidthSpace}, `)}` : '';
+		that.groupMembers = that.groupMembers.length ? `Group Members: ${that.groupMembers.join(`${Unicode.ZeroWidthSpace}, `)}` : '';
 
 		this.saveBiography(that, artist, album, title, fo_bio, pth_bio, pth_rev);
 		bioDoc.close();
@@ -615,7 +615,7 @@ class BioParse {
 		div.innerHTML = responseText;
 		const dv = div.getElementsByTagName('div');
 		$Bio.htmlParse(dv, 'className', 'artistContentSubModule', v => that.biography = v.innerHTML);
-		that.biography = that.biography.split(/<\/h2>/i);
+		that.biography = that.biography.split(Regex.HtmlTagH2Close);
 		if (that.biography.length == 2) {
 			that.biographyAuthor = bio.server.format(that.biography[0]);
 			that.biography = bio.server.format(that.biography[1]);

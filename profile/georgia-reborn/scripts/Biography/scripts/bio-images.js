@@ -187,7 +187,7 @@ class BioImages {
 		if (this.transition.level == 100) this.transition.level = 255;
 		this.cycImages = this.cov.folderSameAsArt ? this.artImages : v => {
 			if (!$Bio.file(v)) return false;
-			return /(?:jpe?g|png|webp|gif|bmp)$/i.test(bioFSO.GetExtensionName(v));
+			return Regex.ArtImageExtensions.test(bioFSO.GetExtensionName(v));
 		};
 
 		['Front', 'Back', 'Disc', 'Icon', 'Art'].forEach((v, i) => {
@@ -242,7 +242,7 @@ class BioImages {
 	artImages(v) {
 		if (!$Bio.file(v)) return false;
 		const fileSize = utils.GetFileSize(v);
-		return (bio.name.isLfmImg(bioFSO.GetFileName(v)) || !bioSet.imgFilterLfm && /(?:jpe?g|png|webp|gif|bmp)$/i.test(bioFSO.GetExtensionName(v)) && !/ - /.test(bioFSO.GetBaseName(v))) && !this.exclArr.includes(fileSize) && !this.blackListed(v);
+		return (bio.name.isLfmImg(bioFSO.GetFileName(v)) || !bioSet.imgFilterLfm && Regex.ArtImageExtensions.test(bioFSO.GetExtensionName(v)) && !Regex.TextDashPadded.test(bioFSO.GetBaseName(v))) && !this.exclArr.includes(fileSize) && !this.blackListed(v);
 	}
 
 	artistReset(force) {
@@ -258,7 +258,7 @@ class BioImages {
 				this.art.folder = !bio.panel.isRadio(bio.panel.id.focus) ? bio.panel.cleanPth(bioCfg.artCusImgFolder, bio.panel.id.focus) : bio.panel.cleanPth(bioCfg.remap.foCycPhoto, bio.panel.id.focus, 'remap', this.artist, '', 1);
 				files = utils.Glob(`${this.art.folder}*`);
 			}
-			if (files.length && files.some(v => /(?:jpe?g|png|webp|gif|bmp)$/i.test(bioFSO.GetExtensionName(v)))) {
+			if (files.length && files.some(v => Regex.ArtImageExtensions.test(bioFSO.GetExtensionName(v)))) {
 				this.art.cusPhotoLocation = true;
 			} else {
 				this.art.folder = !bio.panel.isRadio(bio.panel.id.focus) ? bio.panel.cleanPth(bioCfg.pth.foImgArt, bio.panel.id.focus) : bio.panel.cleanPth(bioCfg.remap.foImgArt, bio.panel.id.focus, 'remap', this.artist, '', 1);
@@ -986,9 +986,9 @@ class BioImages {
 
 	images(v) {
 		if (!$Bio.file(v)) return false;
-		if (this.art.cusPhotoLocation) return /(?:jpe?g|png|webp|gif|bmp)$/i.test(bioFSO.GetExtensionName(v));
+		if (this.art.cusPhotoLocation) return Regex.ArtImageExtensions.test(bioFSO.GetExtensionName(v));
 		const fileSize = utils.GetFileSize(v);
-		return (bio.name.isLfmImg(bioFSO.GetFileName(v), this.artist) || !bioSet.imgFilterLfm && /(?:jpe?g|png|webp|gif|bmp)$/i.test(bioFSO.GetExtensionName(v)) && !/ - /.test(bioFSO.GetBaseName(v))) && !this.exclArr.includes(fileSize) && !this.blackListed(v);
+		return (bio.name.isLfmImg(bioFSO.GetFileName(v), this.artist) || !bioSet.imgFilterLfm && Regex.ArtImageExtensions.test(bioFSO.GetExtensionName(v)) && !Regex.TextDashPadded.test(bioFSO.GetBaseName(v))) && !this.exclArr.includes(fileSize) && !this.blackListed(v);
 	}
 
 	isColOk(c) {

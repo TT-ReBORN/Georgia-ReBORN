@@ -59,7 +59,7 @@ class LibLibrary {
 			else if (!lib.panel.search.txt.length) lib.pop.notifySelection();
 			if (libSet.searchSend != 2) return;
 			if (lib.panel.search.txt) lib.pop.load(lib.panel.list, false, false, false, true, false);
-			else plman.ClearPlaylist(plman.FindOrCreatePlaylist(libSet.libPlaylist.replace(/%view_name%/i, lib.panel.viewName), false));
+			else plman.ClearPlaylist(plman.FindOrCreatePlaylist(libSet.libPlaylist.replace(Regex.TFLibViewName, lib.panel.viewName), false));
 		}, 333);
 
 		this.search500 = $Lib.debounce(() => {
@@ -95,7 +95,7 @@ class LibLibrary {
 					let newSearchItems = new FbMetadbHandleList();
 					this.validSearch = true;
 					try {
-						newSearchItems = fb.GetQueryItems(handleList, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(/\$searchtext/g, lib.panel.search.txt));
+						newSearchItems = fb.GetQueryItems(handleList, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(Regex.TFLibSearchText, lib.panel.search.txt));
 					} catch (e) {
 						this.validSearch = false;
 					}
@@ -144,7 +144,7 @@ class LibLibrary {
 					let newSearchItems = new FbMetadbHandleList();
 					this.validSearch = true;
 					try {
-						newSearchItems = fb.GetQueryItems(handleList, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(/\$searchtext/g, lib.panel.search.txt));
+						newSearchItems = fb.GetQueryItems(handleList, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(Regex.TFLibSearchText, lib.panel.search.txt));
 					} catch (e) {
 						this.validSearch = false;
 					}
@@ -306,7 +306,7 @@ class LibLibrary {
 		lib.pop.cache.filter = {};
 		lib.pop.cache.search = {};
 		this.searchCache = {};
-		if (lib.panel.filter.mode[libSet.filterBy].type.match(/\$nowplaying{(.+?)}/)) {
+		if (lib.panel.filter.mode[libSet.filterBy].type.match(Regex.TFLibNowPlaying)) {
 			this.getFilterQuery();
 			if (this.filterQuery != this.filterQueryID) {
 				if (!libSet.rememberTree && !libSet.reset) this.logTree();
@@ -322,7 +322,7 @@ class LibLibrary {
 				lib.pop.checkAutoHeight();
 			}
 		}
-		if (lib.panel.filter.mode[libSet.filterBy].type.match(/\$selected{(.+?)}/)) {
+		if (lib.panel.filter.mode[libSet.filterBy].type.match(Regex.TFLibSelected)) {
 			this.getFilterQuery();
 			if (this.filterQuery != this.filterQueryID) {
 				if (!libSet.rememberTree && !libSet.reset) this.logTree();
@@ -450,11 +450,11 @@ class LibLibrary {
 	getFilterQuery() {
 		this.filterQuery = lib.panel.filter.mode[libSet.filterBy].type;
 		while (this.filterQuery.includes('$nowplaying{')) {
-			const q = this.filterQuery.match(/\$nowplaying{(.+?)}/);
+			const q = this.filterQuery.match(Regex.TFLibNowPlaying);
 			this.filterQuery = this.filterQuery.replace(q[0], this.eval(q[1], 'nowplaying') || '~#No Value For Item#~');
 		}
 		while (this.filterQuery.includes('$selected{')) {
-			const q = this.filterQuery.match(/\$selected{(.+?)}/);
+			const q = this.filterQuery.match(Regex.TFLibSelected);
 			this.filterQuery = this.filterQuery.replace(q[0], this.eval(q[1], 'selected') || '~#No Value For Item#~');
 		}
 	}
@@ -671,7 +671,7 @@ class LibLibrary {
 		if (!n.includes('~#!#')) return n;
 		let ln = 0;
 		const noPrefix = v => !n.includes(`${v} `);
-		if (this.prefix.every(noPrefix)) return n.replace(/~~#!#/g, '#!#').replace(/~#!#/g, '#!#');
+		if (this.prefix.every(noPrefix)) return n.replace(Regex.LibMarkerDoubleTildeHash, '#!#').replace(Regex.LibMarkerSingleTildeHash, '#!#');
 		const pr1 = n.split('~~#!#');
 		let ret1 = '';
 		for (let j = 1; j < pr1.length; j++) {
@@ -866,7 +866,7 @@ class LibLibrary {
 			this.validSearch = true;
 			this.none = '';
 			try {
-				lib.panel.list = fb.GetQueryItems(this.getSearchList(lib.panel.search.txt) || this.list, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(/\$searchtext/g, lib.panel.search.txt));
+				lib.panel.list = fb.GetQueryItems(this.getSearchList(lib.panel.search.txt) || this.list, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(Regex.TFLibSearchText, lib.panel.search.txt));
 				this.searchCache[lib.panel.search.txt] = lib.panel.list;
 			} catch (e) {
 				this.list = this.list.Clone();
@@ -1037,10 +1037,10 @@ class LibLibrary {
 	}
 
 	sort(name) {
-		if (lib.panel.multiProcess) name = name.replace(/#!#/g, '');
-		if (lib.panel.noDisplay) name = name.replace(/#@#/g, '');
-		if (lib.panel.colMarker) name = name.replace(/@!#.*?@!#/g, '');
-		if (lib.panel.imgView) name = name.replace(/\^@\^/g, '  ');
+		if (lib.panel.multiProcess) name = name.replace(Regex.LibMarkerMultiProcess, '');
+		if (lib.panel.noDisplay) name = name.replace(Regex.LibMarkerNoDisplay, '');
+		if (lib.panel.colMarker) name = name.replace(Regex.LibMarkerColor, '');
+		if (lib.panel.imgView) name = name.replace(Regex.LibMarkerImgView, '  ');
 		return [name, name, name, false];
 	}
 
@@ -1119,7 +1119,7 @@ class LibLibrary {
 					// addns
 					this.validSearch = true;
 					try {
-						newSearchItems = fb.GetQueryItems(handleList, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(/\$searchtext/g, lib.panel.search.txt));
+						newSearchItems = fb.GetQueryItems(handleList, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(Regex.TFLibSearchText, lib.panel.search.txt));
 					} catch (e) {
 						this.validSearch = false;
 					}
@@ -1138,7 +1138,7 @@ class LibLibrary {
 					removeSearchItems.MakeIntersection(origSearch); // handles in origSearch (present in any filter)
 					this.validSearch = true;
 					try {
-						handlesInSearch = fb.GetQueryItems(removeSearchItems, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(/\$searchtext/g, lib.panel.search.txt));
+						handlesInSearch = fb.GetQueryItems(removeSearchItems, !this.filterQuery.includes('$searchtext') ? lib.panel.search.txt : this.filterQuery.replace(Regex.TFLibSearchText, lib.panel.search.txt));
 					} catch (e) {
 						this.validSearch = false;
 					}

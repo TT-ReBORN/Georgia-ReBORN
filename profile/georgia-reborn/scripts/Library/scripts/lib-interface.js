@@ -38,7 +38,7 @@ class LibUserInterface {
 			expand: '',
 			font: gdi.Font('Segoe UI Symbol', 11, 0),
 			fontStyle: 0,
-			fontName: 'FontAwesome',
+			fontName:  grFont.fontRebornSymbols,
 			offset: 0,
 			w: 17
 		};
@@ -144,7 +144,7 @@ class LibUserInterface {
 		this.icon.col_h = '';
 		this.style.bg = false;
 		const set = (c, t) => {
-			c = c.replace(/[^0-9.,-]/g, '').split(/[,-]/);
+			c = c.replace(Regex.NumNonNumeric, '').split(Regex.PunctCommaDash);
 			let cc = '';
 			if (c.length != 3 && c.length != 4) return '';
 			for (let i = 0; i < c.length; i++) {
@@ -478,7 +478,7 @@ class LibUserInterface {
 
 		if (this.id.local) this.font.main = c_font;
 
-		if (!this.font.main || !grSet.customThemeFonts && DetectWine() && /tahoma/i.test(this.font.main.Name)) { // Windows: check still needed (test MS Serif or Modern, neither can be used); Wine: tahoma is default system font, but bold and some unicode characters don't work: if Wine + tahoma detected changed to Segoe UI (if that's not installed, tahoma is still used)
+		if (!this.font.main || !grSet.customThemeFonts && DetectWine() && Regex.UtilFontTahoma.test(this.font.main.Name)) { // Windows: check still needed (test MS Serif or Modern, neither can be used); Wine: tahoma is default system font, but bold and some unicode characters don't work: if Wine + tahoma detected changed to Segoe UI (if that's not installed, tahoma is still used)
 			this.font.main = gdi.Font(grFont.fontDefault, libraryFontSize, 0);
 			$Lib.trace('Spider Monkey Panel is unable to use your default font. Using Segoe UI at default size & style instead', false);
 		}
@@ -914,17 +914,17 @@ class LibUserInterface {
 		}
 		if (libSet.nodeStyle) {
 			if (libSet.nodeStyle < 5) {
-				this.icon.expand = '\uF105';
-				this.icon.expand2 = '\uF0DA';
-				this.icon.collapse = '\uF107';
+				this.icon.expand = RebornSymbols.AngleRight;
+				this.icon.expand2 = RebornSymbols.CaretRight;
+				this.icon.collapse = RebornSymbols.AngleDown;
 			} else if (libSet.nodeStyle === 5) {
-				this.icon.expand = '\uE109'; // Segoe UI Symbol +
-				this.icon.collapse = '\uE108'; // Segoe UI Symbol -
+				this.icon.expand = RebornSymbols.PlusLarge;
+				this.icon.collapse = RebornSymbols.MinusLarge;
 			}
 		}
 		if (libSet.nodeStyle !== 7 && (!this.icon.expand.length || !this.icon.collapse.length)) libSet.nodeStyle = 0;
 		this.style.squareNode = !libSet.nodeStyle || libSet.nodeStyle === 7;
-		if (!libSet.custIconFont.length || libSet.nodeStyle !== 6) this.icon.fontName = libSet.nodeStyle !== 5 ? 'FontAwesome' : libSet.nodeStyle === 5 ? 'Segoe UI Symbol' : 'Consolas';
+		if (!libSet.custIconFont.length || libSet.nodeStyle !== 6) this.icon.fontName = libSet.nodeStyle !== 5 ? grFont.fontRebornSymbols : libSet.nodeStyle === 5 ? 'Segoe UI Symbol' : 'Consolas';
 		else {
 			this.icon.fontName = libSet.custIconFont;
 			this.icon.fontStyle = 0;

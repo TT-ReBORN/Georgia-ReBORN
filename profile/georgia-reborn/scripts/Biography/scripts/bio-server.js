@@ -218,9 +218,9 @@ class BioServer {
 	}
 
 	format(n) {
-		n = n.replace(/<P><\/P>/gi, '').replace(/<p[^>]*>/gi, '').replace(/\r/g, '').replace(/\n/g, '').replace(/<\/p>/gi, '\r\n\r\n').replace(/<br>/gi, '\r\n');
-		while (n != (n = n.replace(/<[^<>]*>/g, ''))); // handle nested tags: https://blog.stevenlevithan.com/archives/reverse-recursive-pattern (works with abc test in post)
-		return n.replace(/&amp(;|)/g, '&').replace(/&quot(;|)/g, '"').replace(/&#39(;|)/g, "'").replace(/&gt(;|)/g, '>').replace(/&nbsp(;|)/g, '').replace(/^ +/gm, '').replace(/^\s+|\s+$/g, '');
+		n = n.replace(Regex.HtmlTagParaEmpty, '').replace(Regex.HtmlTagParaOpen, '').replace(Regex.BreakCarriage, '').replace(Regex.BreakNewline, '').replace(Regex.HtmlTagParaClose, '\r\n\r\n').replace(Regex.HtmlTagBr, '\r\n');
+		while (n != (n = n.replace(Regex.HtmlTagAny, ''))); // handle nested tags: https://blog.stevenlevithan.com/archives/reverse-recursive-pattern (works with abc test in post)
+		return n.replace(Regex.HtmlEntityAmp, '&').replace(Regex.HtmlEntityQuot, '"').replace(Regex.TextApostrophe, "'").replace(Regex.HtmlEntityGt, '>').replace(Regex.HtmlEntityNbsp, '').replace(Regex.SpaceLeadingMultiline, '').replace(Regex.SpaceLeadingTrailing, '');
 	}
 
 	getBio(force, art, type) {
@@ -351,8 +351,8 @@ class BioServer {
 		if (!handle) return;
 		const g_img = utils.GetAlbumArtV2(handle, 0, false);
 		if (g_img) return;
-		const covCanBeSaved = !handle.RawPath.startsWith('fy+') && !handle.RawPath.startsWith('3dydfy:') && !handle.RawPath.startsWith('http');
-		const sw = bioCfg.dlLfmCov && covCanBeSaved ? 1 : bioCfg.dlRevImg ? 0 : 2;
+		const isStreaming = Regex.WebStreaming.test(handle.RawPath);
+		const sw = bioCfg.dlLfmCov && !isStreaming ? 1 : bioCfg.dlRevImg ? 0 : 2;
 		let lfm_cov;
 
 		switch (sw) {
@@ -684,8 +684,8 @@ class BioServer {
 	}
 
 	tidy(n, cutLeadThe) {
-		const nn = cutLeadThe ? n.replace(/^The /i, '') : n;
-		return nn.replace(/&amp(;|)/g, '&').replace(/&quot(;|)/g, '"').replace(/&#39(;|)/g, "'").replace(/&gt(;|)/g, '>').replace(/&nbsp(;|)/g, '').replace(/\band\b|\//gi, '&').replace(/[.,!?:;'\u2019"\u201C\u201D\-_()[\]\u2010\s+]/g, '').replace(/\u00D7/g, 'x').replace(/\$/g, 's').toLowerCase() || n.trim();
+		const nn = cutLeadThe ? n.replace(Regex.TextPrefixThe, '') : n;
+		return nn.replace(Regex.HtmlEntityAmp, '&').replace(Regex.HtmlEntityQuot, '"').replace(Regex.TextApostrophe, "'").replace(Regex.HtmlEntityGt, '>').replace(Regex.HtmlEntityNbsp, '').replace(Regex.TextAmpersand, '&').replace(Regex.PunctAll, '').replace(Regex.UniMultiply, 'x').replace(Regex.PunctDollar, 's').toLowerCase() || n.trim();
 	}
 
 	updateNotFound(f) {

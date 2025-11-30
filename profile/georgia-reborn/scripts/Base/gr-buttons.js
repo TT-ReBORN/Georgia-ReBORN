@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -78,7 +78,7 @@ class Button {
 		/** @public @type {boolean} The state whether the lower artist button was clicked. */
 		this.lowerArtistBtnClicked = false;
 
-		/** @public @type {object} The button map stores the collection of all buttons. */
+		/** @private @type {object} The button map stores the collection of all buttons. */
 		this.btnMap = {};
 		/** @public @type {object} The button object containing all button information. */
 		this.btn = {};
@@ -103,9 +103,9 @@ class Button {
 	set enable(val) {
 		this.enabled = val;
 		if (!val) {
-			this.changeState(ButtonState.Default);
+			this.changeButtonState(ButtonState.Default);
 		} else {
-			this.changeState(ButtonState.Enabled);
+			this.changeButtonState(ButtonState.Enabled);
 		}
 	}
 	// #endregion
@@ -411,7 +411,7 @@ class Button {
 
 			for (let i = 0; i < selectedItems.Count; i++) {
 				const metadb = selectedItems[i];
-				const noStream = !metadb.RawPath.startsWith('http');
+				const noStream = !Regex.WebStreaming.test(metadb.RawPath);
 				let ratingUpdated = rating;
 
 				if (rating === 0) {
@@ -591,7 +591,7 @@ class Button {
 			plArtist = plman.CreatePlaylist(plArtist, plName);
 		}
 
-		const query = `Artist HAS "${artist.replace(/"/g, '')}" OR Album Artist HAS "${artist.replace(/"/g, '')}" OR ARTISTFILTER HAS "${artist.replace(/"/g, '')}"`;
+		const query = `Artist HAS "${artist.replace(Regex.PunctQuoteDouble, '')}" OR Album Artist HAS "${artist.replace(Regex.PunctQuoteDouble, '')}" OR ARTISTFILTER HAS "${artist.replace(Regex.PunctQuoteDouble, '')}"`;
 		const tracks = fb.GetQueryItems(fb.GetLibraryItems(), query);
 		plman.InsertPlaylistItems(plArtist, 0, tracks);
 
@@ -673,7 +673,7 @@ class Button {
 	// #endregion
 
 	// * PRIVATE METHODS - INITIALIZATION * //
-	// #region PUBLIC METHODS - INITIALIZATION
+	// #region PRIVATE METHODS - INITIALIZATION
 	/**
 	 * Creates the button map for all buttons with its configurations for the UI.
 	 * @returns {object} A map of button names to their configuration, including icon, font, type, and dimensions.
@@ -681,113 +681,14 @@ class Button {
 	 */
 	_createButtonMap() {
 		// DebugLog('Buttons => createButtons');
-		const transportCircleSize = SCALE(Math.round(grSet.transportButtonSize_layout * 0.93333));
+		const transportCircleSize = SCALE(Math.round(grSet.transportButtonSize_layout));
 		this.btnMap = {};
 
 		try {
 			this.btnMap = {
-				Stop: {
-					ico: Guifx.stop,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Previous: {
-					ico: Guifx.previous,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Play: {
-					ico: Guifx.play,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Pause: {
-					ico: Guifx.pause,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Next: {
-					ico: Guifx.next,
-					font: grFont.guifx,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackDefault: {
-					ico: Guifx.right,
-					font: grFont.pboDefault,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackRepeatPlaylist: {
-					ico: '\uf01e',
-					font: grFont.pboRepeatPlaylist,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackRepeatTrack: {
-					ico: '\uf021',
-					font: grFont.pboRepeatTrack,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				PlaybackShuffle: {
-					ico: Guifx.shuffle,
-					font: grFont.pboShuffle,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				ShowVolume: {
-					ico: Guifx.volume_down,
-					font: grFont.guifxVolume,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Reload: {
-					ico: Guifx.power,
-					font: grFont.guifxReload,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				AddTracks: {
-					ico: Guifx.medical,
-					font: grFont.guifxAddTrack,
-					type: 'transport',
-					w: transportCircleSize,
-					h: transportCircleSize
-				},
-				Minimize: {
-					ico: '0',
-					font: grFont.topMenuCaption,
-					type: 'window'
-				},
-				Maximize: {
-					ico: '2',
-					font: grFont.topMenuCaption,
-					type: 'window'
-				},
-				Close: {
-					ico: 'r',
-					font: grFont.topMenuCaption,
-					type: 'window'
-				},
 				Hamburger: {
-					ico: '\uf0c9',
-					font: grFont.topMenuCompact,
+					ico: RebornSymbols.Hamburger,
+					font: grFont.topMenuCaption,
 					type: 'compact'
 				},
 				TopMenu: {
@@ -865,29 +766,118 @@ class Button {
 					font: grFont.topMenu,
 					type: 'menu'
 				},
-				Properties: {
-					ico: 'Properties',
-					font: grFont.topMenu,
-					type: 'menu'
+				Minimize: {
+					ico: RebornSymbols.Minimize,
+					font: grFont.topMenuCaption,
+					type: 'window'
 				},
-				Settings: {
-					ico: 'Settings',
-					font: grFont.topMenu,
-					type: 'menu'
+				Maximize: {
+					ico: RebornSymbols.Maximize,
+					font: grFont.topMenuCaption,
+					type: 'window'
+				},
+				Close: {
+					ico: RebornSymbols.Close,
+					font: grFont.topMenuCaption,
+					type: 'window'
 				},
 				Back: {
-					ico: '\uE00E',
+					ico: RebornSymbols.ArrowLeft,
 					type: 'backforward',
-					font: grFont.symbol,
+					font: grFont.playlistHistory,
 					w: SCALE(22),
 					h: SCALE(22)
 				},
 				Forward: {
-					ico: '\uE00F',
+					ico: RebornSymbols.ArrowRight,
 					type: 'backforward',
-					font: grFont.symbol,
+					font: grFont.playlistHistory,
 					w: SCALE(22),
 					h: SCALE(22)
+				},
+				Stop: {
+					ico: RebornSymbols.Stop,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Previous: {
+					ico: RebornSymbols.Prev,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Play: {
+					ico: RebornSymbols.Play,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Pause: {
+					ico: RebornSymbols.Pause,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Next: {
+					ico: RebornSymbols.Next,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackDefault: {
+					ico: RebornSymbols.PlaybackDefault,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackRepeatPlaylist: {
+					ico: RebornSymbols.PlaybackRepeatPlaylist,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackRepeatTrack: {
+					ico: RebornSymbols.PlaybackRepeatTrack,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				PlaybackShuffle: {
+					ico: RebornSymbols.PlaybackShuffle,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				Reload: {
+					ico: RebornSymbols.Power,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				AddTracks: {
+					ico: RebornSymbols.Medical,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
+				},
+				ShowVolume: {
+					ico: RebornSymbols.Volume,
+					font: grFont.lowerBarBtn,
+					type: 'transport',
+					w: transportCircleSize,
+					h: transportCircleSize
 				}
 			};
 		} catch (e) {
@@ -901,6 +891,108 @@ class Button {
 	}
 
 	/**
+	 * Draws a complete top menu button (background style + text/icon) for menu/compact/window types.
+	 * @param {GdiGraphics} g - The GDI graphics object.
+	 * @param {number} w - The width.
+	 * @param {number} h - The height.
+	 * @param {object} btn - The button config.
+	 * @param {number} btnState - The button state (enum value).
+	 * @param {object} btnColor - The color config for the state.
+	 * @param {object} btnStyle - The style config.
+	 * @private
+	 */
+	_drawTopMenuButton(g, w, h, btn, btnState, btnColor, btnStyle) {
+		const arc = SCALE(4);
+		const lineW = SCALE(2);
+		const halfLineW = SCALE(1);
+
+		// * Button backgrounds for styles
+		if (btnState) {
+			if (btnStyle.topMenuDefault || btnStyle.topMenuFilled) {
+				if (btnStyle.topMenuFilled) {
+					g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, btnColor.menuBgColor);
+				}
+				g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, btnColor.menuRectColor);
+			}
+			else if (btnStyle.topMenuBevel) {
+				g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, btnColor.menuBgColor);
+				FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 1);
+				g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, btnColor.menuRectColor);
+			}
+			else if (btnStyle.topMenuInner) {
+				g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, btnColor.menuBgColor);
+				FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 0);
+				g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, btnColor.menuRectColor);
+			}
+			else if (btnStyle.topMenuEmboss) {
+				g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, btnColor.menuBgColor);
+				FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 0.33);
+				g.DrawRoundRect(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 1, arc, arc, 1, grCol.menuRectStyleEmbossTop);
+				g.DrawRoundRect(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 1, arc, arc, 1, grCol.menuRectStyleEmbossBottom);
+			}
+		}
+
+		// * Compact top menu state
+		if (btn.type === 'compact') {
+			const space = g.CalcTextWidth(' ', grFont.topMenuCaption);
+			const icoW = g.CalcTextWidth(this.btnMap.Hamburger.ico, grFont.topMenuCaption);
+			const hamburgerW = icoW + space;
+			const padding = space * (RES._4K ? 1.5 : 1.0);
+			const hamburgerX = Math.round(grSet.topMenuCompactSymbolOnly ? (w - hamburgerW) / 2 : hamburgerW) - padding;
+
+			g.DrawString(this.btnMap.Hamburger.ico, grFont.topMenuCaption, btnColor.menuTextColor, hamburgerX, HD_4K(0, 2), hamburgerW, h, StringFormat(1, 1));
+			if (!grSet.topMenuCompactSymbolOnly) {
+				g.DrawString(btn.ico, btn.font, btnColor.menuTextColor, hamburgerW * 1.25, 0, w - hamburgerW, h, StringFormat(1, 1));
+			}
+			return;
+		}
+
+		// * Normal expanded top menu state
+		g.DrawString(btn.ico, btn.font, btnColor.menuTextColor, 0, btn.type === 'window' ? HD_4K(0, 1) : 0, w, h, StringFormat(1, 1));
+	}
+
+	/**
+	 * Draws a complete transport button (ellipse style + centered icon).
+	 * @param {GdiGraphics} g - The GDI graphics object.
+	 * @param {number} w - The width.
+	 * @param {number} h - The height.
+	 * @param {string} btnKey - The button key (e.g., 'Stop').
+	 * @param {object} btn - The button config.
+	 * @param {object} btnColor - The color config for the state.
+	 * @param {object} btnStyle - The style config.
+	 * @private
+	 */
+	_drawTransportButton(g, w, h, btnKey, btn, btnColor, btnStyle) {
+		const lineW = SCALE(2);
+		const halfLineW = SCALE(1);
+
+		// * Button backgrounds for styles
+		if (btnStyle.transportDefault) {
+			g.DrawEllipse(halfLineW, halfLineW, w - lineW - 2, h - lineW - 1, lineW, btnColor.transportEllipseColor);
+			g.FillEllipse(halfLineW, halfLineW, w - lineW - 2, h - lineW - 1, grCol.transportEllipseBg);
+		}
+		else if (btnStyle.transportBevel) {
+			g.FillEllipse(halfLineW, halfLineW, w - lineW - 1, h - lineW - 1, grCol.transportStyleTop);
+			g.DrawEllipse(halfLineW, halfLineW, w - lineW - 1, h - lineW, 1, grCol.transportStyleBottom);
+			FillGradEllipse(g, halfLineW - 0.5, halfLineW, w + 0.5, h + 0.5, 90, 0, grCol.transportStyleBg, 1);
+		}
+		else if (btnStyle.transportInner) {
+			g.FillEllipse(halfLineW, halfLineW, w - lineW, h - lineW - 1, grCol.transportStyleTop);
+			g.DrawEllipse(halfLineW, halfLineW - 1, w - lineW, h - lineW + 1, 1, grCol.transportStyleBottom);
+			FillGradEllipse(g, halfLineW - 0.5, halfLineW, w + 1.5, h + 0.5, 90, 0, grCol.transportStyleBg, 0);
+		}
+		else if (btnStyle.transportEmboss) {
+			g.FillEllipse(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 2, grCol.transportEllipseBg);
+			FillGradEllipse(g, halfLineW + 2, halfLineW + 2, w - lineW - 2, h - lineW - 2, 90, 0, grCol.transportStyleBg, 0.33);
+			g.DrawEllipse(halfLineW + 1, halfLineW + 2, w - lineW - 2, h - lineW - 3, lineW, grCol.transportStyleTop);
+			g.DrawEllipse(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 2, lineW, grCol.transportStyleBottom);
+		}
+
+		// * Transport Icons
+		g.DrawString(btn.ico, btn.font, btnColor.transportIconColor, 0, 0, w, h, StringFormat(1, 1));
+	}
+
+	/**
 	 * Creates the button images for various states ('Default', 'Hovered', 'Down', 'Enabled') based on the current button configurations.
 	 * @param {boolean} [createButtonMap] - Indicates whether to create the button map, true by default.
 	 * Set to false to use previously loaded button map for performance optimization.
@@ -910,172 +1002,71 @@ class Button {
 	_createButtonImages(createButtonMap = true) {
 		// DebugLog('Buttons => createButtonImages');
 		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'createButtonImages');
-
 		if (createButtonMap || IsEmpty(this.btnMap)) {
 			this.btnMap = this._createButtonMap();
 		}
 
-		const btnCompact = grSet.topMenuCompactSymbolOnly ? '\uf0c9' : '\uf0c9  Menu';
-		const arc = SCALE(4);
-		const lineW = SCALE(2);
-		const halfLineW = Math.floor(lineW / 2);
-
-		const btnStyle = {
-			topMenuDefault: grSet.styleTopMenuButtons === 'default',
-			topMenuFilled: grSet.styleTopMenuButtons === 'filled',
-			topMenuBevel: grSet.styleTopMenuButtons === 'bevel',
-			topMenuInner: grSet.styleTopMenuButtons === 'inner',
-			topMenuEmboss: grSet.styleTopMenuButtons === 'emboss',
-			transportDefault: grSet.styleTransportButtons === 'default',
-			transportBevel: grSet.styleTransportButtons === 'bevel',
-			transportInner: grSet.styleTransportButtons === 'inner',
-			transportEmboss: grSet.styleTransportButtons === 'emboss'
-		};
-
-		const stateColor = {
-			[ButtonState.Default]: {
-				menuTextColor: grCol.menuTextNormal,
-				menuRectColor: grCol.menuRectNormal,
-				menuBgColor: grCol.menuBgColor,
-				transportIconColor: grCol.transportIconNormal,
-				transportEllipseColor: grCol.transportEllipseNormal
-				// iconAlpha: 255, // Used for images only and not used atm
-			},
-			[ButtonState.Hovered]: {
-				menuTextColor: grCol.menuTextHovered,
-				menuRectColor: grCol.menuRectHovered,
-				menuBgColor: grCol.menuBgColor,
-				transportIconColor: grCol.transportIconHovered,
-				transportEllipseColor: grCol.transportEllipseHovered
-				// iconAlpha: 215, // Used for images only and not used atm
-			},
-			[ButtonState.Down]: {
-				menuTextColor: grCol.menuTextDown,
-				menuRectColor: grCol.menuRectDown,
-				menuBgColor: grCol.menuBgColor,
-				transportIconColor: grCol.transportIconDown,
-				transportEllipseColor: grCol.transportEllipseDown
-				// iconAlpha: 215, // Used for images only and not used atm
-			},
-			[ButtonState.Enabled]: {
-				// iconAlpha: 255, // Used for images only and not used atm
-			}
-		};
+		const btnCompact = grSet.topMenuCompactSymbolOnly ? this.btnMap.Hamburger.ico : `${this.btnMap.Hamburger.ico} Menu`;
+		const btnStateColor = this.getButtonColor();
+		const btnStateStyle = this.getButtonStyle();
+		const stylesWithGradients = grSet.styleBevel
+			|| grSet.styleBlend || grSet.styleBlend2
+			|| grSet.styleGradient || grSet.styleGradient2
+			|| grSet.styleAlternative || grSet.styleAlternative2;
 
 		for (const btnKey in this.btnMap) {
 			const btn = this.btnMap[btnKey];
+			const btnStateImages = {};
 
 			if (['menu', 'compact', 'window'].includes(btn.type)) {
 				const img = gdi.CreateImage(100, 100);
 				const g = img.GetGraphics();
 				const textToMeasure = (btn.type === 'compact') ? btnCompact : btn.ico;
-				const measurements = g.MeasureString(textToMeasure, btn.font, 0, 0, 0, 0);
-				btn.w = Math.ceil(measurements.Width + SCALE(btn.type === 'window' ? 10 : 20));
-				btn.h = Math.ceil(measurements.Height + SCALE(btn.type === 'window' ? 10 : 5));
+				const width = g.CalcTextWidth(textToMeasure, btn.font);
+				const height = g.CalcTextHeight(textToMeasure, btn.font);
+				btn.w = Math.floor(width + SCALE(btn.type === 'window' ? 10 : 20));
+				btn.h = Math.floor(height + SCALE(btn.type === 'window' ? 10 : 5));
 				img.ReleaseGraphics(g);
 			}
 
 			let { w, h } = btn;
-
-			if (RES._4K) {
-				if (btn.type === 'window') {
-					w = Math.round(btn.w * 1.2);
-					h = Math.round(btn.h * 1.2);
-				} else if (btn.type !== 'transport') {
-					w += 0;
-					h += 10;
-				}
+			if (btn.type === 'window') {
+				w = Math.round(btn.w * (RES._4K ? 1.4 : 1.2));
+				h = Math.round(btn.h * (RES._4K ? 1.2 : 1.0));
+			} else if (RES._4K && btn.type !== 'transport') {
+				h += 10;
 			}
-
-			const stateImages = {};
 
 			for (const stateKey of ['Default', 'Hovered', 'Down', 'Enabled']) {
 				if (stateKey === 'Enabled' && btn.type !== 'image') continue;
 
-				const stateButton = ButtonState[stateKey];
-				const { menuTextColor, menuRectColor, menuBgColor, transportIconColor, transportEllipseColor } = stateColor[stateButton];
+				const btnState = ButtonState[stateKey];
+				const btnColor = btnStateColor[btnState];
 				const img = gdi.CreateImage(w, h);
 				const g = img.GetGraphics();
 
 				g.SetSmoothingMode(SmoothingMode.AntiAlias);
-				// * Positions playback icons weirdly on AntiAliasGridFit
-				if (btn.type !== 'transport' && btn.type !== 'compact' && !grSet.customThemeFonts) {
+				if (stylesWithGradients) { // ! Can not use ClearTypeGridFit when main bg has gradients
 					g.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 				} else {
-					g.SetTextRenderingHint(TextRenderingHint.AntiAlias);
+					g.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+					g.FillSolidRect(0, 0, w, h, btn.type === 'backforward' ? pl.col.bg : grCol.bg);
 				}
 
-				switch (btn.type) {
-					case 'menu': case 'window': case 'compact':
-						if (stateButton) {
-							if (btnStyle.topMenuDefault || btnStyle.topMenuFilled) {
-								if (btnStyle.topMenuFilled) g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
-								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, menuRectColor);
-							}
-							else if (btnStyle.topMenuBevel) {
-								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
-								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 1);
-								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, menuRectColor);
-							}
-							else if (btnStyle.topMenuInner) {
-								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
-								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 0);
-								g.DrawRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, 1, menuRectColor);
-							}
-							else if (btnStyle.topMenuEmboss) {
-								g.FillRoundRect(halfLineW, halfLineW, w - lineW, h - lineW, arc, arc, menuBgColor);
-								FillGradRoundRect(g, halfLineW, halfLineW + 1, w, h - 1, arc, arc, 90, 0, grCol.menuStyleBg, 0.33);
-								g.DrawRoundRect(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 1, arc, arc, 1, grCol.menuRectStyleEmbossTop);
-								g.DrawRoundRect(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 1, arc, arc, 1, grCol.menuRectStyleEmbossBottom);
-							}
-						}
-
-						if (btn.type === 'compact') {
-							const hamburgerW = g.CalcTextWidth('\uf0c9', grFont.topMenuCompact);
-							const hamburgerX = Math.round(grSet.topMenuCompactSymbolOnly ? (w - hamburgerW) / 2 : hamburgerW * 0.75);
-							g.DrawString('\uf0c9', grFont.topMenuCompact, menuTextColor, hamburgerX, HD_4K(0, 1), hamburgerW, h, StringFormat(1, 1));
-							if (!grSet.topMenuCompactSymbolOnly) {
-								g.DrawString(btn.ico, btn.font, menuTextColor, hamburgerW * 1.25, 0, w - hamburgerW, h, StringFormat(1, 1));
-							}
-						} else {
-							g.DrawString(btn.ico, btn.font, menuTextColor, 0, 0, w, h, StringFormat(1, 1));
-						}
-						break;
-
-					case 'transport':
-						if (btnStyle.transportDefault) {
-							g.DrawEllipse(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 2, lineW, transportEllipseColor);
-							g.FillEllipse(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 2, grCol.transportEllipseBg);
-						}
-						else if (btnStyle.transportBevel) {
-							g.FillEllipse(halfLineW, halfLineW, w - lineW - 1, h - lineW - 1, grCol.transportStyleTop);
-							g.DrawEllipse(halfLineW, halfLineW, w - lineW - 1, h - lineW, 1, grCol.transportStyleBottom);
-							FillGradEllipse(g, halfLineW - 0.5, halfLineW, w + 0.5, h + 0.5, 90, 0, grCol.transportStyleBg, 1);
-						}
-						else if (btnStyle.transportInner) {
-							g.FillEllipse(halfLineW, halfLineW, w - lineW, h - lineW - 1, grCol.transportStyleTop);
-							g.DrawEllipse(halfLineW, halfLineW - 1, w - lineW, h - lineW + 1, 1, grCol.transportStyleBottom);
-							FillGradEllipse(g, halfLineW - 0.5, halfLineW, w + 1.5, h + 0.5, 90, 0, grCol.transportStyleBg, 0);
-						}
-						else if (btnStyle.transportEmboss) {
-							g.FillEllipse(halfLineW + 1, halfLineW + 1, w - lineW - 2, h - lineW - 2, grCol.transportEllipseBg);
-							FillGradEllipse(g, halfLineW + 2, halfLineW + 2, w - lineW - 2, h - lineW - 2, 90, 0, grCol.transportStyleBg, 0.33);
-							g.DrawEllipse(halfLineW + 1, halfLineW + 2, w - lineW - 2, h - lineW - 3, lineW, grCol.transportStyleTop);
-							g.DrawEllipse(halfLineW + 1, halfLineW, w - lineW - 2, h - lineW - 2, lineW, grCol.transportStyleBottom);
-						}
-						g.DrawString(btn.ico, btn.font, transportIconColor, 1, (['Stop', 'Reload', 'AddTracks'].includes(btnKey)) ? 0 : 1, w, h, StringFormat(1, 1));
-						break;
-
-					case 'backforward':
-						g.DrawString(btn.ico, btn.font, pl.col.plman_text_hovered, btnKey === 'Back' ? -1 : 0, 0, w, h, StringFormat(1, 1));
-						break;
+				if (['menu', 'compact', 'window'].includes(btn.type)) {
+					this._drawTopMenuButton(g, w, h, btn, btnState, btnColor, btnStateStyle);
+				}
+				else if (btn.type === 'transport') {
+					this._drawTransportButton(g, w, h, btnKey, btn, btnColor, btnStateStyle);
+				}
+				else if (btn.type === 'backforward') {
+					g.DrawString(btn.ico, btn.font, pl.col.plman_text_hovered, btnKey === 'Back' ? -1 : 0, 0, w, h, StringFormat(1, 1));
 				}
 
 				img.ReleaseGraphics(g);
-				stateImages[stateKey] = img;
+				btnStateImages[stateKey] = img;
 			}
-
-			this.btnImg[btnKey] = stateImages;
+			this.btnImg[btnKey] = btnStateImages;
 		}
 
 		SetDebugProfile(false, 'print', 'createButtonImages');
@@ -1088,11 +1079,10 @@ class Button {
 	 * @private
 	 */
 	_createTopMenuButtons(ww, wh) {
-		/** @type {GdiBitmap[]} */
 		let img = this.btnImg.File;
 		let x   = SCALE(10);
 		const h = img.Default.Height;
-		const y = Math.round(grm.ui.topMenuHeight * 0.5 - h * 0.5 - SCALE(1));
+		const y = Math.floor(grm.ui.topMenuHeight * 0.5 - h * 0.5);
 		const minWidth = ww < SCALE(grSet.layout === 'compact' ? 580 : 620);
 		const fontSize = grSet.menuFontSize_layout;
 		const fontSizeCorr = minWidth && fontSize > 12 ? -fontSize * 0.75 : 0;
@@ -1161,7 +1151,7 @@ class Button {
 		const totalWidth = btnSize * btnCount + (btnCount - 1);
 
 		let x = ww - totalWidth - SCALE(10);
-		const y = Math.round(grm.ui.topMenuHeight * 0.5 - btnSize * 0.5 - SCALE(1));
+		const y = Math.floor(grm.ui.topMenuHeight * 0.5 - btnSize * 0.5);
 
 		this.btn.Minimize = new Button(x, y, btnSize, btnSize, 'Minimize', this.btnImg.Minimize, 'Minimize');
 		x += btnSize;
@@ -1191,7 +1181,7 @@ class Button {
 
 		const btnSize = SCALE(grSet.transportButtonSize_layout);
 		const y = grm.ui.getLowerBarButtonsY();
-		const p = SCALE(grSet.transportButtonSpacing_layout); // Space between buttons
+		const p = SCALE(grSet.transportButtonSpacing_layout);
 		const x = (ww - btnSize * buttonCount - p * (buttonCount - 1)) * 0.5;
 		const calcX = (index) => x + (btnSize + p) * index;
 
@@ -1223,7 +1213,7 @@ class Button {
 	// * PUBLIC METHODS - INITIALIZATION * //
 	// #region PUBLIC METHODS - INITIALIZATION
 	/**
-	 * Creates the theme buttions such as top menu and lower bar transport buttons.
+	 * Creates the theme buttons such as top menu and lower bar transport buttons.
 	 * @param {number} ww - The window.Width.
 	 * @param {number} wh - The window.Height.
 	 * @param {boolean} [createButtonImages] - Whether to create the button images, true by default.
@@ -1303,12 +1293,61 @@ class Button {
 	/**
 	 * Updates the state of the button.
 	 * @param {number} state - The new state to set for the button.
-	 * @private
 	 */
-	changeState(state) {
+	changeButtonState(state) {
 		this.state = state;
 		this.activatedBtns.push(this);
 		this._alphaTimer();
+	}
+
+	/**
+	 * Gets the current button style configuration based on theme settings.
+	 * @returns {object} An object containing boolean flags for each button style type.
+	 */
+	getButtonStyle() {
+		return {
+			topMenuDefault: grSet.styleTopMenuButtons === 'default',
+			topMenuFilled : grSet.styleTopMenuButtons === 'filled',
+			topMenuBevel  : grSet.styleTopMenuButtons === 'bevel',
+			topMenuInner  : grSet.styleTopMenuButtons === 'inner',
+			topMenuEmboss : grSet.styleTopMenuButtons === 'emboss',
+
+			transportDefault: grSet.styleTransportButtons === 'default',
+			transportBevel  : grSet.styleTransportButtons === 'bevel',
+			transportInner  : grSet.styleTransportButtons === 'inner',
+			transportEmboss : grSet.styleTransportButtons === 'emboss'
+		};
+	}
+
+	/**
+	 * Gets the color configuration for each button state.
+	 * @returns {object} An object mapping button states to their color configurations.
+	 */
+	getButtonColor() {
+		return {
+			[ButtonState.Default]: {
+				menuTextColor: grCol.menuTextNormal,
+				menuRectColor: grCol.menuRectNormal,
+				menuBgColor: grCol.menuBgColor,
+				transportIconColor: grCol.transportIconNormal,
+				transportEllipseColor: grCol.transportEllipseNormal
+			},
+			[ButtonState.Hovered]: {
+				menuTextColor: grCol.menuTextHovered,
+				menuRectColor: grCol.menuRectHovered,
+				menuBgColor: grCol.menuBgColor,
+				transportIconColor: grCol.transportIconHovered,
+				transportEllipseColor: grCol.transportEllipseHovered
+			},
+			[ButtonState.Down]: {
+				menuTextColor: grCol.menuTextDown,
+				menuRectColor: grCol.menuRectDown,
+				menuBgColor: grCol.menuBgColor,
+				transportIconColor: grCol.transportIconDown,
+				transportEllipseColor: grCol.transportEllipseDown
+			},
+			[ButtonState.Enabled]: {}
+		};
 	}
 
 	/**
@@ -1319,11 +1358,11 @@ class Button {
 	setButtonState(activeButton, deactivateButton) {
 		if (activeButton) {
 			activeButton.enabled = true;
-			activeButton.changeState(ButtonState.Down);
+			activeButton.changeButtonState(ButtonState.Down);
 		}
 		if (deactivateButton) {
 			deactivateButton.enabled = false;
-			deactivateButton.changeState(ButtonState.Default);
+			deactivateButton.changeButtonState(ButtonState.Default);
 		}
 	}
 
@@ -1383,7 +1422,7 @@ class Button {
 	 */
 	on_mouse_lbtn_dblclk(x, y, m) {
 		if (!this.activeButton) return;
-		this.activeButton.changeState(ButtonState.Down);
+		this.activeButton.changeButtonState(ButtonState.Down);
 		this.downButton = this.activeButton;
 		this.downButton.onDblClick();
 	}
@@ -1396,7 +1435,7 @@ class Button {
 	 */
 	on_mouse_lbtn_down(x, y, m) {
 		if (!this.activeButton) return;
-		this.activeButton.changeState(ButtonState.Down);
+		this.activeButton.changeButtonState(ButtonState.Down);
 		this.downButton = this.activeButton;
 	}
 
@@ -1417,10 +1456,10 @@ class Button {
 		}
 
 		if (this.activeButton) {
-			this.activeButton.changeState(ButtonState.Hovered);
+			this.activeButton.changeButtonState(ButtonState.Hovered);
 		}
 		else if (this.downButton && this.downButton === this.activeButton) {
-			this.downButton.changeState(ButtonState.Default);
+			this.downButton.changeButtonState(ButtonState.Default);
 		}
 
 		this.activeButton = this.downButton;
@@ -1461,10 +1500,10 @@ class Button {
 		}
 
 		if (this.oldButton && this.oldButton !== this.activeButton) {
-			this.oldButton.changeState(this.oldButton.enabled ? ButtonState.Enabled : ButtonState.Default);
+			this.oldButton.changeButtonState(this.oldButton.enabled ? ButtonState.Enabled : ButtonState.Default);
 		}
 		if (this.activeButton && this.activeButton !== this.oldButton) {
-			this.activeButton.changeState(ButtonState.Hovered);
+			this.activeButton.changeButtonState(ButtonState.Hovered);
 		}
 		this.downButton = this.activeButton;
 

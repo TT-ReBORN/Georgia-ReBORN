@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -75,7 +75,7 @@ class Configuration {
 		 * @param {string} str - The string in which to escape backslashes.
 		 * @returns {string} - The string with backslashes escaped.
 		 */
-		this.escapeBackslashes = (str) => str.replace(/\\/g, '\\\\');
+		this.escapeBackslashes = (str) => str.replace(Regex.PathBackslash, '\\\\');
 
 		if (!configurationPath.includes('.jsonc')) {
 			console.log('<WARNING: Config file is not a .jsonc. Text editors may complain about comments in the file>');
@@ -296,7 +296,7 @@ class Configuration {
 
 		while (comment.length > 0) {
 			const line = comment.slice(0, lineLengthMax);
-			const lineBackslashCount = (line.match(/\\\\/g) || []).length;
+			const lineBackslashCount = (line.match(Regex.PathDoubleBackslash) || []).length;
 			const lineLength = lineLengthMax - lineBackslashCount;
 
 			const indexEnd = comment.slice(0, lineLength).lastIndexOf(' ');

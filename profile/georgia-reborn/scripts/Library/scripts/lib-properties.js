@@ -234,7 +234,7 @@ let libProperties = [
 	['Panel Library - Node: Show Tracks', true, 'showTracks'],
 	['Panel Library - Node: Style', 5, 'nodeStyle'],
 	['Panel Library - Node [Squares]: Windows', false, 'winNode'],
-	['Panel Library - Node Custom Icon: +|-', '\uE013|\uE015', 'iconCustom'],
+	['Panel Library - Node Custom Icon: +|-', `${RebornSymbols.ArrowRight2}|${RebornSymbols.ArrowDown2}`, 'iconCustom'],
 	['Panel Library - Node Custom Icon: Vertical Offset (%)', -2, 'iconVerticalPad'],
 
 	['Panel Library - Nowplaying Highlight', true, 'highLightNowplaying'],
@@ -265,7 +265,7 @@ let libProperties = [
 	['Panel Library - Scroll Touch Flick Distance 0-10', 0.8, 'flickDistance'],
 	['Panel Library - Scroll Touch Flick Duration 0-5000 msec (Max)', 3000, 'durationTouchFlick'],
 	['Panel Library - Scroll: Smooth Scroll', true, 'smooth'],
-	['Panel Library - Scrollbar Arrow Custom Icon', '\uE0A0', 'arrowSymbol'],
+	['Panel Library - Scrollbar Arrow Custom Icon', RebornSymbols.ArrowUp4, 'arrowSymbol'],
 	['Panel Library - Scrollbar Arrow Custom Icon: Vertical Offset (%)', -24, 'sbarButPad'],
 	['Panel Library - Scrollbar Arrow Width', Math.round(SCALE(11) * $Lib.scale), 'sbarArrowWidth'],
 	['Panel Library - Scrollbar Button Type', 0, 'sbarButType'],

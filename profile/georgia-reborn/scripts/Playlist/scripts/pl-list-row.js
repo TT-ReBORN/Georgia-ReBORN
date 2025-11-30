@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -170,7 +170,7 @@ class PlaylistRow extends BaseListItem {
 
 		////////////////////////////////////////////////////////////
 
-		const is_radio = this.metadb.RawPath.startsWith('http');
+		const is_radio = Regex.WebStreaming.test(this.metadb.RawPath);
 
 		const right_spacing = SCALE(20);
 		let cur_x = this.x + right_spacing;
@@ -307,7 +307,7 @@ class PlaylistRow extends BaseListItem {
 
 			DrawString(gr, this.title_text, title_font, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			if (this.is_playing) {
-				DrawString(gr, fb.IsPaused ? Guifx.pause : Guifx.play, grFont.guifx, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
+				DrawString(gr, fb.IsPaused ? RebornSymbols.Pause : RebornSymbols.Play, pl.font.playback_icon, this.title_color, cur_x, this.y, title_w, this.h, title_text_format);
 			}
 
 			testRect && gr.DrawRect(this.x, this.y - 1, title_w, this.h, 1, RGBA(155, 155, 255, 250));
@@ -321,14 +321,13 @@ class PlaylistRow extends BaseListItem {
 
 		// * TITLE ARTIST
 		if (this.title_artist_text == null) {
-			const pattern = `^${$('%album artist%', this.metadb).replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&')} `;
-			const regex = new RegExp(pattern);
+			const regex = new RegExp(`^${$('%album artist%', this.metadb).replace(Regex.UtilRegexEscape, '\\$&')} `);
 			this.title_artist_text = $(`[$if($strcmp(${grTF.artist},%artist%),$if(%album artist%,$if(%track artist%,%track artist%,),),${grTF.artist})]`, this.metadb);
 			if (this.title_artist_text.length) {
 				// if tf.artist evaluates to something different than %album artist% strip %artist% from the start of the string
 				// i.e. tf.artist = "Metallica feat. Iron Maiden" then we want this.title_artist_text = "feat. Iron Maiden"
 				this.title_artist_text = this.title_artist_text.replace(regex, '');
-				this.title_artist_text = `  \u25AA  ${this.title_artist_text}`;
+				this.title_artist_text = `  ${Unicode.BlackSmallSquare}  ${this.title_artist_text}`;
 			}
 		}
 		if (this.title_artist_text) {
@@ -480,7 +479,7 @@ class PlaylistRow extends BaseListItem {
 			return;
 		}
 
-		const is_radio = this.metadb.RawPath.startsWith('http');
+		const is_radio = Regex.WebStreaming.test(this.metadb.RawPath);
 		const margin = '';
 		const indexNumbers = this.idx < 9 ? `0${this.idx + 1}. ` : `${this.idx + 1}. `;
 		const trackNumbers = grSet.showPlaylistIndexNumbers ? indexNumbers : `$if2(%tracknumber%,$pad_right(${this.idx_in_header + 1},2,0)). `;

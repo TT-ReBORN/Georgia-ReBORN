@@ -40,11 +40,11 @@ class BioNames {
 	}
 
 	albumClean(n) {
-		return n.replace(/CD(\s*\d|\.0\d)|CD\s*(One|Two|Three)|Dis(c|k)\s*\d|Dis(c|k)\s*(III|II|I|One|Two|Three)\b|(Bonus\s*Track|Collector's|(Digital\s*|Super\s*|)Deluxe|Digital|Expanded|Limited|Platinum|Reissue|Special)\s*(Edition|Version)|(Bonus\s*(CD|Disc))|\d\d\w\w\s*Anniversary\s*(Expanded\s*|Re(-|)master\s*|)(Edition|Re(-|)master|Version)|((19|20)\d\d(\s*|\s*-\s*)|)(Digital(ly|)\s*|)(Re(-|)master(ed|)|Re(-|)recorded)(\s*Edition|\s*Version|)|\(Deluxe\)|\(Mono\)|\(Reissue\)|\(Revisited\)|\(Stereo\)|\(Web\)|\[Deluxe\]|\[Mono\]|\[Reissue\]|\[Revisited\]|\[Stereo\]|\[Web\]/gi, '').replace(/\(\s*\)|\[\s*\]/g, ' ').replace(/\s\s+/g, ' ').replace(/-\s*$/g, ' ').trim();
+		return n.replace(Regex.TextAlbumEdition, '').replace(Regex.PunctEmptyContainers, ' ').replace(Regex.SpaceMultipleTwo, ' ').replace(Regex.EdgeDashTrailingPadded, ' ').trim();
 	}
 
 	albumTidy(n) {
-		return n.replace(/CD(\s*\d|\.0\d)|CD\s*(One|Two|Three)|Dis(c|k)\s*\d|Dis(c|k)\s*(III|II|I|One|Two|Three)\b/gi, '').replace(/\(\s*\)|\[\s*\]/g, ' ').replace(/\s\s+/g, ' ').replace(/-\s*$/g, ' ').trim();
+		return n.replace(Regex.TextAlbumDisc, '').replace(Regex.PunctEmptyContainers, ' ').replace(Regex.SpaceMultipleTwo, ' ').replace(Regex.EdgeDashTrailingPadded, ' ').trim();
 	}
 
 	artist(focus, ignoreLock) {

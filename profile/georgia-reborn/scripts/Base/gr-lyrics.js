@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -36,12 +36,6 @@ class Lyrics {
 		this.lyricType = '';
 		/** @private @type {number} A counter to manage lyrics source loading queue. */
 		this.lyricsSourceQueue = 0;
-		/** @private @type {RegExp} A regular expression to match standard timestamps in lyrics. */
-		this.timestamps = /(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(\.\d{0,3})?\](\s*)/g;
-		/** @private @type {RegExp} A regular expression to match enhanced timestamps in lyrics. */
-		this.enhancedTimestamps = /(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g;
-		/** @private @type {RegExp} A regular expression to match leading timestamps in lyrics. */
-		this.leadingTimestamps = /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/;
 		/** @private @type {boolean} A boolean state value for lyric drag scrolling. */
 		this.scrollDrag = false;
 		/** @private @type {number} A y-coordinate value for the lyric drag scrolling. */
@@ -155,7 +149,7 @@ class Lyrics {
 		let foundLyrics = false;
 		const tpath = [];
 		const tfilename = [];
-		const stripReservedChars = (filename) => filename.replace(/[<>:"/\\|?*]/g, '_');
+		const stripReservedChars = (filename) => filename.replace(Regex.PathIllegalFilename, '_');
 		const lyricPaths = grPath.lyricsPath();
 
 		for (const path of lyricPaths) {
@@ -184,7 +178,7 @@ class Lyrics {
 	 * @returns {boolean} True if the file exists and this.fileName is set, false otherwise.
 	 */
 	checkLyrics(path, filename) {
-		this.lyricType = this.timestamps.test(this.lyricSource) ? 'lrc' : 'txt';
+		this.lyricType = Regex.LyricsTimestamp.test(this.lyricSource) ? 'lrc' : 'txt';
 		const types = [this.lyricType, 'lrc', 'txt'];
 
 		for (const type of types) {
@@ -391,14 +385,14 @@ class Lyrics {
 		}
 
 		if (!this.type.none) {
-			this.type.synced = lyr.some(line => this.leadingTimestamps.test(line));
+			this.type.synced = lyr.some(line => Regex.LyricsTimestampLeading.test(line));
 			this.type.unsynced = !this.type.synced;
 		}
 
 		if (this.type.synced) {
 			let lyrOffset = null;
 			lyr.some(line => {
-				lyrOffset = line.match(/^\s*\[offset\s*:(.*)\]\s*$/);
+				lyrOffset = line.match(Regex.LyricsOffset);
 				return lyrOffset;
 			});
 			this.lyricsOffset = lyrOffset && lyrOffset.length > 0 ? parseInt(lyrOffset[1]) : 0;
@@ -428,7 +422,6 @@ class Lyrics {
 	 */
 	parseSyncLyrics(lyr, isNone) {
 		const lyrics = [];
-		const offsetRegex = /^\s*\[offset\s*:(.*)\]\s*$/;
 		let groupId = 0;
 		let sentenceGroup = 0;
 		let prevTimestamp = null;
@@ -438,14 +431,14 @@ class Lyrics {
 		}
 
 		for (const line of lyr) {
-			if (!this.lyricsOffset && offsetRegex.test(line)) {
-				this.lyricsOffset = parseInt(line.match(offsetRegex)[1]) || 0;
+			if (!this.lyricsOffset && Regex.LyricsOffset.test(line)) {
+				this.lyricsOffset = parseInt(line.match(Regex.LyricsOffset)[1]) || 0;
 				continue;
 			}
-			const matches = line.match(this.leadingTimestamps);
+			const matches = line.match(Regex.LyricsTimestampLeading);
 			if (matches) {
 				const content = this.tidy(line);
-				const timestamps = matches[0].match(/\[.*?\]/g);
+				const timestamps = matches[0].match(Regex.PunctBracketed);
 				const currentTimestamp = this.getMilliseconds(timestamps[0]);
 
 				if (prevTimestamp !== null && currentTimestamp !== prevTimestamp) {
@@ -769,7 +762,7 @@ class Lyrics {
 	 * @returns {number} The time in milliseconds.
 	 */
 	getMilliseconds(t) {
-		t = t.trim().replace(/[[\]]/g, '');
+		t = t.trim().replace(Regex.PunctBracket, '');
 
 		const [minutes = '0', secondsPart = '0'] = t.split(':');
 		const [seconds = '0', frac = '0'] = secondsPart.split('.');
@@ -958,7 +951,7 @@ class Lyrics {
 	 * @returns {!string} A cleaned version of the original string without any timestamps.
 	 */
 	tidy(n) {
-		return n.replace(this.timestamps, '$1$4').replace(this.enhancedTimestamps, '$1$4').trim();
+		return n.replace(Regex.LyricsTimestamp, '$1$4').replace(Regex.LyricsTimestampEnhanced, '$1$4').trim();
 	}
 	// #endregion
 

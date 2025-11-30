@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2024                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -28,6 +28,7 @@ function PlaylistCreateFonts(forceCreation = false) {
 	}
 
 	const fontDefault    = grSet.customThemeFonts ? grCfg.customFont.fontDefault : 'Segoe UI';
+	const fontRebornSymbols = 'Reborn-Symbols';
 	const headerFontSize = grSet.playlistHeaderFontSize_layout;
 	const rowFontSize    = grSet.playlistFontSize_layout;
 
@@ -51,6 +52,7 @@ function PlaylistCreateFonts(forceCreation = false) {
 	pl.font.title_normal   = Font(titleNormalFont, rowFontSize);
 	pl.font.title_selected = Font(titleSelectedFont, rowFontSize);
 	pl.font.title_playing  = Font(titlePlayingFont, rowFontSize);
+	pl.font.playback_icon  = Font(fontRebornSymbols, rowFontSize + 1);
 
 	pl.font.artist_normal          = Font(artistNormalFont, headerFontSize + 3, grSet.customThemeFonts ? FontStyle.Bold : 0);
 	pl.font.artist_playing         = Font(artistPlayingFont, headerFontSize + 3, grSet.customThemeFonts ? FontStyle.Bold : 0);
@@ -65,12 +67,10 @@ function PlaylistCreateFonts(forceCreation = false) {
 
 	pl.font.playcount      = Font(playcountFont, rowFontSize - 3);
 	pl.font.plr_track      = Font(playcountFont, rowFontSize - 3);
-	pl.font.rating_not_set = Font('Segoe UI Symbol', rowFontSize + 2);
-	pl.font.rating_set     = Font('Segoe UI Symbol', rowFontSize + 4);
-	pl.font.scrollbar      = Font('Segoe UI Symbol', headerFontSize);
-
-	pl.font.font_awesome   = Font('FontAwesome', rowFontSize + 2);
-	pl.font.dummy_text     = Font(fontDefault, rowFontSize + 1);
+	pl.font.rating_not_set = Font(fontRebornSymbols, rowFontSize);
+	pl.font.rating_set     = Font(fontRebornSymbols, rowFontSize + 2);
+	pl.font.scrollbar      = Font(fontRebornSymbols, headerFontSize);
+	pl.font.lock           = Font(fontRebornSymbols, rowFontSize + 2);
 }
 
 

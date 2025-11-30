@@ -3,8 +3,6 @@
 class BioLyrics {
 	constructor() {
 		this.noLyrics = ['No lyrics found'];
-		this.enhancedTimestamps = /(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g;
-		this.leadingTimestamps = /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/;
 		this.lyr = [];
 		this.lyrics = [];
 		this.scrollDrag = false;
@@ -12,7 +10,6 @@ class BioLyrics {
 		this.scrollDragOffset = 0;
 		this.stepTime = 0;
 		this.tfLength = fb.TitleFormat('%length_seconds%');
-		this.timestamps = /(\s*)\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}])(\s*)/g;
 	}
 
 	// * METHODS * //
@@ -162,7 +159,7 @@ class BioLyrics {
 	}
 
 	getMilliseconds(t) {
-		t = t.trim().replace(/[[\]]/, '').split(':');
+		t = t.trim().replace(Regex.PunctBracket, '').split(':');
 		return Math.max((t.reduce((acc, time) => (60 * acc) + parseFloat(time))) * 1000, 0);
 	}
 
@@ -310,14 +307,14 @@ class BioLyrics {
 		}
 
 		if (!this.type.none) {
-			if (lyr.some(line => this.leadingTimestamps.test(line))) this.type.synced = true;
+			if (lyr.some(line => Regex.LyricsTimestampLeading.test(line))) this.type.synced = true;
 			else this.type.unsynced = true;
 		}
 
 		switch (true) {
 			case this.type.synced: {
 				let lyrOffset = null;
-				lyr.some(line => lyrOffset = line.match(/^\s*\[offset\s*:(.*)\]\s*$/));
+				lyr.some(line => lyrOffset = line.match(Regex.LyricsOffset));
 				if (lyrOffset && lyrOffset.length > 0) this.lyricsOffset = parseInt(lyrOffset[1]);
 				if (isNaN(this.lyricsOffset)) this.lyricsOffset = 0;
 				this.format(this.parseSyncLyrics(lyr, this.type.none), this.type.synced);
@@ -339,7 +336,7 @@ class BioLyrics {
 		if (isNone) lyrics.push({ timestamp: 0, content: lyr[0] });
 		lyr.forEach(line => {
 			const content = this.tidy(line);
-			const matches = line.match(this.leadingTimestamps);
+			const matches = line.match(Regex.LyricsTimestampLeading);
 			if (matches) {
 				const all = matches[0].split('][');
 				all.forEach(m => {
@@ -416,6 +413,6 @@ class BioLyrics {
 	}
 
 	tidy(n) {
-		return n.replace(this.timestamps, '$1$4').replace(this.enhancedTimestamps, '$1$4').trim();
+		return n.replace(Regex.LyricsTimestamp, '$1$4').replace(Regex.LyricsTimestampEnhanced, '$1$4').trim();
 	}
 }

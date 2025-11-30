@@ -38,8 +38,8 @@ class LibPanel {
 		this.s_lc = StringFormat(0, 1);
 		this.samePattern = true;
 		this.sbar_x = 0;
-		this.softSplitter = '\u00ac';
-		this.splitter = '\u00a6';
+		this.softSplitter = Unicode.NotSign;
+		this.splitter = Unicode.BrokenBar;
 		this.sortBy = '';
 		this.sourceName = '';
 		this.statistics = false;
@@ -226,7 +226,7 @@ class LibPanel {
 		this.colMarker = this.grp[libSet.viewBy].type.includes('$colour{');
 		let valid = false;
 		if (lib.ui.img.blurDark && libSet.text_hUse) {
-			const c = libSet.text_h.replace(/[^0-9.,-]/g, '').split(/[,-]/);
+			const c = libSet.text_h.replace(Regex.NumNonNumeric, '').split(Regex.PunctCommaDash);
 			if (c.length == 3 || c.length == 4) valid = true;
 		}
 		this.textDiffHighlight = lib.ui.img.blurDark && !libSet.highLightRow && !(libSet.text_hUse && valid) && libSet.highLightText && !this.colMarker;
@@ -240,7 +240,7 @@ class LibPanel {
 		this.lines = libSet.albumArtGrpLevel ? libSet.albumArtGrpLevel : [2, 2, 2, 1, 1][libSet.artId];
 
 		if (!this.folderView) {
-			this.statistics = /play(_|)count|auto(_|)rating/.test(this.view);
+			this.statistics = Regex.LibPlayCountRating.test(this.view);
 			if (this.view.includes('%<') || this.view.includes(this.splitter)) this.multiProcess = true;
 			if (this.multiProcess) {
 				if (this.view.includes('$swapbranchprefix{') || this.view.includes('$stripbranchprefix{')) this.multiPrefix = true;
@@ -254,8 +254,8 @@ class LibPanel {
 				mvIndices.forEach(v => {
 					if (v > ix1 && v < ix2) this.view = `${this.view.slice(0, v)}~~${this.view.slice(v)}`;
 				});
-				this.sortBy = this.sortBy.replace(/\$stripbranchprefix{/, '$$stripprefix(').replace(/~~%/, '%');
-				this.view = this.view.replace(/\$stripbranchprefix{/, '$$stripprefix(');
+				this.sortBy = this.sortBy.replace(Regex.TFLibStripBranchPrefix, '$$stripprefix(').replace(Regex.LibMarkerDoubleTildePercent, '%');
+				this.view = this.view.replace(Regex.TFLibStripBranchPrefix, '$$stripprefix(');
 			}
 			while (this.view.includes('$swapbranchprefix{')) {
 				ix1 = this.view.indexOf('$swapbranchprefix{');
@@ -265,30 +265,30 @@ class LibPanel {
 				mvIndices.forEach(v => {
 					if (v > ix1 && v < ix2) this.view = `${this.view.slice(0, v)}~${this.view.slice(v)}`;
 				});
-				this.sortBy = this.sortBy.replace(/\$swapbranchprefix{/, '$$swapprefix(').replace(/~%/, '%');
-				this.view = this.view.replace(/\$swapbranchprefix{/, '$$swapprefix(');
+				this.sortBy = this.sortBy.replace(Regex.TFLibSwapBranchPrefix, '$$swapprefix(').replace(Regex.LibMarkerTildePercent, '%');
+				this.view = this.view.replace(Regex.TFLibSwapBranchPrefix, '$$swapprefix(');
 			}
 			this.sortBy = this.sortBy.trimStart().replace(RegExp(this.splitter, 'g'), '  ');
 			this.view = this.view.trimStart().replace(RegExp(`\\s*${this.splitter}\\s*`, 'g'), this.softSplitter);
 			if (this.multiProcess) {
-				this.sortBy = this.sortBy.replace(/[<>]/g, '');
+				this.sortBy = this.sortBy.replace(Regex.PunctAngle, '');
 				const baseTag = [];
 				const origTag = [];
-				const rxp = !this.multiPrefix ? /%<.*?>%/g : /(~~%<|~%<|%<).*?>%/g;
+				const rxp = !this.multiPrefix ? Regex.LibMarkerPercent : Regex.LibMarkerMultiPercent;
 				let cur_match;
 				while ((cur_match = rxp.exec(this.view))) {
 					origTag.push(cur_match[0]);
-					baseTag.push(cur_match[0].replace('~~%', '%').replace('~%', '%').replace(/[<>]/g, ''));
+					baseTag.push(cur_match[0].replace('~~%', '%').replace('~%', '%').replace(Regex.PunctAngle, ''));
 				}
 				origTag.forEach((v, i) => {
 					const qMark = baseTag[i];
 					this.view = this.view.replace(RegExp(v), `$if2(${v},${qMark})`);
 				});
-				this.view = this.view.replace(/%<album artist>%/i, '$if3(%<#album artist#>%,%<#artist#>%,%<#composer#>%,%<#performer#>%)').replace(/%<album>%/i, '$if2(%<#album#>%,%<#venue#>%)').replace(/%<artist>%/i, '$if3(%<artist>%,%<album artist>%,%<composer>%,%<performer>%)').replace(/<#/g, '<').replace(/#>/g, '>');
+				this.view = this.view.replace(Regex.TFAlbumArtist, '$if3(%<#album artist#>%,%<#artist#>%,%<#composer#>%,%<#performer#>%)').replace(Regex.TFAlbumMulti, '$if2(%<#album#>%,%<#venue#>%)').replace(Regex.TFArtistMulti, '$if3(%<artist>%,%<album artist>%,%<composer>%,%<performer>%)').replace(Regex.LibMarkerSharpOpen, '<').replace(Regex.LibMarkerSharpClose, '>');
 			}
-			if (this.multiProcess) this.view = this.view.replace(/%</g, '#!#$meta_sep(').replace(/>%/g, ',@@)#!#');
-			this.sortBy = this.sortBy.replace(/\|/g, this.splitter);
-			this.view = this.view.replace(/\|/g, this.splitter);
+			if (this.multiProcess) this.view = this.view.replace(Regex.LibMarkerPercentOpen, '#!#$meta_sep(').replace(Regex.LibMarkerPercentClose, ',@@)#!#');
+			this.sortBy = this.sortBy.replace(Regex.DelimPipe, this.splitter);
+			this.view = this.view.replace(Regex.DelimPipe, this.splitter);
 			if (this.view.includes('$nodisplay{')) this.noDisplay = true;
 
 			while (this.view.includes('$nodisplay{')) {
@@ -297,7 +297,7 @@ class LibPanel {
 				const sub1 = this.view.substring(0, ix1 + 11);
 				const sub2 = this.view.substring(ix1 + 11, ix2);
 				const sub3 = this.view.substring(ix2);
-				this.view = sub1 + sub2.replace(/[\u00a6|]/g, '') + sub3;
+				this.view = sub1 + sub2.replace(Regex.UniBrokenPipe, '') + sub3;
 				ix1 = this.view.indexOf('$nodisplay{');
 				ix2 = this.view.indexOf('}', ix1);
 				this.view = $Lib.replaceAt(this.view, ix2, '  #@#');
@@ -320,7 +320,7 @@ class LibPanel {
 				this.view = colView.join('');
 			}
 			if (lib.ui.col.counts) this.colMarker = true;
-			if (this.colMarker) this.sortBy = this.sortBy.replace(/\$colour{.*?}/g, '');
+			if (this.colMarker) this.sortBy = this.sortBy.replace(Regex.TFLibColour, '');
 			while (this.sortBy.includes('$nodisplay{')) {
 				ix1 = this.sortBy.indexOf('$nodisplay{');
 				ix2 = this.sortBy.indexOf('}', ix1);
@@ -1187,9 +1187,9 @@ class LibPanel {
 				this.rootName = this.viewName + (!libSet.showSource ? '' : ` [${this.sourceName}]`);
 				break;
 			case 3: {
-				const nm = this.viewName.replace(/view by|^by\b/i, '').trim();
+				const nm = this.viewName.replace(Regex.LibViewBy, '').trim();
 				const basenames = nm.split(' ').map(v => pluralize(v));
-				const basename = basenames.join(' ').replace(/(album|artist|top|track)s\s/gi, '$1 ').replace(/(similar artist)\s/gi, '$1s ').replace(/years - albums/gi, 'Year - Albums');
+				const basename = basenames.join(' ').replace(Regex.LibTypesPlural, '$1 ').replace(Regex.LibSimilarArtist, '$1s ').replace(Regex.LibYearsAlbums, 'Year - Albums');
 				this.rootName = (!this.imgView ? `${!libSet.showSource ? 'All' : this.sourceName} (#^^^^# ${basename})` : `All #^^^^# ${basename}`);
 				this.rootName1 = (!this.imgView ? `${!libSet.showSource ? 'All' : this.sourceName} (1 ${nm})` : `All 1 ${nm}`);
 				break;
@@ -1209,7 +1209,7 @@ class LibPanel {
 		const libraryFontSize = SCALE((RES._4K ? grSet.libraryFontSize_layout - 0 : grSet.libraryFontSize_layout) || 14);
 		this.filter.font = gdi.Font(grFont.fontDefault, this.zoomFilter > 1.05 ? Math.floor(libraryFontSize) : Math.max(libraryFontSize, SCALE(12)), 1);
 		this.settings.font = gdi.Font('Segoe UI Symbol', libraryFontSize /*sz + mod*/, 0);
-		this.settings.icon = '\uE10C';
+		this.settings.icon = RebornSymbols.ThreeDotEllipsis;
 		this.settings.offset = Math.round(1 * this.settings.font.Size / 17);
 	}
 

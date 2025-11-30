@@ -545,7 +545,7 @@ class LibMenuItems {
 				}
 			}
 		}
-		if (d.value.includes('//') && /%year%|%date%/.test(d.value)) d.sortType = 1;
+		if (d.value.includes('//') && Regex.TFLibYearOrDate.test(d.value)) d.sortType = 1;
 		else if (d.value.includes('%album%')) d.sortType = 2;
 
 		d.menuName = d.sortType ? 'Sort' : 'Sort N/A for selected view pattern';
@@ -935,14 +935,14 @@ class LibMenuItems {
 
 	setViewByFolderHide(tree, indicesStr) {
 		const hideAlbumYear = (name) =>
-			name.replace(/^\s*[[({]?\d{4}[\])}]?\s*[-.]\s*/, '');
+			name.replace(Regex.DateYearLeading, '');
 
 		const hideTrackNumber = (name) =>
-			/^\d{1,2} \S/.test(name) && !/[-._]/.test(name) ? name :
-			name.replace(/^\d{1,2}([-.]\d{1,2})?([-. _]+)(?=\S)/, '');
+			Regex.TrackHasNumber.test(name) && !Regex.TrackHasSeparator.test(name) ? name :
+			name.replace(Regex.TrackNumberLeading, '');
 
 		const hideFileExtension = (name) =>
-			name.replace(/\.\w+$/, '');
+			name.replace(Regex.PathFileExtension, '');
 
 		const hideFuncs = [
 			hideAlbumYear,
@@ -983,13 +983,13 @@ class LibMenuItems {
 			if (i) {
 				const str = d.value.split('//');
 				if (str[1]) {
-					str[1] = str[1].trim().replace(/(\|\s*)(.*?(%year%|%date%))/g,  `$1${d.sortYear[i]}$2`)
-					if (!/\|.*?(%year%|%date%)/.test(str[1])) str[1] = d.sortYear[i] + str[1];
+					str[1] = str[1].trim().replace(Regex.DatePipeCapture,  `$1${d.sortYear[i]}$2`)
+					if (!Regex.DatePipeCheck.test(str[1])) str[1] = d.sortYear[i] + str[1];
 					d.value = `${str[0].trim()} // ${str[1]}`;
 				} else d.value = str[0];
 			}
 		} else if (d.sortType == 2 && i && sortByIX != -1) {
-			d.value = d.value.replace(/%album%/g, d.sortAlbumByYear[sortByIX]);
+			d.value = d.value.replace(Regex.TFAlbum, d.sortAlbumByYear[sortByIX]);
 		}
 		if (d.sortType == 1 || sortByIX != -1) {
 			const expanded = [];

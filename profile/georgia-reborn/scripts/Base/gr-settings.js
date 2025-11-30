@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-09-2025                                              * //
+// * Last change:    30-11-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1486,19 +1486,12 @@ class ThemeSettingsManager {
 		const settingsLayout = [
 			// * Font size
 			'menuFontSize',
-			'menuCaptionFontSize',
 			'lowerBarFontSize',
 			'notificationFontSize',
 			'popupFontSize',
 			'tooltipFontSize',
 
-			'guiFxBtnFontSize',
-			'pboDefaultBtnFontSize',
-			'pboReplayBtnFontSize',
-			'pboShuffleBtnFontSize',
-			'reloadBtnFontSize',
-			'addTrackBtnFontSize',
-			'volumeBtnFontSize',
+			'rebornSymbolsBtnFontSize',
 
 			'gridArtistFontSize',
 			'gridTrackNumFontSize',
@@ -1559,14 +1552,7 @@ class ThemeSettingsManager {
 		];
 
 		const settingsLayoutSpecial = {
-			menuCaptionFontSize: setting => setting.menuFontSize_layout + 1,
-			guiFxBtnFontSize: setting => setting.transportButtonSize_layout / 2,
-			pboDefaultBtnFontSize: setting => setting.transportButtonSize_layout / 1.6,
-			pboReplayBtnFontSize: setting => setting.transportButtonSize_layout / 2,
-			pboShuffleBtnFontSize: setting => setting.transportButtonSize_layout / 1.65,
-			reloadBtnFontSize: setting => setting.transportButtonSize_layout / 1.5,
-			addTrackBtnFontSize: setting => setting.transportButtonSize_layout / 1.5,
-			volumeBtnFontSize: setting => setting.transportButtonSize_layout / 1.33
+			rebornSymbolsBtnFontSize: setting => Math.round(setting.transportButtonSize_layout * 0.5)
 		};
 
 		for (const setting of settingsLayout) {

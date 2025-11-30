@@ -101,8 +101,8 @@ class BioButtons {
 
 		this.lookUp.zoomSize = Math.max(Math.round(this.lookUp.baseSize * bioSet.zoomLookUpBtn / 100), 7);
 		this.lookUp.scale = Math.round(this.lookUp.zoomSize / this.lookUp.baseSize * 100);
-		this.lookUp.font = gdi.Font('FontAwesome', SCALE(18) * this.lookUp.scale / 100, 0);
-		this.lookUp.fontLock = gdi.Font('FontAwesome', SCALE(17) * this.lookUp.scale / 100, 0);
+		this.lookUp.font = gdi.Font(grFont.fontRebornSymbols, SCALE(18) * this.lookUp.scale / 100, 0);
+		this.lookUp.fontLock = gdi.Font(grFont.fontRebornSymbols, SCALE(17) * this.lookUp.scale / 100, 0);
 
 		this.scr.btns = this.scr.albBtns.concat(this.scr.artBtns);
 		this.src.iconFont = this.src.font;
@@ -229,7 +229,7 @@ class BioButtons {
 		if (n == 'all' || n == 'lookUp') {
 			this.lookUp.col = $Bio.toRGB(bio.ui.col.text);
 			$Bio.gr(1, 1, false, g => {
-				this.lookUp.sz = Math.max(g.CalcTextWidth('\uF107', this.lookUp.font), g.CalcTextWidth('\uF023', this.lookUp.fontLock), g.CalcTextHeight('\uF107', this.lookUp.font), g.CalcTextHeight('\uF023', this.lookUp.fontLock));
+				this.lookUp.sz = Math.max(g.CalcTextWidth(RebornSymbols.AngleDown, this.lookUp.font), g.CalcTextWidth(RebornSymbols.Lock, this.lookUp.fontLock), g.CalcTextHeight(RebornSymbols.AngleDown, this.lookUp.font), g.CalcTextHeight(RebornSymbols.Lock, this.lookUp.fontLock));
 			});
 		}
 	}
@@ -270,13 +270,13 @@ class BioButtons {
 					break;
 				case 1: {
 					this.src.amBio = this.src.amRev = bioCfg.amDisplayName.toLowerCase() + (!bioSet.sourceAll ? '' : '... ');
-					this.src.lfmBio = this.src.lfmRev = `\uF202${!bioSet.sourceAll ? '' : '... '}`;
-					this.src.wikiBio = this.src.wikiRev = `\uF266${!bioSet.sourceAll ? '' : '... '}`;
+					this.src.lfmBio = this.src.lfmRev = `${RebornSymbols.Lastfm}${!bioSet.sourceAll ? '' : '... '}`;
+					this.src.wikiBio = this.src.wikiRev = `${RebornSymbols.Wikipedia}${!bioSet.sourceAll ? '' : '... '}`;
 					this.src.txtBio = (bio.txt.bio.subhead.txt[0] || '').toLowerCase() + (!bioSet.sourceAll ? '' : '... ');
 					this.src.txtRev = (bio.txt.rev.subhead.txt[0] || '').toLowerCase() + (!bioSet.sourceAll ? '' : '... ');
 					if (this.src.fontSize != srcFontSize || force) {
 						this.src.font = gdi.Font(bio.ui.font.heading.Name, Math.max(Math.round(bio.ui.font.headingBaseSize * bio.ui.font.zoomSize / (biographyFontSize) * (100 + ((bioSet.zoomHead - 100) / bio.ui.font.boldAdjust)) / 100), 6), bio.ui.font.headingStyle); // gdi.Font(this.src.bahnInstalled ? this.src.bahn : 'Segoe UI Semibold', this.src.fontSize, 0);
-						this.src.iconFont = gdi.Font('FontAwesome', Math.round(this.src.fontSize * (this.src.bahnInstalled ? 1.09 : 1.16)), 0);
+						this.src.iconFont = gdi.Font(grFont.fontRebornSymbols, Math.round(this.src.fontSize * (this.src.bahnInstalled ? 1.09 : 1.16)), 0);
 					}
 					const alt_w = [];
 					alt_w[9] = ' ';
@@ -297,7 +297,7 @@ class BioButtons {
 		}
 		if (bio.ui.stars == 1 && bio.ui.show.btnRedLastfm) this.setRatingImages(Math.round(this.src.h / 1.5) * 5, Math.round(this.src.h / 1.5), RGBA(225, 225, 245, 255), RGBA(225, 225, 245, 60), bio.ui.col.starBor, true);
 
-		this.src.pxShift = /[gjpqy]/.test(this.src.amRev + this.src.lfmRev + this.src.wikiRev + this.src.txtRev + this.src.amBio + this.src.lfmBio + this.src.wikiBio + this.src.txtBio);
+		this.src.pxShift = Regex.UtilFontDescenders.test(this.src.amRev + this.src.lfmRev + this.src.wikiRev + this.src.txtRev + this.src.amBio + this.src.lfmBio + this.src.wikiBio + this.src.txtBio);
 	}
 
 	draw(gr) {
@@ -526,8 +526,8 @@ class BioButtons {
 		bioSet.zoomHead = 115;
 		this.lookUp.zoomSize = this.lookUp.baseSize;
 		this.lookUp.scale = bioSet.zoomLookUpBtn = 100;
-		this.lookUp.font = gdi.Font('FontAwesome', SCALE(18) * this.lookUp.scale / 100, 0);
-		this.lookUp.fontLock = gdi.Font('FontAwesome', SCALE(17) * this.lookUp.scale / 100, 0);
+		this.lookUp.font = gdi.Font(grFont.fontRebornSymbols, SCALE(18) * this.lookUp.scale / 100, 0);
+		this.lookUp.fontLock = gdi.Font(grFont.fontRebornSymbols, SCALE(17) * this.lookUp.scale / 100, 0);
 		bioSet.zoomHeadBtn = 100;
 		bioSet.zoomTooltip = 100;
 		bio.ui.getFont();
@@ -622,7 +622,7 @@ class BioButtons {
 
 	setSbarIcon() {
 		if (bioSet.sbarType == 3) {
-			this.scr.arrow = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
+			this.scr.arrow = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? RebornSymbols.ArrowUp3 : RebornSymbols.ArrowUp4;
 			this.scr.pad = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? -0.26 : -0.22;
 		} else {
 			switch (bioSet.sbarButType) {
@@ -630,10 +630,10 @@ class BioButtons {
 					this.scr.iconFontName = 'Segoe UI Symbol';
 					this.scr.iconFontStyle = 0;
 					if (!bio.ui.sbar.type) {
-						this.scr.arrow = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
+						this.scr.arrow = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? RebornSymbols.ArrowUp3 : RebornSymbols.ArrowUp4;
 						this.scr.pad = bio.ui.sbar.but_w < Math.round(15 * $Bio.scale) ? -0.3 : -0.22;
 					} else {
-						this.scr.arrow = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? '\uE018' : '\uE0A0';
+						this.scr.arrow = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? RebornSymbols.ArrowUp3 : RebornSymbols.ArrowUp4;
 						this.scr.pad = bio.ui.sbar.but_w < Math.round(14 * $Bio.scale) ? -0.26 : -0.22;
 					}
 					break;
@@ -683,7 +683,7 @@ class BioButtons {
 		const biographyFontSize = SCALE((RES._4K ? grSet.biographyFontSize_layout - 0 : grSet.biographyFontSize_layout) || 14);
 		const grFlag = grm.ui.flagImgs.length;
 		const flagWidth = grFlag ? grm.ui.flagImgs.reduce((sum, img) => sum + img.Width + biographyFontSize - HD_4K(18, 60), 0) : bio.but.flag.w;
-		const flagTooltip = grFlag ? `[${GetMetaValues(grTF.artist_country).join(' \u00B7 ')}] ${bio.txt.artist}` : bio.txt[n].flagCountry;
+		const flagTooltip = grFlag ? `[${GetMetaValues(grTF.artist_country).join(` ${Unicode.MiddleDot} `)}] ${bio.txt.artist}` : bio.txt[n].flagCountry;
 		const suffix = grSet.showTooltipBiography ? this.isNextSourceAvailable() ? 'text' : 'N/A' : '';
 		const type = grSet.showTooltipBiography ? bio.panel.m.x > bio.panel.heading.x + bio.panel.heading.w / 2 ? `Next ${suffix}` : bio.panel.m.x > bio.panel.heading.x ? (bio.txt[n].flag && bio.txt[n].flagCountry && bio.panel.m.x < bio.panel.heading.x + flagWidth ? flagTooltip : `Previous ${suffix}`) : '' : '';
 		return this.src.visible && this.trace_src(bio.panel.m.x, bio.panel.m.y) || !bio.but.tooltipBio.name ? type : !this.fbv1 ? bio.but.tooltipBio.name : bio.but.tooltipBio.name.replace(/&/g, '&&');
@@ -714,8 +714,8 @@ class BioButtons {
 		const o = this.btns.lookUp;
 		window.RepaintRect(0, o.y, bio.panel.w, o.h);
 		this.lookUp.scale = Math.round(this.lookUp.zoomSize / this.lookUp.baseSize * 100);
-		this.lookUp.font = gdi.Font('FontAwesome', SCALE(18) * this.lookUp.scale / 100, 0);
-		this.lookUp.fontLock = gdi.Font('FontAwesome', SCALE(17) * this.lookUp.scale / 100, 0);
+		this.lookUp.font = gdi.Font(grFont.fontRebornSymbols, SCALE(18) * this.lookUp.scale / 100, 0);
+		this.lookUp.fontLock = gdi.Font(grFont.fontRebornSymbols, SCALE(17) * this.lookUp.scale / 100, 0);
 		this.createImages('lookUp');
 		this.refresh(true);
 		bioSet.zoomLookUpBtn = this.lookUp.scale;
@@ -843,7 +843,7 @@ class BioBtn {
 					// gr.DrawRect(bio.but.flag.x + o, bio.but.flag.y + o, bio.but.flag.w - w, bio.but.flag.h - w + 1, w, bio.ui.col.imgBor);
 				}
 			}
-			gr.SetInterpolationMode(2);
+			gr.SetInterpolationMode(0); // Causes ugly border artifact glitches around transport buttons in the lower bar with ClearTypeGridFit, Needed to switch from HighQuality (2) to Default (0)
 			const h_x = (bioSet.hdPos != 2 ? dx1 : this.x) + bio.but.flag.sp;
 			const h_w = (bioSet.hdPos != 2 ? this.w - spacer - bio.but.src.w - (!bioSet.hdPos ? 10 : 0) : this.w - spacer) - bio.but.flag.sp;
 			gr.GdiDrawText(dh, bio.ui.font.heading, bio.ui.col.headingText, h_x, this.y, h_w, this.h, bioSet.hdPos != 2 ? bio.txt.c[bioSet.hdPos] : bio.txt.cc);
@@ -897,11 +897,11 @@ class BioBtn {
 		const col = bio.ui.col.headingText;
 		gr.SetTextRenderingHint(3); // AntiAliasGridFit
 		if (!bio.panel.lock) {
-			gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x - HD_4K(0, 1), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
-			gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x - HD_4K(0, 1), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
-			if (this.state == 'hover') gr.DrawString(!bio.panel.style.moreTags || !bioSet.artistView ? '\uF107' : '\uF107', bio.but.lookUp.font, col, this.x, this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
+			gr.DrawString(RebornSymbols.AngleDown, bio.but.lookUp.font, col, this.x - HD_4K(0, 1), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
+			gr.DrawString(RebornSymbols.AngleDown, bio.but.lookUp.font, col, this.x - HD_4K(0, 1), this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
+			if (this.state == 'hover') gr.DrawString(RebornSymbols.AngleDown, bio.but.lookUp.font, col, this.x, this.y + SCALE(1), this.p1, this.p2, StringFormat(2, 0));
 		} else {
-			gr.DrawString('\uF023', bio.but.lookUp.fontLock, col, this.x, this.y + 2 * $Bio.scale, this.p1, this.p2, StringFormat(2, 0));
+			gr.DrawString(RebornSymbols.Lock, bio.but.lookUp.fontLock, col, this.x, this.y + 2 * $Bio.scale, this.p1, this.p2, StringFormat(2, 0));
 		}
 	}
 

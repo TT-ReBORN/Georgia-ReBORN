@@ -27,7 +27,10 @@ class LibPopulate {
 		this.selection_holder = fb.AcquireUiSelectionHolder();
 		this.selList = null;
 		this.setFocus = false;
-		this.specialChar = '[\\u0027\\u002D\\u00AD\\u058A\\u2010\\u2011\\u2012\\u2013\\u2014\\uFE58]';
+		this.specialChar = '[' + [Unicode.Apostrophe,
+			Unicode.SoftHyphen, Unicode.ArmenianHyphen, Unicode.Hyphen, Unicode.NonBreakingHyphen,
+			Unicode.FigureDash, Unicode.EnDash, Unicode.EmDash, Unicode.SmallEmDash
+		].join('') + ']';
 		this.sy_sz = 8;
 		this.tree = [];
 
@@ -241,7 +244,7 @@ class LibPopulate {
 				}
 			});
 			b.forEach(v => {
-				v.nm = v.nm.replace(/#!#/g, '');
+				v.nm = v.nm.replace(Regex.LibMarkerMultiProcess, '');
 				nm_arr.push(v.nm);
 			});
 			multi_cond.forEach((v, i) => {
@@ -312,7 +315,7 @@ class LibPopulate {
 						} else v.item.forEach(v => multi_cond[j - 1].item.push(v));
 					});
 					br.forEach(v => {
-						v.nm = v.nm.replace(/#!#/g, '');
+						v.nm = v.nm.replace(Regex.LibMarkerMultiProcess, '');
 						nm_arr.push(v.nm);
 					});
 					multi_cond.forEach((v, i) => {
@@ -370,7 +373,7 @@ class LibPopulate {
 				const str = `@!#${lib.ui.col.counts}\`${this.highlight.text ? lib.ui.col.text_h : lib.ui.col.counts}\`${lib.ui.col.textSel}@!#`;
 				if (!item.nm.endsWith(str)) item.nm += str;
 			}
-			item.name = !lib.panel.noDisplay ? item.nm : item.nm.replace(/#@#.*?#@#/g, '');
+			item.name = !lib.panel.noDisplay ? item.nm : item.nm.replace(Regex.LibMarkerNoDisplayContent, '');
 			if (v.child.length > 0) this.buildTree(v.child, level + 1, node, !!item.root);
 		});
 		if (lib.ui.style.squareNode && lib.ui.col.line) {
@@ -594,7 +597,7 @@ class LibPopulate {
 					(item.statistics !== undefined ? `${this.statistics[this.statisticsShow]}: ${item.statistics}` : '') :
 					(item.count ? `${['', 'Tracks', 'Items'][this.nodeCounts]}:${item.count}` : '');
 				} else if (trace1) {
-					text = (!lib.panel.colMarker ? item.name : item.name.replace(/@!#.*?@!#/g, '')) + (!this.countsRight || this.statisticsShow ? item.count : '');
+					text = (!lib.panel.colMarker ? item.name : item.name.replace(Regex.LibMarkerColor, '')) + (!this.countsRight || this.statisticsShow ? item.count : '');
 					text = text.replace(/&/g, '&&');
 				}
 				if (text != libTooltip.Text) this.deactivateTooltip();
@@ -617,7 +620,7 @@ class LibPopulate {
 					trace2 = item.tt.y2 == -1 ? false : x >= item.tt.x && x <= item.tt.x + item.tt.w && y >= item.tt.y2 && y <= item.tt.y2 + libImg.text.h;
 					trace3 = item.tt.y3 == -1 ? false : x >= item.tt.x && x <= item.tt.x + item.tt.w && y >= item.tt.y3 && y <= item.tt.y3 + libImg.text.h;
 					text = trace1 || trace2 || trace3 ? item.tt.text : '';
-					if (lib.panel.colMarker) text = text.replace(/@!#.*?@!#/g, '');
+					if (lib.panel.colMarker) text = text.replace(Regex.LibMarkerColor, '');
 					text = text.replace(/&/g, '&&');
 					if (text != libTooltip.Text) this.deactivateTooltip();
 					if (!trace1 && !trace2 && !trace3 || !item.tt[1] && !item.tt[2] && !item.tt[3]) {
@@ -626,7 +629,7 @@ class LibPopulate {
 					}
 				} else {
 					text = lib.panel.lines == 2 ? !libSet.albumArtFlipLabels ? `${item.grp}\n${item.lot}` : `${item.lot}\n${item.grp}` : item.grp;
-					if (lib.panel.colMarker) text = text.replace(/@!#.*?@!#/g, '');
+					if (lib.panel.colMarker) text = text.replace(Regex.LibMarkerColor, '');
 					text = text.replace(/&/g, '&&');
 					if (text != libTooltip.Text) this.deactivateTooltip();
 				}
@@ -934,10 +937,10 @@ class LibPopulate {
 			nm[i] = item.name + (i || this.rootNode != 3 || this.nodeCounts == 1 && (this.countsRight || this.statisticsShow) ? (!this.countsRight || this.statisticsShow ? item.count : '') : '');
 			const counts = !this.statisticsShow ? item.count : item.statistics;
 			if (this.highlight.nowPlayingShow && !item.root && this.inRange(this.nowp, item.item)) nowp_c.push(i);
-			item.np = nowp_c.includes(i) || lib.panel.textDiffHighlight && this.m.i == i ? '\u266B  ' : '';
+			item.np = nowp_c.includes(i) || lib.panel.textDiffHighlight && this.m.i == i ? `${Unicode.BeamedEighthNotes}  ` : '';
 			if (item.np && item.id != this.id) this.row.note_w = gr.CalcTextWidth(item.np, lib.ui.font.main);
 			if (item.id != this.id || this.highlight.nowPlayingIndicator) {
-				let itemName = !lib.panel.colMarker ? nm[i] : nm[i].replace(/@!#.*?@!#/g, '');
+				let itemName = !lib.panel.colMarker ? nm[i] : nm[i].replace(Regex.LibMarkerColor, '');
 				if (item.np && this.highlight.nowPlayingIndicator && item.track) itemName = item.np + itemName;
 				item.name_w = gr.CalcTextWidth(itemName, lib.ui.font.main, true);
 				item.count_w = this.nodeCounts && this.countsRight || this.statisticsShow ?
@@ -1305,13 +1308,13 @@ class LibPopulate {
 			n = n.replace('@!##!#', '<!>');
 			n = n.replace('@!#', '~#~');
 		}
-		n = n.replace(/<!>/g, '@!##!#').replace(/~#~/g, '#!#@!#');
+		n = n.replace(Regex.LibMarkerExcl, '@!##!#').replace(Regex.LibMarkerTildeHash, '#!#@!#');
 
 		while (n.includes('#@##!#')) { // $nodisplay
 			n = n.replace('#@##!#', '<!>');
 			n = n.replace('#@#', '~#~');
 		}
-		n = n.replace(/<!>/g, '#@##!#').replace(/~#~/g, '#!##@#');
+		n = n.replace(Regex.LibMarkerExcl, '#@##!#').replace(Regex.LibMarkerTildeHash, '#!##@#');
 		return n;
 	}
 
@@ -1387,7 +1390,7 @@ class LibPopulate {
 					const key = this.getKey(v);
 					v.count = !v.track || !this.showTracks ? (v.name ? ' ' : '') + (this.nodeCounts == 1 ? `(${this.trackCount(v.item)})` : this.nodeCounts == 2 ? `(${this.branchCount(v, !!v.root, true, false, key, type)})` : '') : '';
 					if (!this.showTracks && v.count == `${v.name ? ' ' : ''}(0)`) v.count = '';
-					if (this.countsRight && !this.statisticsShow) v.count = v.count.replace(/[()]/g, '');
+					if (this.countsRight && !this.statisticsShow) v.count = v.count.replace(Regex.PunctParen, '');
 				}
 			} else {
 				const getTracks = [true, true, true, true, false, false, true, false, false, false, false][libSet.itemShowStatistics];
@@ -1397,7 +1400,7 @@ class LibPopulate {
 				}
 				const getItemCount = !v.root && libSet.itemOverlayType != 1 && libSet.albumArtLabelType == 2 && !libSet.itemShowStatistics && (lib.pop.nodeCounts == 1 || lib.pop.nodeCounts == 2);
 				if (getItemCount) {
-					const count = v.count.replace(/\D/g, '');
+					const count = v.count.replace(Regex.NumNonDigits, '');
 					if (lib.panel.lines == 1 || libSet.albumArtFlipLabels) v.grp += ` (${count})`;
 					else v.lot += ` (${count})`;
 				}
@@ -1536,7 +1539,7 @@ class LibPopulate {
 				if (!this.dblClickAction || this.autoPlay.click === 2) return;
 				if (this.dblClickAction !== 2 && this.dblClickAction !== 3 || this.dblClickAction === 2 && item.track || this.dblClickAction === 2 && lib.panel.imgView) {
 					if (!this.autoFill.mouse) this.send(item, x, y);
-					let pl_stnd_idx = plman.FindOrCreatePlaylist(libSet.libPlaylist.replace(/%view_name%/i, lib.panel.viewName), false);
+					let pl_stnd_idx = plman.FindOrCreatePlaylist(libSet.libPlaylist.replace(Regex.TFLibViewName, lib.panel.viewName), false);
 					if (libSet.sendToCur) pl_stnd_idx = plman.ActivePlaylist;
 					else plman.ActivePlaylist = pl_stnd_idx;
 					plman.ActivePlaylist = pl_stnd_idx;
@@ -1670,7 +1673,7 @@ class LibPopulate {
 	load(list, isArray, add, autoPlay, def_pl, insert) {
 		let np_item = -1;
 		let pid = -1;
-		const pl_stnd = libSet.libPlaylist.replace(/%view_name%/i, lib.panel.viewName);
+		const pl_stnd = libSet.libPlaylist.replace(Regex.TFLibViewName, lib.panel.viewName);
 		let pl_stnd_idx = plman.FindOrCreatePlaylist(pl_stnd, true);
 
 		if (!def_pl && plman.ActivePlaylist != -1) pl_stnd_idx = plman.ActivePlaylist;
