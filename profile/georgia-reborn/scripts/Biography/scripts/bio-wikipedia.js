@@ -105,7 +105,7 @@ class BioDldWikipedia {
 		}
 
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsWiki);
 
 		switch (this.searchItem) {
 			case 0:

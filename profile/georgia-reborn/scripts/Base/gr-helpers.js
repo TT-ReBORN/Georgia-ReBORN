@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    04-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -229,6 +229,7 @@ function AWStartWaveformAnalysis() {
 
 /**
  * Adjusts the window's position and size with optional constraints.
+ * @global
  */
 function UIWAdjustWindowGeometry() {
 	if (!UIWizard) return;
@@ -430,19 +431,6 @@ function GetWindowsVersion() {
 		}
 		return '6.1';
 	});
-}
-
-
-/**
- * Prepares an HTML file by replacing the CSS file reference with a new CSS file based on the Windows version.
- * @param {string} path - The file path of the HTML file that needs to be prepared.
- * @returns {string} The modified HTML content with the updated CSS file reference.
- */
-function PrepareHTML(path) {
-	const htmlCode = utils.ReadTextFile(path);
-	const newCss = GetWindowsVersion() === '6.1' ? 'styles7.css' : 'styles10.css';
-	const cssPath = `${fb.FoobarPath}georgia-reborn\\scripts\\playlist\\assets\\html\\${newCss}`;
-	return htmlCode.replace(/href="styles10.css"/i, `href="${cssPath}"`);
 }
 
 

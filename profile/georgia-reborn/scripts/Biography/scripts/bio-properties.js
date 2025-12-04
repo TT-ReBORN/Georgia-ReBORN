@@ -328,6 +328,10 @@ let bioProperties = [
 	['Panel Biography - Scrollbar Width Bar', 11, 'sbarBase_w'],
 	['Panel Biography - Scrollbar Windows Metrics', false, 'sbarWinMetrics'],
 
+	['Panel Biography - Server Download - Create last.fm similar artist database file', true, 'exportSimArtists'],
+	['Panel Biography - Server Download - AllMusic built-in (true)/ActiveX (false)', true, 'useUtilsAllmusic'],
+	['Panel Biography - Server Download - last.fm built-in (true)/ActiveX (false)', true, 'useUtilsLastfm'],
+	['Panel Biography - Server Download - Wikipedia built-in (true)/ActiveX (false)', true, 'useUtilsWiki'],
 	['Panel Biography - Server Name', 'biography', 'serverName'],
 
 	['Panel Biography - Show Album History', true, 'showAlbumHistory'],
@@ -369,6 +373,7 @@ let bioProperties = [
 	['Panel Biography - Text Auto Optimise Multiple Items', true, 'autoOptimiseText'],
 	['Panel Biography - Text Only', false, 'text_only'],
 
+	['Panel Biography - Text Reader Default codepage (auto = 0)', 65001, 'fileCodePage'],
 	['Panel Biography - Text Reader Enable', true, 'txtReaderEnable'],
 	['Panel Biography - Text Reader Item Properties: Field Width', 0, 'fieldWidth'],
 	['Panel Biography - Text Reader Item Properties: Show Line Dividers', true, 'lineDividers'],

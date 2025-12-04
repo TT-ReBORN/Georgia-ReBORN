@@ -161,7 +161,13 @@ const bioEnglish = {
 	'Type:': 'Type:',
 	'Undo': 'Undo',
 	'Wikipedia': 'Wikipedia',
-	'Write existing file info to tags: ': 'Write existing file info to tags: '
+	'Write existing file info to tags: ': 'Write existing file info to tags: ',
+	// Regorxxx <- Use WinHttp.WinHttpRequest.5.1 / XMLHTTP ActiveX objects or utils.HTTPRequestAsync
+	'Network': 'Network',
+	'Web requests method priority:': 'Web requests method priority:',
+	'- Unsupported foo_spider_monkey_panel version -': '- Unsupported foo_spider_monkey_panel version -',
+	'- Unsupported foo_uie_jsplitter version -': '- Unsupported foo_uie_jsplitter version -',
+	// Regorxxx ->
 }
 
 /** @global @type {object.<string, string>} */
@@ -321,7 +327,13 @@ const bioSimplifiedChinese = {
 	'Type:': '样式：',
 	'Undo': '撤消',
 	'Wikipedia': '维基百科',
-	'Write existing file info to tags: ': '将现有文件信息写入标签：'
+	'Write existing file info to tags: ': '将现有文件信息写入标签：',
+	// Regorxxx <- Use WinHttp.WinHttpRequest.5.1 / XMLHTTP ActiveX objects or utils.HTTPRequestAsync
+	'Network': '网络',
+	'Web requests method priority:': 'Web 请求方法优先级:',
+	'- Unsupported foo_spider_monkey_panel version -': '- 不支持的 foo_spider_monkey_panel 版本 -',
+	'- Unsupported foo_uie_jsplitter version -': '- 不支持的 foo_uie_jsplitter 版本 -'
+	// Regorxxx ->
 }
 
 /** @global @type {object.<string, string>} */
@@ -481,7 +493,13 @@ const bioTraditionalChinese = {
 	'Type:': '類型：',
 	'Undo': '還原',
 	'Wikipedia': '維基百科',
-	'Write existing file info to tags: ': '將現有文件信息寫入標籤：'
+	'Write existing file info to tags: ': '將現有文件信息寫入標籤：',
+	// Regorxxx <- Use WinHttp.WinHttpRequest.5.1 / XMLHTTP ActiveX objects or utils.HTTPRequestAsync
+	'Network': '網絡',
+	'Web requests method priority:': 'Web 請求方法優先權:',
+	'- Unsupported foo_spider_monkey_panel version -': '- 不支援的 foo_spider_monkey_panel 版本 -',
+	'- Unsupported foo_uie_jsplitter version -': '- 不支援的 foo_uie_jsplitter 版本 -'
+	// Regorxxx ->
 }
 
 /** @global @type @type {Array<Object.<string, string>>} */

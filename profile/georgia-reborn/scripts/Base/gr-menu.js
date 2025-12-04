@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    04-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3039,6 +3039,28 @@ class TopMenuOptions {
 		biographyImageAutoCycleMenu.appendTo(biographyImageMenu);
 
 		biographyImageMenu.appendTo(biographyMenu);
+
+		// * NETWORK * //
+		const biographyNetworkMenu = new Menu('Network');
+		if (utils.HTTPRequestAsync) {
+			biographyNetworkMenu.addToggleItem(`AllMusic     ${bioSet.useUtilsAllmusic ? '(New download method)' : '(Old download method)'}`, bioSet, 'useUtilsAllmusic', () => {
+				bioSet.toggle('useUtilsAllmusic');
+				window.NotifyOthers('bio_property', [['useUtilsAllmusic', bioSet.useUtilsAllmusic]]);
+			});
+			biographyNetworkMenu.addToggleItem(`last.fm        ${bioSet.useUtilsLastfm ? '(New download method)' : '(Old download method)'}`, bioSet, 'useUtilsLastfm', () => {
+				bioSet.toggle('useUtilsLastfm');
+				window.NotifyOthers('bio_property', [['useUtilsLastfm', bioSet.useUtilsLastfm]]);
+			});
+			biographyNetworkMenu.addToggleItem(`Wikipedia   ${bioSet.useUtilsWiki ? '(New download method)' : '(Old download method)'}`, bioSet, 'useUtilsWiki', () => {
+				bioSet.toggle('useUtilsWiki');
+				window.NotifyOthers('bio_property', [['useUtilsWiki', bioSet.useUtilsWiki]]);
+			});
+		}
+		else {
+			const parent = fb.ComponentPath.includes('foo_uie_jsplitter') ? 'foo_uie_jsplitter' : 'foo_spider_monkey_panel';
+			biographyNetworkMenu.addItem(`- Unsupported ${parent} version -`, false, () => {}, true);
+		}
+		biographyNetworkMenu.appendTo(biographyMenu);
 
 		if (!context_menu) biographyMenu.appendTo(menu);
 	}

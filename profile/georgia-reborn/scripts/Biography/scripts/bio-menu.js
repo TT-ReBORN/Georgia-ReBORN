@@ -572,6 +572,61 @@ class BioMenuItems {
 
 		bioMenu.addSeparator({});
 
+		// Regorxxx <- Use WinHttp.WinHttpRequest.5.1 / XMLHTTP ActiveX objects or utils.HTTPRequestAsync
+		bioMenu.newMenu({
+			menuName: bioLg.Network
+		});
+
+		bioMenu.newItem({
+			menuName: bioLg.Network,
+			str: bioLg['Web requests method priority:'],
+			flags: BIO_MF_GRAYED,
+			separator: true
+		});
+
+		if (utils.HTTPRequestAsync) {
+			bioMenu.newItem({
+				menuName: bioLg.Network,
+				str: `AllMusic     ${bioSet.useUtilsAllmusic ? '(New download method)' : '(Old download method)'}`,
+				func: () => {
+					bioSet.toggle('useUtilsAllmusic');
+					window.NotifyOthers('bio_property', [['useUtilsAllmusic', bioSet.useUtilsAllmusic]]);
+				},
+				checkItem: bioSet.useUtilsAllmusic,
+			});
+
+			bioMenu.newItem({
+				menuName: bioLg.Network,
+				str: `last.fm        ${bioSet.useUtilsLastfm ? '(New download method)' : '(Old download method)'}`,
+				func: () => {
+					bioSet.toggle('useUtilsLastfm');
+					window.NotifyOthers('bio_property', [['useUtilsLastfm', bioSet.useUtilsLastfm]]);
+				},
+				checkItem: bioSet.useUtilsLastfm,
+			});
+
+			bioMenu.newItem({
+				menuName: bioLg.Network,
+				str: `Wikipedia   ${bioSet.useUtilsWiki ? '(New download method)' : '(Old download method)'}`,
+				func: () => {
+					bioSet.toggle('useUtilsWiki');
+					window.NotifyOthers('bio_property', [['useUtilsWiki', bioSet.useUtilsWiki]]);
+				},
+				checkItem: bioSet.useUtilsWiki,
+			});
+		}
+		else {
+			const parent = fb.ComponentPath.includes('foo_uie_jsplitter') ? 'foo_uie_jsplitter' : 'foo_spider_monkey_panel';
+			bioMenu.newItem({
+				menuName: bioLg.Network,
+				str: bioLg[`- Unsupported ${parent} version -`],
+				flags: BIO_MF_GRAYED,
+			});
+		}
+
+		bioMenu.addSeparator({});
+		// Regorxxx ->
+
 		if (bioSet.menuShowPlaylists == 2 || bioSet.menuShowPlaylists && this.shift) {
 			const pl_no = Math.ceil(this.playlist.menu.length / 30);
 			bioMenu.newMenu({

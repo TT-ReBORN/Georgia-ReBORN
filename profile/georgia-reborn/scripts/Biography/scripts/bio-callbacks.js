@@ -34,6 +34,12 @@ class BioCallbacks {
 		bio.txt.paint();
 	}
 
+	// TT & Regorxxx <- warn about errors downloading files
+	on_download_file_done(path, success, error_text) {
+		bioXHR.onDownloadFileDone(path, success, error_text);
+	}
+	// TT & Regorxxx ->
+
 	on_font_changed() {
 		bio.ui.getFont();
 		bio.alb_scrollbar.reset();
@@ -52,6 +58,12 @@ class BioCallbacks {
 	on_get_album_art_done(handle, art_id, image, image_path) {
 		bio.img.on_get_album_art_done(handle, art_id, image, image_path);
 	}
+
+	// TT & Regorxxx <- Http Requests when utils.HTTPRequestAsync is available
+	on_http_request_done(task_id, success, response_text, status, headers) {
+		bioXHR.onHttpRequestDone(task_id, success, response_text, status, headers);
+	}
+	// TT & Regorxxx ->
 
 	on_item_focus_change() {
 		if (!bioSet.panelActive) return;

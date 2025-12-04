@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    04-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -417,6 +417,7 @@ const FontStyle = {
  * @property {string} BrokenBar - The Broken Bar symbol.
  * @property {string} Bullet - The Bullet symbol.
  * @property {string} BulletOperator - The Bullet Operator symbol.
+ * @property {string} MiddleDot - The Middle Dot symbol.
  * @property {string} NotSign - The Not Sign symbol.
  *
  * @property {string} StarEmpty - The empty star symbol.
@@ -511,6 +512,7 @@ const RebornSymbols = {
 	BrokenBar: '\u00A6',
 	Bullet: '\u2022',
 	BulletOperator: '\u2219',
+	MiddleDot: '\u00B7',
 	NotSign: '\u00AC',
 
 	// Ratings & Favorites
@@ -857,7 +859,7 @@ const Unicode = {
  * @property {RegExp} WebDomain - Matches domain from URL `/:\/\/(www\.)?([^/]+)/`. Captures: optional www., domain.
  * @property {RegExp} WebLastFmDotSpace - Matches "Last.fm: " variant `/Last\.fm: /g`.
  * @property {RegExp} WebLastFmHyphen - Matches "Last-fm:" variant `/Last-fm:/g`.
- * @property {RegExp} WebLastFmImg - Matches Last.fm image URLs `/https:\/\/lastfm\.freetls\.fastly\.net\/i\/u\/(avatar170s)\/[a-f0-9]+(\.(jpg|png|webp))? /gi`. Captures: size, hash, optional ext.
+ * @property {RegExp} WebLastFmImg - Matches Last.fm image URLs `/https:\/\/lastfm\.freetls\.fastly\.net\/i\/u\/(avatar170s)\/[a-f0-9]+(\.(jpg|png|webp))?/gi`. Captures: size, hash, optional ext.
  * @property {RegExp} WebLastFmLine - Matches full Last.fm lines with optional newline `/^Last\.fm: .*$(\n)?/gm`.
  * @property {RegExp} WebLastFmPrefix - Matches Last.fm prefix with space `/^Last\.fm:\s/gm`.
  * @property {RegExp} WebLastFmVariant - Matches Last.fm variants ending with semicolon `/^Last(\.|-)fm:.*?;/g`.
@@ -1026,6 +1028,7 @@ const Unicode = {
  * @property {RegExp} LyricsTimestampEnhanced - Matches `<mm:ss.xx>` `/(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g`. Captures: space, optional min, sec+ms, space.
  * @property {RegExp} LyricsTimestampLeading - Matches 1+ timestamps at line start `/^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/`. Captures: full.
  *
+ * @property {RegExp} UtilDummyTest - Matches two letters between the pipe `/.{2}\|.{2}/g`.
  * @property {RegExp} UtilFontDescenders - Matches letters with descenders `/[gjpqy]/`.
  * @property {RegExp} UtilFontNeedsSymbols - Matches symbols/emojis needing fallback `/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u23F7\u23F9-\u25B5\u25B7-\u26FF]|\uD83E[\uDD10-\uDDFF]/`.
  * @property {RegExp} UtilFontTahoma - Matches tahoma field `/tahoma/i`.
@@ -1291,7 +1294,7 @@ const Regex = {
 	WebDomain: /:\/\/(www\.)?([^/]+)/,
 	WebLastFmDotSpace: /Last\.fm: /g,
 	WebLastFmHyphen: /Last-fm:/g,
-	WebLastFmImg: /https:\/\/lastfm\.freetls\.fastly\.net\/i\/u\/(avatar170s)\/[a-f0-9]+(\.(jpg|png|webp))? /gi,
+	WebLastFmImg: /https:\/\/lastfm\.freetls\.fastly\.net\/i\/u\/(avatar170s)\/[a-f0-9]+(\.(jpg|png|webp))?/gi,
 	WebLastFmLine: /^Last\.fm: .*$(\n)?/gm,
 	WebLastFmPrefix: /^Last\.fm:\s/gm,
 	WebLastFmVariant: /^Last(\.|-)fm:.*?;/g,
@@ -1467,6 +1470,7 @@ const Regex = {
 	LyricsTimestampLeading: /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/,
 
 	// * UTILITY * //
+	UtilDummyTest: /.{2}\|.{2}/g,
 	UtilFontDescenders: /[gjpqy]/,
 	UtilFontNeedsSymbols: /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u23F7\u23F9-\u25B5\u25B7-\u26FF]|\uD83E[\uDD10-\uDDFF]/,
 	UtilFontTahoma: /tahoma/i,

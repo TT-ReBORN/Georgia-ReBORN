@@ -426,15 +426,6 @@ class BioSettings {
 			bioSet.classicalAlbFallback = false;
 		}
 
-		this.suffix = {
-			foLfmRev: ' [Lastfm Review]',
-			foLfmBio: ' [Lastfm Biography]',
-			foAmRev: ' [Allmusic Review]',
-			foAmBio: ' [Allmusic Biography]',
-			foWikiRev: ' [Wikipedia Review]',
-			foWikiBio: ' [Wikipedia Biography]'
-		};
-
 		const needRevSuffix = [...new Set([this.pth.foLfmRev, this.pth.foAmRev, this.pth.foWikiRev])].length != 3;
 		if (!needRevSuffix) {
 			this.suffix.foLfmRev = this.suffix.foAmRev = this.suffix.foWikiRev = '';
@@ -452,7 +443,11 @@ class BioSettings {
 		if (!this.lang.ok) this.language = 'EN';
 		this.menuSimilarNum = $Bio.clamp(this.menuSimilarNum, 0, 10);
 		this.lfmSim = this.dlLfmSim;
-		if (this.lfmSim && this.menuSimilarNum < 7 && (!this.tagEnabled10 || this.tagEnabled13 < 7)) this.lfmSim = false;
+		// Regorxxx <- Save similar artist data
+		if (!bioSet.exportSimArtists) {
+			if (this.lfmSim && this.menuSimilarNum < 7 && (!this.tagEnabled10 || this.tagEnabled13 < 7)) this.lfmSim = false;
+		}
+		// Regorxxx ->
 		if (this.local) {
 			this.pth.foLfmSim = this.pth.foLfmSim.replace('{BA9557CE-7B4B-4E0E-9373-99F511E81252}', '{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}').replace('biography-cache', 'find-&-play-cache');
 			this.lfmSim = false;

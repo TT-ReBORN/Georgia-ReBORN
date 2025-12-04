@@ -5,85 +5,205 @@ class BioRequestAllmusic {
 		this.request = null;
 		this.timer = null;
 		this.checkResponse = null;
+		this.cacheHeaders = {
+			'Cache-Control': 'private',
+			'Pragma': 'no-cache',
+			'Cache': 'no-store',
+			'If-Modified-Since': 'Sat, 1 Jan 2000 00:00:00 GMT'
+		};
+		this.errorCodeMap = {
+			'0x80072ee7': 400, // Name resolution failure
+			'0x80072ee2': 408, // Timeout
+			'0x8000000a': 408  // Data timeout
+		};
 	}
 
+	/**
+	 * Aborts the current request and cleans up timers/intervals.
+	 */
 	abortRequest() {
 		if (!this.request) return;
+
 		clearTimeout(this.timer);
 		clearInterval(this.checkResponse);
-		this.request.Abort();
+
+		try { this.request.Abort(); } catch (e) {}
+
 		this.request = null;
 		this.timer = null;
 		this.checkResponse = null;
 	}
 
-	onStateChange(resolve, reject, func = null) { // credit regorxxx
-		if (this.request !== null) {
-			if (this.request.Status === 200) {
-				return func ? func(this.request.ResponseText, this.request) : resolve(this.request.ResponseText);
-			} else if (!func) {
-				return reject(this.request.ResponseText);
-			}
-		} else if (!func) {
-			return reject({ status: 408, responseText: 'Request Timeout' });
+	/**
+	 * Parses status from error message based on known codes.
+	 * @param {string} errorMessage - The error message.
+	 * @returns {number} HTTP-like status code.
+	 */
+	getErrorStatus(errorMessage) {
+		for (const [code, status] of Object.entries(this.errorCodeMap)) {
+			if (errorMessage.includes(code)) return status;
 		}
-		return null;
+		return 400; // Default bad request
 	}
 
-	send({ method = 'GET', URL, body = void (0), func = null, requestHeader = [], bypassCache = false, timeout = 5000 }) { // credit regorxxx
+	/**
+	 * Builds the full URL, appending a cache-buster if needed.
+	 * @param {string} URL - The base URL.
+	 * @param {boolean} bypassCache - Whether to bypass cache.
+	 * @returns {string} The modified URL.
+	 */
+	getUrl(URL, bypassCache) {
+		if (!bypassCache) return URL;
+		const separator = URL.includes('?') ? '&' : '?';
+		return `${URL}${separator}${Date.now()}`;
+	}
+
+	/**
+	 * Initializes request headers, including cache-bypassing ones if applicable.
+	 * @param {Array<[string, string]>} requestHeader - Array of [key, value] pairs.
+	 * @param {boolean} bypassCache - Whether to add cache headers.
+	 */
+	initHeaders(requestHeader, bypassCache) {
+		// Apply custom headers
+		for (const [key, value] of requestHeader) {
+			if (!key || value == null) {
+				console.log(`Invalid HTTP header skipped: [${key}, ${value}]`);
+				continue;
+			}
+			this.request.SetRequestHeader(key, String(value));
+		}
+
+		// Apply cache-bypass headers
+		if (bypassCache) {
+			for (const [key, value] of Object.entries(this.cacheHeaders)) {
+				this.request.SetRequestHeader(key, value);
+			}
+		}
+	}
+
+	/**
+	 * Initializes the request with method, URL, etc.
+	 * @param {string} method - HTTP method (e.g., 'GET').
+	 * @param {string} URL - The URL.
+	 * @param {any} body - Request body for POST.
+	 * @param {boolean} bypassCache - Bypass cache flag.
+	 * @param {Array<[string, string]>} requestHeader - Headers.
+	 * @param {number} timeout - Timeout in ms.
+	 * @param {Function|null} onreadystatechange - Optional ready state handler.
+	 */
+	initRequest(method, URL, body, bypassCache, requestHeader, timeout, onreadystatechange = null) {
+		if (!['GET', 'POST'].includes(method)) {
+			throw new Error(`Unsupported method: ${method}`);
+		}
+
+		if (typeof timeout !== 'number' || timeout <= 0) {
+			throw new Error('Timeout must be a positive number');
+		}
+
+		const fullUrl = this.getUrl(URL, bypassCache);
+		this.request.Open(method, fullUrl, true);
+		this.initHeaders(requestHeader, bypassCache);
+
+		if (onreadystatechange) {
+			this.request.onreadystatechange = onreadystatechange;
+		}
+
+		this.request.SetTimeouts(timeout, timeout, timeout, timeout);
+		this.request.Send(method === 'POST' ? body : undefined);
+	}
+
+	/**
+	 * Handles timeout by waiting for response or rejecting.
+	 * @param {Function} resolve - Promise resolve.
+	 * @param {Function} reject - Promise reject.
+	 * @param {Function|null} func - Optional callback.
+	 */
+	handleTimeout(resolve, reject, func) {
+		try {
+			this.request.WaitForResponse(-1);
+			this.onStateChange(resolve, reject, func);
+		}
+		catch (e) {
+			const status = this.getErrorStatus(e.message);
+			this.abortRequest();
+			reject({ status, responseText: e.message, error: e });
+		}
+	}
+
+	/**
+	 * Handles state change, resolving/rejecting based on status.
+	 * @param {Function} resolve - Promise resolve.
+	 * @param {Function} reject - Promise reject.
+	 * @param {Function|null} func - Optional callback.
+	 */
+	onStateChange(resolve, reject, func) {
+		if (this.request.onreadystatechange && this.request.readyState !== 4) {
+			return;
+		}
+
+		clearInterval(this.checkResponse);
+		clearTimeout(this.timer);
+		this.checkResponse = null;
+		this.timer = null;
+
+		const status = this.request.Status;
+		const responseText = this.request.ResponseText;
+
+		if (status >= 200 && status < 300) {
+			if (func) {
+				func(responseText, this.request);
+			}
+			resolve(responseText);
+		} else {
+			reject({ status, responseText });
+		}
+
+		this.request = null;
+	}
+
+	/**
+	 * Sends the request, returning a Promise.
+	 * @param {Object} options - Request options.
+	 * @param {string} [options.method='GET'] - HTTP method.
+	 * @param {string} options.URL - URL.
+	 * @param {any} [options.body=undefined] - Body for POST.
+	 * @param {Function|null} [options.func=null] - Callback on success.
+	 * @param {Array<[string, string]>} [options.requestHeader=[]] - Headers.
+	 * @param {boolean} [options.bypassCache=false] - Bypass cache.
+	 * @param {number} [options.timeout=5000] - Timeout in ms.
+	 * @returns {Promise<string>} Resolves with response text on success.
+	 */
+	send({ method = 'GET', URL, body = undefined, func = null, requestHeader = [], bypassCache = false, timeout = 5000 }) {
 		this.abortRequest();
 
-		return new Promise((resolve, reject) => {
-			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#bypassing_the_cache
-			// Add ('&' + new Date().getTime()) to URLS to avoid caching
-			const fullUrl = URL + (bypassCache ? (URL.includes('?') ? '&' : '?') + new Date().getTime() : '');
-			this.request = new ActiveXObject('WinHttp.WinHttpRequest.5.1');
-			this.request.Open(method, fullUrl, true);
-
-			requestHeader.forEach(pair => {
-				if (!pair[0] || !pair[1]) {
-					console.log(`HTTP Headers missing: ${pair}`);
-					return;
-				}
-				this.request.SetRequestHeader(...pair);
+		// Async XMLHttpRequest mode
+		if (utils.HTTPRequestAsync && bioSet.useUtilsAllmusic) {
+			return new Promise((resolve, reject) => {
+				this.request = bioXHR.createRequest(bioSet.useUtilsAllmusic);
+				this.initRequest(method, URL, body, bypassCache, requestHeader, timeout, () =>
+					this.onStateChange(resolve, reject, func));
+				this.timer = setTimeout(() => this.handleTimeout(resolve, reject, func), timeout);
 			});
+		}
 
-			if (bypassCache) {
-				this.request.SetRequestHeader('Cache-Control', 'private');
-				this.request.SetRequestHeader('Pragma', 'no-cache');
-				this.request.SetRequestHeader('Cache', 'no-store');
-				this.request.SetRequestHeader('If-Modified-Since', 'Sat, 1 Jan 2000 00:00:00 GMT');
-			}
-
-			this.request.SetTimeouts(timeout, timeout, timeout, timeout);
-			this.request.Send(method === 'POST' ? body : void (0));
+		// ActiveXObject polling mode
+		return new Promise((resolve, reject) => {
+			this.request = new ActiveXObject('WinHttp.WinHttpRequest.5.1');
+			this.initRequest(method, URL, body, bypassCache, requestHeader, timeout);
 
 			this.timer = setTimeout(() => {
 				clearInterval(this.checkResponse);
-				try {
-					this.request.WaitForResponse(-1);
-					this.onStateChange(resolve, reject, func);
-				} catch (e) {
-					let status = 400;
-					if (e.message.indexOf('0x80072ee7') !== -1) {
-						status = 400;
-					} else if (e.message.indexOf('0x80072ee2') !== -1) {
-						status = 408;
-					} else if (e.message.indexOf('0x8000000a') !== -1) {
-						status = 408;
-					}
-					this.abortRequest();
-					reject({ status, responseText: e.message });
-				}
+				this.handleTimeout(resolve, reject, func);
 			}, timeout);
 
 			this.checkResponse = setInterval(() => {
-				let response;
 				try {
-					response = this.request.Status && this.request.ResponseText;
-				} catch (e) {}
-				if (!response) return;
-				this.onStateChange(resolve, reject, func);
+					if (typeof this.request.Status !== 'undefined' && typeof this.request.ResponseText !== 'undefined') {
+						this.onStateChange(resolve, reject, func);
+					}
+				} catch (e) {
+					// Ignore interim errors
+				}
 			}, 30);
 		});
 	}

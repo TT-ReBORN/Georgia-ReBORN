@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    04-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -424,8 +424,6 @@ class MainUI {
 			(this.displayArtworkLayoutCover() || this.displayLyrics && grSet.lyricsLayout !== 'normal')) {
 			gr.DrawImage(grCol.imgBlended, 0, 0, this.ww, this.wh, 0, 0, grCol.imgBlended.Width, grCol.imgBlended.Height);
 		}
-
-		gr.SetSmoothingMode(SmoothingMode.HighQuality);
 	}
 
 	/**
@@ -3305,6 +3303,10 @@ class MainUI {
 		const invalidBlackThemeStyle = grSet.theme !== 'black' && grSet.styleBlackReborn;
 		const invalidRebornThemeStyle = grSet.theme !== 'reborn' && (grSet.styleRebornWhite || grSet.styleRebornBlack || grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
 		const invalidGradientStyle = !['reborn', 'random', 'blue', 'darkblue', 'red'].includes(grSet.theme) && !grSet.theme.startsWith('custom') && (grSet.styleGradient || grSet.styleGradient2);
+
+		if (grCol.primary === RGB(255, 255, 255)) { // * Need when changing from grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2
+			grm.color.getThemeColors(this.albumArt); // * Update grCol.primary for dynamic themes
+		}
 
 		// * Disable style nighttime for themes that do not support it
 		if (invalidNighttimeStyle) {

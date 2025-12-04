@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    04-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -154,6 +154,51 @@ function on_size() {
 	grm.ui.displayLyrics && grm.lyrics.initLyrics();
 	grm.style.setStyleBlend();
 	grm.button.initButtonState();
+}
+
+
+//////////////////////////////////
+// * JSPLITTER-ONLY CALLBACKS * //
+//////////////////////////////////
+/**
+ * Called when {@link utils.DownloadFileAsync} thread is finished
+ * New callback and only available with JSplitter v4.0.4.4-beta and JSplitter v3.7.4.
+ * @global
+ * @param {string} path - The path of the downloaded file.
+ * @param {boolean} success - The success message if the download was successful.
+ * @param {string} error_text - The error message if the download failed.
+ */
+function on_download_file_done(path, success, error_text) {
+	if (grm.ui.displayLibrary) {
+		CallLog('Library => on_download_file_done');
+		lib.call.on_download_file_done(path, success, error_text);
+	}
+	// if (grm.ui.displayBiography) {
+		CallLog('Biography => on_download_file_done');
+		bio.call.on_download_file_done(path, success, error_text);
+	// }
+}
+
+
+/**
+ * Called when {@link utils.HTTPRequestAsync} request is finished
+ * New callback and only available with JSplitter v4.0.4.4-beta and JSplitter v3.7.4.
+ * @global
+ * @param {number} task_id - The task id returned by {@link utils.HTTPRequestAsync}
+ * @param {boolean} success - The state whether the request was successful.
+ * @param {string} response_text- The response body as text.
+ * @param {string} status - The HTTP response code.
+ * @param {string} content_type - The 'Content-Type' HTTP response header.
+ */
+function on_http_request_done(task_id, success, response_text, status, content_type) {
+	if (grm.ui.displayLibrary) {
+		CallLog('Library => on_http_request_done');
+		lib.call.on_http_request_done(task_id, success, response_text, status, content_type);
+	}
+	// if (grm.ui.displayBiography) {
+		CallLog('Biography => on_http_request_done');
+		bio.call.on_http_request_done(task_id, success, response_text, status, content_type);
+	// }
 }
 
 

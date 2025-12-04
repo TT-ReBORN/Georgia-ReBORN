@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    04-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -81,6 +81,7 @@ class FileLoader {
 			'biography\\scripts\\bio-interface.js',
 			'biography\\scripts\\bio-language.js',
 			'biography\\scripts\\bio-panel.js',
+			'biography\\scripts\\bio-web.js',
 			'biography\\scripts\\bio-server.js',
 			'biography\\scripts\\bio-allmusic.js',
 			'biography\\scripts\\bio-lastfm.js',

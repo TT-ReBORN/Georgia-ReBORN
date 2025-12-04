@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    04-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1062,6 +1062,19 @@ class PlaylistGroupingHandler {
 	}
 
 	/**
+	 * Prepares an HTML file by replacing the CSS file reference with a new CSS file based on the Windows version.
+	 * @param {string} path - The file path of the HTML file that needs to be prepared.
+	 * @returns {string} The modified HTML content with the updated CSS file reference.
+	 * @private
+	 */
+	_prepareHTML(path) {
+		const htmlCode = utils.ReadTextFile(path);
+		const newCss = GetWindowsVersion() === '6.1' ? 'styles7.css' : 'styles10.css';
+		const cssPath = `${fb.FoobarPath}georgia-reborn\\scripts\\playlist\\assets\\html\\${newCss}`;
+		return htmlCode.replace(/href="styles10.css"/i, `href="${cssPath}"`);
+	}
+
+	/**
 	 * Opens the group presets manager dialog.
 	 * @param {Function} on_execute_callback_fn - The function to call when the dialog is closed.
 	 * @private
@@ -1088,7 +1101,7 @@ class PlaylistGroupingHandler {
 			on_execute_callback_fn();
 		};
 
-		const htmlCode = PrepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\GroupPresetsMngr.html`);
+		const htmlCode = _prepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\GroupPresetsMngr.html`);
 		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: [JSON.stringify([this.settings.group_presets, this.cur_group.name, this.settings.default_group_name]), on_ok_fn] });
 	}
 
@@ -1114,7 +1127,7 @@ class PlaylistGroupingHandler {
 		};
 
 		const parsed_query = this.cur_group.name === 'user_defined' ? [this.cur_group.group_query, this.cur_group.title_query]	: ['', '[%album artist%]'];
-		const htmlCode = PrepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\MsgBox.html`);
+		const htmlCode = _prepareHTML(`${fb.ProfilePath}georgia-reborn\\scripts\\playlist\\assets\\html\\MsgBox.html`);
 		utils.ShowHtmlDialog(window.ID, htmlCode, { width: 650, height: 425, data: ['Foobar2000: Group by', ['Grouping Query', 'Title Query'], parsed_query, on_ok_fn] });
 	}
 

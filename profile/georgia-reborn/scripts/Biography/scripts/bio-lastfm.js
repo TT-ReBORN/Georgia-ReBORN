@@ -43,7 +43,7 @@ class BioDldLastfm {
 		this.fo_bio = p_fo_bio;
 		this.pth_bio = p_pth_bio;
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
 		const URL = this.searchBio == 3 ? `https://${bio.server.lfm.server}/music/${encodeURIComponent(this.artist)}/${encodeURIComponent(this.itemValue[0])}` : this.searchBio == 2 ? `https://www.last.fm/music/${encodeURIComponent(this.artist)}/+albums` : `https://${!this.retry ? bio.server.lfm.server : 'www.last.fm'}/music/${encodeURIComponent(this.artist)}${this.searchBio ? '/+wiki' : ''}`;
 		this.func = this.analyse;
 		if (bioSet.multiServer && !force && bio.server.urlDone(bioMD5.hashStr(this.artist + this.pth_bio + URL))) return;
@@ -250,7 +250,7 @@ class BioDldArtImages {
 	}
 
 	run(dl_ar, force, art, p_stndBio, p_supCache) {
-		if (!$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) return;
+		if (!utils.DownloadFileAsync && !$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) return; // Regorxxx <- Use utils.DownloadFileAsync if available ->
 		let img_folder = p_stndBio && !bio.panel.isRadio(art.focus) ? bio.panel.cleanPth(bioCfg.pth.foImgArt, art.focus, 'server') : bio.panel.cleanPth(bioCfg.remap.foImgArt, art.focus, 'remap', dl_ar, '', 1);
 		if (p_supCache && !$Bio.folder(img_folder)) img_folder = bio.panel.cleanPth(bioCfg.sup.foImgArt, art.focus, 'remap', dl_ar, '', 1);
 		const getNo = this.img_exp(dl_ar, img_folder, !force ? bio.server.exp : 0);
@@ -292,7 +292,7 @@ class BioLfmArtImg {
 		this.allFiles = p_allFiles;
 		this.imgExisting = p_imgExisting;
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
 		const URL = `https://${!this.retry ? bio.server.lfm.server : 'www.last.fm'}/music/${encodeURIComponent(this.dl_ar)}/+images`;
 		this.func = this.analyse;
 		if (bioSet.multiServer && !force && bio.server.urlDone(bioMD5.hashStr(this.dl_ar + this.getNo + this.autoAdd + this.img_folder + URL))) return;
@@ -358,13 +358,22 @@ class BioLfmArtImg {
 				$Bio.save(`${this.img_folder}update.txt`, '', true);
 				bio.timer.decelerating();
 				if (this.autoAdd) {
-					$Bio.take(links, this.getNo).forEach(v => $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg"`, 0));
+					$Bio.take(links, this.getNo).forEach(v => {
+						// Regorxxx <- Use utils.DownloadFileAsync if available
+						const imPth = `${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg`;
+						if (utils.DownloadFileAsync) { utils.DownloadFileAsync(v, imPth); }
+						else { $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0); }
+						// Regorxxx ->
+					});
 				} else {
 					let c = 0;
 					$Bio.take(links, bioCfg.photoNum).some(v => {
 						const imPth = `${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg`;
 						if (!this.allFiles.includes(imPth)) {
-							$Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0);
+							// Regorxxx <- Use utils.DownloadFileAsync if available
+							if (utils.DownloadFileAsync) { utils.DownloadFileAsync(v, imPth); }
+							else { $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0); }
+							// Regorxxx ->
 							c++;
 							return c == this.getNo;
 						}
@@ -424,7 +433,7 @@ class BioLfmAlbum {
 			URL += `&method=album.getInfo&artist=${encodeURIComponent(this.albumArtist)}&album=${encodeURIComponent(this.rev || this.retry ? this.album : this.albm)}&autocorrect=${bio.server.auto_corr}`;
 		} else URL = `https://${bio.server.lfm.server}/music/${encodeURIComponent(this.albumArtist)}/${encodeURIComponent(this.album.replace(Regex.PunctPlus, '%2B'))}`;
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
 		this.func = this.analyse;
 		if (bioSet.multiServer && !force && bio.server.urlDone(bioMD5.hashStr(this.albumArtist + this.album + this.albm + this.rev + this.rev_img + (bioCfg.imgRevHQ || !this.rev_img) + this.pth + URL))) return;
 		this.xmlhttp.open('GET', URL);
@@ -520,7 +529,7 @@ class BioLfmAlbum {
 			this.getStats = false;
 			return this.search(this.albumArtist, this.album, this.rev, this.fo, this.pth);
 		} else {
-			if (!$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) return;
+			if (!utils.DownloadFileAsync && !$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) return; // Regorxxx <- Use utils.DownloadFileAsync if available ->
 			const data = $Bio.jsonParse(this.xmlhttp.responseText, [], 'get', 'album.image');
 			if (data.length < 5) {
 				bio.server.updateNotFound(`${this.albumArtist} - ${this.retry ? this.album : this.albm} ${bio.server.auto_corr} ${this.pth}`);
@@ -546,7 +555,10 @@ class BioLfmAlbum {
 			}
 			bio.timer.decelerating(true);
 			$Bio.buildPth(this.fo);
-			$Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${link}" "${this.pth + link.slice(-4)}"`, 0);
+			// Regorxxx <- Use utils.DownloadFileAsync if available
+			if (utils.DownloadFileAsync) { utils.DownloadFileAsync(link, this.pth + link.slice(-4)); }
+			else { $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${link}" "${this.pth + link.slice(-4)}"`, 0); }
+			// Regorxxx ->
 		}
 	}
 }
@@ -606,7 +618,7 @@ class BioLfmTrack {
 				if (!bio.server.lfm.def_EN && !this.retry) URL += `&lang=${bioCfg.language.toLowerCase()}`;
 				URL += `&method=track.getInfo&artist=${encodeURIComponent(this.artist)}&track=${encodeURIComponent(this.track)}&autocorrect=${bio.server.auto_corr}`;
 			} else {
-				this.text = $Bio.jsonParse(this.pth, false, 'file');
+				this.text = $Bio.jsonParse(this.pth, false, 'file-utf8'); // Regorxxx <- Force UTF-8 ->
 				if (!this.text) {
 					this.text = {
 						ids: {}
@@ -628,7 +640,7 @@ class BioLfmTrack {
 			} else return this.revSave();
 		}
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
 		this.func = this.analyse;
 		if (bioSet.multiServer && !this.force && bio.server.urlDone(bioMD5.hashStr(this.artist + this.track + this.pth + URL))) return;
 		this.xmlhttp.open('GET', URL);
@@ -831,8 +843,8 @@ class BioLfmSimilarArtists {
 		this.fn_sim = p_fn_sim;
 		if (this.retry) this.lmt = this.lmt == 249 ? 235 + Math.floor(Math.random() * 14) : this.lmt + 10;
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-		const URL = 'http://ws.audioscrobbler.com/2.0/?format=json' + bio.panel.lfm + '&method=artist.getSimilar&artist=' + encodeURIComponent(this.artist) + '&limit=' + this.lmt + '&autocorrect=1';
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
+		const URL = `http://ws.audioscrobbler.com/2.0/?format=json${bio.panel.lfm}&method=artist.getSimilar&artist=${encodeURIComponent(this.artist)}&limit=${this.lmt}&autocorrect=1`;
 		this.func = this.analyse;
 		this.xmlhttp.open('GET', URL);
 		this.xmlhttp.onreadystatechange = this.ready_callback;
@@ -866,6 +878,23 @@ class BioLfmSimilarArtists {
 					});
 					$Bio.buildPth(this.pth_sim);
 					$Bio.save(this.fn_sim, JSON.stringify(list), true);
+					// Regorxxx <- Save similar artist data
+					if (bioSet.exportSimArtists) {
+						const mbid = bio.server.artistMbid[this.artist]
+							? bio.server.artistMbid[this.artist]
+							: this.handles
+								? FbTitleFormat('[$trim($meta(MUSICBRAINZ_ALBUMARTISTID,0))]'.EvalWithMetadb(this.handles[0]))
+								: $Bio.eval('[$trim($meta(MUSICBRAINZ_ALBUMARTISTID,0))]', bio.panel.id.focus);
+						if (mbid && !bio.server.artistMbid[this.artist]) { bio.server.artistMbid[this.artist] = mbid; }
+						bioWebData.updateSimilarDataFile(`${bioCfg.storageFolder}\\lastfm_artists.json`,
+							[{
+								artist: this.artist,
+								...(mbid ? { mbid } : {}),
+								val: list.slice(1, 10).map((v) => ({ artist: v.name, score: v.score }))
+							}]
+						);
+					}
+					// Regorxxx ->
 					if (bioCfg.lfmSim) {
 						bio.panel.getList();
 						window.NotifyOthers('bio_getLookUpList', 'bio_getLookUpList');
@@ -895,7 +924,7 @@ class BioLfmTopAlbums {
 	search(p_artist) {
 		this.artist = p_artist;
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
 		const URL = `https://www.last.fm/music/${encodeURIComponent(this.artist)}/+albums`;
 		this.func = this.analyse;
 		this.xmlhttp.open('GET', URL);
@@ -947,7 +976,7 @@ class BioDldLastfmGenresWhitelist {
 
 	search() {
 		this.func = null;
-		this.xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
 		const URL = 'https://musicbrainz.org/genres';
 		this.func = this.analyse;
 		this.xmlhttp.open('GET', URL);
@@ -976,7 +1005,7 @@ class BioDldLastfmGenresWhitelist {
 
 		if (genres.length > 860) {
 			const pth = `${bioCfg.storageFolder}lastfm_genre_whitelist.json`;
-			const existingGenres = $Bio.jsonParse(pth, [], 'file');
+			const existingGenres = $Bio.jsonParse(pth, [], 'file-utf8'); // Regorxxx <-- Force UTF-8
 			if (genres.length > existingGenres.length) {
 				$Bio.buildPth(pth);
 				$Bio.save(pth, JSON.stringify(genres), true);
