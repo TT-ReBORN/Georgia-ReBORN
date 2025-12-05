@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    05-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -534,7 +534,7 @@ class Button {
 			lib.lib.treeState(false, libSet.rememberTree);
 			if (grSet.addTracksPlaylistSwitch) {
 				this.btn.library.enabled = false;
-				this.btn.library.changeState(ButtonState.Default);
+				this.btn.library.changeButtonState(ButtonState.Default);
 				grm.ui.displayLibrary = false;
 				grm.ui.displayPlaylist = true;
 				if (!grSet.playlistAutoScrollNowPlaying) grm.ui.setPlaylistSize();
@@ -1475,7 +1475,7 @@ class Button {
 
 		for (const key in this.btn) {
 			if (this.btn[key].state !== 0) {
-				this.btn[key].changeState(ButtonState.Default);
+				this.btn[key].changeButtonState(ButtonState.Default);
 			}
 		}
 	}

@@ -751,7 +751,7 @@ class LibMenuItems {
 				lib.lib.treeState(false, libSet.rememberTree);
 				if (grSet.addTracksPlaylistSwitch) {
 					grm.button.btn.library.enabled = false;
-					grm.button.btn.library.changeState(ButtonState.Default);
+					grm.button.btn.library.changeButtonState(ButtonState.Default);
 					grm.ui.displayLibrary = false;
 					grm.ui.displayPlaylist = true;
 					if (!grSet.playlistAutoScrollNowPlaying) grm.ui.setPlaylistSize();
@@ -765,7 +765,7 @@ class LibMenuItems {
 				lib.lib.treeState(false, libSet.rememberTree);
 				if (grSet.addTracksPlaylistSwitch) {
 					grm.button.btn.library.enabled = false;
-					grm.button.btn.library.changeState(ButtonState.Default);
+					grm.button.btn.library.changeButtonState(ButtonState.Default);
 					grm.ui.displayLibrary = false;
 					grm.ui.displayPlaylist = true;
 					setTimeout(() => { pl.playlist.scrollbar.scroll_to_end(); }, 100);
