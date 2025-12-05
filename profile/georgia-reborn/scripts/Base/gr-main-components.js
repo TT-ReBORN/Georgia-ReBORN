@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    05-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3161,6 +3161,8 @@ class VolumeButton {
 	 * @param {number} val - The new volume value that triggered the update.
 	 */
 	on_volume_change(val) {
+		if (!this.volumeBar || !this.displayVolumeBar) return;
+
 		if (grSet.showTooltipVolume) {
 			this.volumeBar.displayTooltip();
 		}
