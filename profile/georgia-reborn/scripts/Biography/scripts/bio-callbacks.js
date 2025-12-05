@@ -36,7 +36,7 @@ class BioCallbacks {
 
 	// TT & Regorxxx <- warn about errors downloading files
 	on_download_file_done(path, success, error_text) {
-		bioXHR.onDownloadFileDone(path, success, error_text);
+		bioXHR.on_download_file_done(path, success, error_text);
 	}
 	// TT & Regorxxx ->
 
@@ -61,7 +61,7 @@ class BioCallbacks {
 
 	// TT & Regorxxx <- Http Requests when utils.HTTPRequestAsync is available
 	on_http_request_done(task_id, success, response_text, status, headers) {
-		bioXHR.onHttpRequestDone(task_id, success, response_text, status, headers);
+		bioXHR.on_http_request_done(task_id, success, response_text, status, headers);
 	}
 	// TT & Regorxxx ->
 
