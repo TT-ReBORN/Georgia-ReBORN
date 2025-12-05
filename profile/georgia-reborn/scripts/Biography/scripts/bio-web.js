@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-12-2025                                              * //
+// * Last change:    06-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -167,6 +167,16 @@ class BioXMLHttpRequest {
 		/** @private @type {number} HTTP status code */
 		this._status = 0;
 
+		// Pre-bind legacy methods
+		/** @private @type {Function} Bound reference to the open() method for PascalCase compatibility. */
+		this._boundOpen = this.open.bind(this);
+		/** @private @type {Function} Bound reference to the setRequestHeader() method for PascalCase compatibility. */
+		this._boundSetRequestHeader = this.setRequestHeader.bind(this);
+		/** @private @type {Function} Bound reference to the send() method for PascalCase compatibility. */
+		this._boundSend = this.send.bind(this);
+		/** @private @type {Function} Bound reference to the abort() method for PascalCase compatibility. */
+		this._boundAbort = this.abort.bind(this);
+
 		// Callback
 		/** @public @type {Function|null} Ready state change callback */
 		this.onreadystatechange = null;
@@ -205,6 +215,78 @@ class BioXMLHttpRequest {
 	get status() {
 		return this._status;
 	}
+	// #endregion
+
+	// * LEGACY ACTIVEX COMPATIBILITY LAYER * //
+	// #region ACTIVEX COMPATIBILITY
+	/**
+	 * Legacy property: Gets the current ready state (PascalCase alias for readyState).
+	 * @returns {number} The ready state.
+	 */
+	get ReadyState() {
+		return this.readyState;
+	}
+
+	/**
+	 * Legacy property: Gets the response body as text (PascalCase alias for responseText).
+	 * @returns {string|null} The response text.
+	 */
+	get ResponseText() {
+		return this.responseText;
+	}
+
+	/**
+	 * Legacy method: Sets HTTP header (PascalCase alias for setRequestHeader).
+	 * @returns {Function} Bound setRequestHeader method.
+	 */
+	get SetRequestHeader() {
+		return this._boundSetRequestHeader;
+	}
+
+	/**
+	 * Legacy method: Aborts request if in progress (PascalCase alias for abort).
+	 * @returns {Function} Bound abort method.
+	 */
+	get Abort() {
+		return this._boundAbort;
+	}
+
+	/**
+	 * Legacy method: Initializes request (PascalCase alias for open).
+	 * @returns {Function} Bound open method.
+	 */
+	get Open() {
+		return this._boundOpen;
+	}
+
+	/**
+	 * Legacy method: Sends HTTP request (PascalCase alias for send).
+	 * @returns {Function} Bound send method.
+	 */
+	get Send() {
+		return this._boundSend;
+	}
+
+	/**
+	 * Legacy property: Gets the HTTP status code (PascalCase alias for status).
+	 * @returns {number} The HTTP status code.
+	 */
+	get Status() {
+		return this.status;
+	}
+
+	// Legacy No-Op Methods
+	/**
+	 * Legacy method: Placeholder for WinHttp.WinHttpRequest.5.1 SetTimeouts().
+	 * This implementation uses external timers and is a no-op.
+	 */
+	SetTimeouts() {}
+
+	/**
+	 * Legacy method: Placeholder for WinHttp.WinHttpRequest.5.1 WaitForResponse().
+	 * This implementation uses the onreadystatechange callback and is a no-op.
+	 */
+	WaitForResponse() {}
 	// #endregion
 
 	// * PRIVATE METHODS * //
