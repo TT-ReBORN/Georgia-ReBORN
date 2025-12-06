@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-12-2025                                              * //
+// * Last change:    06-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2780,16 +2780,34 @@ class Volume {
 		this.dragVol = 0;
 		/** @private @type {TooltipHandler} */
 		this.tooltipHandler = new TooltipHandler();
+		/** @private @type {number} */
+		this.tooltipTimeout = null;
 	}
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
+	/**
+	 * Clears the volume bar tooltip.
+	 */
+	clearTooltip() {
+		clearTimeout(this.tooltipTimeout);
+		this.tooltipTimeout = null;
+
+		this.tooltipTimeout = setTimeout(() => {
+			this.tooltipHandler.stop();
+			window.Repaint();
+		}, 2000);
+	}
+
 	/**
 	 * Displays the volume bar tooltip.
 	 */
 	displayTooltip() {
 		const volTooltip = grSet.showTooltipVolumeInPercent ? `${Math.ceil(ConvertVolume(fb.Volume, 'toPercent'))} %` : `${Math.ceil(fb.Volume.toFixed(2))} dB`;
 		this.tooltipHandler.showImmediate(volTooltip);
+
+		const offset = SCALE(30);
+		grm.ui.repaintStyledTooltips(grm.ui.styledToolTipX - offset * 2, grm.ui.styledToolTipY - offset, grm.ui.styledToolTipW + offset * 4, grm.ui.styledToolTipH + offset * 2);
 	}
 
 	/**
@@ -2869,16 +2887,11 @@ class Volume {
 				this.dragVol = ConvertVolume(pos, 'toDecibel');
 				fb.Volume = this.dragVol;
 			}
-			if (grSet.showTooltipVolume) {
-				this.displayTooltip();
-			}
+
 			return true;
 		}
 
 		this.drag = false;
-		if (grSet.showTooltipVolume) {
-			this.tooltipHandler.stop();
-		}
 		return false;
 	}
 
@@ -3161,8 +3174,6 @@ class VolumeButton {
 	 * @param {number} val - The new volume value that triggered the update.
 	 */
 	on_volume_change(val) {
-		if (!this.volumeBar || !this.displayVolumeBar) return;
-
 		if (grSet.showTooltipVolume) {
 			this.volumeBar.displayTooltip();
 		}
@@ -3170,6 +3181,8 @@ class VolumeButton {
 		if (this.displayVolumeBar) {
 			this.repaint();
 		}
+
+		this.volumeBar.clearTooltip();
 	}
 	// #endregion
 }

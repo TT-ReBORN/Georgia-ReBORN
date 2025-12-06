@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-12-2025                                              * //
+// * Last change:    06-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -348,12 +348,12 @@ class MainUI {
 
 		// * REPAINT RECTS * //
 		// #region REPAINT RECTS
-		/** @public @type {Function} Throttles and limits the repaint requests for styled tooltips to 50 ms. */
-		this.repaintStyledTooltips = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 50);
+		/** @public @type {Function} Throttles and limits the repaint requests for styled tooltips to 17 ms. */
+		this.repaintStyledTooltips = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), FPS._60);
 		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay to 1 sec. */
-		this.repaintDebugSystemOverlay = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 1000);
+		this.repaintDebugSystemOverlay = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), FPS._1);
 		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay seekbar area to 1 sec. */
-		this.repaintDebugSystemOverlaySeekbar = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), 1000);
+		this.repaintDebugSystemOverlaySeekbar = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), FPS._1);
 		// #endregion
 	}
 

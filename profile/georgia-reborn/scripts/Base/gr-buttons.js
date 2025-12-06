@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    05-12-2025                                              * //
+// * Last change:    06-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1205,8 +1205,8 @@ class Button {
 		}
 		if (grSet.showVolumeBtn_layout) {
 			this.btn.volume = new Button(calcX(++buttonCount), y, btnSize, btnSize, 'Volume', this.btnImg.ShowVolume);
-			grm.volBtn.setMetrics(this.btn.volume.x, y);
 		}
+		grm.volBtn.setMetrics(this.btn.volume && this.btn.volume.x, y);
 	}
 	// #endregion
 
@@ -1516,7 +1516,7 @@ class Button {
 			if (this.lastOverButton.tooltip) {
 				grm.ttip.showDelayed(this.lastOverButton.tooltip);
 			}
-			else if (this.lastOverButton.id === 'Volume' && !grm.volBtn.show_volume_bar) {
+			else if (this.lastOverButton.id === 'Volume' && !grm.volBtn.displayVolumeBar) {
 				grm.ttip.showDelayed(this.lowerTransportTooltip('volume'));
 			}
 			else if (this.lastOverButton.id === 'PlaybackOrder') {
