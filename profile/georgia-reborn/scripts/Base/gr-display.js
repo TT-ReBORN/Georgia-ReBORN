@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    06-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -260,10 +260,10 @@ class Display {
 	 * @param {boolean} setSizesForDisplay - Sets the font and button sizes for the current display resolution mode.
 	 */
 	updatePlayerSize(sizeName, setSizesForDisplay) {
+		this.sizeInitialized = false;
+		if (setSizesForDisplay) this.setSizesForDisplay();
 		this.setPlayerSize(sizeName);
 		this.setWindowSizeLimitsForLayouts(window.Width, window.Height);
-		if (setSizesForDisplay) this.setSizesForDisplay();
-		grm.ui.initPanels();
 		grm.ui.clearCache('metrics');
 		grm.details.clearCache('metrics');
 		PlaylistHeader.img_cache.clear();
@@ -725,7 +725,7 @@ class Display {
 			else if (grSet.layout === 'default' && (isKeyF11 || (isMaximize && grSet.fullscreenMaximize))) {
 				UIWizard.ToggleFullscreen();
 			}
-			else if (isKeyEscape) {
+			else if (isKeyEscape && UIWizard.WindowState === WindowState.FullScreen) {
 				UIWizard.ExitFullscreen();
 			}
 			if (grSet.layout !== 'default' && UIWizard.WindowState === WindowState.Maximized) {
