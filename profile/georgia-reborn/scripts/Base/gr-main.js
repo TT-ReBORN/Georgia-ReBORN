@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-12-2025                                              * //
+// * Last change:    11-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1946,13 +1946,11 @@ class MainUI {
 		SetDebugProfile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
 
 		const fullInit =
-			this.initThemeFull || grSet.themeBrightness !== 'default'
+			this.initThemeFull || ['reborn', 'random'].includes(grSet.theme)
 			||
-			libSet.theme !== 0 || bioSet.theme !== 0
+			grSet.themeBrightness !== 'default' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn
 			||
-			['reborn', 'random'].includes(grSet.theme)
-			||
-			grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn;
+			libSet.theme !== 0 || bioSet.theme !== 0;
 
 		// * SETUP COLORS * //
 		this.initCustomTheme();
@@ -4290,19 +4288,28 @@ class MainUI {
 	 * @throws Logs an error if the scaling operation fails.
 	 */
 	setAlbumArtScaled() {
-		if (this.albumArtScaled) this.albumArtScaled = null;
-
-		const sourceArt = this.albumArtCopy || this.albumArt;
+		if (this.albumArtScaled) {
+			this.albumArtScaled = null;
+		}
 
 		try {
-			// * Avoid weird anti-aliased scaling along border of images, see: https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
+			// ! Avoid weird 2px anti-aliased scaling artifacts of HighQualityBicubic along border of images:
+			// ! https://stackoverflow.com/questions/4772273/interpolationmode-highqualitybicubic-introducing-artefacts-on-edge-of-resized-im
 			this.albumArtCorrupt = false;
-			this.albumArtScaled = sourceArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.Bicubic); // Old method -> this.albumArtScaled = this.albumArt.Resize(this.albumArtSize.w, this.albumArtSize.h);
-			const sg = this.albumArtScaled.GetGraphics();
-			const HQscaled = sourceArt.Resize(this.albumArtSize.w, this.albumArtSize.h, InterpolationMode.HighQualityBicubic);
-			sg.DrawImage(HQscaled, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4, 2, 2, this.albumArtScaled.Width - 4, this.albumArtScaled.Height - 4);
-			this.albumArtScaled.ReleaseGraphics(sg);
-		} catch (e) {
+
+			// * 1. Resize with HighQualityBicubic with +4px border (2px on each side)
+			const albumArtSource = this.albumArtCopy || this.albumArt;
+			const albumArtScaled = albumArtSource.Resize(this.albumArtSize.w + 4, this.albumArtSize.h + 4, InterpolationMode.HighQualityBicubic);
+
+			// * 2. Create final image at exact target size
+			this.albumArtScaled = gdi.CreateImage(this.albumArtSize.w, this.albumArtSize.h);
+			const g = this.albumArtScaled.GetGraphics();
+
+			// * 3. Draw the scaled HQ image, cropping 2px from each side
+			g.DrawImage(albumArtScaled, 0, 0, this.albumArtSize.w, this.albumArtSize.h, 2, 2, this.albumArtSize.w, this.albumArtSize.h);
+			this.albumArtScaled.ReleaseGraphics(g);
+		}
+		catch (e) {
 			this.handleArtworkError('albumArt');
 		}
 	}
