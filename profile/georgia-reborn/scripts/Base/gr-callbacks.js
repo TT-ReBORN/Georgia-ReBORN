@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-12-2025                                              * //
+// * Last change:    12-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -157,12 +157,12 @@ function on_size() {
 }
 
 
-//////////////////////////////////
-// * JSPLITTER-ONLY CALLBACKS * //
-//////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// * ASYNC NETWORK CALLBACKS - SINCE SMP 1.7.25.12.8 AND JSplitter 3.7.4 * //
+/////////////////////////////////////////////////////////////////////////////
 /**
  * Called when {@link utils.DownloadFileAsync} thread is finished
- * New callback and only available with JSplitter v4.0.4.4-beta and JSplitter v3.7.4.
+ * New callback and only available since SMP v1.7.25.12.8 or JSplitter v3.7.4/v4.0.4.4-beta.
  * @global
  * @param {string} path - The path of the downloaded file.
  * @param {boolean} success - The success message if the download was successful.
@@ -182,7 +182,7 @@ function on_download_file_done(path, success, error_text) {
 
 /**
  * Called when {@link utils.HTTPRequestAsync} request is finished
- * New callback and only available with JSplitter v4.0.4.4-beta and JSplitter v3.7.4.
+ * New callback and only available since SMP v1.7.25.12.8 or JSplitter v3.7.4/v4.0.4.4-beta.
  * @global
  * @param {number} task_id - The task id returned by {@link utils.HTTPRequestAsync}
  * @param {boolean} success - The state whether the request was successful.
