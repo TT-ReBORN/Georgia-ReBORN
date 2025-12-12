@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    12-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -123,7 +123,7 @@ const grPath = {
 	 */
 	discArtImagePaths() {
 		const paths = grCfg.discArtPaths.map(path => $(path));
-		return paths.flatMap(pattern => UtilsGlob(pattern));
+		return paths.flatMap(pattern => utils.Glob(pattern));
 	},
 
 	/**

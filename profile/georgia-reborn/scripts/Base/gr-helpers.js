@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-12-2025                                              * //
+// * Last change:    12-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1369,52 +1369,6 @@ function FilterFiles(files = [], pattern = null) {
 
 
 /**
- * Finds files in a directory that match a given pattern. This function is a replacement for SMP's utils.Glob().
- * @global
- * @param {string} filePath - The file path with an optional pattern (wildcards) to match files.
- * @returns {string[]} The array of matching file paths.
- * @example
- * // Finds all jpg files in the directory C:\Test
- * FindFiles("C:\\Test\\*.jpg");
- *
- * // Finds all files in the directory C:\Test that start with 'folder'
- * FindFiles("C:\\Test\\folder*");
- *
- * // Finds the specific file folder.jpg in the directory C:\Test
- * FindFiles("C:\\Test\\folder.jpg");
- */
-function FindFiles(filePath) {
-	const lastBackslashIndex = filePath.lastIndexOf('\\');
-	if (lastBackslashIndex === -1) return [];
-
-	const directory = filePath.slice(0, lastBackslashIndex);
-	if (!IsFolder(directory)) return [];
-
-	const folder = fso.GetFolder(directory);
-	const files = folder.Files;
-	const filePattern = filePath.slice(lastBackslashIndex + 1);
-
-	// * Early exit for exact match without wildcards
-	if (!filePattern.includes('*')) {
-		const exactFile = `${folder.Path}\\${filePattern}`;
-		return IsFile(exactFile) ? [exactFile] : [];
-	}
-
-	// * Search for files that match the pattern
-	const result = [];
-	const regex = new RegExp(`^${filePattern.replace(Regex.PathWildcardAsterisk, '.*')}$`, 'i');
-
-	for (const file of files) {
-		if (regex.test(file.Name)) {
-			result.push(file.Path);
-		}
-	}
-
-	return result;
-}
-
-
-/**
  * Checks if a file exists.
  * @global
  * @param {string} filename - The filename to check.
@@ -1554,18 +1508,6 @@ function SaveFSO(file, value, bUTF16) {
 	}
 	console.log(`Error saving to ${file}`);
 	return false;
-}
-
-
-/**
- * Wrapper for `utils.Glob`, which does not support file paths with semicolons.
- * Uses the faster SMP's `utils.Glob` method for paths without semicolons, or the slower `FindFiles` helper otherwise.
- * @global
- * @param {string} filePath - The path of the file to process.
- * @returns {string[] | any} The array of matching file paths returned by `utils.Glob` or `FindFiles`.
- */
-function UtilsGlob(filePath) {
-	return !filePath.includes(';') ? utils.Glob(filePath) : FindFiles(filePath);
 }
 
 

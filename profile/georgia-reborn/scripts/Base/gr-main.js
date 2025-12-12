@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-12-2025                                              * //
+// * Last change:    12-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3181,18 +3181,18 @@ class MainUI {
 	getImagePathList(type, metadb, pattern = null) {
 		if (type === 'artistArt') {
 			const artistArtPathsRaw = bio.panel.cleanPth(bioCfg.pth.foImgArt, bio.panel.id.focus);
-			const artistArtPaths = UtilsGlob(`${artistArtPathsRaw}*`);
+			const artistArtPaths = utils.Glob(`${artistArtPathsRaw}*`);
 			return FilterFiles(artistArtPaths, pattern);
 		}
 
 		if (type === 'albumArt') {
-			const albumArtPathsRaw = grCfg.imgPaths.flatMap(path => UtilsGlob($(path, metadb)));
+			const albumArtPathsRaw = grCfg.imgPaths.flatMap(path => utils.Glob($(path, metadb)));
 			const albumArtPaths = [...new Set(albumArtPathsRaw)];
 			return FilterFiles(albumArtPaths, pattern);
 		}
 
 		if (type === 'customArt') {
-			const customArtPaths = UtilsGlob(`${grPath.images}background\\*`);
+			const customArtPaths = utils.Glob(`${grPath.images}background\\*`);
 			return FilterFiles(customArtPaths, pattern);
 		}
 
