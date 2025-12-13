@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-12-2025                                              * //
+// * Last change:    13-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -575,6 +575,7 @@ function initThemeDayNightMode(date) {
 	// * Set theme based on day time
 	grSet.themeDayNightTime = isDayTime ? 'day' : 'night';
 	setThemeDayNightTheme(isDayTime);
+	fb.RunMainMenuCommand(`View/Mode/${isDayTime ? 'Light' : 'Dark'}`);
 
 	return `${formattedHours}:${formattedMinutes} ${timeSuffix}`;
 }
