@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-12-2025                                              * //
+// * Last change:    17-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -173,10 +173,10 @@ function on_download_file_done(path, success, error_text) {
 		CallLog('Library => on_download_file_done');
 		// lib.call.on_download_file_done(path, success, error_text);
 	}
-	// if (grm.ui.displayBiography) {
+	if (grm.ui.displayBiography) {
 		CallLog('Biography => on_download_file_done');
 		bio.call.on_download_file_done(path, success, error_text);
-	// }
+	}
 }
 
 
@@ -195,10 +195,10 @@ function on_http_request_done(task_id, success, response_text, status, content_t
 		CallLog('Library => on_http_request_done');
 		// lib.call.on_http_request_done(task_id, success, response_text, status, content_type);
 	}
-	// if (grm.ui.displayBiography) {
+	if (grm.ui.displayBiography) {
 		CallLog('Biography => on_http_request_done');
 		bio.call.on_http_request_done(task_id, success, response_text, status, content_type);
-	// }
+	}
 }
 
 

@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-12-2025                                              * //
+// * Last change:    17-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -343,9 +343,12 @@ class Button {
 			grm.ui.setPlaylistSize();
 		}
 
-		// The Biography's on_playback_new_track in gr-callbacks.js is only called when Biography panel is active to improve performance.
-		// Therefore, we need to call it now and update the Biography's nowPlaying state when a new song is played from the active Playlist panel.
-		bio.call.on_playback_new_track();
+		if (grm.ui.displayBiography) {
+			bio.txt.grab();
+			bio.img.grab(true);
+			bio.call.on_playback_new_track(); // Refresh
+		}
+
 		grm.ui.handlePanelLayout('all', 'initLayout');
 		this._updatePanelState();
 	}
