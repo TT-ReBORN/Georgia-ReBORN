@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    16-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -771,7 +771,6 @@ class ConfigDefaults {
 			returnToHomeOnPlaybackStop: true,
 			addTracksPlaylistSwitch: false,
 			hideMiddlePanelShadow: false,
-			fullscreenESCDisabled: false,
 			fullscreenMaximize: true,
 			lockPlayerSize: false,
 			transportButtonSize_default: 32,
@@ -941,7 +940,6 @@ class ConfigDefaults {
 			returnToHomeOnPlaybackStop: 'Values: true, false - Options > Player controls > Panel > Return to home on playback stop',
 			addTracksPlaylistSwitch: 'Values: true, false - Options > Player controls > Panel > Switch to playlist when adding songs',
 			hideMiddlePanelShadow: 'Values: true, false - Options > Player controls > Panel > Hide middle panel shadow',
-			fullscreenESCDisabled: 'Values: true, false - Options > Player controls > Panel > Disable fullscreen ESC',
 			fullscreenMaximize: 'Values: true, false - not in Options - enable or disable the maximize to fullscreen function',
 			lockPlayerSize: 'Values: true, false - Options > Player controls > Panel > Lock player size',
 			transportButtonSize_default: 'Values: 28, 30, 32, 34, 36, 38, 40, 42 - Options > Player controls > Transport button size > Default',

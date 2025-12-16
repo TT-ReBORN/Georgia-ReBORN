@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-12-2025                                              * //
+// * Last change:    16-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1333,8 +1333,6 @@ class TopMenuOptions {
 		playerControlsPanelMenu.addToggleItem('Switch to playlist when adding songs', grSet, 'addTracksPlaylistSwitch');
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Hide middle panel shadow', grSet, 'hideMiddlePanelShadow', () => { RepaintWindow(); });
-		playerControlsPanelMenu.addSeparator();
-		playerControlsPanelMenu.addToggleItem('Disable fullscreen ESC', grSet, 'fullscreenESCDisabled');
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Lock player size', grSet, 'lockPlayerSize', () => { UIWizard.DisableWindowSizing = true; });
 		playerControlsPanelMenu.appendTo(playerControlsMenu);

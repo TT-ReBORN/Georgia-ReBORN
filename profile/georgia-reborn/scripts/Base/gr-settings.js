@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    16-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -408,7 +408,6 @@ grSet.addProperties({
 	returnToHomeOnPlaybackStop:         ['Georgia-ReBORN - 09. Player controls: Return to home on playback stop', true], // true: Return to home on playback stop
 	addTracksPlaylistSwitch:            ['Georgia-ReBORN - 09. Player controls: Switch to playlist when adding songs', false], // When adding songs from Library or Playlist to another playlist
 	hideMiddlePanelShadow:              ['Georgia-ReBORN - 09. Player controls: Hide middle panel shadow', false], // false: Hides the middle panel shadow
-	fullscreenESCDisabled:              ['Georgia-ReBORN - 09. Player controls: Disable fullscreen ESC', false], // Enable or disable ESC fullscreen exit
 	fullscreenMaximize:                 ['Georgia-ReBORN - 09. Player controls: Maximize to fullscreen', true], // Enable or disable maximize function
 	lockPlayerSize:                     ['Georgia-ReBORN - 09. Player controls: Lock player size', false], // false: Locks the player size
 	transportButtonSize_default:        ['Georgia-ReBORN - 09. Player controls: Transport button size (Default)', 32], // Size in pixels of the buttons in Default layout
@@ -1066,7 +1065,6 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'returnToHomeOnPlaybackStop', grCfg.themeControls, 'returnToHomeOnPlaybackStop', true);
 		this._setSetting(grSet, 'addTracksPlaylistSwitch', grCfg.themeControls, 'addTracksPlaylistSwitch', false);
 		this._setSetting(grSet, 'hideMiddlePanelShadow', grCfg.themeControls, 'hideMiddlePanelShadow', false);
-		this._setSetting(grSet, 'fullscreenESCDisabled', grCfg.themeControls, 'fullscreenESCDisabled', false);
 		this._setSetting(grSet, 'fullscreenMaximize', grCfg.themeControls, 'fullscreenMaximize', true);
 		this._setSetting(grSet, 'lockPlayerSize', grCfg.themeControls, 'lockPlayerSize', false);
 		this._setSetting(grSet, 'transportButtonSize_default', grCfg.themeControls, 'transportButtonSize_default', 32);

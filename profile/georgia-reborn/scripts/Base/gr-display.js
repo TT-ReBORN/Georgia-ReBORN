@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-12-2025                                              * //
+// * Last change:    16-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -699,7 +699,7 @@ class Display {
 	 * This method handles toggling between fullscreen and normal window states, maximizing/restoring the window, and adjusting window state during specific UI interactions.
 	 * @param {string} triggeredBy - Specifies the type of trigger that invoked the method. Expected values are 'key', 'minimize', 'maximize', or 'doubleClick'.
 	 * The method distinguishes between different types of triggers:
-	 * - 'key': Handles key press events, specifically for F11 to toggle fullscreen and ESC to exit fullscreen, respecting certain conditions.
+	 * - 'key': Handles key press events, specifically for F11 to toggle fullscreen, respecting certain conditions.
 	 * - 'minimize': Handles minimize button click events.
 	 * - 'maximize': Handles maximize button click events.
 	 * - 'doubleClick': Handles double-click events on the top menu bar, adjusting the window state based on fullscreen mode or specific layout settings.
@@ -711,7 +711,6 @@ class Display {
 	handleWindowControl(triggeredBy) {
 		const isKeyF10 = triggeredBy === 'key' && utils.IsKeyPressed(VKey.F10);
 		const isKeyF11 = triggeredBy === 'key' && utils.IsKeyPressed(VKey.F11);
-		const isKeyEscape = triggeredBy === 'key' && utils.IsKeyPressed(VKey.ESCAPE) && !grSet.fullscreenESCDisabled;
 		const isMinimize = triggeredBy === 'minimize';
 		const isMaximize = triggeredBy === 'maximize';
 
@@ -724,9 +723,6 @@ class Display {
 			}
 			else if (grSet.layout === 'default' && (isKeyF11 || (isMaximize && grSet.fullscreenMaximize))) {
 				UIWizard.ToggleFullscreen();
-			}
-			else if (isKeyEscape && UIWizard.WindowState === WindowState.FullScreen) {
-				UIWizard.ExitFullscreen();
 			}
 			if (grSet.layout !== 'default' && UIWizard.WindowState === WindowState.Maximized) {
 				UIWizard.ExitMaximize();

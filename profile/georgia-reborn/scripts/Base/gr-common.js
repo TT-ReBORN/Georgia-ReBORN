@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-12-2025                                              * //
+// * Last change:    16-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1624,16 +1624,14 @@ const MainMenuState = {
  * A set of UI Wizard window state settings.
  * @typedef  {object} WindowState
  * @property {number} Normal - The window is in normal state.
- * @property {number} Minimized - The window is minimized.
  * @property {number} Maximized - The window is maximized.
  * @property {number} Fullscreen - The window is fullscreen.
  */
 /** @global @enum @type {WindowState} */
 const WindowState = {
 	Normal: 0,
-	Minimized: 1,
-	Maximized: 2,
-	Fullscreen: 3
+	Maximized: 1,
+	Fullscreen: 2
 };
 
 /**
