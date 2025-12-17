@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-12-2025                                              * //
+// * Last change:    17-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -430,6 +430,8 @@ class Preloader {
 
 		// * BACKGROUND * //
 		gr.FillSolidRect(0, 0, this.ww, this.wh, this.col.bg);
+
+		if (this.ww < 1 || this.wh < 1) return;
 
 		// * LOGO/TEXT * //
 		if (grSet.showPreloaderLogo) {
