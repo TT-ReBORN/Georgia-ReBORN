@@ -1712,15 +1712,14 @@ class TopMenuOptions {
 
 		playerControlsWaveformBarMenu.createRadioSubMenu('Resolution', ['Minimum', 'Very low', 'Low', 'Balanced', 'Standard (default)', 'High', 'Very high'], grSet.waveformBarResolution, [1, 5, 10, 15, 20, 50, 100], (res) => {
 			grSet.waveformBarResolution = res;
-			grm.waveBar.updateConfig({ analysis: { resolution: res } });
 
 			const handle = fb.GetNowPlaying();
 			if (handle) {
 				grm.waveBar.deleteWaveformFile(handle);
-				grm.waveBar.on_playback_new_track(handle);
 			}
 
-			grm.waveBar.updateBar();
+			grm.waveBar.updateConfig({ analysis: { resolution: res } });
+			grm.waveBar.updateBar(true);
 		});
 
 		playerControlsWaveformBarMenu.createRadioSubMenu('Style', ['Waveform', 'Bars', 'Dots', 'Halfbars'], grSet.waveformBarDesign, ['waveform', 'bars', 'dots', 'halfbars'], (design) => {

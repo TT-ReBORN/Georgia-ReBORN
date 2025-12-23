@@ -17,111 +17,316 @@
 // * API * //
 /////////////
 /**
- * Starts analyzing asynchronously selected tracks and logs detailed audio metrics.
+ * Prepares COM-ready track metadata from metadb handle(s), with fallback to selected items if null.
+ * @global
+ * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb -
+ *  - FbMetadbHandle: fb.GetNowPlaying() or fb.GetSelected();
+ *  - FbMetadbHandleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+ *  - null: defaults to plman.GetPlaylistSelectedItems(plman.ActivePlaylist).
+ * @returns {Object} { handleList: FbMetadbHandleList, metadata: string[], artists: string[], albums: string[], titles: string[] }
+ *  - metadata: Array of "path\u001Fsubsong" strings (e.g., "C:\\song.mp3\u001F0"), auto-marshaled to VT_ARRAY | VT_BSTR for COM.
  */
-async function AWStartFullTrackAnalysis() {
-	if (!AudioWizard) return;
+function GetMetadata(metadb) {
+	const handleData = metadb || plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+	const handleList = new FbMetadbHandleList(handleData);
+	const handleArray = handleList.Convert();
+	const handleCount = handleArray.length;
 
-	console.log("Audio Wizard => Starting full-track metrics analysis...");
+	const metadata = new Array(handleCount);
+	const artists = new Array(handleCount);
+	const albums = new Array(handleCount);
+	const titles = new Array(handleCount);
+
+	const sep = Unicode.InformationSeparatorOne;
+	const combinedTf = fb.TitleFormat(`%artist%${sep}%album%${sep}%title%`);
+
+	for (let i = 0; i < handleCount; i++) {
+		const handle = handleArray[i];
+		const parts = combinedTf.EvalWithMetadb(handle).split(sep);
+		metadata[i] = `${handle.Path}${sep}${handle.SubSong}`;
+		artists[i] = parts[0] || "Unknown Artist";
+		albums[i]  = parts[1] || "Unknown Album";
+		titles[i]  = parts[2] || "Unknown Title";
+	}
+
+	return { handleList, metadata, artists, albums, titles };
+}
+
+
+/**
+ * Starts full-track metrics analysis using GetFullTrackMetrics (batch retrieval).
+ * @global
+ * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
+ * @param {number} [chunkDuration] - The optional chunk duration from 10-1000ms.
+ * @returns {Promise<{success: boolean, metrics?: any}>}
+ */
+async function AWStartFullTrackMetricsBatch(metadb, chunkDuration = 200) {
+	if (!AudioWizard || AudioWizard.FullTrackProcessing) {
+		return { success: false };
+	}
+
+	console.log("Audio Wizard => Starting full-track metrics batch analysis...");
 
 	try {
-		await new Promise((resolve, reject) => {
-			const onComplete = () => {
-				console.log("Audio Wizard => Analysis complete!");
+		const { handleList, metadata, artists, albums, titles } = GetMetadata(metadb);
+		console.log(`Audio Wizard => Processing ${artists.length} track(s) via unified format`);
 
-				const metricsPerTrack = 12; // M LUFS, S LUFS, I LUFS, RMS, SP, TP, PSR, PLR, CF, LRA, DR, PD
-				const metrics = AudioWizard.GetFullTrackMetrics();
+		return await new Promise((resolve) => {
+			const onComplete = (success) => {
+				try {
+					console.log(`Audio Wizard => Batch metrics callback fired, success: ${success}`);
 
-				const selectedTracks = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-				const tfArtist = fb.TitleFormat("%artist%");
-				const tfAlbum = fb.TitleFormat("%album%");
-				const tfTitle = fb.TitleFormat("%title%");
-
-				console.log(`Audio Wizard => Analyzed ${selectedTracks.Count} track(s):`);
-
-				for (let i = 0; i < selectedTracks.Count; i++) {
-					const track = selectedTracks[i];
-					const artist = tfArtist.EvalWithMetadb(track);
-					const album = tfAlbum.EvalWithMetadb(track);
-					const title = tfTitle.EvalWithMetadb(track);
-					const offset = i * metricsPerTrack;
-
-					console.log(`Audio Wizard => GetFullTrackMetrics => Track ${i + 1}: ${artist} - ${album} - ${title}`);
-					console.log(`  M LUFS: ${metrics[offset + 0].toFixed(2)}`);
-					console.log(`  S LUFS: ${metrics[offset + 1].toFixed(2)}`);
-					console.log(`  I LUFS: ${metrics[offset + 2].toFixed(2)}`);
-					console.log(`  RMS: ${metrics[offset + 3].toFixed(2)}`);
-					console.log(`  Sample Peak: ${metrics[offset + 4].toFixed(2)}`);
-					console.log(`  True Peak: ${metrics[offset + 5].toFixed(2)}`);
-					console.log(`  PSR: ${metrics[offset + 6].toFixed(2)}`);
-					console.log(`  PLR: ${metrics[offset + 7].toFixed(2)}`);
-					console.log(`  CF: ${metrics[offset + 8].toFixed(2)}`);
-					console.log(`  LRA: ${metrics[offset + 9].toFixed(2)}`);
-					console.log(`  DR: ${metrics[offset + 10].toFixed(2)}`);
-					console.log(`  PD: ${metrics[offset + 11].toFixed(2)}`);
-
-					console.log(`Audio Wizard => Individual Metrics => Track ${i + 1}: ${artist} - ${album} - ${title}`);
-					console.log(`  M LUFS: ${AudioWizard.GetMomentaryLUFSFull(i).toFixed(2)}`);
-					console.log(`  S LUFS: ${AudioWizard.GetShortTermLUFSFull(i).toFixed(2)}`);
-					console.log(`  I LUFS: ${AudioWizard.GetIntegratedLUFSFull(i).toFixed(2)}`);
-					console.log(`  RMS: ${AudioWizard.GetRMSFull(i).toFixed(2)}`);
-					console.log(`  Sample Peak: ${AudioWizard.GetSamplePeakFull(i).toFixed(2)}`);
-					console.log(`  True Peak: ${AudioWizard.GetTruePeakFull(i).toFixed(2)}`);
-					console.log(`  PSR: ${AudioWizard.GetPSRFull(i).toFixed(2)}`);
-					console.log(`  PLR: ${AudioWizard.GetPLRFull(i).toFixed(2)}`);
-					console.log(`  CF: ${AudioWizard.GetCrestFactorFull(i).toFixed(2)}`);
-					console.log(`  LRA: ${AudioWizard.GetLoudnessRangeFull(i).toFixed(2)}`);
-					console.log(`  DR: ${AudioWizard.GetDynamicRangeFull(i).toFixed(2)}`);
-					console.log(`  PD: ${AudioWizard.GetPureDynamicsFull(i).toFixed(2)}`);
-
-					console.log("\n");
-				}
-
-				// Compute and log DR and PD album metrics
-				const albums = new Map();
-				for (let i = 0; i < selectedTracks.Count; i++) {
-					const track = selectedTracks[i];
-					const album = tfAlbum.EvalWithMetadb(track);
-					const artist = tfArtist.EvalWithMetadb(track);
-					if (album && !albums.has(album)) {
-						albums.set(album, artist || "Unknown Artist");
+					if (!success) {
+						console.log('Audio Wizard => No tracks selected, returning empty batch result');
+						resolve({ success: false });
+						return;
 					}
+
+					console.log("Audio Wizard => Batch metrics analysis complete!");
+
+					const metricsPerTrack = 12;
+					const metrics = AudioWizard.GetFullTrackMetrics();
+
+					console.log(`Audio Wizard => Analyzed ${handleList.Count} track(s) with GetFullTrackMetrics:`);
+
+					for (let i = 0; i < handleList.Count; i++) {
+						const artist = artists[i];
+						const album = albums[i];
+						const title = titles[i];
+						const offset = i * metricsPerTrack;
+
+						console.log(`Audio Wizard => GetFullTrackMetrics => Track ${i + 1}: ${artist} - ${album} - ${title}`);
+						console.log(`  M LUFS: ${metrics[offset + 0].toFixed(2)}`);
+						console.log(`  S LUFS: ${metrics[offset + 1].toFixed(2)}`);
+						console.log(`  I LUFS: ${metrics[offset + 2].toFixed(2)}`);
+						console.log(`  RMS: ${metrics[offset + 3].toFixed(2)}`);
+						console.log(`  Sample Peak: ${metrics[offset + 4].toFixed(2)}`);
+						console.log(`  True Peak: ${metrics[offset + 5].toFixed(2)}`);
+						console.log(`  PSR: ${metrics[offset + 6].toFixed(2)}`);
+						console.log(`  PLR: ${metrics[offset + 7].toFixed(2)}`);
+						console.log(`  CF: ${metrics[offset + 8].toFixed(2)}`);
+						console.log(`  LRA: ${metrics[offset + 9].toFixed(2)}`);
+						console.log(`  DR: ${metrics[offset + 10].toFixed(2)}`);
+						console.log(`  PD: ${metrics[offset + 11].toFixed(2)}`);
+						console.log("\n");
+					}
+
+					resolve({ success: true, metrics });
 				}
-
-				console.log(`Audio Wizard => Analyzed ${albums.size} album(s):`);
-
-				for (const [album, artist] of albums.entries()) {
-					const dr = AudioWizard.GetDynamicRangeAlbumFull(album);
-					const pd = AudioWizard.GetPureDynamicsAlbumFull(album);
-					console.log(`Audio Wizard => Album metrics: ${artist} - ${album}`);
-					console.log(`  DR-A: ${dr === -Infinity ? '-inf' : dr.toFixed(2)}`);
-					console.log(`  PD-A: ${pd === -Infinity ? '-inf' : pd.toFixed(2)}`);
+				catch (e) {
+					console.log(`Audio Wizard => Error in batch metrics callback: ${e.message}`);
+					resolve({ success: false });
 				}
-
-				resolve();
 			};
 
-			try {
-				AudioWizard.SetFullTrackAnalysisCallback(onComplete);
-				AudioWizard.StartFullTrackAnalysis(100);
-			} catch (e) {
-				reject(new Error(`Audio Wizard => Failed to start full-track metrics analysis: ${e.description}`));
-			}
+			AudioWizard.SetFullTrackAnalysisCallback(onComplete);
+			AudioWizard.StartFullTrackAnalysis(metadata, chunkDuration);
 		});
 	}
 	catch (e) {
-		console.log(`Audio Wizard => Error in full-track metrics analysis: ${e.message}`);
+		console.log(`Audio Wizard => Unexpected error in full-track metrics batch analysis: ${e.message}`);
+		return { success: false };
+	}
+}
+
+
+/**
+ * Starts full-track metrics analysis using single getters (e.g., GetMomentaryLUFSFull).
+ * @global
+ * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
+ * @param {number} [chunkDuration] - The optional chunk duration from 10-1000ms.
+ * @returns {Promise<{success: boolean, singleMetrics?: any}>}
+ */
+async function AWStartFullTrackMetricsSingle(metadb, chunkDuration = 200) {
+	if (!AudioWizard || AudioWizard.FullTrackProcessing) {
+		return { success: false };
+	}
+
+	console.log("Audio Wizard => Starting full-track single metrics analysis...");
+
+	try {
+		const { handleList, metadata, artists, albums, titles } = GetMetadata(metadb);
+
+		if (!handleList || handleList.Count === 0) {
+			console.log("Audio Wizard => No tracks to analyze.");
+			return { success: false };
+		}
+
+		const trackCount = handleList.Count;
+
+		return await new Promise((resolve) => {
+			const onComplete = (success) => {
+				if (!success) {
+					console.log('Audio Wizard => Analysis failed or was cancelled');
+					resolve({ success: false, singleMetrics: new Map() });
+					return;
+				}
+
+				console.log("Audio Wizard => Single metrics analysis complete!");
+				console.log(`Audio Wizard => Analyzed ${trackCount} track(s):`);
+
+				const singleMetrics = new Map();
+
+				for (let i = 0; i < trackCount; i++) {
+					const key = `${artists[i]} - ${albums[i]} - ${titles[i]}`;
+
+					const metrics = {
+						mLufs: AudioWizard.GetMomentaryLUFSFull(i),
+						sLufs: AudioWizard.GetShortTermLUFSFull(i),
+						iLufs: AudioWizard.GetIntegratedLUFSFull(i),
+						rms: AudioWizard.GetRMSFull(i),
+						samplePeak: AudioWizard.GetSamplePeakFull(i),
+						truePeak: AudioWizard.GetTruePeakFull(i),
+						psr: AudioWizard.GetPSRFull(i),
+						plr: AudioWizard.GetPLRFull(i),
+						cf: AudioWizard.GetCrestFactorFull(i),
+						lra: AudioWizard.GetLoudnessRangeFull(i),
+						dr: AudioWizard.GetDynamicRangeFull(i),
+						pd: AudioWizard.GetPureDynamicsFull(i)
+					};
+
+					singleMetrics.set(key, metrics);
+
+					console.log(`Audio Wizard => Track ${i + 1}: ${key}`);
+					console.log(`  M LUFS: ${metrics.mLufs.toFixed(2)} | S LUFS: ${metrics.sLufs.toFixed(2)} | I LUFS: ${metrics.iLufs.toFixed(2)}`);
+					console.log(`  RMS: ${metrics.rms.toFixed(2)} | Peak: ${metrics.samplePeak.toFixed(2)} | True Peak: ${metrics.truePeak.toFixed(2)}`);
+					console.log(`  PSR: ${metrics.psr.toFixed(2)} | PLR: ${metrics.plr.toFixed(2)} | CF: ${metrics.cf.toFixed(2)}`);
+					console.log(`  LRA: ${metrics.lra.toFixed(2)} | DR: ${metrics.dr.toFixed(2)} | PD: ${metrics.pd.toFixed(2)}`);
+					console.log("");
+				}
+
+				resolve({ success: true, singleMetrics });
+			};
+
+			AudioWizard.SetFullTrackAnalysisCallback(onComplete);
+			AudioWizard.StartFullTrackAnalysis(metadata, chunkDuration);
+		});
+	}
+	catch (e) {
+		console.log(`Audio Wizard => Error in full-track single metrics analysis: ${e.message || e}`);
+		return { success: false };
+	}
+}
+
+
+/**
+ * Starts waveform analysis for single or multiple tracks.
+ * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
+ * @param {number} [metric] - The optional waveform metric (0-3).
+ * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
+ * @returns {Promise<{success: boolean, tracks?: Array<{index: number, path: string, duration: number, waveformData: Array}>}>}
+ */
+async function AWStartWaveformAnalysis(metadb, metric = 0, resolution = 1) {
+	if (!AudioWizard || AudioWizard.FullTrackProcessing) {
+		return { success: false };
+	}
+
+	console.log("Audio Wizard => Starting waveform analysis...");
+
+	try {
+		const { metadata } = GetMetadata(metadb);
+
+		return await new Promise((resolve) => {
+			const onComplete = (success) => {
+				try {
+					console.log(`Audio Wizard => Waveform callback fired, success: ${success}`);
+
+					if (!success) {
+						console.log('Audio Wizard => Waveform analysis failed');
+						resolve({ success: false });
+						return;
+					}
+
+					const tracks = [];
+					const trackCount = AudioWizard.GetWaveformTrackCount();
+					console.log(`Audio Wizard => Processing ${trackCount} track(s)`);
+
+					// Retrieve each track's waveform data
+					for (let i = 0; i < trackCount; i++) {
+						const waveformData = AudioWizard.GetWaveformData(i);
+						const path = AudioWizard.GetWaveformTrackPath(i);
+						const duration = AudioWizard.GetWaveformTrackDuration(i).toFixed(2);
+						const resolution = (waveformData.length / duration / 4).toFixed(1);
+						tracks.push({ index: i, path, duration, waveformData });
+						console.log(`Audio Wizard => Track ${i + 1}: ${waveformData.length} waveform values over ${duration}s (resolution: ~${resolution} pts/sec)`);
+						// console.log(`Audio Wizard => Track ${i + 1}: ${waveformData}`);
+					}
+
+					resolve({ success: true, tracks });
+				}
+				catch (e) {
+					AudioWizard.StopWaveformAnalysis();
+					resolve({ success: false });
+					console.log(`Audio Wizard => Error in waveform callback: ${e.message}`);
+				}
+			};
+
+			AudioWizard.WaveformMetric = metric;
+			AudioWizard.SetFullTrackWaveformCallback(onComplete);
+			AudioWizard.StartWaveformAnalysis(metadata, resolution);
+		});
+	}
+	catch (e) {
+		console.log(`Audio Wizard => Error in waveform analysis: ${e.message}`);
+		AudioWizard.StopWaveformAnalysis();
+		return { success: false };
+	}
+}
+
+
+/**
+ * Analyzes tracks and saves the waveform data to JSON files in a cache folder.
+ * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
+ * @param {string} cachePath - The folder where .aw.json files will be stored.
+ * @param {number} [metric] - The optional waveform metric (0-3).
+ * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
+ */
+async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, metric, resolution) {
+	if (!AudioWizard || AudioWizard.FullTrackProcessing) return;
+
+	console.log(`Audio Wizard => Batch processing ${metadb.Count} tracks...`);
+
+	const result = await AWStartWaveformAnalysis(metadb, metric, resolution);
+	if (!result.success) return;
+
+	const tfArtistTitle = fb.TitleFormat('%artist% - %title%');
+
+	for (const track of result.tracks) {
+		const structuredData = [];
+		const handle = metadb[track.index];
+		let fileName = tfArtistTitle.EvalWithMetadb(handle).trim();
+
+		if (!fileName) {
+			const baseName = track.path.split('\\').pop().replace(Regex.PathFileExtensionFinal, '');
+			fileName = baseName || track.path;
+		}
+
+		fileName = fileName.replace(Regex.PathIllegalFilename, '_').substring(0, 100);
+		const targetPath = `${cachePath}\\${fileName}.aw.json`;
+
+		for (let i = 0, len = track.waveformData.length; i < len; i += 4) {
+			structuredData.push(track.waveformData.slice(i, i + 4));
+		}
+
+		if (Save(targetPath, JSON.stringify(structuredData), true)) {
+			console.log(`Audio Wizard => Saved: ${targetPath}`);
+		} else {
+			console.log(`Audio Wizard => Failed to save ${track.path}`);
+		}
 	}
 }
 
 
 /**
  * Starts peakmeter monitoring and logs adjusted RMS and sample peak levels.
+ * @global
+ * @param {number} [refreshRate] - The optional refresh rate from from 10-1000ms.
+ * @param {number} [chunkDuration] - The optional chunk duration from 10-1000ms.
  */
-function AWStartPeakmeterMonitoring() {
+function AWStartPeakmeterMonitoring(refreshRate = 33, chunkDuration = 50) {
 	if (!AudioWizard) return;
 
-	AudioWizard.StartPeakmeterMonitoring(17, 50); // 17ms refresh rate, 50ms chunk duration
+	AudioWizard.StartPeakmeterMonitoring(refreshRate, chunkDuration);
 
 	console.log('Peakmeter - Adjusted Left RMS:', AudioWizard.PeakmeterAdjustedLeftRMS.toFixed(2));
 	console.log('Peakmeter - Adjusted Right RMS:', AudioWizard.PeakmeterAdjustedRightRMS.toFixed(2));
@@ -135,11 +340,14 @@ function AWStartPeakmeterMonitoring() {
 
 /**
  * Starts raw audio monitoring and processes raw PCM audio samples.
+ * @global
+ * @param {number} [refreshRate] - The optional refresh rate from from 10-1000ms.
+ * @param {number} [chunkDuration] - The optional chunk duration from 10-1000ms.
  */
-function AWStartRawAudioMonitoring() {
+function AWStartRawAudioMonitoring(refreshRate = 33, chunkDuration = 50) {
 	if (!AudioWizard) return;
 
-	AudioWizard.StartRawAudioMonitoring(17, 50); // 17ms refresh rate, 50ms chunk duration
+	AudioWizard.StartRawAudioMonitoring(refreshRate, chunkDuration);
 
 	try {
 		const startTime = Date.now();
@@ -184,11 +392,14 @@ function AWStartRawAudioMonitoring() {
 
 /**
  * Starts real-time audio monitoring and logs various audio metrics.
+ * @global
+ * @param {number} [refreshRate] - The optional refresh rate from from 10-1000ms.
+ * @param {number} [chunkDuration] - The optional chunk duration from 10-1000ms.
  */
-function AWStartRealTimeMonitoring() {
+function AWStartRealTimeMonitoring(refreshRate = 33, chunkDuration = 50) {
 	if (!AudioWizard) return;
 
-	AudioWizard.StartRealTimeMonitoring(17, 50); // 17ms refresh rate, 50ms chunk duration
+	AudioWizard.StartRealTimeMonitoring(refreshRate, chunkDuration);
 
 	console.log('Real-time - Momentary LUFS:', AudioWizard.MomentaryLUFS.toFixed(2));
 	console.log('Real-time - Short Term LUFS:', AudioWizard.ShortTermLUFS.toFixed(2));
@@ -205,25 +416,6 @@ function AWStartRealTimeMonitoring() {
 	console.log('Real-time - PD:', AudioWizard.PureDynamics.toFixed(2));
 	console.log('Real-time - Phase Correlation:', AudioWizard.PhaseCorrelation.toFixed(2));
 	console.log('Real-time - Stereo Width:', AudioWizard.StereoWidth.toFixed(2), '\n');
-}
-
-
-/**
- * Starts waveform analysis and logs the resulting waveform data.
- */
-function AWStartWaveformAnalysis() {
-	if (!AudioWizard) return;
-
-	console.log("Audio Wizard => Starting waveform analysis...");
-
-	AudioWizard.WaveformMetric = 0; // 0 = RMS, 2 = RMS_Peak, 3 = Peak, 4 = Waveform_Peak
-	AudioWizard.StartWaveformAnalysis(100); // 100 ms resolution
-
-	AudioWizard.SetFullTrackWaveformCallback(() => {
-		console.log('Audio Wizard => Waveform analysis complete!');
-		console.log('Waveform Data:', AudioWizard.WaveformData);
-		AudioWizard.StopWaveformAnalysis();
-	});
 }
 
 

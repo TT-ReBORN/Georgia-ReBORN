@@ -1732,15 +1732,14 @@ class ContextMenus {
 			for (const res of waveformBarResolution) {
 				waveformBarResolutionMenu.appendItem(res[0], () => {
 					grSet.waveformBarResolution = res[1];
-					grm.waveBar.updateConfig({ analysis: { resolution: res[1] } });
 
 					const handle = fb.GetNowPlaying();
 					if (handle) {
 						grm.waveBar.deleteWaveformFile(handle);
-						grm.waveBar.on_playback_new_track(handle);
 					}
 
-					grm.waveBar.updateBar();
+					grm.waveBar.updateConfig({ analysis: { resolution: res[1] } });
+					grm.waveBar.updateBar(true);
 					RepaintWindow();
 				}, {
 					is_radio_checked: res[1] === grSet.waveformBarResolution

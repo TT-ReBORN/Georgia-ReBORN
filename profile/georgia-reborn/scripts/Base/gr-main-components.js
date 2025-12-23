@@ -4611,14 +4611,14 @@ class WaveformBar {
 		 * The waveform bar analysis settings.
 		 * @typedef {object} waveformBarAnalysis
 		 * @property {string} binaryMode - The analysis mode: 'audioWizard' | 'visualizer'.
-		 * @property {number} resolution - The temporal resolution in samples per second from 1-1000, recommended preset ranges are:
-		 * - 100 samples/sec: Very High Details (10ms, for transient-heavy audio like EDM).
-		 * - 50 samples/sec: High Details (20ms, for mastering and detailed visualization).
-		 * - 20 samples/sec: Standard Details (50ms, matches FFmpeg/astats, ideal for broadcast).
-		 * - 15 samples/sec: Balanced Details (~67ms, for smooth audio like pop or jazz).
-		 * - 10 samples/sec: Low Details (100ms, for basic visualization).
-		 * - 5 samples/sec: Very Low Details (200ms, for low-performance devices, very smooth audio).
-		 * - 1 sample/sec: Minimum Details (1000ms, for ultra-minimal previews on very slow devices).
+		 * @property {number} resolution - The temporal resolution in points per second from 1-1000, recommended preset ranges are:
+		 * - 100 points/sec: Very High Details (10ms, for transient-heavy audio like EDM).
+		 * - 50 points/sec: High Details (20ms, for mastering and detailed visualization).
+		 * - 20 points/sec: Standard Details (50ms, matches FFmpeg/astats, ideal for broadcast).
+		 * - 15 points/sec: Balanced Details (~67ms, for smooth audio like pop or jazz).
+		 * - 10 points/sec: Low Details (100ms, for basic visualization).
+		 * - 5 points/sec: Very Low Details (200ms, for low-performance devices, very smooth audio).
+		 * - 1 points/sec: Minimum Details (1000ms, for ultra-minimal previews on very slow devices).
 		 * @property {number} timeout - The maximum duration for waveform analysis in milliseconds.
 		 * @property {string} compressionMode - The compression mode: 'none' | 'utf-8' | 'utf-16' | '7zip'.
 		 * @property {string} saveMode - The save behavior: 'always' | 'library' | 'never'.
@@ -4661,7 +4661,7 @@ class WaveformBar {
 		 */
 		/** @private @type {waveformBarCompatibility} */
 		this.compatibleFiles = {
-			audioWizardList: ['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv'],
+			audioWizardList: ['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'cue', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv'],
 			audioWizard: null
 		};
 		for (const key of ['audioWizard']) {
@@ -5057,11 +5057,10 @@ class WaveformBar {
 		if (!handle) return;
 
 		const noVisual = this.analysis.binaryMode !== 'visualizer';
-		const noSubSong = handle.SubSong === 0;
 		const validExt = this.checkCompatibleFileExtension(handle);
 
 		this.isZippedFile = handle.RawPath.includes('unpack://');
-		this.isAllowedFile = noVisual && noSubSong && validExt && !this.isZippedFile;
+		this.isAllowedFile = noVisual && validExt && !this.isZippedFile;
 		this.isFallback = !this.isAllowedFile && this.analysis.visualizerFallback;
 	}
 
@@ -5212,59 +5211,63 @@ class WaveformBar {
 	}
 
 	/**
-	 * Analyzes data of the given handle and saves the results in the waveform bar cache directory.
-	 * This method handles command generation, execution, data processing, and saving.
-	 * @param {FbMetadbHandle} handle - The handle to analyze.
+	 * Analyzes data of the given handle(s) and saves the results in the waveform bar cache directory.
+	 * @param {FbMetadbHandle|FbMetadbHandleList} handle - The handle(s) to analyze.
 	 * @param {string} waveformBarFolder - The folder where the waveform bar data should be saved.
 	 * @param {string} waveformBarFile - The name of the waveform bar file.
 	 * @param {string} [sourceFile] - The path of the source file.
 	 * @returns {Promise<void>} The promise that resolves when the analysis has finished.
 	 */
-	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path) {
-		if (!this.isAllowedFile || !AudioWizard) return;
+	async analyzeData(handle, waveformBarFolder, waveformBarFile, sourceFile = handle.Path || handle[0].Path) {
+		if (!this.isAllowedFile || !AudioWizard || AudioWizard.FullTrackProcessing) return;
 
-		if (!IsFolder(waveformBarFolder)) CreateFolder(waveformBarFolder);
-
-		this.startTime = Date.now();
-		const metric = this.metrics.mode[this.preset.analysisMode];
-		AudioWizard.WaveformMetric = this.metrics.index[metric];
-		this.handle = handle;
-		this.waveformBarFile = waveformBarFile;
-
-		console.log(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
+		if (!IsFolder(waveformBarFolder)) {
+			CreateFolder(waveformBarFolder);
+		}
 
 		try {
-			await new Promise((resolve, reject) => {
-				const timeout = setTimeout(() => {
-					AudioWizard.StopWaveformAnalysis();
-					reject(new Error(`Audio Wizard => Analysis timed out after ${this.analysis.timeout}ms`));
-				}, this.analysis.timeout);
+			const handleList = (handle instanceof FbMetadbHandleList) ? handle :
+				new FbMetadbHandleList(Array.isArray(handle) ? handle : [handle]
+			);
+			const startTime = Date.now();
+			const metric = this.metrics.mode[this.preset.analysisMode];
 
-				AudioWizard.SetFullTrackWaveformCallback(() => {
-					clearTimeout(timeout);
-					const waveformData = AudioWizard.WaveformData;
-					console.log(`Audio Wizard => Retrieved ${waveformData && waveformData.length ? waveformData.length : 0} samples`);
+			DebugLog(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
 
-					const processedData = [];
-					waveformData.length = Math.floor(waveformData.length / this.metrics.count) * this.metrics.count;
-					for (let i = 0; i < waveformData.length; i += this.metrics.count) {
-						processedData.push(waveformData.slice(i, i + this.metrics.count));
-					}
-
-					this.current = processedData;
-					console.log(`Audio Wizard => Stored ${this.current.length} frames`);
-
-					if (this.saveDataAllowed(handle) && this.current.length) {
-						this.analyzeDataSave(waveformBarFile, JSON.stringify(this.current));
-					}
-
-					console.log(`Audio Wizard => Analysis completed in ${(Date.now() - this.startTime) / 1000} seconds`);
-					this.throttlePaint();
-					resolve();
-				});
-
-				AudioWizard.StartWaveformAnalysis(this.analysis.resolution);
+			const success = await new Promise((resolve) => {
+				const { metadata } = GetMetadata(handleList);
+				AudioWizard.WaveformMetric = this.metrics.index[metric];
+				AudioWizard.SetFullTrackWaveformCallback((res) => resolve(res));
+				AudioWizard.StartWaveformAnalysis(metadata, this.analysis.resolution);
 			});
+
+			if (!success) {
+				console.log('Audio Wizard => Waveform analysis failed - API returned error');
+				return;
+			}
+
+			const trackCount = AudioWizard.GetWaveformTrackCount();
+
+			for (let i = 0; i < trackCount; i++) {
+				const rawData = AudioWizard.GetWaveformData(i);
+				const trackHandle = handleList[i];
+				const processedData = [];
+
+				for (let j = 0; j < rawData.length; j += this.metrics.count) {
+					processedData.push(rawData.slice(j, j + this.metrics.count));
+				}
+
+				if (this.saveDataAllowed(trackHandle) && processedData.length) {
+					this.analyzeDataSave(waveformBarFile, JSON.stringify(processedData));
+					DebugLog(`Audio Wizard => Saved ${processedData.length} points for track ${i + 1}`);
+				}
+
+				// Update current view if this is a single track analysis
+				if (handleList.Count === 1) this.current = processedData;
+			}
+
+			DebugLog(`Audio Wizard => Analysis completed in ${(Date.now() - startTime) / 1000} seconds`);
+			this.throttlePaint();
 		}
 		catch (e) {
 			console.log(`Audio Wizard => Analysis error: ${e.message}`);

@@ -551,6 +551,8 @@ const RebornSymbols = {
 	ChevronRight: '\uF054',
 	ChevronUp: '\uF057',
 	ChevronDown: '\uF058',
+	Download: '\uF019',
+	Download2: '\uF361',
 	External: '\uF360'
 };
 
@@ -635,7 +637,8 @@ const Unicode = {
  * @property {RegExp} PathDoubleBackslash - Matches double backslashes `/\\\\/g`.
  * @property {RegExp} PathDrivePrefix - Matches Windows drive prefixes `/^[a-zA-Z]:\\/g`.
  * @property {RegExp} PathEscapedDot - Matches escaped dot "\." `/\\\./g`.
- * @property {RegExp} PathFileExtension - Matches file extensions `/\.\w+$/`.
+ * @property {RegExp} PathFileExtension - Matches simple file extensions (alphanumeric + underscore only) `/\.\w+$/`.
+ * @property {RegExp} PathFileExtensionFinal - Matches the final file extension robustly (any chars except / and .) `/\.[^/.]+$/`.
  * @property {RegExp} PathFilenameExtract - Matches and extracts filename from full path `/[^/\\]*$/`.
  * @property {RegExp} PathFilenameStrict - Matches and extracts filename (requires at least one char) `/[^\\\/]+$/`.
  * @property {RegExp} PathForwardSlash - Matches all forward slashes `/\//g`.
@@ -681,6 +684,7 @@ const Unicode = {
  * @property {RegExp} TimeSingleDigit - Matches single digits after `:` in times `/:(\d([^\d]|$))/g`. Captures: digit, suffix.
  *
  * @property {RegExp} NumDigit - Matches single digit `/\d/`.
+ * @property {RegExp} NumHttpStatus - Matches 3-digit HTTP status codes `/\b\d{3}\b/`. Captures: status code.
  * @property {RegExp} NumLeading - Matches digits at start `/^\d+/`.
  * @property {RegExp} NumNonDigits - Matches non-digits `/\D/g`.
  * @property {RegExp} NumNonNumeric - Matches non-numeric `/[^0-9.,-]/g`.
@@ -856,6 +860,10 @@ const Unicode = {
  *
  * @property {RegExp} WebAllMusicDataReleaseYear - Matches data-releaseyear attribute `/data-releaseyear=\s*"\s*\d+\s*"/i`.
  * @property {RegExp} WebAllMusicRating - Matches AllMusic rating class `/allmusicRating ratingAllmusic(\d)/i`. Captures: digit.
+ * @property {RegExp} WebBandcampArtUrlAny - Matches any standalone Bandcamp artwork URL in the page source `/(https?:\/\/f\d*\.bcbits\.com\/img\/a\d{10,}_\d+\.(?:jpg|png))/i`.
+ * @property {RegExp} WebBandcampImgSrc - Matches Bandcamp <img> tag src attribute containing the artwork URL `/<img[^>]*src=["'](https?:\/\/f\d*\.bcbits\.com\/img\/a\d{10,}_\d+\.(?:jpg|png))["']/i`.
+ * @property {RegExp} WebBandcampPopupImageLink - Matches Bandcamp popupImage link with href containing the artwork URL `/<a[^>]*class=["']?[^"']*\bpopupImage\b[^"']*["']?[^>]*href=["'](https?:\/\/f\d*\.bcbits\.com\/img\/a\d{10,}_\d+\.(?:jpg|png))["']/i`.
+ * @property {RegExp} WebBandcampSizeSuffix -Matches the size suffix (_10, _5, _0 etc.) at the end of a Bandcamp image URL before the extension `/_\d+(\.(?:jpg|png))$/i`.
  * @property {RegExp} WebDomain - Matches domain from URL `/:\/\/(www\.)?([^/]+)/`. Captures: optional www., domain.
  * @property {RegExp} WebLastFmDotSpace - Matches "Last.fm: " variant `/Last\.fm: /g`.
  * @property {RegExp} WebLastFmHyphen - Matches "Last-fm:" variant `/Last-fm:/g`.
@@ -1028,7 +1036,7 @@ const Unicode = {
  * @property {RegExp} LyricsTimestampEnhanced - Matches `<mm:ss.xx>` `/(\s*)<(\d{1,2}:|)\d{1,2}:\d{2}(>|\.\d{1,3}>)(\s*)/g`. Captures: space, optional min, sec+ms, space.
  * @property {RegExp} LyricsTimestampLeading - Matches 1+ timestamps at line start `/^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/`. Captures: full.
  *
- * @property {RegExp} UtilDummyTest - Matches two letters between the pipe `/.{2}\|.{2}/g`.
+ * @property {RegExp} UtilCleanStr - Matches two letters between the pipe `/.{2}\|.{2}/g`.
  * @property {RegExp} UtilFontDescenders - Matches letters with descenders `/[gjpqy]/`.
  * @property {RegExp} UtilFontNeedsSymbols - Matches symbols/emojis needing fallback `/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u23F7\u23F9-\u25B5\u25B7-\u26FF]|\uD83E[\uDD10-\uDDFF]/`.
  * @property {RegExp} UtilFontTahoma - Matches tahoma field `/tahoma/i`.
@@ -1057,6 +1065,7 @@ const Regex = {
 	PathDrivePrefix: /^[a-zA-Z]:\\/g,
 	PathEscapedDot: /\\\./g,
 	PathFileExtension: /\.\w+$/,
+	PathFileExtensionFinal: /\.[^/.]+$/,
 	PathFilenameExtract: /[^/\\]*$/,
 	PathFilenameStrict: /[^\\\/]+$/,
 	PathForwardSlash: /\//g,
@@ -1106,6 +1115,7 @@ const Regex = {
 
 	// * NUMERIC * //
 	NumDigit: /\d/,
+	NumHttpStatus: /\b\d{3}\b/,
 	NumLeading: /^\d+/,
 	NumNonDigits: /\D/g,
 	NumNonNumeric: /[^0-9.,-]/g,
@@ -1291,6 +1301,10 @@ const Regex = {
 	// * WEB * //
 	WebAllMusicDataReleaseYear: /data-releaseyear=\s*"\s*\d+\s*"/i,
 	WebAllMusicRating: /allmusicRating ratingAllmusic(\d)/i,
+	WebBandcampArtUrlAny: /(https?:\/\/f\d*\.bcbits\.com\/img\/a\d{10,}_\d+\.(?:jpg|png))/i,
+	WebBandcampImgSrc: /<img[^>]*src=["'](https?:\/\/f\d*\.bcbits\.com\/img\/a\d{10,}_\d+\.(?:jpg|png))["']/i,
+	WebBandcampPopupImageLink: /<a[^>]*class=["']?[^"']*\bpopupImage\b[^"']*["']?[^>]*href=["'](https?:\/\/f\d*\.bcbits\.com\/img\/a\d{10,}_\d+\.(?:jpg|png))["']/i,
+	WebBandcampSizeSuffix: /_\d+(\.(?:jpg|png))$/i,
 	WebDomain: /:\/\/(www\.)?([^/]+)/,
 	WebLastFmDotSpace: /Last\.fm: /g,
 	WebLastFmHyphen: /Last-fm:/g,
@@ -1470,7 +1484,7 @@ const Regex = {
 	LyricsTimestampLeading: /^(\s*\[(\d{1,2}:|)\d{1,2}:\d{2}(]|\.\d{1,3}]))+/,
 
 	// * UTILITY * //
-	UtilDummyTest: /.{2}\|.{2}/g,
+	UtilCleanStr: /.{2}\|.{2}/g,
 	UtilFontDescenders: /[gjpqy]/,
 	UtilFontNeedsSymbols: /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2020-\u2021\u2023-\u23F7\u23F9-\u25B5\u25B7-\u26FF]|\uD83E[\uDD10-\uDDFF]/,
 	UtilFontTahoma: /tahoma/i,
