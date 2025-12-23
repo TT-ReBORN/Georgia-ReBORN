@@ -700,8 +700,8 @@ let bioSettings = [
 	['Biography [Lastfm] Folder', '%storage_folder%\\biography-cache\\biography\\lastfm\\$lower($cut(%BIO_ARTIST%,1))', 'text', 'foLfmBio'],
 	['Album Review [Wikipedia] Folder', '%storage_folder%\\biography-cache\\review\\wikipedia\\$lower($cut(%BIO_ALBUMARTIST%,1))', 'text', 'foWikiRev'],
 	['Biography [Wikipedia] Folder', '%storage_folder%\\biography-cache\\biography\\wikipedia\\$lower($cut(%BIO_ARTIST%,1))', 'text', 'foWikiBio'],
-	['Image [Artist] Folder', '%storage_folder%\\biography-cache\\art_img\\$lower($cut(%BIO_ARTIST%,1))\\%BIO_ARTIST%', 'text', 'foImgArt'],
-	['Image [Review] Folder', '%storage_folder%\\biography-cache\\rev_img\\$lower($cut(%BIO_ALBUMARTIST%,1))\\%BIO_ALBUMARTIST%', 'text', 'foImgRev'],
+	['Image [Artist] Folder', '%profile%\\cache\\artwork\\local\\artists\\%BIO_ARTIST%', 'text', 'foImgArt'],
+	['Image [Review] Folder', '%profile%\\cache\\artwork\\local\\review\\%BIO_ALBUMARTIST%', 'text', 'foImgRev'],
 
 	['Auto Cache', 1, 'num', 'autoCache'],
 	['Auto Cache Time', 0, 'num', 'autoCacheTime'],
@@ -715,8 +715,8 @@ let bioSettings = [
 	['Auto-Save Folder', '$directory_path(%path%)', 'text', 'foImgCov'],
 	['Auto-Save File Name', 'cover', 'text', 'fnImgCov'],
 
-	['Folder', '%storage_folder%\\biography-cache\\art_img\\$lower($cut(%BIO_ARTIST%,1))\\%BIO_ARTIST%', 'text', 'foCycCov'],
-	['Folder', '%storage_folder%\\biography-cache\\art_img\\$lower($cut(%BIO_ARTIST%,1))\\%BIO_ARTIST%', 'text', 'foCycPhoto'],
+	['Folder', '%profile%\\cache\\artwork\\local\\artists\\%BIO_ARTIST%', 'text', 'foCycCov'],
+	['Folder', '%profile%\\cache\\artwork\\local\\artists\\%BIO_ARTIST%', 'text', 'foCycPhoto'],
 	['Album Name Auto-Clean', false, 'boolean', 'albStrip'],
 	['Cache Expiry (days: minimum 28)', 28, 'num', 'exp'],
 

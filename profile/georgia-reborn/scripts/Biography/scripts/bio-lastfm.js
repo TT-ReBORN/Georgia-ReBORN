@@ -250,11 +250,23 @@ class BioDldArtImages {
 	}
 
 	run(dl_ar, force, art, p_stndBio, p_supCache) {
-		if (!utils.DownloadFileAsync && !$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) return; // Regorxxx <- Use utils.DownloadFileAsync if available ->
-		let img_folder = p_stndBio && !bio.panel.isRadio(art.focus) ? bio.panel.cleanPth(bioCfg.pth.foImgArt, art.focus, 'server') : bio.panel.cleanPth(bioCfg.remap.foImgArt, art.focus, 'remap', dl_ar, '', 1);
-		if (p_supCache && !$Bio.folder(img_folder)) img_folder = bio.panel.cleanPth(bioCfg.sup.foImgArt, art.focus, 'remap', dl_ar, '', 1);
+		if (!utils.DownloadFileAsync && !$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) {
+			return;
+		}
+
+		const img_folder = p_stndBio && !bio.panel.isRadio(art.focus)
+			? bio.panel.cleanPth(bioCfg.pth.foImgArt, art.focus, 'server')
+			: bio.panel.cleanPth(bioCfg.remap.foImgArt, art.focus, 'remap', dl_ar, '', 1);
+
+		// * Check if Library Explorer already has images to skip download
+		if (bioWebData.hasExistingImages('artist', img_folder, bioCfg.photoNum) && !force) {
+			return;
+		}
+
+		// * Continue with existing download
 		const getNo = this.img_exp(dl_ar, img_folder, !force ? bio.server.exp : 0);
 		if (!getNo[0]) return;
+
 		const lfm_art = new BioLfmArtImg(() => lfm_art.onStateChange());
 		lfm_art.search(dl_ar, img_folder, getNo[0], getNo[1], getNo[2], getNo[3], force);
 	}
@@ -357,28 +369,8 @@ class BioLfmArtImg {
 				}
 				$Bio.save(`${this.img_folder}update.txt`, '', true);
 				bio.timer.decelerating();
-				if (this.autoAdd) {
-					$Bio.take(links, this.getNo).forEach(v => {
-						// Regorxxx <- Use utils.DownloadFileAsync if available
-						const imPth = `${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg`;
-						if (utils.DownloadFileAsync) { utils.DownloadFileAsync(v, imPth); }
-						else { $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0); }
-						// Regorxxx ->
-					});
-				} else {
-					let c = 0;
-					$Bio.take(links, bioCfg.photoNum).some(v => {
-						const imPth = `${this.img_folder + a}_${v.substring(v.lastIndexOf('/') + 1)}.jpg`;
-						if (!this.allFiles.includes(imPth)) {
-							// Regorxxx <- Use utils.DownloadFileAsync if available
-							if (utils.DownloadFileAsync) { utils.DownloadFileAsync(v, imPth); }
-							else { $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0); }
-							// Regorxxx ->
-							c++;
-							return c == this.getNo;
-						}
-					});
-				}
+				const limit = this.autoAdd ? this.getNo : bioCfg.photoNum;
+				bioWebData.downloadImage(this.img_folder, a, $Bio.take(links, limit));
 			}
 		}
 	}
@@ -555,10 +547,11 @@ class BioLfmAlbum {
 			}
 			bio.timer.decelerating(true);
 			$Bio.buildPth(this.fo);
-			// Regorxxx <- Use utils.DownloadFileAsync if available
-			if (utils.DownloadFileAsync) { utils.DownloadFileAsync(link, this.pth + link.slice(-4)); }
-			else { $Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${link}" "${this.pth + link.slice(-4)}"`, 0); }
-			// Regorxxx ->
+
+			const dir = this.pth.substring(0, this.pth.lastIndexOf('\\') + 1);
+			const fileName = bioFSO.GetFileName(this.pth);
+			const prefix = fileName.substring(0, fileName.lastIndexOf('.'));
+			bioWebData.downloadImage(dir, prefix, link);
 		}
 	}
 }

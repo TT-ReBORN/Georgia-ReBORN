@@ -483,6 +483,32 @@ class BioWebData {
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
+	downloadImage(dir, prefix, links) {
+		const linkArray = Array.isArray(links) ? links : [links];
+		if (!linkArray.length) return;
+
+		const existingImages = utils.Glob(`${dir}${prefix}_*_*.jpg`);
+		const maxIndex = existingImages.length > 0 ?
+			Math.max(...existingImages.map(p => {
+				const match = p.match(/_(\d+)_/);
+				return match ? parseInt(match[1]) : 0;
+			})) : 0;
+
+		let imageIndex = maxIndex + 1;
+
+		linkArray.forEach(v => {
+			const paddedIndex = String(imageIndex).padStart(2, '0');
+			const imPth = `${dir}${prefix}_${paddedIndex}_original.jpg`;
+
+			if (utils.DownloadFileAsync) {
+				utils.DownloadFileAsync(v, imPth);
+			} else {
+				$Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0);
+			}
+			imageIndex++;
+		});
+	}
+
 	/**
 	 * Merges similar artist data from file with new data.
 	 * Creates a unified dataset, updating existing entries and adding new ones.
@@ -532,6 +558,20 @@ class BioWebData {
 
 		this._sortByScore(data);
 		return data;
+	}
+
+	hasExistingImages(type, folder, minCount = 1) {
+		if (!$Lib.folder(folder)) return false;
+
+		const files = utils.Glob(`${folder}*.jpg`) || [];
+
+		// Filter out thumb and update.txt
+		const validImages = files.filter(f => {
+			const name = bioFSO.GetFileName(f);
+			return !name.includes('_thumb') && name !== 'update.txt';
+		});
+
+		return validImages.length >= minCount;
 	}
 
 	/**
