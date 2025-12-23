@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-12-2025                                              * //
+// * Last change:    23-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -580,7 +580,7 @@ class BioWebData {
 
 		const data = fileExists ? this.getSimilarDataFromFile(file, newData) : newData;
 
-		if (fileExists) $Bio.deleteFile(file);
+		if (fileExists) bioFSO.DeleteFile(file);
 		this._saveToFile(file, data);
 	}
 	// #endregion
