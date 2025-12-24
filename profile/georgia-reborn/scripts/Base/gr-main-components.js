@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-12-2025                                              * //
+// * Last change:    24-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -5284,9 +5284,9 @@ class WaveformBar {
 		if (this.analysis.binaryMode === 'visualizer') return;
 
 		const compression = {
-			'utf-16': () => SaveFSO(`${waveformBarFile}.aw.lz16`, LZString.compressToUTF16(dataStr), true),
-			'utf-8':  () => Save(`${waveformBarFile}.aw.lz`, LZUTF8.compress(dataStr, { outputEncoding: 'Base64' })),
-			'none':   () => Save(`${waveformBarFile}.aw.json`, dataStr)
+			'utf-16': () => SaveFSO(`${waveformBarFile}.awz.lz16`, LZString.compressToUTF16(dataStr), true),
+			'utf-8':  () => Save(`${waveformBarFile}.awz.lz`, LZUTF8.compress(dataStr, { outputEncoding: 'Base64' })),
+			'none':   () => Save(`${waveformBarFile}.awz.json`, dataStr)
 		};
 
 		(compression[this.analysis.compressionMode] || compression.none)();
@@ -5497,9 +5497,9 @@ class WaveformBar {
 	 */
 	getFileConfigs() {
 		return [
-			{ ext: '.aw.json', decompress: JSON.parse, codePage: this.codePage },
-			{ ext: '.aw.lz',   decompress: str => JSON.parse(LZUTF8.decompress(str, { inputEncoding: 'Base64' })), codePage: this.codePage },
-			{ ext: '.aw.lz16', decompress: str => JSON.parse(LZString.decompressFromUTF16(str)), codePage: this.codePageV2 }
+			{ ext: '.awz.json', decompress: JSON.parse, codePage: this.codePage },
+			{ ext: '.awz.lz',   decompress: str => JSON.parse(LZUTF8.decompress(str, { inputEncoding: 'Base64' })), codePage: this.codePage },
+			{ ext: '.awz.lz16', decompress: str => JSON.parse(LZString.decompressFromUTF16(str)), codePage: this.codePageV2 }
 		];
 	}
 

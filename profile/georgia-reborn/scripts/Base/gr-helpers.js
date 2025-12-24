@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-12-2025                                              * //
+// * Last change:    24-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -277,7 +277,7 @@ async function AWStartWaveformAnalysis(metadb, metric = 0, resolution = 1) {
 /**
  * Analyzes tracks and saves the waveform data to JSON files in a cache folder.
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
- * @param {string} cachePath - The folder where .aw.json files will be stored.
+ * @param {string} cachePath - The folder where .awz.json files will be stored.
  * @param {number} [metric] - The optional waveform metric (0-3).
  * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
  */
@@ -302,7 +302,7 @@ async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, metric, reso
 		}
 
 		fileName = fileName.replace(Regex.PathIllegalFilename, '_').substring(0, 100);
-		const targetPath = `${cachePath}\\${fileName}.aw.json`;
+		const targetPath = `${cachePath}\\${fileName}.awz.json`;
 
 		for (let i = 0, len = track.waveformData.length; i < len; i += 4) {
 			structuredData.push(track.waveformData.slice(i, i + 4));
