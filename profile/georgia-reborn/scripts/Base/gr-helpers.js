@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-12-2025                                              * //
+// * Last change:    26-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1554,8 +1554,11 @@ function DeleteFolder(folder, force = true) {
  * // Returns: ['image.jpg']
  */
 function FilterFiles(files = [], pattern = null) {
-	const excludePattern = pattern && pattern.source.startsWith('!');
+	if (!pattern) return files;
+
+	const excludePattern = pattern.source.startsWith('!');
 	const filterRegex = excludePattern ? new RegExp(pattern.source.slice(1), pattern.flags) : pattern;
+
 	return excludePattern ? files.filter(file => !filterRegex.test(file)) : files.filter(file => filterRegex.test(file));
 }
 
