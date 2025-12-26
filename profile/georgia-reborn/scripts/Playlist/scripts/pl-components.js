@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    26-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2578,6 +2578,8 @@ class PlaylistManager {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	on_paint(gr) {
+		if (this.w < 1 || this.h < 1) return;
+
 		if (!this.info_text || this.cur_playlist_idx !== plman.ActivePlaylist) {
 			this.cur_playlist_idx = plman.ActivePlaylist;
 			let metadb_list = plman.GetPlaylistSelectedItems(this.cur_playlist_idx);
