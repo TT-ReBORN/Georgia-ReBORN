@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-12-2025                                              * //
+// * Last change:    27-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3415,8 +3415,9 @@ class TopMenuOptions {
 		themeCacheLibraryMenu.addSeparator();
 		themeCacheLibraryMenu.addItem('Open library cache directory', false, () => {
 			const cacheDir = grSet.customLibraryDir ? $(grCfg.customLibraryDir, undefined, true) : `${fb.ProfilePath}cache\\library\\library-tree-cache`;
-			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
-			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
+			const absoluteCacheDir = fso.GetAbsolutePathName(cacheDir);
+			if (absoluteCacheDir && !IsFolder(absoluteCacheDir)) CreateFolder(absoluteCacheDir);
+			OpenExplorer(`explorer /open, "${absoluteCacheDir}"`, false);
 		});
 		themeCacheLibraryMenu.addItem('Delete library cache', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteLibraryCache');
@@ -3447,8 +3448,9 @@ class TopMenuOptions {
 		themeCacheBiographyMenu.addSeparator();
 		themeCacheBiographyMenu.addItem('Open biography cache directory', false, () => {
 			const cacheDir = grSet.customBiographyDir ? $(grCfg.customBiographyDir, undefined, true) : `${fb.ProfilePath}cache\\biography\\biography-cache`;
-			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
-			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
+			const absoluteCacheDir = fso.GetAbsolutePathName(cacheDir);
+			if (absoluteCacheDir && !IsFolder(absoluteCacheDir)) CreateFolder(absoluteCacheDir);
+			OpenExplorer(`explorer /open, "${absoluteCacheDir}"`, false);
 		});
 		themeCacheBiographyMenu.addItem('Delete biography cache', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteBiographyCache');
@@ -3475,8 +3477,9 @@ class TopMenuOptions {
 		themeCacheLyricsMenu.addSeparator();
 		themeCacheLyricsMenu.addItem('Open lyrics directory', false, () => {
 			const cacheDir = grSet.customLyricsDir ? $(grCfg.customLyricsDir, undefined, true) : `${fb.ProfilePath}cache\\lyrics`;
-			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
-			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
+			const absoluteCacheDir = fso.GetAbsolutePathName(cacheDir);
+			if (absoluteCacheDir && !IsFolder(absoluteCacheDir)) CreateFolder(absoluteCacheDir);
+			OpenExplorer(`explorer /open, "${absoluteCacheDir}"`, false);
 		});
 		themeCacheLyricsMenu.addItem('Delete lyrics', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteLyricsCache');
@@ -3503,8 +3506,9 @@ class TopMenuOptions {
 		themeCacheWaveformBarMenu.addSeparator();
 		themeCacheWaveformBarMenu.addItem('Open waveform bar cache directory', false, () => {
 			const cacheDir = grSet.customWaveformBarDir ? $(grCfg.customWaveformBarDir, undefined, true)  : `${fb.ProfilePath}cache\\waveform`;
-			if (!IsFolder(cacheDir)) CreateFolder(cacheDir);
-			OpenExplorer(`explorer /open, "${cacheDir}"`, false);
+			const absoluteCacheDir = fso.GetAbsolutePathName(cacheDir);
+			if (absoluteCacheDir && !IsFolder(absoluteCacheDir)) CreateFolder(absoluteCacheDir);
+			OpenExplorer(`explorer /open, "${absoluteCacheDir}"`, false);
 		});
 		themeCacheWaveformBarMenu.addItem('Delete waveform bar cache', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteWaveformBarCache');

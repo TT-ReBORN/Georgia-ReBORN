@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-12-2025                                              * //
+// * Last change:    26-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1764,7 +1764,15 @@ class InputBox {
 		try {
 			const msg = grm.msg.getMessage('inputBox', 'customCacheDir');
 			this.inputBoxUserValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', inputBoxOldValue, true);
-			this.inputBoxNewValue = !this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' && !this.inputBoxUserValue.length ? '' : JSON.parse(`"${this.inputBoxUserValue.replace(Regex.PunctBackslash, '\\\\')}"`);
+
+			if (!this.inputBoxUserValue || typeof this.inputBoxUserValue !== 'string' || !this.inputBoxUserValue.length) {
+				this.inputBoxNewValue = '';
+			} else {
+				let processedValue = this.inputBoxUserValue.replace(Regex.PathForwardSlash, '\\').replace(Regex.PathBackslashTrailing, '');
+				processedValue = `${processedValue.replace(Regex.PathBackslash, '\\\\')}\\\\`;
+				this.inputBoxNewValue = JSON.parse(`"${processedValue}"`);
+			}
+
 			if (typeof this.inputBoxNewValue !== 'string') {
 				throw new Error('Invalid type');
 			}
@@ -1790,7 +1798,8 @@ class InputBox {
 
 		if (this.inputBoxNewValue) {
 			const cacheDir = $(this.inputBoxNewValue, undefined, true);
-			if (cacheDir && !IsFolder(cacheDir)) CreateFolder(cacheDir);
+			const absoluteCacheDir = fso.GetAbsolutePathName(cacheDir);
+			if (absoluteCacheDir && !IsFolder(absoluteCacheDir)) CreateFolder(absoluteCacheDir);
 		}
 	}
 
