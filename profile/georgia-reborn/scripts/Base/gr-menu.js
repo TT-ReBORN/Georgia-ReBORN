@@ -1672,14 +1672,12 @@ class TopMenuOptions {
 		// * SEEKBAR - WAVEFORM BAR * //
 		const playerControlsWaveformBarMenu = new Menu('Waveform bar');
 		const playerControlsWaveformBarAnalysisMenu = new Menu('Analysis');
-		playerControlsWaveformBarAnalysisMenu.addRadioItems(
-			grSet.waveformBarMode === 'audioWizard' ? ['RMS level', 'Peak level', 'RMS peak', 'Waveform peak'] : ['RMS level  (Audio Wizard only)', 'Peak level  (Audio Wizard only)', 'RMS peak (Audio Wizard only)', 'Waveform (Audio Wizard only)'],
-			grSet.waveformBarAnalysis, ['rms_level', 'peak_level', 'rms_peak', 'waveform_peak'], (type) => {
-			grSet.waveformBarAnalysis = type;
-			grm.waveBar.updateConfig({ preset: { analysisMode: type } });
-			grm.waveBar.updateBar();
-			RepaintWindow();
-		}, grSet.waveformBarMode !== 'audioWizard');
+		playerControlsWaveformBarAnalysisMenu.addRadioItems(['RMS', 'RMS Peak', 'Sample Peak', 'Waveform'], grSet.waveformBarAnalysis, ['rms', 'rms_peak', 'sample_peak', 'waveform'], (type) => {
+				grSet.waveformBarAnalysis = type;
+				grm.waveBar.updateConfig({ preset: { analysisMode: type } });
+				grm.waveBar.updateBar();
+				RepaintWindow();
+		});
 		playerControlsWaveformBarAnalysisMenu.addSeparator();
 		playerControlsWaveformBarAnalysisMenu.addRadioItems(
 			['Save mode - always', 'Save mode - library', 'Save mode - never'], grSet.waveformBarSaveMode, ['always', 'library', 'never'], (mode) => {

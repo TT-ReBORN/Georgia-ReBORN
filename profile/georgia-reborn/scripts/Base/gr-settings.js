@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-12-2025                                              * //
+// * Last change:    27-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -488,7 +488,7 @@ grSet.addProperties({
 	peakmeterBarWheelSeekSpeed:         ['Georgia-ReBORN - 09. Player controls: Peakmeter bar mouse wheel seek speed', 5], // Peakmeter bar mouse wheel seeking speed, seconds per wheel step
 	peakmeterBarRefreshRate:            ['Georgia-ReBORN - 09. Player controls: Peakmeter bar refresh rate', 'variable'], // 1000, 500, 333, 250, 200, 166, 142, 125, 111, 100, 83, 67, 50, 40, 33, 22, 17, "variable" - peakmeter bar refresh rate
 	waveformBarMode:                    ['Georgia-ReBORN - 09. Player controls: Waveform bar mode', 'audioWizard'], // 'audioWizard' 'visualizer' - Which binary type the waveform bar will use
-	waveformBarAnalysis:                ['Georgia-ReBORN - 09. Player controls: Waveform bar analysis', 'rms_level'], // 'rms_level'  'peak_level' 'rms_peak' - Analysis type available only with waveform
+	waveformBarAnalysis:                ['Georgia-ReBORN - 09. Player controls: Waveform bar analysis', 'waveform'], // 'rms', 'rms_peak', 'sample_peak', 'waveform'
 	waveformBarSaveMode:                ['Georgia-ReBORN - 09. Player controls: Waveform bar save mode', 'always'], // 'always' 'library' 'never' - Waveform bar analysis save mode
 	waveformBarFallbackAnalysis:        ['Georgia-ReBORN - 09. Player controls: Waveform bar analysis fallback', true], // true - Waveform bar visualizer fallback during analysis process
 	waveformBarFallback:                ['Georgia-ReBORN - 09. Player controls: Waveform bar fallback', true], // true - Waveform bar visualizer fallback if analysis fails
@@ -1146,7 +1146,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'peakmeterBarRefreshRate', grCfg.themeControls, 'peakmeterBarRefreshRate', 'variable');
 		this._setSetting(grSet, 'waveformBarMode', grCfg.themeControls, 'waveformBarMode', 'audioWizard');
 		this._setSetting(grSet, 'waveformBarSaveMode', grCfg.themeControls, 'waveformBarSaveMode', 'always');
-		this._setSetting(grSet, 'waveformBarAnalysis', grCfg.themeControls, 'waveformBarAnalysis', 'rms_level');
+		this._setSetting(grSet, 'waveformBarAnalysis', grCfg.themeControls, 'waveformBarAnalysis', 'waveform');
 		this._setSetting(grSet, 'waveformBarFallbackAnalysis', grCfg.themeControls, 'waveformBarFallbackAnalysis', true);
 		this._setSetting(grSet, 'waveformBarFallback', grCfg.themeControls, 'waveformBarFallback', true);
 		this._setSetting(grSet, 'waveformBarResolution', grCfg.themeControls, 'waveformBarResolution', 50);

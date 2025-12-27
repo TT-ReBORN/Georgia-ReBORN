@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-12-2025                                              * //
+// * Last change:    27-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4615,6 +4615,8 @@ class WaveformBar {
 		this.isError = false;
 		/** @private @type {boolean} The state indicating if fallback mode is active. For visualizerFallback, set at checkAllowedFile(). */
 		this.isFallback = false;
+		/** @private @type {number} The number of audio channels in the current waveform data. */
+		this.currentChannels = 1;
 
 		/**
 		 * The waveform bar analysis settings.
@@ -4696,36 +4698,38 @@ class WaveformBar {
 		 * @property {number} count - The number of metrics per frame.
 		 * @property {object} index - The metric names to their frame indexes (e.g., rms: 0).
 		 * @property {object} range - The valid ranges for each metric (e.g., [-100, 0] for dB metrics).
-		 * @property {object} mode - The analysisMode values to metric names (e.g., rms_level: 'rms').
+		 * @property {object} mode - The analysisMode values to metric names (e.g., rms: 'rms').
 		 * @public
 		 */
 		/** @private @type {waveformBarMetricsConfig} */
 		this.metrics = {
-			count: 4,
+			count: 5,
 			index: {
 				rms: 0,
 				rms_peak: 1,
-				peak: 2,
-				waveform_peak: 3
+				sample_peak: 2,
+				min: 3,
+				max: 4
 			},
 			mode: {
-				rms_level: 'rms',
+				rms: 'rms',
 				rms_peak: 'rms_peak',
-				peak_level: 'peak',
-				waveform_peak: 'waveform_peak'
+				sample_peak: 'sample_peak',
+				waveform: 'waveform'
 			},
 			range: {
 				rms: [-100, 0],
 				rms_peak: [-100, 0],
-				peak: [-100, 0],
-				waveform_peak: [-1, 1]
+				sample_peak: [-100, 0],
+				min: [-1, 1],
+				max: [-1, 1]
 			}
 		};
 
 		/**
 		 * The waveform bar preset settings.
 		 * @typedef {object} waveformBarPreset
-		 * @property {string} analysisMode - The waveform bar analysis mode `rms_level`, `rms_peak`, `peak_level`, `waveform_peak`.
+		 * @property {string} analysisMode - The waveform bar analysis mode `rms`, `rms_peak`, `sample_peak`, `waveform`.
 		 * @property {string} barDesign - The waveform bar design `waveform`, `bars`, `dots`, `halfbars`.
 		 * @property {string} paintMode - The waveform bar paint mode `full`, `partial`.
 		 * @property {boolean} animate - The flag to display animation.
@@ -5189,7 +5193,16 @@ class WaveformBar {
 			const fileWithExt = `${waveformBarFile}${file.ext}`;
 			if (IsFile(fileWithExt)) {
 				const str = Open(fileWithExt, file.codePage) || '';
-				this.current = file.decompress(str) || [];
+				const parsed = file.decompress(str) || {};
+
+				if (parsed.data && Array.isArray(parsed.data)) {
+					this.current = parsed.data;
+					this.currentChannels = parsed.channels || 1;
+				} else {
+					this.current = Array.isArray(parsed) ? parsed : [];
+					this.currentChannels = 1;
+				}
+
 				if (this.verifyData(handle, fileWithExt, isRetry)) {
 					analysisComplete = true;
 					break;
@@ -5239,13 +5252,11 @@ class WaveformBar {
 				new FbMetadbHandleList(Array.isArray(handle) ? handle : [handle]
 			);
 			const startTime = Date.now();
-			const metric = this.metrics.mode[this.preset.analysisMode];
 
 			DebugLog(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
 
 			const success = await new Promise((resolve) => {
 				const { metadata } = GetMetadata(handleList);
-				AudioWizard.WaveformMetric = this.metrics.index[metric];
 				AudioWizard.SetFullTrackWaveformCallback((res) => resolve(res));
 				AudioWizard.StartWaveformAnalysis(metadata, this.analysis.resolution);
 			});
@@ -5255,24 +5266,31 @@ class WaveformBar {
 				return;
 			}
 
+			const metricsPerChannel = 5;
 			const trackCount = AudioWizard.GetWaveformTrackCount();
 
 			for (let i = 0; i < trackCount; i++) {
-				const rawData = AudioWizard.GetWaveformData(i);
 				const trackHandle = handleList[i];
-				const processedData = [];
+				const data = [];
+				const rawData = AudioWizard.GetWaveformData(i);
+				const channels = AudioWizard.GetWaveformTrackChannels(i);
+				const stepSize = metricsPerChannel * channels;
 
-				for (let j = 0; j < rawData.length; j += this.metrics.count) {
-					processedData.push(rawData.slice(j, j + this.metrics.count));
+				// Restructure flat array into array of arrays (one array per time step)
+				for (let j = 0; j < rawData.length; j += stepSize) {
+					const pointSlice = rawData.slice(j, j + stepSize);
+					const roundedPoint = pointSlice.map(v => Math.round(v * 1000) / 1000);
+					data.push(roundedPoint);
 				}
 
-				if (this.saveDataAllowed(trackHandle) && processedData.length) {
-					this.analyzeDataSave(waveformBarFile, JSON.stringify(processedData));
-					DebugLog(`Audio Wizard => Saved ${processedData.length} points for track ${i + 1}`);
+				if (this.saveDataAllowed(trackHandle)) {
+					this.analyzeDataSave(waveformBarFile, JSON.stringify({ channels, data }));
 				}
 
-				// Update current view if this is a single track analysis
-				if (handleList.Count === 1) this.current = processedData;
+				if (handleList.Count === 1) {
+					this.current = data;
+					this.currentChannels = channels; // Store for normalizePoints
+				}
 			}
 
 			DebugLog(`Audio Wizard => Analysis completed in ${(Date.now() - startTime) / 1000} seconds`);
@@ -5343,24 +5361,30 @@ class WaveformBar {
 	 */
 	validData() {
 		if (!Array.isArray(this.current) || !this.current.length) {
-			return false; // Ensure this.current is a non-empty array
+			return false;
 		}
 
+		const channels = this.currentChannels || 1;
+		const expectedLength = this.metrics.count * channels;
+
 		return this.current.every(frame => {
-			// Check that frame is an array with the expected number of elements
-			if (!Array.isArray(frame) || frame.length < this.metrics.count) {
+			if (!Array.isArray(frame) || frame.length < expectedLength) {
 				return false;
 			}
 
-			// Validate all metrics are finite numbers and within expected ranges
-			for (const [metric, index] of Object.entries(this.metrics.index)) {
-				const value = frame[index];
-				if (typeof value !== 'number' || !isFinite(value)) {
-					return false;
-				}
-				const [min, max] = this.metrics.range[metric];
-				if (value < min || value > max) {
-					return false;
+			// Validate metrics for each channel
+			for (let ch = 0; ch < channels; ch++) {
+				const offset = ch * this.metrics.count;
+
+				for (const [metric, index] of Object.entries(this.metrics.index)) {
+					const value = frame[offset + index];
+					if (typeof value !== 'number' || !isFinite(value)) {
+						return false;
+					}
+					const [min, max] = this.metrics.range[metric];
+					if (value < min || value > max) {
+						return false;
+					}
 				}
 			}
 
@@ -5630,7 +5654,7 @@ class WaveformBar {
 	getResizedFrames(scale, frames, newFrames) {
 		const data = Array(newFrames).fill(null).map(() => ({ maxAbs: 0, maxSigned: 0, val: 0, count: 0 }));
 		const scaleFactor = newFrames < frames ? frames / newFrames : newFrames / frames;
-		const isWaveformPeak = this.preset.analysisMode === 'waveform_peak';
+		const isWaveform = this.preset.analysisMode === 'waveform';
 
 		if (frames === 0 || newFrames === 0) return [];
 
@@ -5638,7 +5662,7 @@ class WaveformBar {
 			const frame = this.current[i];
 
 			if (newFrames < frames) {
-				if (isWaveformPeak) { // Track max absolute and signed values for waveform_peak
+				if (isWaveform) { // Track max absolute and signed values for waveform
 					data[j].maxAbs = Math.max(data[j].maxAbs, Math.abs(frame));
 					data[j].maxSigned = Math.abs(frame) > Math.abs(data[j].maxSigned) ? frame : data[j].maxSigned;
 					data[j].count++;
@@ -5674,7 +5698,7 @@ class WaveformBar {
 			}
 			else { // Upsampling: repeat or interpolate frames
 				while (h < scaleFactor && j < newFrames) {
-					if (isWaveformPeak) {
+					if (isWaveform) {
 						data[j].maxAbs = Math.max(data[j].maxAbs, Math.abs(frame));
 						data[j].maxSigned = Math.abs(frame) > Math.abs(data[j].maxSigned) ? frame : data[j].maxSigned;
 					} else {
@@ -5688,7 +5712,7 @@ class WaveformBar {
 			}
 		}
 
-		return data.filter(el => el.count > 0).map(el => isWaveformPeak ? el.maxSigned : el.val / el.count);
+		return data.filter(el => el.count > 0).map(el => isWaveform ? el.maxSigned : el.val / el.count);
 	}
 
 	/**
@@ -5701,19 +5725,41 @@ class WaveformBar {
 		// Safety filter for any unexpected invalid frames
 		this.current = this.current.filter(frame => frame != null && Array.isArray(frame) && frame.length >= this.metrics.count);
 
+		if (this.analysis.binaryMode === 'audioWizard' && !this.isFallback && !this.fallbackMode.paint && this.preset.analysisMode === 'waveform') {
+			const channels = this.currentChannels || 1;
+			const minIdx = this.metrics.index.min;
+			const maxIdx = this.metrics.index.max;
+			const metricsPerChannel = this.metrics.count;
+
+			this.current = this.current.map(frame => {
+				let globalMin = Infinity;
+				let globalMax = -Infinity;
+
+				// Process ALL channels
+				for (let ch = 0; ch < channels; ch++) {
+					const offset = ch * metricsPerChannel;
+					const chMin = frame[offset + minIdx];
+					const chMax = frame[offset + maxIdx];
+
+					globalMin = Math.min(globalMin, chMin);
+					globalMax = Math.max(globalMax, chMax);
+				}
+
+				// Return the value with larger magnitude
+				return Math.abs(globalMax) > Math.abs(globalMin) ? globalMax : globalMin;
+			});
+		}
+
 		let { upper, lower } = this.getMaxValue(this.current);
 
-		if (this.analysis.binaryMode === 'audioWizard' && !this.isFallback && !this.fallbackMode.paint && this.preset.analysisMode !== 'waveform_peak') {
+		if (this.analysis.binaryMode === 'audioWizard' && !this.isFallback && !this.fallbackMode.paint && this.preset.analysisMode !== 'waveform') {
 			const metric = this.metrics.mode[this.preset.analysisMode];
 			const pos = this.metrics.index[metric];
 			const minVal = this.getMinValuePos(this.current, pos);
 
-			this.current = this.getScaledFrames(this.current, pos, minVal, this.preset.analysisMode === 'rms_level');
+			this.current = this.getScaledFrames(this.current, pos, minVal, this.preset.analysisMode === 'rms');
 			this.current = this.getNormalizedFrameValues(this.current, Math.min(...this.current.map(frame => frame[this.metrics.count])));
 			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[this.metrics.count]));
-		}
-		else if (this.analysis.binaryMode === 'audioWizard' && this.preset.analysisMode === 'waveform_peak') {
-			this.current = this.current.map(frame => frame[this.metrics.index.waveform_peak]);
 		}
 		else if (this.visualizer) {
 			const maxVal = Math.max(Math.abs(upper), Math.abs(lower));

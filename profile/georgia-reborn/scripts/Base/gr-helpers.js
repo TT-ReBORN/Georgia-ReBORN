@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-12-2025                                              * //
+// * Last change:    27-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -212,11 +212,10 @@ async function AWStartFullTrackMetricsSingle(metadb, chunkDuration = 200) {
 /**
  * Starts waveform analysis for single or multiple tracks.
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
- * @param {number} [metric] - The optional waveform metric (0-3).
  * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
- * @returns {Promise<{success: boolean, tracks?: Array<{index: number, path: string, duration: number, waveformData: Array}>}>}
+ * @returns {Promise<{success: boolean, tracks?: Array<{index: number, path: string, duration: number, channels: number, waveformData: Array}>}>}
  */
-async function AWStartWaveformAnalysis(metadb, metric = 0, resolution = 1) {
+async function AWStartWaveformAnalysis(metadb, resolution = 1) {
 	if (!AudioWizard || AudioWizard.FullTrackProcessing) {
 		return { success: false };
 	}
@@ -241,15 +240,21 @@ async function AWStartWaveformAnalysis(metadb, metric = 0, resolution = 1) {
 					const trackCount = AudioWizard.GetWaveformTrackCount();
 					console.log(`Audio Wizard => Processing ${trackCount} track(s)`);
 
-					// Retrieve each track's waveform data
 					for (let i = 0; i < trackCount; i++) {
-						const waveformData = AudioWizard.GetWaveformData(i);
 						const path = AudioWizard.GetWaveformTrackPath(i);
-						const duration = AudioWizard.GetWaveformTrackDuration(i).toFixed(2);
-						const resolution = (waveformData.length / duration / 4).toFixed(1);
-						tracks.push({ index: i, path, duration, waveformData });
-						console.log(`Audio Wizard => Track ${i + 1}: ${waveformData.length} waveform values over ${duration}s (resolution: ~${resolution} pts/sec)`);
-						// console.log(`Audio Wizard => Track ${i + 1}: ${waveformData}`);
+						const duration = AudioWizard.GetWaveformTrackDuration(i);
+						const channels = AudioWizard.GetWaveformTrackChannels(i);
+						const waveformData = AudioWizard.GetWaveformData(i);
+
+						const metricsPerPoint = 5 * channels;
+						const totalValues = waveformData.length;
+						const numPoints = totalValues / metricsPerPoint;
+						const durLog = duration.toFixed(2);
+						const resLog = (numPoints / duration).toFixed(1);
+
+						tracks.push({ index: i, path, duration, channels, waveformData });
+						console.log(`Audio Wizard => Track ${i + 1}: ${totalValues} values (${numPoints} points over ${durLog}s, resolution: ~${resLog} pts/sec)`);
+						// console.log(`Audio Wizard => Track ${i + 1}: ${waveformData.map(v => Number(v.toFixed(3))).join(',')}`);
 					}
 
 					resolve({ success: true, tracks });
@@ -261,7 +266,6 @@ async function AWStartWaveformAnalysis(metadb, metric = 0, resolution = 1) {
 				}
 			};
 
-			AudioWizard.WaveformMetric = metric;
 			AudioWizard.SetFullTrackWaveformCallback(onComplete);
 			AudioWizard.StartWaveformAnalysis(metadata, resolution);
 		});
@@ -275,18 +279,17 @@ async function AWStartWaveformAnalysis(metadb, metric = 0, resolution = 1) {
 
 
 /**
- * Analyzes tracks and saves the waveform data to JSON files in a cache folder.
+ * Analyzes tracks and saves multi-channel waveform data to JSON.
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
  * @param {string} cachePath - The folder where .awz.json files will be stored.
- * @param {number} [metric] - The optional waveform metric (0-3).
- * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
+ * @param {number} [resolution] - Resolution in points/sec.
  */
-async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, metric, resolution) {
+async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, resolution = 1) {
 	if (!AudioWizard || AudioWizard.FullTrackProcessing) return;
 
 	console.log(`Audio Wizard => Batch processing ${metadb.Count} tracks...`);
 
-	const result = await AWStartWaveformAnalysis(metadb, metric, resolution);
+	const result = await AWStartWaveformAnalysis(metadb, resolution);
 	if (!result.success) return;
 
 	const tfArtistTitle = fb.TitleFormat('%artist% - %title%');
@@ -294,6 +297,7 @@ async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, metric, reso
 	for (const track of result.tracks) {
 		const structuredData = [];
 		const handle = metadb[track.index];
+
 		let fileName = tfArtistTitle.EvalWithMetadb(handle).trim();
 
 		if (!fileName) {
@@ -303,12 +307,24 @@ async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, metric, reso
 
 		fileName = fileName.replace(Regex.PathIllegalFilename, '_').substring(0, 100);
 		const targetPath = `${cachePath}\\${fileName}.awz.json`;
+		const metricsPerPoint = 5 * track.channels;
 
-		for (let i = 0, len = track.waveformData.length; i < len; i += 4) {
-			structuredData.push(track.waveformData.slice(i, i + 4));
+		for (let i = 0; i < track.waveformData.length; i += metricsPerPoint) {
+			const pointSlice = track.waveformData.slice(i, i + metricsPerPoint);
+			const roundedSlice = pointSlice.map(v => Math.round(v * 1000) / 1000);
+			structuredData.push(roundedSlice);
 		}
 
-		if (Save(targetPath, JSON.stringify(structuredData), true)) {
+		const jsonFile = JSON.stringify({
+			version: 1,
+			channels: track.channels,
+			duration: track.duration,
+			metricsPerChannel: 5,
+			metrics: ['rms', 'rms_peak', 'sample_peak', 'min', 'max'],
+			data: structuredData
+		});
+
+		if (Save(targetPath, jsonFile, true)) {
 			console.log(`Audio Wizard => Saved: ${targetPath}`);
 		} else {
 			console.log(`Audio Wizard => Failed to save ${track.path}`);

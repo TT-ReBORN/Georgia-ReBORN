@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    27-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1650,9 +1650,9 @@ class ContextMenus {
 		else if (grSet.seekbar === 'waveformbar') {
 			cm.separator();
 			const waveformBarAnalysisMenu = new ContextMenu('Analysis');
-			const waveformBarAnalysis = [['RMS level', 'rms_level'], ['Peak level', 'peak_level'], ['RMS peak', 'rms_peak'], ['Waveform peak', 'waveform_peak']];
+			const waveformBarAnalysis = [['RMS', 'rms'], ['RMS peak', 'rms_peak'], ['Sample Peak', 'sample_peak'], ['Waveform', 'waveform']];
 			for (const type of waveformBarAnalysis) {
-				waveformBarAnalysisMenu.appendItem(type[0] + (grSet.waveformBarMode === 'audioWizard' ? '' : ' (Audio Wizard only)'), () => {
+				waveformBarAnalysisMenu.appendItem(type[0], () => {
 					grSet.waveformBarAnalysis = type[1];
 					grm.waveBar.updateConfig({ preset: { analysisMode: type[1] } });
 					grm.waveBar.updateBar();

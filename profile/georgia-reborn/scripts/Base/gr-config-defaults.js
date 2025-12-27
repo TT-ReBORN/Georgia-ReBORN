@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-12-2025                                              * //
+// * Last change:    27-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -851,7 +851,7 @@ class ConfigDefaults {
 			peakmeterBarWheelSeekSpeed: 5,
 			peakmeterBarRefreshRate: 'variable',
 			waveformBarMode: 'audioWizard',
-			waveformBarAnalysis: 'rms_level',
+			waveformBarAnalysis: 'waveform',
 			waveformBarSaveMode: 'always',
 			waveformBarFallbackAnalysis: true,
 			waveformBarFallback: true,
@@ -1020,7 +1020,7 @@ class ConfigDefaults {
 			peakmeterBarWheelSeekSpeed: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Seekbar > Peakmeter bar > Mouse wheel seek speed',
 			peakmeterBarRefreshRate: 'Values: 1000, 500, 333, 250, 200, 166, 142, 125, 111, 100, 83, 67, 50, 40, 33, 22, 17, "variable" - Options > Player controls > Seekbar > Peakmeter bar > Refresh rate',
 			waveformBarMode: 'Values: "waveform", "visualizer" - Options > Player controls > Seekbar > Waveform bar > Mode',
-			waveformBarAnalysis: 'Values: "rms_level", "peak_level", "rms_peak" - Options > Player controls > Seekbar > Waveform bar > Analysis',
+			waveformBarAnalysis: 'Values: "rms", "rms_peak", "sample_peak", "waveform", - Options > Player controls > Seekbar > Waveform bar > Analysis',
 			waveformBarSaveMode: 'Values: "always", "library", "never" - Options > Player controls > Seekbar > Waveform bar > Analysis',
 			waveformBarFallbackAnalysis: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer during analysis',
 			waveformBarFallback: 'Values: true, false - Options > Player controls > Seekbar > Waveform bar > Analysis > Visualizer for incompatible files',
