@@ -6,7 +6,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-12-2025                                              * //
+// * Last change:    27-12-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -119,7 +119,9 @@ class Display {
 	 * @returns {Promise<void>} A promise that resolves when the initialization has finished.
 	 */
 	async autoDetectRes() {
-		const displayMode = UIWizard.DisplayResolutionMode || 'HD';
+		const displayModeUIW = UIWizard.DisplayResolutionMode || 'HD';
+		const displayMode = ['4K', 'QHD', 'HD'].includes(displayModeUIW) ? displayModeUIW : '4K';
+
 		RES._4K = displayMode === '4K';
 		RES._QHD = displayMode === 'QHD';
 		grSet.displayRes = displayMode;
