@@ -29,14 +29,8 @@ function _panel(custom_background = false) {
 	}
 
 	this.font_changed = () => {
-		let name;
-		let font = window.InstanceType ? window.GetFontDUI(0) : window.GetFontCUI(0);
-		if (font) {
-			name = font.Name;
-		} else {
-			name = 'Segoe UI';
-			console.log(N, 'Unable to use default font. Using', name, 'instead.');
-		}
+		const font = window.InstanceType ? window.GetFontDUI(0) : window.GetFontCUI(0);
+		const name = font.Name;
 		this.fonts.title = _gdiFont(name, 12, 1);
 		this.fonts.normal = _gdiFont(name, this.fonts.size.value);
 		this.fonts.fixed = _gdiFont('Lucida Console', this.fonts.size.value);

@@ -97,8 +97,6 @@ function _rating(x, y, size, colour) {
 			const idx = f.MetaFind(this.properties.tag.value);
 			const ret = idx > -1 ? f.MetaValue(idx, 0) : 0;
 			return ret;
-		case 3: // Spider Monkey Panel DB
-			return panel.tf('$if2(%smp_rating%,0)');
 		default:
 			return 0;
 		}
@@ -116,10 +114,6 @@ function _rating(x, y, size, colour) {
 			let handles = new FbMetadbHandleList(panel.metadb);
 			handles.UpdateFileInfoFromJSON(JSON.stringify(obj));
 			break;
-		case 3: // Spider Monkey Panel DB
-			panel.metadb.SetRating(this.hrating == this.rating ? 0 : this.hrating);
-			panel.metadb.RefreshStats();
-			break;
 		}
 	}
 
@@ -128,8 +122,8 @@ function _rating(x, y, size, colour) {
 	}
 
 	this.properties = {
-		mode : new _p('2K3.RATING.MODE', 0), // 0 not set 1 foo_playcount 2 file tag 3 Spider Monkey Panel DB
-		max : new _p('2K3.RATING.MAX', 5), // only use for file tag/Spider Monkey Panel DB
+		mode : new _p('2K3.RATING.MODE', 0), // 0 not set 1 foo_playcount 2 file tag
+		max : new _p('2K3.RATING.MAX', 5), // only use for file tag
 		tag: new _p('2K3.RATING.TAG', 'rating')
 	};
 	this.x = x;
@@ -141,14 +135,14 @@ function _rating(x, y, size, colour) {
 	this.rating = 0;
 	this.hrating = 0;
 	this.font = gdi.Font('FontAwesome', this.h - 2);
-	this.modes = ['Not Set', 'foo_playcount', 'File Tag', 'Spider Monkey Panel DB'];
+	this.modes = ['Not Set', 'foo_playcount', 'File Tag'];
 	this.foo_playcount = _cc('foo_playcount');
 	window.SetTimeout(() => {
-		if (this.properties.mode.value == 1 && !this.foo_playcount) { // if mode is set to 1 (foo_playcount) but component is missing, reset to 0.
+		if ((this.properties.mode.value == 1 && !this.foo_playcount) || this.properties.mode.value > 2) { // if mode is set to 1 (foo_playcount) but component is missing, reset to 0.
 			this.properties.mode.value = 0;
 		}
 		if (this.properties.mode.value == 0) {
-			fb.ShowPopupMessage('This script has now been updated and supports 3 different modes.\n\nAs before, you can use foo_playcount which is limited to 5 stars.\n\nThe 2nd option is writing to your file tags. You can choose the tag name and a max value via the right click menu.\n\nLastly, a new "Playback Stats" database has been built into Spider Monkey Panel. It is bound to just "%artist% - %title%". This uses %smp_rating% which can be accessed via title formatting in all other components/search dialogs. This also supports a custom max value.\n\nAll options are available on the right click menu. If you do not see the new options when right clicking, make sure you have the latest "rating.txt" imported from the "samples\\complete" folder.', window.ScriptInfo.Name);
+			fb.ShowPopupMessage('This script has now been updated and supports 2 different modes.\n\nAs before, you can use foo_playcount which is limited to 5 stars.\n\nThe 2nd option is writing to your file tags. You can choose the tag name and a max value via the right click menu. All options are available on the right click menu. If you do not see the new options when right clicking, make sure you have the latest "rating.txt" imported from the "samples\\complete" folder.', window.ScriptInfo.Name);
 		}
 	}, 500);
 }

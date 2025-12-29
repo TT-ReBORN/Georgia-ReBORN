@@ -290,8 +290,6 @@ function _list(mode, x, y, w, h) {
 			panel.m.CheckMenuItem(1302, this.properties.tech.enabled);
 			panel.m.AppendMenuItem(this.foo_playcount ? MF_STRING : MF_GRAYED, 1303, 'Playback Statistics (foo_playcount)');
 			panel.m.CheckMenuItem(1303, this.foo_playcount && this.properties.playcount.enabled);
-			panel.m.AppendMenuItem(MF_STRING, 1304, 'Spider Monkey Panel Stats');
-			panel.m.CheckMenuItem(1304, this.properties.stats.enabled);
 			panel.m.AppendMenuItem(MF_STRING, 1305, 'Replaygain');
 			panel.m.CheckMenuItem(1305, this.properties.rg.enabled);
 			panel.m.AppendMenuSeparator();
@@ -385,10 +383,6 @@ function _list(mode, x, y, w, h) {
 			break;
 		case 1303:
 			this.properties.playcount.toggle();
-			panel.item_focus_change();
-			break;
-		case 1304:
-			this.properties.stats.toggle();
 			panel.item_focus_change();
 			break;
 		case 1305:
@@ -594,9 +588,6 @@ function _list(mode, x, y, w, h) {
 			}
 			if (this.foo_playcount && this.properties.playcount.enabled) {
 				this.add_playcount();
-			}
-			if (this.properties.stats.enabled) {
-				this.add_stats();
 			}
 			if (this.properties.rg.enabled) {
 				this.add_rg();
@@ -1038,11 +1029,6 @@ function _list(mode, x, y, w, h) {
 				this.add();
 			}
 
-			this.add_stats = () => {
-				this.add(['SMP_PLAYCOUNT', 'SMP_LOVED', 'SMP_FIRST_PLAYED', 'SMP_LAST_PLAYED', 'SMP_RATING']);
-				this.add();
-			}
-
 			this.add_rg = () => {
 				this.add(['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK']);
 				this.add();
@@ -1065,7 +1051,6 @@ function _list(mode, x, y, w, h) {
 				location : new _p('2K3.LIST.PROPERTIES.LOCATION', true),
 				tech : new _p('2K3.LIST.PROPERTIES.TECH', true),
 				playcount : new _p('2K3.LIST.PROPERTIES.PLAYCOUNT', true),
-				stats: new _p('2K3.LIST.PROPERTIES.STATS', true),
 				rg : new _p('2K3.LIST.PROPERTIES.RG', true)
 			};
 
