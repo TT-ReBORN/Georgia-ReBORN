@@ -305,7 +305,7 @@ function _thumbs() {
 
 	this.lbtn_dblclk = (x, y) => {
 		if (this.image_xywh_trace(x, y)) {
-			_run(this.files[this.image]);
+			fb.ShowPictureViewer(this.files[this.image]);
 		}
 	}
 
