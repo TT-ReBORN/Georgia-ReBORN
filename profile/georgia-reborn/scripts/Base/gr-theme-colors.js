@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Themes                                   * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -104,7 +103,7 @@ class BaseColors {
 
 		/** @private @type {boolean} The state when theme is nighttime. */
 		this.NIGHTTIME = (['reborn', 'random'].includes(grSet.theme) && grSet.styleNighttime ||
-			grSet.themeDayNightMode && grSet.themeDayNightTime === 'night') && !grSet.styleRebornWhite;
+			grSet.themeDayNightEnabled && grSet.themeDayNightTime === 'night') && !grSet.styleRebornWhite;
 	}
 
 	/**

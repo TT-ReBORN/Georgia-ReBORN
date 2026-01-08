@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Playlist Helpers                         * //
 // * Author:         TT                                                      * //
-// * Org. Author:    extremeHunter, TheQwertiest                             * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 

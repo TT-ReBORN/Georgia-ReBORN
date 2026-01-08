@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Configuration                            * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -234,7 +233,6 @@ class Configuration {
 			'// * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //',
 			'// * Description:    Georgia-ReBORN Configuration File                       * //',
 			'// * Author:         TT                                                      * //',
-			'// * Org. Author:    Mordred                                                 * //',
 			'// * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //',
 			'// *                                                                         * //',
 			'// * Manual changes to this file will take effect on the next reload.        * //',
@@ -417,6 +415,8 @@ class ConfigurationManager {
 		this.artworkImageFormats = {};
 		/** @public @type {object} The config `artworkPatterns` settings in the main config. */
 		this.artworkPatterns = {};
+		/** @public @type {object} The config `Design` settings in the main config. */
+		this.design = {};
 		/** @public @type {object} The config `Theme` settings in the main config. */
 		this.theme = {};
 		/** @public @type {object} The config `Style` settings in the main config. */
@@ -687,14 +687,16 @@ class ConfigurationManager {
 		this.config.addConfigurationObject(grDef.imgPathSchema, cfgSet.imgPaths || grDef.imgPathDefaults);
 		this.config.addConfigurationObject(grDef.discArtPathSchema, cfgSet.discArtPaths || grDef.discArtPathDefaults);
 
+		this.design          = this.config.addConfigurationObject(grDef.designSchema, Object.assign({}, grDef.designDefaults, cfgSet.design), grDef.designComments);
 		this.theme           = this.config.addConfigurationObject(grDef.themeSchema, Object.assign({}, grDef.themeDefaults, cfgSet.theme), grDef.themeComments);
 		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, Object.assign({}, grDef.themeStyleDefaults, cfgSet.style), grDef.themeStyleComments);
 		this.preset          = this.config.addConfigurationObject(grDef.themePresetSchema, Object.assign({}, grDef.themePresetDefaults, cfgSet.preset), grDef.themePresetComments);
-		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, Object.assign({}, grDef.themePlayerSizeDefaults, cfgSet.themePlayerSize), grDef.themePlayerSizeComments);
-		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, Object.assign({}, grDef.themeLayoutDefaults, cfgSet.themeLayout), grDef.themeLayoutComments);
+
 		this.themeDisplay    = this.config.addConfigurationObject(grDef.themeDisplaySchema, Object.assign({}, grDef.themeDisplayDefaults, cfgSet.themeDisplay), grDef.themeDisplayComments);
-		this.themeBrightness = this.config.addConfigurationObject(grDef.themeBrightnessSchema, Object.assign({}, grDef.themeBrightnessDefaults, cfgSet.themeBrightness), grDef.themeBrightnessComments);
+		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, Object.assign({}, grDef.themeLayoutDefaults, cfgSet.themeLayout), grDef.themeLayoutComments);
+		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, Object.assign({}, grDef.themePlayerSizeDefaults, cfgSet.themePlayerSize), grDef.themePlayerSizeComments);
 		this.themeFontSize   = this.config.addConfigurationObject(grDef.themeFontSizesSchema, Object.assign({}, grDef.themeFontSizesDefaults, cfgSet.themeFontSize), grDef.themeFontSizesComments);
+
 		this.themeControls   = this.config.addConfigurationObject(grDef.themePlayerControlsSchema, Object.assign({}, grDef.themePlayerControlsDefaults, cfgSet.themeControls), grDef.themePlayerControlsComments);
 
 		this.themePlaylist   = this.config.addConfigurationObject(grDef.themePlaylistSchema, Object.assign({}, grDef.themePlaylistDefaults, cfgSet.themePlaylist), grDef.themePlaylistComments);
@@ -785,14 +787,16 @@ class ConfigurationManager {
 		this.config.addConfigurationObject(grDef.imgPathSchema, grDef.imgPathDefaults);
 		this.config.addConfigurationObject(grDef.discArtPathSchema, grDef.discArtPathDefaults);
 
+		this.design          = this.config.addConfigurationObject(grDef.designSchema, grDef.designDefaults, grDef.designComments);
 		this.theme           = this.config.addConfigurationObject(grDef.themeSchema, grDef.themeDefaults, grDef.themeComments);
 		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, grDef.themeStyleDefaults, grDef.themeStyleComments);
 		this.preset          = this.config.addConfigurationObject(grDef.themePresetSchema, grDef.themePresetDefaults, grDef.themePresetComments);
-		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, grDef.themePlayerSizeDefaults, grDef.themePlayerSizeComments);
-		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, grDef.themeLayoutDefaults, grDef.themeLayoutComments);
+
 		this.themeDisplay    = this.config.addConfigurationObject(grDef.themeDisplaySchema, grDef.themeDisplayDefaults, grDef.themeDisplayComments);
-		this.themeBrightness = this.config.addConfigurationObject(grDef.themeBrightnessSchema, grDef.themeBrightnessDefaults, grDef.themeBrightnessComments);
+		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, grDef.themeLayoutDefaults, grDef.themeLayoutComments);
+		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, grDef.themePlayerSizeDefaults, grDef.themePlayerSizeComments);
 		this.themeFontSize   = this.config.addConfigurationObject(grDef.themeFontSizesSchema, grDef.themeFontSizesDefaults, grDef.themeFontSizesComments);
+
 		this.themeControls   = this.config.addConfigurationObject(grDef.themePlayerControlsSchema, grDef.themePlayerControlsDefaults, grDef.themePlayerControlsComments);
 
 		this.themePlaylist   = this.config.addConfigurationObject(grDef.themePlaylistSchema, grDef.themePlaylistDefaults, grDef.themePlaylistComments);

@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Menu                                     * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -241,20 +240,20 @@ class TopMenu {
 		const themeDayNightSandbox = grSet.themeSetupDay || grSet.themeSetupNight || grSet.themeSandbox;
 
 		if (!contextMenu) {
+			grm.options.designOptions(menu);
 			grm.options.themeOptions(menu);
 			grm.options.styleOptions(menu);
 			grm.options.presetOptions(menu);
 
 			if (!themeDayNightSandbox) {
-				grm.options.playerSizeOptions(menu);
-				grm.options.layoutOptions(menu);
+				menu.addSeparator();
 				grm.options.displayOptions(menu);
+				grm.options.layoutOptions(menu);
+				grm.options.playerSizeOptions(menu);
+				grm.options.fontSizeOptions(menu);
 			}
 
-			grm.options.brightnessOptions(menu);
-
 			if (!themeDayNightSandbox) {
-				grm.options.fontSizeOptions(menu);
 				menu.addSeparator();
 				grm.options.playerControlsOptions(menu);
 				menu.addSeparator();
@@ -309,27 +308,24 @@ class TopMenuOptions {
 		 * @private
 		 */
 		this.applyThemeSetting = (setting, value) => {
-			if (grSet.themeDayNightMode) {
-				initThemeDayNightMode(new Date());
-				const msg = grm.msg.getMessage('main', 'themeDayNightModeNotice');
-				const msgFb = grm.msg.getMessage('main', 'themeDayNightModeNotice', true);
-				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-					if (confirmed) grSet.themeDayNightMode = false;
-				});
-				if (grSet.themeDayNightMode) return;
-			}
+			grm.day.showStyleChangeWarning((shouldContinue) => {
+				if (!shouldContinue) return;
 
-			if (setting) {
-				const savedSettingName = `saved${setting.charAt(0).toUpperCase()}${setting.slice(1)}`;
-				if (grSet.themeSandbox) {
-					grSet[setting] = value;
-				} else {
-					grm.ui.restoreThemeStylePreset(true, true);
-					grSet[savedSettingName] = grSet[setting] = value;
+				if (setting) {
+					const savedSettingName = `saved${setting.charAt(0).toUpperCase()}${setting.slice(1)}`;
+
+					if (grSet.themeSandbox) {
+						grSet[setting] = value;
+					} else {
+						grm.ui.restoreThemeStylePreset(true, true);
+						grSet[savedSettingName] = grSet[setting] = value;
+					}
 				}
-			}
 
-			if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
+				if (grSet.themeSetupDay || grSet.themeSetupNight) {
+					grm.day.setThemeDayNightStyle();
+				}
+			});
 		}
 
 		/** @public @type {ActiveXObject} The Audio Wizard ActiveX object. */
@@ -338,6 +334,47 @@ class TopMenuOptions {
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
+	/**
+	 * Top menu > Options > Design.
+	 * @param {Menu} menu - Creates the Design menu via a new Menu instance.
+	 * @protected
+	 */
+	designOptions(menu) {
+		const designMenu = new Menu('Design');
+		const currentDesign = grm.ui.getDesignPresetState();
+
+		designMenu.addRadioItems(['Default', 'Clean', 'Harmonic', 'Minimal', 'Modern black', 'Modern white', 'Modern day/night'], currentDesign,
+			['default', 'clean', 'harmonic', 'minimal', 'modern_black', 'modern_white', 'modern_day_night'], (design) => {
+
+			if (design === currentDesign) {
+				grm.ui.setDesign(design);
+				return;
+			}
+
+			const msgKey = design === 'modern_day_night' ? 'modernDayNight' : 'designChange';
+			const msg = grm.msg.getMessage('menu', msgKey);
+			const msgFb = grm.msg.getMessage('menu', msgKey, true);
+
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', async (confirmed) => {
+				if (!confirmed) return;
+
+				if (design === 'modern_day_night') {
+					grSet.themeDayNightEnabled = false;
+					grm.day.stopTimer();
+				}
+
+				await ExecuteAndWait(() => {
+					grm.ui.setDesign(design);
+				}, () => !grm.ui.initThemeRunning);
+
+				if (design === 'modern_day_night') {
+					grm.day.setDayNightCustomTimeRange(true);
+				}
+			});
+		}, false, false, [0]);
+		designMenu.appendTo(menu);
+	}
+
 	/**
 	 * Top menu > Options > Theme.
 	 * @param {Menu} menu - Creates the Theme menu via a new Menu instance.
@@ -350,6 +387,7 @@ class TopMenuOptions {
 			this.applyThemeSetting('theme', theme);
 			grm.ui.resetTheme();
 			grm.ui.initTheme();
+			grm.day.applyFoobarTheme();
 			grm.details.setDiscArtShadow();
 			grm.preset.initThemePresetState();
 		}, false, false, [3, 7]);
@@ -420,12 +458,14 @@ class TopMenuOptions {
 				grSet.styleDefault = false;
 				return;
 			}
+
 			grSet.preset = false;
 			grm.ui.resetStyle('all');
 			grm.ui.resetStyle('all_theme_day_night');
 			grm.ui.restoreThemeStylePreset(true);
 			grm.ui.resetTheme();
 			grm.ui.initTheme();
+			grm.day.applyFoobarTheme();
 		});
 		styleMenu.addSeparator();
 		if (['reborn', 'random'].includes(grSet.theme) || grSet.theme.startsWith('custom')) {
@@ -864,16 +904,35 @@ class TopMenuOptions {
 	}
 
 	/**
-	 * Top menu > Options > Player size.
-	 * @param {Menu} menu - Creates the Player size menu via a new Menu instance.
+	 * Top menu > Options > Display.
+	 * @param {Menu} menu - Creates the Display menu via a new Menu instance.
 	 * @protected
 	 */
-	playerSizeOptions(menu) {
-		menu.createRadioSubMenu('Player size', ['Small', 'Normal', 'Large'], grSet.playerSize, ['small', 'normal', 'large'], (size) => {
-			grSet.playerSize = size;
-			grSet.displayScale = 100;
-			grm.display.updatePlayerSize(grSet.playerSize);
-		}, grSet.lockPlayerSize);
+	displayOptions(menu) {
+		const displayMenu = new Menu('Display');
+
+		displayMenu.addItem('Auto-detect', false, () => { grm.display.autoDetectRes(); });
+		displayMenu.addSeparator();
+		displayMenu.addRadioItems(['4K', 'QHD', 'HD'], grSet.displayRes, ['4K', 'QHD', 'HD'], (res) => {
+			grSet.displayRes = res;
+			grm.display.updatePlayerSize('small', true);
+		});
+		displayMenu.addSeparator();
+		displayMenu.createRadioSubMenu('Scaling', ['  50%', '  60%', '  70%', '  80%', '  90%', '100%', '110%', '120%', '130%', '140%', '150%'],
+			grSet.displayScale, [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150], (scale) => {
+			grSet.displayScale = scale;
+			const size = grm.display.checkPlayerSize(grm.ui.ww, grm.ui.wh, grSet.layout, grSet.displayRes);
+			grm.display.updatePlayerSize(size, true);
+		});
+		displayMenu.addSeparator();
+		displayMenu.createRadioSubMenu('Brightness', ['   -50%', '   -40%', '   -30%', '   -25%', '   -20%', '   -15%', '   -10%', '     -5%', 'Default', '     +5%', '   +10%', '   +15%', '   +20%', '   +25%', '   +30%', '   +40%', '   +50%'],
+			grSet.themeBrightness, [-50, -40, -30, -25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25, 30, 40, 50], (percent) => {
+			this.applyThemeSetting('themeBrightness', percent);
+			grm.ui.initThemeFull = true;
+			grm.ui.initTheme();
+		}, grSet.presetSelectMode === 'harmonic');
+
+		displayMenu.appendTo(menu);
 	}
 
 	/**
@@ -896,42 +955,16 @@ class TopMenuOptions {
 	}
 
 	/**
-	 * Top menu > Options > Display.
-	 * @param {Menu} menu - Creates the Display menu via a new Menu instance.
+	 * Top menu > Options > Player size.
+	 * @param {Menu} menu - Creates the Player size menu via a new Menu instance.
 	 * @protected
 	 */
-	displayOptions(menu) {
-		const displayResMenu = new Menu('Display');
-
-		displayResMenu.addItem('Auto-detect', false, () => { grm.display.autoDetectRes(); });
-		displayResMenu.addSeparator();
-		displayResMenu.addRadioItems(['4K', 'QHD', 'HD'], grSet.displayRes, ['4K', 'QHD', 'HD'], (res) => {
-			grSet.displayRes = res;
-			grm.display.updatePlayerSize('small', true);
-		});
-		displayResMenu.addSeparator();
-		displayResMenu.createRadioSubMenu('Scaling', ['  50%', '  60%', '  70%', '  80%', '  90%', '100%', '110%', '120%', '130%', '140%', '150%'],
-			grSet.displayScale, [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150], (scale) => {
-			grSet.displayScale = scale;
-			const size = grm.display.checkPlayerSize(grm.ui.ww, grm.ui.wh, grSet.layout, grSet.displayRes);
-			grm.display.updatePlayerSize(size, true);
-		});
-
-		displayResMenu.appendTo(menu);
-	}
-
-	/**
-	 * Top menu > Options > Brightness.
-	 * @param {Menu} menu - Creates the Brightness menu via a new Menu instance.
-	 * @protected
-	 */
-	brightnessOptions(menu) {
-		menu.createRadioSubMenu('Brightness', ['   -50%', '   -40%', '   -30%', '   -25%', '   -20%', '   -15%', '   -10%', '     -5%', 'Default', '     +5%', '   +10%', '   +15%', '   +20%', '   +25%', '   +30%', '   +40%', '   +50%'],
-			grSet.themeBrightness, [-50, -40, -30, -25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25, 30, 40, 50], (percent) => {
-			this.applyThemeSetting('themeBrightness', percent);
-			grm.ui.initThemeFull = true;
-			grm.ui.initTheme();
-		}, grSet.presetSelectMode === 'harmonic');
+	playerSizeOptions(menu) {
+		menu.createRadioSubMenu('Player size', ['Small', 'Normal', 'Large'], grSet.playerSize, ['small', 'normal', 'large'], (size) => {
+			grSet.playerSize = size;
+			grSet.displayScale = 100;
+			grm.display.updatePlayerSize(grSet.playerSize);
+		}, grSet.lockPlayerSize);
 	}
 
 	/**
@@ -3235,93 +3268,42 @@ class TopMenuOptions {
 	settingsOptions(menu) {
 		const settingsMenu = new Menu('Settings');
 
+		// * THEME DAY/NIGHT MODE * //
 		if (!grSet.themeSandbox) {
-			// * THEME DAY/NIGHT MODE * //
-			const themeDayNightModeMenu = new Menu('Theme day/night mode');
+			const themeDayNightModeMenu = new Menu('Day/night');
 
 			const dayNightTimeRangeDefaults = ['6-18', '7-19', '8-20', '9-21', '10-22'];
-			const dayNightTimeRangeLabels = dayNightTimeRangeDefaults.map(FormatThemeDayNightModeString);
+			const dayNightTimeRangeLabels = dayNightTimeRangeDefaults.map(t => grm.day.formatTimeRangeString(t));
 			dayNightTimeRangeLabels.unshift('Deactivated (default)');
 
-			const dayNightTimeRangeCustom = grSet.themeDayNightMode && !dayNightTimeRangeDefaults.includes(grSet.themeDayNightMode);
-			const dayNightTimeRangeCustomLabel = `Custom: ${FormatThemeDayNightModeString(grSet.themeDayNightMode)}`;
-			const dayNightTimeRangeVal = dayNightTimeRangeCustom ? grSet.themeDayNightMode : (grSet.themeDayNightMode || false);
+			const dayNightTimeRangeCustom = grSet.themeDayNightSchedule && !dayNightTimeRangeDefaults.includes(grSet.themeDayNightSchedule);
+			const dayNightTimeRangeCustomLabel = dayNightTimeRangeCustom ? `Custom: ${grm.day.formatTimeRangeString(grSet.themeDayNightSchedule)}` : '';
+
+			const dayNightTimeRangeVal = grSet.themeDayNightEnabled && grSet.design !== 'modern_day_night' ? grSet.themeDayNightSchedule : false;
 			const dayNightTimeRangeValues = [false, ...dayNightTimeRangeDefaults];
 
 			if (dayNightTimeRangeCustom) {
 				dayNightTimeRangeLabels.push(dayNightTimeRangeCustomLabel);
-				dayNightTimeRangeValues.push(grSet.themeDayNightMode);
+				dayNightTimeRangeValues.push(grSet.themeDayNightSchedule);
 			}
 
 			themeDayNightModeMenu.addItem('Set custom time range', false, () => {
-				grm.inputBox.themeDayNightModeCustom();
+				grm.day.setDayNightCustomTimeRange();
 			});
 			themeDayNightModeMenu.addSeparator();
+
 			themeDayNightModeMenu.addRadioItems(dayNightTimeRangeLabels, dayNightTimeRangeVal, dayNightTimeRangeValues, (time) => {
-				grSet.themeDayNightMode = time;
-				if (!grSet.themeDayNightMode) {
-					grSet.themeDayNightMode = false;
-					grm.ui.clearTimer('themeDayNightMode');
-					return;
-				}
-				const msg = grm.msg.getMessage('menu', 'themeDayNightMode');
-				const msgFb = grm.msg.getMessage('menu', 'themeDayNightMode', true);
-				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-					if (confirmed) {
-						grm.ui.resetTheme();
-						initThemeDayNightMode(new Date());
-						grm.ui.initThemeFull = true;
-						grm.ui.initCustomTheme();
-						grm.ui.initTheme();
-						grm.ui.initStyleState();
-						grm.preset.initThemePresetState();
-					} else {
-						grSet.themeDayNightMode = false;
-						if (grSet.presetAutoRandomMode !== 'off') {
-							grSet.presetAutoRandomMode = 'dblclick';
-							grm.preset.getRandomThemePreset();
-						}
-					}
-				});
+				grm.day.handleDayNightMode(time || '6-18', time !== false);
 			});
 			themeDayNightModeMenu.addSeparator();
+
+			themeDayNightModeMenu.addItem(grSet.themeSetupDay ? 'Save and exit daytime theme setup' : 'Theme setup for daytime', false, () => {
+				grm.day.startDayNightSetup('day');
+			});
+			themeDayNightModeMenu.addItem(grSet.themeSetupNight ? 'Save and exit nighttime theme setup' : 'Theme setup for nighttime', false, () => {
+				grm.day.startDayNightSetup('night')
+			});
 			themeDayNightModeMenu.appendTo(settingsMenu);
-			themeDayNightModeMenu.addItem(!grSet.themeSetupDay ? 'Theme setup for daytime' : 'Save and exit daytime theme setup', false, () => {
-				grSet.themeSetupDay = !grSet.themeSetupDay;
-				grSet.themeSetupNight = false;
-				grSet.themeDayNightMode = false;
-				RepaintWindow();
-				if (!grSet.themeSetupDay) {
-					grm.ui.themeNotification = '';
-					return;
-				}
-				grm.msg.showPopupNotice('menu', 'themeSetupDay');
-				grm.ui.resetTheme();
-				setThemeDayNightTheme(true);
-				grm.ui.initThemeFull = true;
-				grm.ui.initCustomTheme();
-				grm.ui.initTheme();
-				grm.ui.initStyleState();
-				grm.preset.initThemePresetState();
-			});
-			themeDayNightModeMenu.addItem(!grSet.themeSetupNight ? 'Theme setup for nighttime' : 'Save and exit nighttime theme setup', false, () => {
-				grSet.themeSetupDay = false;
-				grSet.themeSetupNight = !grSet.themeSetupNight;
-				grSet.themeDayNightMode = false;
-				RepaintWindow();
-				if (!grSet.themeSetupNight) {
-					grm.ui.themeNotification = '';
-					return;
-				}
-				grm.msg.showPopupNotice('menu', 'themeSetupNight');
-				grm.ui.resetTheme();
-				setThemeDayNightTheme(false);
-				grm.ui.initThemeFull = true;
-				grm.ui.initCustomTheme();
-				grm.ui.initTheme();
-				grm.ui.initStyleState();
-				grm.preset.initThemePresetState();
-			});
 		}
 
 		// * HIDE OTHER MENUS WHEN THEME DAY/NIGHT SETUP IS ACTIVE
@@ -3330,8 +3312,37 @@ class TopMenuOptions {
 			return;
 		}
 
+		// * THEME FONTS * //
+		if (!grSet.themeSandbox) {
+			const themeFontMenu = new Menu('Fonts');
+			themeFontMenu.addToggleItem('Use custom theme fonts', grSet, 'customThemeFonts', () => {
+				const msg = grm.msg.getMessage('menu', 'customThemeFonts');
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+					grSet.customThemeFonts = confirmed;
+				});
+				window.Reload();
+			});
+			themeFontMenu.appendTo(settingsMenu);
+		}
+
+		// * THEME IMAGES * //
+		if (!grSet.themeSandbox) {
+			const themeImagesMenu = new Menu('Images');
+			themeImagesMenu.addToggleItem('Use custom preloader logo', grSet, 'customPreloaderLogo', () => {
+				if (!grSet.customPreloaderLogo) return window.Reload();
+				grm.msg.showPopupNotice('menu', 'customPreloaderLogo');
+				window.Reload();
+			});
+			themeImagesMenu.addToggleItem('Use custom theme images', grSet, 'customThemeImages', () => {
+				if (!grSet.customThemeImages) return window.Reload();
+				grm.msg.showPopupNotice('menu', 'customThemeImages');
+				window.Reload();
+			});
+			themeImagesMenu.appendTo(settingsMenu);
+		}
+
 		// * THEME SANDBOX * //
-		const themeSandboxMenu = new Menu('Theme sandbox');
+		const themeSandboxMenu = new Menu('Sandbox');
 		const restoreThemeStylePresetSettings = (restoreStyles) => {
 			grSet.presetAutoRandomMode = 'dblclick';
 			grm.ui.setThemePresetSelection(true); // * Reactivate all
@@ -3376,33 +3387,28 @@ class TopMenuOptions {
 			return;
 		}
 
-		// * THEME FONTS * //
-		const themeFontMenu = new Menu('Theme fonts');
-		themeFontMenu.addToggleItem('Use custom theme fonts', grSet, 'customThemeFonts', () => {
-			const msg = grm.msg.getMessage('menu', 'customThemeFonts');
-			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				grSet.customThemeFonts = confirmed;
-			});
-			window.Reload();
-		});
-		themeFontMenu.appendTo(settingsMenu);
+		settingsMenu.addSeparator();
 
-		// * THEME IMAGES * //
-		const themeImagesMenu = new Menu('Theme images');
-		themeImagesMenu.addToggleItem('Use custom preloader logo', grSet, 'customPreloaderLogo', () => {
-			if (!grSet.customPreloaderLogo) return window.Reload();
-			grm.msg.showPopupNotice('menu', 'customPreloaderLogo');
-			window.Reload();
+		// * THEME BACKUP * //
+		const themeBackupMenu = new Menu('Backup');
+		themeBackupMenu.addItem('Make backup', false, () => {
+			const msg = grm.msg.getMessage('menu', 'makeBackup');
+			const msgFb = grm.msg.getMessage('menu', 'makeBackup', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				if (confirmed) ManageBackup(true);
+			});
 		});
-		themeImagesMenu.addToggleItem('Use custom theme images', grSet, 'customThemeImages', () => {
-			if (!grSet.customThemeImages) return window.Reload();
-			grm.msg.showPopupNotice('menu', 'customThemeImages');
-			window.Reload();
+
+		themeBackupMenu.addItem('Restore backup', false, () => {
+			const msg = grm.msg.getMessage('menu', 'restoreBackup');
+			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+				if (confirmed) ManageBackup(false, true);
+			});
 		});
-		themeImagesMenu.appendTo(settingsMenu);
+		themeBackupMenu.appendTo(settingsMenu);
 
 		// * THEME CACHE * //
-		const themeCacheMenu = new Menu('Theme cache');
+		const themeCacheMenu = new Menu('Cache');
 		const themeCacheLibraryMenu = new Menu('Library');
 		themeCacheLibraryMenu.addToggleItem('Image disk cache enabled', libSet, 'albumArtDiskCache');
 		themeCacheLibraryMenu.addToggleItem('Preload images in disk cache', libSet, 'albumArtPreLoad');
@@ -3526,26 +3532,8 @@ class TopMenuOptions {
 		themeCacheWaveformBarMenu.appendTo(themeCacheMenu);
 		themeCacheMenu.appendTo(settingsMenu);
 
-		// * THEME BACKUP * //
-		const themeBackupMenu = new Menu('Theme backup');
-		themeBackupMenu.addItem('Make backup', false, () => {
-			const msg = grm.msg.getMessage('menu', 'makeBackup');
-			const msgFb = grm.msg.getMessage('menu', 'makeBackup', true);
-			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) ManageBackup(true);
-			});
-		});
-
-		themeBackupMenu.addItem('Restore backup', false, () => {
-			const msg = grm.msg.getMessage('menu', 'restoreBackup');
-			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) ManageBackup(false, true);
-			});
-		});
-		themeBackupMenu.appendTo(settingsMenu);
-
 		// * THEME CONFIGURATION * //
-		const themeConfigMenu = new Menu('Theme configuration');
+		const themeConfigMenu = new Menu('Configuration');
 		themeConfigMenu.addItem('Save settings to config file', false, () => {
 			const msg = grm.msg.getMessage('menu', 'saveSettingsConfig');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
@@ -3645,7 +3633,7 @@ class TopMenuOptions {
 		themeConfigMenu.appendTo(settingsMenu);
 
 		// * THEME PERFORMANCE * //
-		settingsMenu.createRadioSubMenu('Theme performance', ['Lowest quality (fastest speed - very slow CPU)', 'Low quality', 'Balanced (Default)', 'High quality', 'Highest quality (slowest speed - very fast CPU)'], grSet.themePerformance,
+		settingsMenu.createRadioSubMenu('Performance', ['Lowest quality (fastest speed - very slow CPU)', 'Low quality', 'Balanced (Default)', 'High quality', 'Highest quality (slowest speed - very fast CPU)'], grSet.themePerformance,
 			['lowestQuality', 'lowQuality', 'balanced', 'highQuality', 'highestQuality'], (perf) => {
 			const msg = grm.msg.getMessage('menu', 'themePerformance');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {

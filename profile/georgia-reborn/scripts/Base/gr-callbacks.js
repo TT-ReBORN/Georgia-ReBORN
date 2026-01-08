@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Callbacks                                * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -182,11 +181,11 @@ function on_download_file_done(path, success, error_text) {
 
 /**
  * Called when {@link utils.HTTPRequestAsync} request is finished
- * New callback and only available since SMP v1.7.25.12.8 or JSplitter v3.7.4/v4.0.4.4-beta.
+ * New callback and only available with SMP v1.7.25.12.8 or JSplitter v3.7.4/v4.0.4.4-beta.
  * @global
  * @param {number} task_id - The task id returned by {@link utils.HTTPRequestAsync}
  * @param {boolean} success - The state whether the request was successful.
- * @param {string} response_text- The response body as text.
+ * @param {string} response_text - The response body as text.
  * @param {string} status - The HTTP response code.
  * @param {string} content_type - The 'Content-Type' HTTP response header.
  */

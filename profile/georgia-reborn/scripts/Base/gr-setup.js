@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Setup                                    * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -42,6 +41,7 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @typedef  {object} grm - The Georgia-ReBORN main object.
  * @property {MainUI} ui - The instance of `MainUI` class for main user interface operations.
  * @property {Details} details - The instance of `Details` class for details interface operations.
+ * @property {ThemeDayNight} day - The instance of `ThemeDayNight` class for theme day/night mode operations.
  * @property {ThemeSettingsManager} settings - The instance of `ThemeSettingsManager` class for theme settings operations.
  * @property {Display} display - The instance of `Display` class for UI display operations.
  * @property {BaseColors} color - The instance of `BaseColors` class for color-related utility operations.
@@ -51,7 +51,7 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @property {TopMenu} topMenu - The instance of `TopMenu` class for top menu interface operations.
  * @property {TopMenuOptions} options - The instance of `TopMenuOptions` class for top menu option management operations.
  * @property {ContextMenus} ctxMenu - The instance of `ContextMenus` class for context menu operations.
- * @property {InputBox} inputBox - The instance of `InputBox` class for input box operations.
+ * @property {MenuInputBox} inputBox - The instance of `MenuInputBox` class for menu input box operations.
  * @property {CustomMenu} cusMenu - The instance of `CustomMenu` class for custom menu base control operations.
  * @property {CustomThemeMenu} cthMenu - The instance of `CustomThemeMenu` class for custom theme menu operations.
  * @property {MetadataGridMenu} gridMenu - The instance of `MetadataGridMenu` class for metadata grid menu operations.
@@ -242,7 +242,6 @@ const grPath = {
  * @property {GdiFont} lowerBarWave - The theme waveform bar font 'HelveticaNeueLT Pro 65 Md' used in lower bar.
  * @property {GdiFont} noAlbumArtStub - The theme font ''Reborn-Symbols' used for no album art music note symbol.
  * @property {GdiFont} noAlbumArtStub2 - The theme font ''Reborn-Symbols' used for no album art music radio symbol.
- * @property {GdiFont} symbol - The panel font 'Segoe UI Symbol' used for special chars, scrollbar buttons, etc.
  * @property {GdiFont} notification - The theme font 'HelveticaNeueLT Pro 65 Md' used for notifications.
  * @property {GdiFont} popup - The theme font 'Segoe UI' used for popups.
  * @property {GdiFont} tooltip - The theme font 'HelveticaNeueLT Pro 65 Md' used for styled tooltips.

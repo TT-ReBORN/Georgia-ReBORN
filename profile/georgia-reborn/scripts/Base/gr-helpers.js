@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Main Helpers                             * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1764,34 +1763,11 @@ function Debounce(func, delay, { leading } = {}) {
 
 
 /**
- * Wraps a synchronous function call that does not return a promise in a promise.
- * This utility function is useful for converting functions that perform synchronous operations
- * into a promise-based interface, allowing them to be used with async/await syntax.
- * Additionally, it can poll for a condition before resolving.
- * @global
- * @param {function(): void} func - The synchronous function to wrap. This function should not return a promise.
- * @param {function(): boolean} [condition] - An optional condition function to check before resolving the promise.
- * @returns {Promise<void>} A promise that resolves immediately after the function call completes or the condition is met.
+ * Runs a heavy task and waits for a specific state change before proceeding.
  */
-function MakeAsync(func, condition) {
-	return new Promise(resolve => {
-		func();
-
-		if (condition) {
-			const checkCondition = () => {
-				if (condition()) {
-					clearInterval(interval);
-					resolve();
-				}
-			};
-
-			const interval = setInterval(checkCondition, 50);
-			setTimeout(checkCondition, 0); // Fallback to setTimeout in case the condition is met very quickly
-			return;
-		}
-
-		resolve();
-	});
+async function ExecuteAndWait(func, condition, maxWait = 5000) {
+	func(); // Execute the synchronous heavy lifting
+	return await WaitUntil(condition, maxWait);
 }
 
 
@@ -1914,6 +1890,26 @@ function TryMethod(fn, parent) {
 			return parent[fn](...args);
 		} catch (e) { }
 	};
+}
+
+
+/**
+ * Pauses execution until a condition is true or a timeout is reached.
+ * @param {function} condition - Function that returns true/false.
+ * @param {number} maxWait - Max time in ms (0 = infinite).
+ * @returns {Promise<boolean>} Resolves true if timed out, false if condition met.
+ */
+function WaitUntil(condition, maxWait = 0) {
+	const startTime = Date.now();
+	return new Promise(resolve => {
+		const interval = setInterval(() => {
+			const timedOut = maxWait > 0 && (Date.now() - startTime >= maxWait);
+			if (condition() || timedOut) {
+				clearInterval(interval);
+				resolve(timedOut);
+			}
+		}, 50);
+	});
 }
 
 
@@ -2847,7 +2843,7 @@ function FillGradEllipse(gr, x, y, w, h, angle, color1, color2, focus) {
  * @param {number} angle - The angle of the gradient in degrees.
  * @param {number} color1 - The first color of the gradient.
  * @param {number} color2 - The second color of the gradient.
- * @param {number} focus - The focus where the centered color will be at its highest intensity. Values 0 or 1.
+ * @param {number} [focus] - The focus where the centered color will be at its highest intensity. Values 0 or 1.
  * @returns {GdiGraphics} The filled rectangle.
  */
 function FillGradRect(gr, x, y, w, h, angle, color1, color2, focus = 1) {
@@ -2870,10 +2866,10 @@ function FillGradRect(gr, x, y, w, h, angle, color1, color2, focus = 1) {
  * @param {number} angle - The angle of the arc in degrees.
  * @param {number} color1 - The color of the top side of the gradient.
  * @param {number} color2 - The color of the bottom side of the gradient.
- * @param {number} focus - The focus where the centered color will be at its highest intensity. Values 0 or 1.
+ * @param {number} [focus] - The focus where the centered color will be at its highest intensity. Values 0 or 1.
  * @returns {GdiGraphics} The gradient filled rounded rectangle.
  */
-function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1, color2, focus) {
+function FillGradRoundRect(gr, x, y, w, h, arc_width, arc_height, angle, color1, color2, focus = 1) {
 	const SCALE1 = SCALE(1);
 
 	if (w < SCALE1 || h < SCALE1) return null;
@@ -4445,32 +4441,6 @@ function DeleteLyrics() {
  */
 function DeleteWaveformBarCache() {
 	DeleteFolder(grSet.customWaveformBarDir ? $(`${grCfg.customWaveformBarDir}\\*.*`, undefined, true) : `${fb.ProfilePath}cache\\waveform\\*.*`);
-}
-
-
-/**
- * Formats the theme day/night mode time range string into a more readable format.
- * @global
- * @param {string|null} themeDayNightMode - The time range for theme day/night mode in 24-hour format, e.g. '6-18' for 6am to 6pm. If null or undefined, it returns 'Deactivated (default)'.
- * @returns {string} A formatted string representing the time range in 12-hour format with am/pm suffixes, e.g. '06am (day) - 06pm (night)', or 'Deactivated (default)' if themeDayNightMode is falsy.
- */
-function FormatThemeDayNightModeString(themeDayNightMode) {
-	if (!themeDayNightMode) return 'Deactivated (default)';
-
-	// * Safeguard to handle number values and convert them to string with default end hour
-	if (typeof grSet.themeDayNightMode === 'number') {
-		grSet.themeDayNightMode = `${grSet.themeDayNightMode}-18`; // Defaulting end hour to 18 (6 PM)
-	} else if (typeof grSet.themeDayNightMode === 'string' && !grSet.themeDayNightMode.includes('-')) {
-		grSet.themeDayNightMode = `${grSet.themeDayNightMode}-${grSet.themeDayNightMode}`; // Same start and end hour
-	}
-
-	const [start, end] = themeDayNightMode.split('-').map(part => {
-		let hour = parseInt(part, 10);
-		const suffix = (hour >= 12 && hour < 24) ? ' PM' : ' AM';
-		hour = (hour === 0 || hour === 12) ? 12 : hour % 12;
-		return `${hour.toString().padStart(2, '0')}${suffix}`;
-	});
-	return `${start} (day) - ${end} (night)`;
 }
 
 

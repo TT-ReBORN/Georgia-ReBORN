@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Settings                                 * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -149,164 +148,165 @@ const grSet = new PanelProperties();
 grSet.addProperties({
 	version:                            ['Georgia-ReBORN - #Version: Do not hand edit!', '3.0-x64-DEV'],
 
+	// * Design
+	design:                             ['Georgia-ReBORN - 01. Design', 'modern_day_night'], // Default design preset
+
 	// * Theme
-	theme:                              ['Georgia-ReBORN - 01. Theme:', 'reborn'], // Use reborn theme as default
-	theme_day:                          ['Georgia-ReBORN - 01. Theme_daytime:', 'white'], // Use white theme as default for daytime
-	theme_night:                        ['Georgia-ReBORN - 01. Theme_nighttime:', 'black'], // Use black theme as default for nighttime
-	savedTheme:                         ['Georgia-ReBORN - 01. Theme_saved:', 'reborn'], // Saved active theme state - used to restore theme state after custom [%GR_THEME%] usage
+	theme:                              ['Georgia-ReBORN - 02. Theme:', 'reborn'], // Use reborn theme as default
+	theme_day:                          ['Georgia-ReBORN - 02. Theme_daytime:', 'white'], // Use white theme as default for daytime
+	theme_night:                        ['Georgia-ReBORN - 02. Theme_nighttime:', 'black'], // Use black theme as default for nighttime
+	savedTheme:                         ['Georgia-ReBORN - 02. Theme_saved:', 'reborn'], // Saved active theme state - used to restore theme state after custom [%GR_THEME%] usage
 
 	// * Style
-	styleDefault:                       ['Georgia-ReBORN - 02. Style: Default', true], // Use default style
-	styleNighttime:                     ['Georgia-ReBORN - 02. Style: Nighttime', false], // Use Nighttime style
-	styleBevel:                         ['Georgia-ReBORN - 02. Style: Bevel', false], // Use bevel style
-	styleBlend:                         ['Georgia-ReBORN - 02. Style: Blend', false], // Use blend style
-	styleBlend2:                        ['Georgia-ReBORN - 02. Style: Blend 2', false], // Use blend2 style
-	styleGradient:                      ['Georgia-ReBORN - 02. Style: Gradient', false], // Use gradient style
-	styleGradient2:                     ['Georgia-ReBORN - 02. Style: Gradient 2', false], // Use gradient2 style
-	styleAlternative:                   ['Georgia-ReBORN - 02. Style: Alternative colors', false], // Use alternative colors style
-	styleAlternative2:                  ['Georgia-ReBORN - 02. Style: Alternative colors 2', false], // Use alternative colors 2 style
-	styleBlackAndWhite:                 ['Georgia-ReBORN - 02. Style: Black and white', false], // Use Black And White style
-	styleBlackAndWhite2:                ['Georgia-ReBORN - 02. Style: Black and white 2', false], // Use Black And White 2 style
-	styleBlackAndWhiteReborn:           ['Georgia-ReBORN - 02. Style: Black and white reborn', false], // Use Black And White Reborn style
-	styleBlackReborn:                   ['Georgia-ReBORN - 02. Style: Black reborn', false], // Use Black reborn style
-	styleRebornWhite:                   ['Georgia-ReBORN - 02. Style: Reborn white', false], // Use Reborn white style
-	styleRebornBlack:                   ['Georgia-ReBORN - 02. Style: Reborn black', false], // Use Reborn black style
-	styleRebornFusion:                  ['Georgia-ReBORN - 02. Style: Reborn fusion', false], // Use Reborn fusion style
-	styleRebornFusion2:                 ['Georgia-ReBORN - 02. Style: Reborn fusion 2', false], // Use Reborn fusion 2 style
-	styleRebornFusionAccent:            ['Georgia-ReBORN - 02. Style: Reborn fusion accent', false], // Use Reborn fusion accent style
-	styleRandomPastel:                  ['Georgia-ReBORN - 02. Style: Random pastel', false], // Use Random pastel style
-	styleRandomDark:                    ['Georgia-ReBORN - 02. Style: Random dark', false], // Use Random dark style
-	styleRandomAutoColor:               ['Georgia-ReBORN - 02. Style: Random auto color', 'off'], // Use auto color in Random theme
-	styleTopMenuButtons:                ['Georgia-ReBORN - 02. Style: Top menu buttons', 'default'], // default = flat, style of top menu buttons
-	styleTransportButtons:              ['Georgia-ReBORN - 02. Style: Transport buttons', 'default'], // default = flat, style of transport buttons
-	styleProgressBarDesign:             ['Georgia-ReBORN - 02. Style: Progress bar design', 'default'], // default = flat, progress bar design
-	styleProgressBar:                   ['Georgia-ReBORN - 02. Style: Progress bar', 'default'], // default = flat, style of progress bar
-	styleProgressBarFill:               ['Georgia-ReBORN - 02. Style: Progress bar fill', 'default'], // default = flat, style of progress bar fill
-	styleVolumeBarDesign:               ['Georgia-ReBORN - 02. Style: Volume bar design', 'default'], // default = flat, volume bar design
-	styleVolumeBar:                     ['Georgia-ReBORN - 02. Style: Volume bar', 'default'], // default = flat, style of volume bar
-	styleVolumeBarFill:                 ['Georgia-ReBORN - 02. Style: Volume bar fill', 'default'], // default = flat, style of volume bar fill
-	styleNighttime_day:                 ['Georgia-ReBORN - 02. Style_daytime: Nighttime', false], // Daytime nighttime style state - used for theme day/night mode usage
-	styleBevel_day:                     ['Georgia-ReBORN - 02. Style_daytime: Bevel', false], // Daytime bevel style state - used for theme day/night mode usage
-	styleBlend_day:                     ['Georgia-ReBORN - 02. Style_daytime: Blend', false], // Daytime blend style state - used for theme day/night mode usage
-	styleBlend2_day:                    ['Georgia-ReBORN - 02. Style_daytime: Blend 2', false], // Daytime blend 2 style state - used for theme day/night mode usage
-	styleGradient_day:                  ['Georgia-ReBORN - 02. Style_daytime: Gradient', false], // Daytime gradient style state - used for theme day/night mode usage
-	styleGradient2_day:                 ['Georgia-ReBORN - 02. Style_daytime: Gradient 2', false], // Daytime gradient 2 style state - used for theme day/night mode usage
-	styleAlternative_day:               ['Georgia-ReBORN - 02. Style_daytime: Alternative colors', false], // Daytime alternative style state - used for theme day/night mode usage
-	styleAlternative2_day:              ['Georgia-ReBORN - 02. Style_daytime: Alternative colors 2', false], // Daytime alternative 2 style state - used for theme day/night mode usage
-	styleBlackAndWhite_day:             ['Georgia-ReBORN - 02. Style_daytime: Black and white', false], // Daytime black and white style state - used for theme day/night mode usage
-	styleBlackAndWhite2_day:            ['Georgia-ReBORN - 02. Style_daytime: Black and white 2', false], // Daytime black and white 2 style state - used for theme day/night mode usage
-	styleBlackAndWhiteReborn_day:       ['Georgia-ReBORN - 02. Style_daytime: Black and white reborn', false], // Daytime black and white reborn style state - used for theme day/night mode usage
-	styleBlackReborn_day:               ['Georgia-ReBORN - 02. Style_daytime: Black reborn', false], // Daytime black reborn style state - used for theme day/night mode usage
-	styleRebornWhite_day:               ['Georgia-ReBORN - 02. Style_daytime: Reborn white', false], // Daytime reborn white style state - used for theme day/night mode usage
-	styleRebornBlack_day:               ['Georgia-ReBORN - 02. Style_daytime: Reborn black', false], // Daytime reborn black style state - used for theme day/night mode usage
-	styleRebornFusion_day:              ['Georgia-ReBORN - 02. Style_daytime: Reborn fusion', false], // Daytime reborn fusion style state - used for theme day/night mode usage
-	styleRebornFusion2_day:             ['Georgia-ReBORN - 02. Style_daytime: Reborn fusion 2', false], // Daytime reborn fusion 2 style state - used for theme day/night mode usage
-	styleRebornFusionAccent_day:        ['Georgia-ReBORN - 02. Style_daytime: Reborn fusion accent', false], // Daytime reborn fusion accent style state - used for theme day/night mode usage
-	styleRandomPastel_day:              ['Georgia-ReBORN - 02. Style_daytime: Random pastel', false], // Daytime random pastel style state - used for theme day/night mode usage
-	styleRandomDark_day:                ['Georgia-ReBORN - 02. Style_daytime: Random dark', false], // Daytime random dark style state - used for theme day/night mode usage
-	styleRandomAutoColor_day:           ['Georgia-ReBORN - 02. Style_daytime: Random auto color', 'off'], // Daytime random auto color style state - used for theme day/night mode usage
-	styleTopMenuButtons_day:            ['Georgia-ReBORN - 02. Style_daytime: Top menu buttons', 'default'], // Daytime top menu button style state - used for theme day/night mode usage
-	styleTransportButtons_day:          ['Georgia-ReBORN - 02. Style_daytime: Transport buttons', 'default'], // Daytime transport button style state - used for theme day/night mode usage
-	styleProgressBarDesign_day:         ['Georgia-ReBORN - 02. Style_daytime: Progress bar design', 'default'], // Daytime progress bar design style state - used for theme day/night mode usage
-	styleProgressBar_day:               ['Georgia-ReBORN - 02. Style_daytime: Progress bar', 'default'], // Daytime progress bar style state - used for theme day/night mode usage
-	styleProgressBarFill_day:           ['Georgia-ReBORN - 02. Style_daytime: Progress bar fill', 'default'], // Daytime progress bar fill style state - used for theme day/night mode usage
-	styleVolumeBarDesign_day:           ['Georgia-ReBORN - 02. Style_daytime: Volume bar design', 'default'], // Daytime volume bar design style state - used for theme day/night mode usage
-	styleVolumeBar_day:                 ['Georgia-ReBORN - 02. Style_daytime: Volume bar', 'default'], // Daytime volume bar style state - used for theme day/night mode usage
-	styleVolumeBarFill_day:             ['Georgia-ReBORN - 02. Style_daytime: Volume bar fill', 'default'], // Daytime volume bar fill style state - used for theme day/night mode usage
-	styleNighttime_night:               ['Georgia-ReBORN - 02. Style_nighttime: Nighttime', false], // Nighttime nighttime style state - used for theme day/night mode usage
-	styleBevel_night:                   ['Georgia-ReBORN - 02. Style_nighttime: Bevel', false], // Nighttime bevel style state - used for theme day/night mode usage
-	styleBlend_night:                   ['Georgia-ReBORN - 02. Style_nighttime: Blend', false], // Nighttime blend style state - used for theme day/night mode usage
-	styleBlend2_night:                  ['Georgia-ReBORN - 02. Style_nighttime: Blend 2', false], // Nighttime blend 2 style state - used for theme day/night mode usage
-	styleGradient_night:                ['Georgia-ReBORN - 02. Style_nighttime: Gradient', false], // Nighttime gradient style state - used for theme day/night mode usage
-	styleGradient2_night:               ['Georgia-ReBORN - 02. Style_nighttime: Gradient 2', false], // Nighttime gradient 2 style state - used for theme day/night mode usage
-	styleAlternative_night:             ['Georgia-ReBORN - 02. Style_nighttime: Alternative colors', false], // Nighttime alternative style state - used for theme day/night mode usage
-	styleAlternative2_night:            ['Georgia-ReBORN - 02. Style_nighttime: Alternative colors 2', false], // Nighttime alternative 2 style state - used for theme day/night mode usage
-	styleBlackAndWhite_night:           ['Georgia-ReBORN - 02. Style_nighttime: Black and white', false], // Nighttime black and white style state - used for theme day/night mode usage
-	styleBlackAndWhite2_night:          ['Georgia-ReBORN - 02. Style_nighttime: Black and white 2', false], // Nighttime black and white 2 style state - used for theme day/night mode usage
-	styleBlackAndWhiteReborn_night:     ['Georgia-ReBORN - 02. Style_nighttime: Black and white reborn', false], // Nighttime black and white reborn style state - used for theme day/night mode usage
-	styleBlackReborn_night:             ['Georgia-ReBORN - 02. Style_nighttime: Black reborn', false], // Nighttime black reborn style state - used for theme day/night mode usage
-	styleRebornWhite_night:             ['Georgia-ReBORN - 02. Style_nighttime: Reborn white', false], // Nighttime reborn white style state - used for theme day/night mode usage
-	styleRebornBlack_night:             ['Georgia-ReBORN - 02. Style_nighttime: Reborn black', false], // Nighttime reborn black style state - used for theme day/night mode usage
-	styleRebornFusion_night:            ['Georgia-ReBORN - 02. Style_nighttime: Reborn fusion', false], // Nighttime reborn fusion style state - used for theme day/night mode usage
-	styleRebornFusion2_night:           ['Georgia-ReBORN - 02. Style_nighttime: Reborn fusion 2', false], // Nighttime reborn fusion 2 style state - used for theme day/night mode usage
-	styleRebornFusionAccent_night:      ['Georgia-ReBORN - 02. Style_nighttime: Reborn fusion accent', false], // Nighttime reborn fusion accent style state - used for theme day/night mode usage
-	styleRandomPastel_night:            ['Georgia-ReBORN - 02. Style_nighttime: Random pastel', false], // Nighttime random pastel style state - used for theme day/night mode usage
-	styleRandomDark_night:              ['Georgia-ReBORN - 02. Style_nighttime: Random dark', false], // Nighttime random dark style state - used for theme day/night mode usage
-	styleRandomAutoColor_night:         ['Georgia-ReBORN - 02. Style_nighttime: Random auto color', 'off'], // Nighttime random auto color style state - used for theme day/night mode usage
-	styleTopMenuButtons_night:          ['Georgia-ReBORN - 02. Style_nighttime: Top menu buttons', 'default'], // Nighttime top menu button style state - used for theme day/night mode usage
-	styleTransportButtons_night:        ['Georgia-ReBORN - 02. Style_nighttime: Transport buttons', 'default'], // Nighttime transport button style state - used for theme day/night mode usage
-	styleProgressBarDesign_night:       ['Georgia-ReBORN - 02. Style_nighttime: Progress bar design', 'default'], // Nighttime progress bar design style state - used for theme day/night mode usage
-	styleProgressBar_night:             ['Georgia-ReBORN - 02. Style_nighttime: Progress bar', 'default'], // Nighttime progress bar style state - used for theme day/night mode usage
-	styleProgressBarFill_night:         ['Georgia-ReBORN - 02. Style_nighttime: Progress bar fill', 'default'], // Nighttime progress bar fill style state - used for theme day/night mode usage
-	styleVolumeBarDesign_night:         ['Georgia-ReBORN - 02. Style_nighttime: Volume bar design', 'default'], // Nighttime volume bar design style state - used for theme day/night mode usage
-	styleVolumeBar_night:               ['Georgia-ReBORN - 02. Style_nighttime: Volume bar', 'default'], // Nighttime volume bar style state - used for theme day/night mode usage
-	styleVolumeBarFill_night:           ['Georgia-ReBORN - 02. Style_nighttime: Volume bar fill', 'default'], // Nighttime volume bar fill style state - used for theme day/night mode usage
-	savedStyleNighttime:                ['Georgia-ReBORN - 02. Style_saved: Nighttime', false], // Saved active nighttime style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleBevel:                    ['Georgia-ReBORN - 02. Style_saved: Bevel', false], // Saved active bevel style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleBlend:                    ['Georgia-ReBORN - 02. Style_saved: Blend', false], // Saved active blend style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleBlend2:                   ['Georgia-ReBORN - 02. Style_saved: Blend 2', false], // Saved active blend 2 style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleGradient:                 ['Georgia-ReBORN - 02. Style_saved: Gradient', false], // Saved active gradient style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleGradient2:                ['Georgia-ReBORN - 02. Style_saved: Gradient 2', false], // Saved active gradient 2 style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleAlternative:              ['Georgia-ReBORN - 02. Style_saved: Alternative colors', false], // Saved active alternative style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleAlternative2:             ['Georgia-ReBORN - 02. Style_saved: Alternative colors 2', false], // Saved active alternative 2 style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleBlackAndWhite:            ['Georgia-ReBORN - 02. Style_saved: Black and white', false], // Saved active black and white style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleBlackAndWhite2:           ['Georgia-ReBORN - 02. Style_saved: Black and white 2', false], // Saved active black and white 2 style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleBlackAndWhiteReborn:      ['Georgia-ReBORN - 02. Style_saved: Black and white reborn', false], // Saved active black and white reborn style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleBlackReborn:              ['Georgia-ReBORN - 02. Style_saved: Black reborn', false], // Saved active black reborn style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRebornWhite:              ['Georgia-ReBORN - 02. Style_saved: Reborn white', false], // Saved active reborn white style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRebornBlack:              ['Georgia-ReBORN - 02. Style_saved: Reborn black', false], // Saved active reborn black style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRebornFusion:             ['Georgia-ReBORN - 02. Style_saved: Reborn fusion', false], // Saved active reborn fusion style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRebornFusion2:            ['Georgia-ReBORN - 02. Style_saved: Reborn fusion 2', false], // Saved active reborn fusion 2 style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRebornFusionAccent:       ['Georgia-ReBORN - 02. Style_saved: Reborn fusion accent', false], // Saved active reborn fusion accent style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRandomPastel:             ['Georgia-ReBORN - 02. Style_saved: Random pastel', false], // Saved active random pastel style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRandomDark:               ['Georgia-ReBORN - 02. Style_saved: Random dark', false], // Saved active random dark style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleRandomAutoColor:          ['Georgia-ReBORN - 02. Style_saved: Random auto color', 'off'], // Saved active random auto color style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleTopMenuButtons:           ['Georgia-ReBORN - 02. Style_saved: Top menu buttons', 'default'], // Saved active top menu button style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleTransportButtons:         ['Georgia-ReBORN - 02. Style_saved: Transport buttons', 'default'], // Saved active transport button style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleProgressBarDesign:        ['Georgia-ReBORN - 02. Style_saved: Progress bar design', 'default'], // Saved active progress bar design style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleProgressBar:              ['Georgia-ReBORN - 02. Style_saved: Progress bar', 'default'], // Saved active progress bar style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleProgressBarFill:          ['Georgia-ReBORN - 02. Style_saved: Progress bar fill', 'default'], // Saved active progress bar fill style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleVolumeBarDesign:          ['Georgia-ReBORN - 02. Style_saved: Volume bar design', 'default'], // Saved active volume bar design style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleVolumeBar:                ['Georgia-ReBORN - 02. Style_saved: Volume bar', 'default'], // Saved active volume bar style state - used to restore style state after custom [%GR_STYLE%] usage
-	savedStyleVolumeBarFill:            ['Georgia-ReBORN - 02. Style_saved: Volume bar fill', 'default'], // Saved active volume bar fill style state - used to restore style state after custom [%GR_STYLE%] usage
+	styleDefault:                       ['Georgia-ReBORN - 03. Style: Default', true], // Use default style
+	styleNighttime:                     ['Georgia-ReBORN - 03. Style: Nighttime', false], // Use Nighttime style
+	styleBevel:                         ['Georgia-ReBORN - 03. Style: Bevel', false], // Use bevel style
+	styleBlend:                         ['Georgia-ReBORN - 03. Style: Blend', false], // Use blend style
+	styleBlend2:                        ['Georgia-ReBORN - 03. Style: Blend 2', false], // Use blend2 style
+	styleGradient:                      ['Georgia-ReBORN - 03. Style: Gradient', false], // Use gradient style
+	styleGradient2:                     ['Georgia-ReBORN - 03. Style: Gradient 2', false], // Use gradient2 style
+	styleAlternative:                   ['Georgia-ReBORN - 03. Style: Alternative colors', false], // Use alternative colors style
+	styleAlternative2:                  ['Georgia-ReBORN - 03. Style: Alternative colors 2', false], // Use alternative colors 2 style
+	styleBlackAndWhite:                 ['Georgia-ReBORN - 03. Style: Black and white', false], // Use Black And White style
+	styleBlackAndWhite2:                ['Georgia-ReBORN - 03. Style: Black and white 2', false], // Use Black And White 2 style
+	styleBlackAndWhiteReborn:           ['Georgia-ReBORN - 03. Style: Black and white reborn', false], // Use Black And White Reborn style
+	styleBlackReborn:                   ['Georgia-ReBORN - 03. Style: Black reborn', false], // Use Black reborn style
+	styleRebornWhite:                   ['Georgia-ReBORN - 03. Style: Reborn white', false], // Use Reborn white style
+	styleRebornBlack:                   ['Georgia-ReBORN - 03. Style: Reborn black', false], // Use Reborn black style
+	styleRebornFusion:                  ['Georgia-ReBORN - 03. Style: Reborn fusion', false], // Use Reborn fusion style
+	styleRebornFusion2:                 ['Georgia-ReBORN - 03. Style: Reborn fusion 2', false], // Use Reborn fusion 2 style
+	styleRebornFusionAccent:            ['Georgia-ReBORN - 03. Style: Reborn fusion accent', false], // Use Reborn fusion accent style
+	styleRandomPastel:                  ['Georgia-ReBORN - 03. Style: Random pastel', false], // Use Random pastel style
+	styleRandomDark:                    ['Georgia-ReBORN - 03. Style: Random dark', false], // Use Random dark style
+	styleRandomAutoColor:               ['Georgia-ReBORN - 03. Style: Random auto color', 'off'], // Use auto color in Random theme
+	styleTopMenuButtons:                ['Georgia-ReBORN - 03. Style: Top menu buttons', 'default'], // default = flat, style of top menu buttons
+	styleTransportButtons:              ['Georgia-ReBORN - 03. Style: Transport buttons', 'default'], // default = flat, style of transport buttons
+	styleProgressBarDesign:             ['Georgia-ReBORN - 03. Style: Progress bar design', 'default'], // default = flat, progress bar design
+	styleProgressBar:                   ['Georgia-ReBORN - 03. Style: Progress bar', 'default'], // default = flat, style of progress bar
+	styleProgressBarFill:               ['Georgia-ReBORN - 03. Style: Progress bar fill', 'default'], // default = flat, style of progress bar fill
+	styleVolumeBarDesign:               ['Georgia-ReBORN - 03. Style: Volume bar design', 'default'], // default = flat, volume bar design
+	styleVolumeBar:                     ['Georgia-ReBORN - 03. Style: Volume bar', 'default'], // default = flat, style of volume bar
+	styleVolumeBarFill:                 ['Georgia-ReBORN - 03. Style: Volume bar fill', 'default'], // default = flat, style of volume bar fill
+	styleNighttime_day:                 ['Georgia-ReBORN - 03. Style_daytime: Nighttime', false], // Daytime nighttime style state - used for theme day/night mode usage
+	styleBevel_day:                     ['Georgia-ReBORN - 03. Style_daytime: Bevel', false], // Daytime bevel style state - used for theme day/night mode usage
+	styleBlend_day:                     ['Georgia-ReBORN - 03. Style_daytime: Blend', false], // Daytime blend style state - used for theme day/night mode usage
+	styleBlend2_day:                    ['Georgia-ReBORN - 03. Style_daytime: Blend 2', false], // Daytime blend 2 style state - used for theme day/night mode usage
+	styleGradient_day:                  ['Georgia-ReBORN - 03. Style_daytime: Gradient', false], // Daytime gradient style state - used for theme day/night mode usage
+	styleGradient2_day:                 ['Georgia-ReBORN - 03. Style_daytime: Gradient 2', false], // Daytime gradient 2 style state - used for theme day/night mode usage
+	styleAlternative_day:               ['Georgia-ReBORN - 03. Style_daytime: Alternative colors', false], // Daytime alternative style state - used for theme day/night mode usage
+	styleAlternative2_day:              ['Georgia-ReBORN - 03. Style_daytime: Alternative colors 2', false], // Daytime alternative 2 style state - used for theme day/night mode usage
+	styleBlackAndWhite_day:             ['Georgia-ReBORN - 03. Style_daytime: Black and white', false], // Daytime black and white style state - used for theme day/night mode usage
+	styleBlackAndWhite2_day:            ['Georgia-ReBORN - 03. Style_daytime: Black and white 2', false], // Daytime black and white 2 style state - used for theme day/night mode usage
+	styleBlackAndWhiteReborn_day:       ['Georgia-ReBORN - 03. Style_daytime: Black and white reborn', false], // Daytime black and white reborn style state - used for theme day/night mode usage
+	styleBlackReborn_day:               ['Georgia-ReBORN - 03. Style_daytime: Black reborn', false], // Daytime black reborn style state - used for theme day/night mode usage
+	styleRebornWhite_day:               ['Georgia-ReBORN - 03. Style_daytime: Reborn white', false], // Daytime reborn white style state - used for theme day/night mode usage
+	styleRebornBlack_day:               ['Georgia-ReBORN - 03. Style_daytime: Reborn black', false], // Daytime reborn black style state - used for theme day/night mode usage
+	styleRebornFusion_day:              ['Georgia-ReBORN - 03. Style_daytime: Reborn fusion', false], // Daytime reborn fusion style state - used for theme day/night mode usage
+	styleRebornFusion2_day:             ['Georgia-ReBORN - 03. Style_daytime: Reborn fusion 2', false], // Daytime reborn fusion 2 style state - used for theme day/night mode usage
+	styleRebornFusionAccent_day:        ['Georgia-ReBORN - 03. Style_daytime: Reborn fusion accent', false], // Daytime reborn fusion accent style state - used for theme day/night mode usage
+	styleRandomPastel_day:              ['Georgia-ReBORN - 03. Style_daytime: Random pastel', false], // Daytime random pastel style state - used for theme day/night mode usage
+	styleRandomDark_day:                ['Georgia-ReBORN - 03. Style_daytime: Random dark', false], // Daytime random dark style state - used for theme day/night mode usage
+	styleRandomAutoColor_day:           ['Georgia-ReBORN - 03. Style_daytime: Random auto color', 'off'], // Daytime random auto color style state - used for theme day/night mode usage
+	styleTopMenuButtons_day:            ['Georgia-ReBORN - 03. Style_daytime: Top menu buttons', 'default'], // Daytime top menu button style state - used for theme day/night mode usage
+	styleTransportButtons_day:          ['Georgia-ReBORN - 03. Style_daytime: Transport buttons', 'default'], // Daytime transport button style state - used for theme day/night mode usage
+	styleProgressBarDesign_day:         ['Georgia-ReBORN - 03. Style_daytime: Progress bar design', 'default'], // Daytime progress bar design style state - used for theme day/night mode usage
+	styleProgressBar_day:               ['Georgia-ReBORN - 03. Style_daytime: Progress bar', 'default'], // Daytime progress bar style state - used for theme day/night mode usage
+	styleProgressBarFill_day:           ['Georgia-ReBORN - 03. Style_daytime: Progress bar fill', 'default'], // Daytime progress bar fill style state - used for theme day/night mode usage
+	styleVolumeBarDesign_day:           ['Georgia-ReBORN - 03. Style_daytime: Volume bar design', 'default'], // Daytime volume bar design style state - used for theme day/night mode usage
+	styleVolumeBar_day:                 ['Georgia-ReBORN - 03. Style_daytime: Volume bar', 'default'], // Daytime volume bar style state - used for theme day/night mode usage
+	styleVolumeBarFill_day:             ['Georgia-ReBORN - 03. Style_daytime: Volume bar fill', 'default'], // Daytime volume bar fill style state - used for theme day/night mode usage
+	styleNighttime_night:               ['Georgia-ReBORN - 03. Style_nighttime: Nighttime', false], // Nighttime nighttime style state - used for theme day/night mode usage
+	styleBevel_night:                   ['Georgia-ReBORN - 03. Style_nighttime: Bevel', false], // Nighttime bevel style state - used for theme day/night mode usage
+	styleBlend_night:                   ['Georgia-ReBORN - 03. Style_nighttime: Blend', false], // Nighttime blend style state - used for theme day/night mode usage
+	styleBlend2_night:                  ['Georgia-ReBORN - 03. Style_nighttime: Blend 2', false], // Nighttime blend 2 style state - used for theme day/night mode usage
+	styleGradient_night:                ['Georgia-ReBORN - 03. Style_nighttime: Gradient', false], // Nighttime gradient style state - used for theme day/night mode usage
+	styleGradient2_night:               ['Georgia-ReBORN - 03. Style_nighttime: Gradient 2', false], // Nighttime gradient 2 style state - used for theme day/night mode usage
+	styleAlternative_night:             ['Georgia-ReBORN - 03. Style_nighttime: Alternative colors', false], // Nighttime alternative style state - used for theme day/night mode usage
+	styleAlternative2_night:            ['Georgia-ReBORN - 03. Style_nighttime: Alternative colors 2', false], // Nighttime alternative 2 style state - used for theme day/night mode usage
+	styleBlackAndWhite_night:           ['Georgia-ReBORN - 03. Style_nighttime: Black and white', false], // Nighttime black and white style state - used for theme day/night mode usage
+	styleBlackAndWhite2_night:          ['Georgia-ReBORN - 03. Style_nighttime: Black and white 2', false], // Nighttime black and white 2 style state - used for theme day/night mode usage
+	styleBlackAndWhiteReborn_night:     ['Georgia-ReBORN - 03. Style_nighttime: Black and white reborn', false], // Nighttime black and white reborn style state - used for theme day/night mode usage
+	styleBlackReborn_night:             ['Georgia-ReBORN - 03. Style_nighttime: Black reborn', false], // Nighttime black reborn style state - used for theme day/night mode usage
+	styleRebornWhite_night:             ['Georgia-ReBORN - 03. Style_nighttime: Reborn white', false], // Nighttime reborn white style state - used for theme day/night mode usage
+	styleRebornBlack_night:             ['Georgia-ReBORN - 03. Style_nighttime: Reborn black', false], // Nighttime reborn black style state - used for theme day/night mode usage
+	styleRebornFusion_night:            ['Georgia-ReBORN - 03. Style_nighttime: Reborn fusion', false], // Nighttime reborn fusion style state - used for theme day/night mode usage
+	styleRebornFusion2_night:           ['Georgia-ReBORN - 03. Style_nighttime: Reborn fusion 2', false], // Nighttime reborn fusion 2 style state - used for theme day/night mode usage
+	styleRebornFusionAccent_night:      ['Georgia-ReBORN - 03. Style_nighttime: Reborn fusion accent', false], // Nighttime reborn fusion accent style state - used for theme day/night mode usage
+	styleRandomPastel_night:            ['Georgia-ReBORN - 03. Style_nighttime: Random pastel', false], // Nighttime random pastel style state - used for theme day/night mode usage
+	styleRandomDark_night:              ['Georgia-ReBORN - 03. Style_nighttime: Random dark', false], // Nighttime random dark style state - used for theme day/night mode usage
+	styleRandomAutoColor_night:         ['Georgia-ReBORN - 03. Style_nighttime: Random auto color', 'off'], // Nighttime random auto color style state - used for theme day/night mode usage
+	styleTopMenuButtons_night:          ['Georgia-ReBORN - 03. Style_nighttime: Top menu buttons', 'default'], // Nighttime top menu button style state - used for theme day/night mode usage
+	styleTransportButtons_night:        ['Georgia-ReBORN - 03. Style_nighttime: Transport buttons', 'default'], // Nighttime transport button style state - used for theme day/night mode usage
+	styleProgressBarDesign_night:       ['Georgia-ReBORN - 03. Style_nighttime: Progress bar design', 'default'], // Nighttime progress bar design style state - used for theme day/night mode usage
+	styleProgressBar_night:             ['Georgia-ReBORN - 03. Style_nighttime: Progress bar', 'default'], // Nighttime progress bar style state - used for theme day/night mode usage
+	styleProgressBarFill_night:         ['Georgia-ReBORN - 03. Style_nighttime: Progress bar fill', 'default'], // Nighttime progress bar fill style state - used for theme day/night mode usage
+	styleVolumeBarDesign_night:         ['Georgia-ReBORN - 03. Style_nighttime: Volume bar design', 'default'], // Nighttime volume bar design style state - used for theme day/night mode usage
+	styleVolumeBar_night:               ['Georgia-ReBORN - 03. Style_nighttime: Volume bar', 'default'], // Nighttime volume bar style state - used for theme day/night mode usage
+	styleVolumeBarFill_night:           ['Georgia-ReBORN - 03. Style_nighttime: Volume bar fill', 'default'], // Nighttime volume bar fill style state - used for theme day/night mode usage
+	savedStyleNighttime:                ['Georgia-ReBORN - 03. Style_saved: Nighttime', false], // Saved active nighttime style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBevel:                    ['Georgia-ReBORN - 03. Style_saved: Bevel', false], // Saved active bevel style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlend:                    ['Georgia-ReBORN - 03. Style_saved: Blend', false], // Saved active blend style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlend2:                   ['Georgia-ReBORN - 03. Style_saved: Blend 2', false], // Saved active blend 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleGradient:                 ['Georgia-ReBORN - 03. Style_saved: Gradient', false], // Saved active gradient style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleGradient2:                ['Georgia-ReBORN - 03. Style_saved: Gradient 2', false], // Saved active gradient 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleAlternative:              ['Georgia-ReBORN - 03. Style_saved: Alternative colors', false], // Saved active alternative style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleAlternative2:             ['Georgia-ReBORN - 03. Style_saved: Alternative colors 2', false], // Saved active alternative 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackAndWhite:            ['Georgia-ReBORN - 03. Style_saved: Black and white', false], // Saved active black and white style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackAndWhite2:           ['Georgia-ReBORN - 03. Style_saved: Black and white 2', false], // Saved active black and white 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackAndWhiteReborn:      ['Georgia-ReBORN - 03. Style_saved: Black and white reborn', false], // Saved active black and white reborn style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleBlackReborn:              ['Georgia-ReBORN - 03. Style_saved: Black reborn', false], // Saved active black reborn style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornWhite:              ['Georgia-ReBORN - 03. Style_saved: Reborn white', false], // Saved active reborn white style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornBlack:              ['Georgia-ReBORN - 03. Style_saved: Reborn black', false], // Saved active reborn black style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornFusion:             ['Georgia-ReBORN - 03. Style_saved: Reborn fusion', false], // Saved active reborn fusion style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornFusion2:            ['Georgia-ReBORN - 03. Style_saved: Reborn fusion 2', false], // Saved active reborn fusion 2 style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRebornFusionAccent:       ['Georgia-ReBORN - 03. Style_saved: Reborn fusion accent', false], // Saved active reborn fusion accent style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRandomPastel:             ['Georgia-ReBORN - 03. Style_saved: Random pastel', false], // Saved active random pastel style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRandomDark:               ['Georgia-ReBORN - 03. Style_saved: Random dark', false], // Saved active random dark style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRandomAutoColor:          ['Georgia-ReBORN - 03. Style_saved: Random auto color', 'off'], // Saved active random auto color style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleTopMenuButtons:           ['Georgia-ReBORN - 03. Style_saved: Top menu buttons', 'default'], // Saved active top menu button style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleTransportButtons:         ['Georgia-ReBORN - 03. Style_saved: Transport buttons', 'default'], // Saved active transport button style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleProgressBarDesign:        ['Georgia-ReBORN - 03. Style_saved: Progress bar design', 'default'], // Saved active progress bar design style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleProgressBar:              ['Georgia-ReBORN - 03. Style_saved: Progress bar', 'default'], // Saved active progress bar style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleProgressBarFill:          ['Georgia-ReBORN - 03. Style_saved: Progress bar fill', 'default'], // Saved active progress bar fill style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleVolumeBarDesign:          ['Georgia-ReBORN - 03. Style_saved: Volume bar design', 'default'], // Saved active volume bar design style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleVolumeBar:                ['Georgia-ReBORN - 03. Style_saved: Volume bar', 'default'], // Saved active volume bar style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleVolumeBarFill:            ['Georgia-ReBORN - 03. Style_saved: Volume bar fill', 'default'], // Saved active volume bar fill style state - used to restore style state after custom [%GR_STYLE%] usage
 
 	// * Preset
-	preset:                             ['Georgia-ReBORN - 03. Preset: Active preset:', false], // Active preset
-	preset_day:                         ['Georgia-ReBORN - 03. Preset: Active preset_daytime:', false], // Daytime active preset
-	preset_night:                       ['Georgia-ReBORN - 03. Preset: Active preset_nighttime:', false], // Nighttime active preset
-	presetSelectMode:                   ['Georgia-ReBORN - 03. Preset: Select mode', 'default'], // 'default', 'theme', 'harmonic' - preset select mode
-	presetSelectWhite:                  ['Georgia-ReBORN - 03. Preset: Select presets: White', true], // Include White theme presets when using the auto random presets timer
-	presetSelectBlack:                  ['Georgia-ReBORN - 03. Preset: Select presets: Black', true], // Include Black theme presets when using the auto random presets timer
-	presetSelectReborn:                 ['Georgia-ReBORN - 03. Preset: Select presets: Reborn', true], // Include Reborn theme presets when using the auto random presets timer
-	presetSelectRandom:                 ['Georgia-ReBORN - 03. Preset: Select presets: Random', true], // Include Random theme presets when using the auto random presets timer
-	presetSelectBlue:                   ['Georgia-ReBORN - 03. Preset: Select presets: Blue', true], // Include Blue theme presets when using the auto random presets timer
-	presetSelectDarkblue:               ['Georgia-ReBORN - 03. Preset: Select presets: Dark blue', true], // Include Darkblue theme presets when using the auto random presets timer
-	presetSelectRed:                    ['Georgia-ReBORN - 03. Preset: Select presets: Red', true], // Include Red theme presets when using the auto random presets timer
-	presetSelectCream:                  ['Georgia-ReBORN - 03. Preset: Select presets: Cream', true], // Include Cream theme presets when using the auto random presets timer
-	presetSelectNblue:                  ['Georgia-ReBORN - 03. Preset: Select presets: Neon blue', true], // Include Neon blue theme presets when using the auto random presets timer
-	presetSelectNgreen:                 ['Georgia-ReBORN - 03. Preset: Select presets: Neon green', true], // Include Neon green theme presets when using the auto random presets timer
-	presetSelectNred:                   ['Georgia-ReBORN - 03. Preset: Select presets: Neon red', true], // Include Neon red theme presets when using the auto random presets timer
-	presetSelectNgold:                  ['Georgia-ReBORN - 03. Preset: Select presets: Neon gold', true], // Include Neon gold theme presets when using the auto random presets timer
-	presetSelectCustom:                 ['Georgia-ReBORN - 03. Preset: Select presets: Custom theme', true], // Include Custom theme presets when using the auto random presets timer
-	presetAutoRandomMode:               ['Georgia-ReBORN - 03. Preset: Auto random mode:', 'dblclick'], // Auto random mode
-	presetIndicator:                    ['Georgia-ReBORN - 03. Preset: Indicator:', true], // Preset indicator
-	savedPreset:                        ['Georgia-ReBORN - 03. Preset_saved: Active preset:', false], // Saved active preset state - used for custom [%GR_PRESET%]
+	preset:                             ['Georgia-ReBORN - 04. Preset: Active preset:', false], // Active preset
+	preset_day:                         ['Georgia-ReBORN - 04. Preset: Active preset_daytime:', false], // Daytime active preset
+	preset_night:                       ['Georgia-ReBORN - 04. Preset: Active preset_nighttime:', false], // Nighttime active preset
+	presetSelectMode:                   ['Georgia-ReBORN - 04. Preset: Select mode', 'default'], // 'default', 'theme', 'harmonic' - preset select mode
+	presetSelectWhite:                  ['Georgia-ReBORN - 04. Preset: Select presets: White', true], // Include White theme presets when using the auto random presets timer
+	presetSelectBlack:                  ['Georgia-ReBORN - 04. Preset: Select presets: Black', true], // Include Black theme presets when using the auto random presets timer
+	presetSelectReborn:                 ['Georgia-ReBORN - 04. Preset: Select presets: Reborn', true], // Include Reborn theme presets when using the auto random presets timer
+	presetSelectRandom:                 ['Georgia-ReBORN - 04. Preset: Select presets: Random', true], // Include Random theme presets when using the auto random presets timer
+	presetSelectBlue:                   ['Georgia-ReBORN - 04. Preset: Select presets: Blue', true], // Include Blue theme presets when using the auto random presets timer
+	presetSelectDarkblue:               ['Georgia-ReBORN - 04. Preset: Select presets: Dark blue', true], // Include Darkblue theme presets when using the auto random presets timer
+	presetSelectRed:                    ['Georgia-ReBORN - 04. Preset: Select presets: Red', true], // Include Red theme presets when using the auto random presets timer
+	presetSelectCream:                  ['Georgia-ReBORN - 04. Preset: Select presets: Cream', true], // Include Cream theme presets when using the auto random presets timer
+	presetSelectNblue:                  ['Georgia-ReBORN - 04. Preset: Select presets: Neon blue', true], // Include Neon blue theme presets when using the auto random presets timer
+	presetSelectNgreen:                 ['Georgia-ReBORN - 04. Preset: Select presets: Neon green', true], // Include Neon green theme presets when using the auto random presets timer
+	presetSelectNred:                   ['Georgia-ReBORN - 04. Preset: Select presets: Neon red', true], // Include Neon red theme presets when using the auto random presets timer
+	presetSelectNgold:                  ['Georgia-ReBORN - 04. Preset: Select presets: Neon gold', true], // Include Neon gold theme presets when using the auto random presets timer
+	presetSelectCustom:                 ['Georgia-ReBORN - 04. Preset: Select presets: Custom theme', true], // Include Custom theme presets when using the auto random presets timer
+	presetAutoRandomMode:               ['Georgia-ReBORN - 04. Preset: Auto random mode:', 'dblclick'], // Auto random mode
+	presetIndicator:                    ['Georgia-ReBORN - 04. Preset: Indicator:', true], // Preset indicator
+	savedPreset:                        ['Georgia-ReBORN - 04. Preset_saved: Active preset:', false], // Saved active preset state - used for custom [%GR_PRESET%]
 
-	// * Player size
-	playerSize:                         ['Georgia-ReBORN - 04. Player size:', 'small'], // Default player size
+	// * Display
+	displayRes:                         ['Georgia-ReBORN - 05. Display', '<not_set>'], // 4K: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
+	displayScale:                       ['Georgia-ReBORN - 05. Display scaling', 100], // 100: Default 100% scale
+	themeBrightness:                    ['Georgia-ReBORN - 05. Display brightness', 'default'], // default: Theme brightness
+	themeBrightness_day:                ['Georgia-ReBORN - 05. Display brightness_daytime', 'default'], // default: Daytime theme brightness
+	themeBrightness_night:              ['Georgia-ReBORN - 05. Display brightness_nighttime', 'default'], // default: Nighttime theme brightness
+	savedThemeBrightness:               ['Georgia-ReBORN - 05. Display brightness_saved', 'default'], // Saved active theme brightness state - used to restore brightness after custom [%GR_PRESET%] usage
 
 	// * Layout
-	layout:                             ['Georgia-ReBORN - 05. Layout', 'default'], // Default layout
+	layout:                             ['Georgia-ReBORN - 06. Layout', 'default'], // Default layout
 
-	// * Display resolution
-	displayRes:                         ['Georgia-ReBORN - 06. Display', '<not_set>'], // 4K: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
-	displayScale:                       ['Georgia-ReBORN - 06. Display scaling', 100], // 100: Default 100% scale
-
-	// * Brightness
-	themeBrightness:                    ['Georgia-ReBORN - 07. Brightness', 'default'], // default: Theme brightness
-	themeBrightness_day:                ['Georgia-ReBORN - 07. Brightness_daytime', 'default'], // default: Daytime theme brightness
-	themeBrightness_night:              ['Georgia-ReBORN - 07. Brightness_nighttime', 'default'], // default: Nighttime theme brightness
-	savedThemeBrightness:               ['Georgia-ReBORN - 07. Saved_Brightness', 'default'], // Saved active theme brightness state - used to restore brightness after custom [%GR_PRESET%] usage
+	// * Player size
+	playerSize:                         ['Georgia-ReBORN - 07. Player size:', 'small'], // Default player size
 
 	// * Font size
 	menuFontSize_default:               ['Georgia-ReBORN - 08. Font size: Top menu (Default)', 12], // Top menu font size in Default layout
@@ -634,7 +634,8 @@ grSet.addProperties({
 	lyricsTranslationLine:              ['Georgia-ReBORN - 14. Lyrics: Translation line', 1], // 1 - 2 - the index of the translation line, first or second line in bilingual lyrics
 
 	// * Settings
-	themeDayNightMode:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night mode', false], // false: The theme day/night mode state controlled by OS clock and users set themeSettings.themeDayNightMode value
+	themeDayNightEnabled:               ['Georgia-ReBORN - 15. Settings: Auto-day/night mode enabled', false], // false: The theme day/night mode state
+	themeDayNightSchedule:              ['Georgia-ReBORN - 15. Settings: Auto-day/night mode schedule', '6-18'], // '6-18': The theme day/night mode daytime schedule
 	themeDayNightTime:                  ['Georgia-ReBORN - 15. Settings: Auto-day/night time', ''], // The current time of the day as string value 'day' or 'night', auto-controlled and used for theme day/night mode
 	themeSetupDay:                      ['Georgia-ReBORN - 15. Settings: Auto-day/night theme setup daytime', false], // false: The daytime setup mode state when configuring the theme for daytime
 	themeSetupNight:                    ['Georgia-ReBORN - 15. Settings: Auto-day/night theme setup nighttime', false], // false: The nighttime setup mode state when configuring the theme for nighttime
@@ -650,7 +651,6 @@ grSet.addProperties({
 	lyricsAutoDelete:                   ['Georgia-ReBORN - 15. Settings: Auto-delete lyrics', false], // false: This will auto-delete downloaded lyrics on startup
 	customWaveformBarDir:               ['Georgia-ReBORN - 15. Settings: Use custom waveform bar directory', false], // false: Use custom waveform bar directory
 	waveformBarAutoDelete:              ['Georgia-ReBORN - 15. Settings: Auto-delete waveform bar cache', false], // false: This will auto-delete analyzed waveform bar files on startup
-	customThemeSettings:                ['Georgia-ReBORN - 15. Settings: Use custom theme settings', true], // true: User can set own custom theme settings in the config file
 	themePerformance:                   ['Georgia-ReBORN - 15. Settings: Theme performance', 'balanced'], // 'balanced' - default: How the theme performs, either fast speed, balanced or good quality depending on CPU
 	devTools:                           ['Georgia-ReBORN - 15. Settings: Enable developer tools', false], // true: Show developer tools in options context menu
 
@@ -742,7 +742,7 @@ class ThemeSettingsManager {
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
-	 * Loads default theme settings when grSet.customThemeSettings is false, otherwise it loads settings from the config file.
+	 * Loads loads settings from the config file.
 	 * When using with the parameter, it saves all settings to the config file.
 	 * @param {boolean} saveCfg - Saves current theme settings from the `pref` panel properties object to config file.
 	 * @param {boolean} loadCfg - Loads theme settings from the config file to the `pref` panel properties object.
@@ -756,6 +756,7 @@ class ThemeSettingsManager {
 		this.loadCfg = loadCfg;
 		this.defaultCfg = defaultCfg;
 
+		this.setDesign();
 		this.setTheme();
 		this.setStyle();
 		this.setPreset();
@@ -783,6 +784,13 @@ class ThemeSettingsManager {
 		grm.display.initPlayerSize();
 
 		grm.ui.libraryCanReload = true;
+	}
+
+	/**
+	 * Sets design settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setDesign() {
+		this._setSetting(grSet, 'design', grCfg.design, 'design', 'modern_day_night');
 	}
 
 	/**
@@ -1454,7 +1462,8 @@ class ThemeSettingsManager {
 	 * Sets Settings settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
 	setSettings() {
-		this._setSetting(grSet, 'themeDayNightMode', grCfg.themeSettings, 'themeDayNightMode', false);
+		this._setSetting(grSet, 'themeDayNightEnabled', grCfg.themeSettings, 'themeDayNightEnabled', false);
+		this._setSetting(grSet, 'themeDayNightSchedule', grCfg.themeSettings, 'themeDayNightSchedule', false);
 		this._setSetting(grSet, 'customThemeFonts', grCfg.themeSettings, 'customThemeFonts', false);
 		this._setSetting(grSet, 'customPreloaderLogo', grCfg.themeSettings, 'customPreloaderLogo', false);
 		this._setSetting(grSet, 'customThemeImages', grCfg.themeSettings, 'customThemeImages', false);

@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Theme Presets                            * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-11-2024                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2285,7 +2284,14 @@ class ThemePreset {
 	 * @private
 	 */
 	_pickRandomThemePreset() {
-		let randomThemePreset;
+		const pickPreset = (presets) => {
+			if (presets.length === 0) {
+				this.whiteP01();
+				return;
+			}
+			const randomIndex = Math.floor(Math.random() * presets.length);
+			presets[randomIndex]();
+		};
 
 		// * Random presets
 		const themePresetsRandom = [
@@ -2303,6 +2309,11 @@ class ThemePreset {
 			...grSet.presetSelectNgold    ? [this.ngoldP01, this.ngoldP02, this.ngoldP03, this.ngoldP04, this.ngoldP05, this.ngoldP06, this.ngoldP07, this.ngoldP08, this.ngoldP09, this.ngoldP10] : [],
 			...grSet.presetSelectCustom   ? Array(10).fill([this.customP01.bind(this), this.customP02.bind(this), this.customP03.bind(this), this.customP04.bind(this), this.customP05.bind(this), this.customP06.bind(this), this.customP07.bind(this), this.customP08.bind(this), this.customP09.bind(this), this.customP10.bind(this)]).flat() /* Increase pick probability ten times ( 10 custom themes ) */ : []
 		];
+
+		if (grSet.presetSelectMode !== 'harmonic') {
+			pickPreset(themePresetsRandom);
+			return;
+		}
 
 		// * Harmonic presets
 		const themePresetsLight = [
@@ -2325,32 +2336,26 @@ class ThemePreset {
 			...grSet.presetSelectNgold  ? [this.ngoldP01, this.ngoldP02, this.ngoldP03, this.ngoldP04, this.ngoldP05, this.ngoldP06, this.ngoldP07, this.ngoldP08, this.ngoldP09, this.ngoldP10] : []
 		];
 
-		if (grSet.presetSelectMode === 'harmonic') {
-			grCol.colBrightness  = Color.BRT(grCol.primary);
-			grCol.colBrightness2 = Color.BRT(grCol.primary_alt);
-			grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
+		// * Brightness
+		grCol.colBrightness  = Color.BRT(grCol.primary);
+		grCol.colBrightness2 = Color.BRT(grCol.primary_alt);
+		grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt);
 
-			if (grCol.colBrightness > 200 || grCol.imgBrightness > 180) { // * Light
-				randomThemePreset = Math.floor(Math.random() * themePresetsLight.length);
-				themePresetsLight[(randomThemePreset)]();
-			}
-			else if (grCol.colBrightness < 200 && grCol.colBrightness > 50 || grCol.imgBrightness < 180 && grCol.imgBrightness > 130) { // * Middle
-				if (ColorDistance(grCol.primary, grCol.primary_alt) > 200) { // * Reborn fusion
-					randomThemePreset = Math.floor(Math.random() * themePresetsFusion.length);
-					themePresetsFusion[(randomThemePreset)]();
-				} else {
-					randomThemePreset = Math.floor(Math.random() * themePresetsMiddle.length);
-					themePresetsMiddle[(randomThemePreset)]();
-				}
-			}
-			else if (grCol.colBrightness < 50 || grCol.imgBrightness < 130) { // * Dark
-				randomThemePreset = Math.floor(Math.random() * themePresetsDark.length);
-				themePresetsDark[(randomThemePreset)]();
-			}
+		// * Light
+		if (grCol.colBrightness > 200 || grCol.imgBrightness > 180) {
+			pickPreset(themePresetsLight);
 		}
+		// * Dark
+		else if (grCol.colBrightness < 50 || grCol.imgBrightness < 130) {
+			pickPreset(themePresetsDark);
+		}
+		// * Fusion
+		else if (ColorDistance(grCol.primary, grCol.primary_alt) > 200) {
+			pickPreset(themePresetsFusion);
+		}
+		// * Middle
 		else {
-			randomThemePreset = Math.floor(Math.random() * themePresetsRandom.length);
-			themePresetsRandom[(randomThemePreset)]();
+			pickPreset(themePresetsMiddle);
 		}
 	}
 
@@ -2362,6 +2367,7 @@ class ThemePreset {
 		grm.ui.resetStyle('all');
 		this._pickRandomThemePreset();
 		grm.ui.updateStyle();
+		grm.day.applyFoobarTheme();
 		grm.ui.themePresetMatchMode = false;
 	}
 	// #endregion
@@ -2600,10 +2606,13 @@ class ThemePreset {
 	 */
 	setThemePreset(preset) {
 		if (typeof this[preset] !== 'function') return;
+
 		grm.ui.themePresetMatchMode = false;
 		grm.ui.resetStyle('all');
 		this[preset](); // Call the method on the ThemePreset instance
+
 		grm.ui.updateStyle();
+		grm.day.applyFoobarTheme();
 		grm.details.setDiscArtShadow();
 	}
 	// #endregion

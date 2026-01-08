@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Config Defaults                          * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -218,6 +217,28 @@ class ConfigDefaults {
 			'* Re-arrange, add, or remove as needed. Folder delimiters must be double-slashes.                                                                                                                       ' +
 			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                          ' +
 			'* Performance Note: Adding more paths affects performance. If your music collection consistently uses specific folders for artwork consider removing unnecessary paths to optimize performance.         ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
+
+		// * DESIGN * //
+		// #region DESIGN
+		/** @public @type {object} Options > Design settings with default value. */
+		this.designDefaults = {
+			design: 'modern'
+		};
+
+		/** @public @type {object} Options > Theme settings config name description. */
+		this.designComments = {
+			design: 'Values: "default", "clean", "modern",  - Options > Design'
+		};
+
+		/** @public @type {object} Options > Design settings config header description. */
+		this.designSchema = new ConfigurationObjectSchema('design', ConfigurationObjectType.Object, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* DESIGN:                                                                                                                                                                                               ' +
+			'* Top menu Options > Design                                                                                                                                                                             ' +
+			'* You can set and select between the 2 available pre-defined designs that will be used.                                                                                                                 ' +
+			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
 
@@ -560,13 +581,19 @@ class ConfigDefaults {
 		/** @public @type {object} Options > Display settings with default value. */
 		this.themeDisplayDefaults = {
 			resolution: 'HD',
-			scaling: 100
+			scaling: 100,
+			themeBrightness: 'default',
+			themeBrightness_day: 'default',
+			themeBrightness_night: 'default'
 		};
 
 		/** @public @type {object} Options > Display settings config name description. */
 		this.themeDisplayComments = {
 			resolution: 'Values: "4K", "QHD", "HD" - Options > Display',
-			scaling: 'Values: 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 - Options > Display > Scaling'
+			scaling: 'Values: 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 - Options > Display > Scaling',
+			themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness',
+			themeBrightness_day: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - daytime theme',
+			themeBrightness_night: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - nighttime theme'
 		};
 
 		/** @public @type {object} Options > Display settings config header description. */
@@ -574,33 +601,7 @@ class ConfigDefaults {
 			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 			'* DISPLAY:                                                                                                                                                                                              ' +
 			'* Top menu Options > Display                                                                                                                                                                            ' +
-			'* You can set and select between the 3 available resolution that will be used.                                                                                                                          ' +
-			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
-			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
-		// #endregion
-
-		// * BRIGHTNESS * //
-		// #region BRIGHTNESS
-		/** @public @type {object} Options > Brightness settings with default value. */
-		this.themeBrightnessDefaults = {
-			themeBrightness: 'default',
-			themeBrightness_day: 'default',
-			themeBrightness_night: 'default'
-		};
-
-		/** @public @type {object} Options > Brightness settings config name description. */
-		this.themeBrightnessComments = {
-			themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness',
-			themeBrightness_day: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - daytime theme',
-			themeBrightness_night: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - nighttime theme'
-		};
-
-		/** @public @type {object} Options > Brightness settings config header description. */
-		this.themeBrightnessSchema = new ConfigurationObjectSchema('themeBrightness', ConfigurationObjectType.Object, undefined,
-			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
-			'* THEME BRIGHTNESS:                                                                                                                                                                                     ' +
-			'* Top menu Options > Brightness                                                                                                                                                                         ' +
-			'* You can set and select between the 11 available brightness settings that will be used.                                                                                                                ' +
+			'* You can set and select between the 3 available resolution, 11 available scaling and brightness settings that will be used.                                                                            ' +
 			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
@@ -1730,7 +1731,8 @@ class ConfigDefaults {
 		// #region SETTINGS
 		/** @public @type {object} Options > Settings with default values. */
 		this.themeSettingsDefaults = {
-			themeDayNightMode: false,
+			themeDayNightEnabled: false,
+			themeDayNightSchedule: '6-18',
 			customThemeFonts: false,
 			customPreloaderLogo: false,
 			customThemeImages: false,
@@ -1750,7 +1752,8 @@ class ConfigDefaults {
 
 		/** @public @type {object} Options > Settings config name description. */
 		this.themeSettingsComments = {
-			themeDayNightMode: 'Values: false, or a custom string value in 24 hour time format e.g "6-18" - Options > Settings > Theme day/night mode',
+			themeDayNightEnabled: 'Values: true, false - Options > Settings > Day/night > Enable/disable',
+			themeDayNightSchedule: 'Values: string in 24 hour time format e.g "6-18" - Options > Settings > Day/night > Set custom time range',
 			customThemeFonts: 'Values: true, false - Options > Settings > Theme fonts > Use custom theme fonts',
 			customPreloaderLogo: 'Values: true, false - Options > Settings > Theme images > Use custom preloader logo',
 			customThemeImages: 'Values: true, false - Options > Settings > Theme images > Use custom theme images',

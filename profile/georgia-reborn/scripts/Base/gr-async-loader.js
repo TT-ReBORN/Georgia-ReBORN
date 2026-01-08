@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Preloader                                * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -43,6 +42,7 @@ class FileLoader {
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-config-defaults.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-settings.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-setup.js`);
+		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-theme-daynight.js`);
 
 		/** @private @type {string} The file list that contains all Georgia-ReBORN script files. */
 		this.fileList = [
@@ -106,9 +106,11 @@ class FileLoader {
 			'base\\gr-color.js',
 			'base\\gr-theme-colors.js',
 			'base\\gr-theme-presets.js',
+			'base\\gr-menu-manager.js',
 			'base\\gr-menu-context.js',
 			'base\\gr-menu-custom.js',
 			'base\\gr-menu.js',
+			'base\\gr-messages.js',
 			'base\\gr-buttons.js',
 			'base\\gr-main.js',
 			'base\\gr-main-components.js',
@@ -255,7 +257,7 @@ class Preloader {
 		/** @public @type {boolean} The state indicating if the theme is a custom theme. */
 		this.themeCustom = grSet.theme && grSet.theme.startsWith('custom');
 		/** @public @type {boolean} The state indicating if the theme is in night mode. */
-		this.themeNight = grSet.themeDayNightMode && grSet.themeDayNightTime === 'night' && !grSet.styleRebornWhite;
+		this.themeNight = grSet.themeDayNightEnabled && grSet.themeDayNightTime === 'night' && !grSet.styleRebornWhite;
 		/** @public @type {boolean} The state indicating if the style is nighttime. */
 		this.styleNight = ['reborn', 'random'].includes(grSet.theme) && grSet.styleNighttime;
 		// #endregion
@@ -277,21 +279,10 @@ class Preloader {
 
 		// * INITIALIZATION * //
 		// #region INITIALIZATION
-		this.initThemeDayNightModeState();
+		ThemeDayNight.initThemeDayNightPreloader();
 		this.initColors();
 		this.initFonts();
 		// #endregion
-	}
-
-	/**
-	 * Initializes the theme day/night mode state.
-	 * Start the theme day/night mode initialization before drawing the preloader.
-	 */
-	initThemeDayNightModeState() {
-		if (!grSet.themeDayNightMode) return;
-		initThemeDayNightMode(new Date());
-		const [dayStart, nightStart] = grSet.themeDayNightMode.split('-');
-		console.log(`Theme day/night mode is active, current time is: ${initThemeDayNightMode(new Date())}. The schedule has been set to ${To12HourTimeFormat(dayStart)} (day) - ${To12HourTimeFormat(nightStart)} (night).`);
 	}
 
 	/**
@@ -465,7 +456,7 @@ class Preloader {
 		const cThemeLogo = this.customTheme && this.customTheme.grCol_preloaderLogo;
 
 		// * NIGHTTIME LOGOS * //
-		const nighttime = (grSet.styleNighttime || grSet.themeDayNightMode && grSet.themeDayNightTime === 'night') && !grSet.styleRebornWhite;
+		const nighttime = (grSet.styleNighttime || grSet.themeDayNightEnabled && grSet.themeDayNightTime === 'night') && !grSet.styleRebornWhite;
 		const nighttimeReborn = nighttime && grSet.theme === 'reborn';
 		const nighttimeRandom = nighttime && grSet.theme === 'random';
 		const nighttimeCustom = nighttime && this.themeCustom;
@@ -528,141 +519,6 @@ class Preloader {
 			this.drawLogo.logoErrorShown = true;
 		}
 	}
-}
-
-
-//////////////////////////////
-// * THEME DAY/NIGHT MODE * //
-//////////////////////////////
-/**
- * Initializes the current time and changes the theme to day or night based on the OS clock and grSet.themeDayNightMode value.
- * The grSet.themeDayNightMode can be a string in the format 'startHour-endHour', which represents custom starting and ending hours for the day theme.
- * For example, '6-18' indicates day theme from 6 AM to 6 PM. This range can wrap around midnight.
- * The value 'false' disables the day/night theme feature, which is the default setting.
- * If the feature is disabled or if other theme-related preferences are set, the function exits without changing the theme.
- * This function has a side effect of modifying grSet.theme.
- * @global
- * @param {Date} date - The `Date` object that represents the current date and time.
- * @returns {string|null} The current time in the format "hours:minutes AM/PM" or null.
- */
-function initThemeDayNightMode(date) {
-	if (!grSet.themeDayNightMode) return null;
-
-	// * Safeguard to handle number values and convert them to string with default end hour
-	if (typeof grSet.themeDayNightMode === 'number') {
-		grSet.themeDayNightMode = `${grSet.themeDayNightMode}-18`; // Defaulting end hour to 18 (6 PM)
-	} else if (typeof grSet.themeDayNightMode === 'string' && !grSet.themeDayNightMode.includes('-')) {
-		grSet.themeDayNightMode = `${grSet.themeDayNightMode}-${grSet.themeDayNightMode}`; // Same start and end hour
-	}
-
-	const hours = date.getHours();
-	const minutes = date.getMinutes();
-
-	// * Parse the start and end times from the themeDayNightMode string
-	const [startHourStr, endHourStr] = grSet.themeDayNightMode.split('-').map(Number);
-	const startHour = parseInt(startHourStr, 10);
-	const rawEndHour = parseInt(endHourStr, 10);
-	const endHour = rawEndHour === 0 ? 24 : rawEndHour;
-
-	// * Determine if the current time is within the day range, the day range can wrap around midnight (e.g '23-6' means 23:00 to 06:00).
-	const isDayRange = hours >= startHour && hours < endHour;
-	const isNightRange = hours >= startHour || hours < endHour;
-	const isDayTime = startHour < endHour ? isDayRange : isNightRange;
-
-	// * Formatting time
-	const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-	const formattedHours = hours % 12 || 12;
-	const timeSuffix = hours >= 12 ? 'PM' : 'AM';
-
-	// * Set theme based on day time
-	grSet.themeDayNightTime = isDayTime ? 'day' : 'night';
-	setThemeDayNightTheme(isDayTime);
-	fb.RunMainMenuCommand(`View/Mode/${isDayTime ? 'Light' : 'Dark'}`);
-
-	return `${formattedHours}:${formattedMinutes} ${timeSuffix}`;
-}
-
-/**
- * Sets the theme based on the time of day.
- * Used to switch between day and night mode by applying the corresponding theme settings.
- * @global
- * @param {boolean} isDaytime - When true, the daytime theme is applied; otherwise, the nighttime theme is applied.
- */
-function setThemeDayNightTheme(isDaytime) {
-	const _day_night = isDaytime ? '_day' : '_night';
-
-	grSet.theme = grSet[`theme${_day_night}`];
-	grSet.styleNighttime = grSet[`styleNighttime${_day_night}`];
-	grSet.styleBevel = grSet[`styleBevel${_day_night}`];
-	grSet.styleBlend = grSet[`styleBlend${_day_night}`];
-	grSet.styleBlend2 = grSet[`styleBlend2${_day_night}`];
-	grSet.styleGradient = grSet[`styleGradient${_day_night}`];
-	grSet.styleGradient2 = grSet[`styleGradient2${_day_night}`];
-	grSet.styleAlternative = grSet[`styleAlternative${_day_night}`];
-	grSet.styleAlternative2 = grSet[`styleAlternative2${_day_night}`];
-	grSet.styleBlackAndWhite = grSet[`styleBlackAndWhite${_day_night}`];
-	grSet.styleBlackAndWhite2 = grSet[`styleBlackAndWhite2${_day_night}`];
-	grSet.styleBlackAndWhiteReborn = grSet[`styleBlackAndWhiteReborn${_day_night}`];
-	grSet.styleBlackReborn = grSet[`styleBlackReborn${_day_night}`];
-	grSet.styleRebornWhite = grSet[`styleRebornWhite${_day_night}`];
-	grSet.styleRebornBlack = grSet[`styleRebornBlack${_day_night}`];
-	grSet.styleRebornFusion = grSet[`styleRebornFusion${_day_night}`];
-	grSet.styleRebornFusion2 = grSet[`styleRebornFusion2${_day_night}`];
-	grSet.styleRebornFusionAccent = grSet[`styleRebornFusionAccent${_day_night}`];
-	grSet.styleRandomPastel = grSet[`styleRandomPastel${_day_night}`];
-	grSet.styleRandomDark = grSet[`styleRandomDark${_day_night}`];
-	grSet.styleRandomAutoColor = grSet[`styleRandomAutoColor${_day_night}`];
-	grSet.styleTopMenuButtons = grSet[`styleTopMenuButtons${_day_night}`];
-	grSet.styleTransportButtons = grSet[`styleTransportButtons${_day_night}`];
-	grSet.styleProgressBarDesign = grSet[`styleProgressBarDesign${_day_night}`];
-	grSet.styleProgressBar = grSet[`styleProgressBar${_day_night}`];
-	grSet.styleProgressBarFill = grSet[`styleProgressBarFill${_day_night}`];
-	grSet.styleVolumeBarDesign = grSet[`styleVolumeBarDesign${_day_night}`];
-	grSet.styleVolumeBar = grSet[`styleVolumeBar${_day_night}`];
-	grSet.styleVolumeBarFill = grSet[`styleVolumeBarFill${_day_night}`];
-	grSet.themeBrightness = grSet[`themeBrightness${_day_night}`];
-	grSet.preset = grSet[`preset${_day_night}`];
-}
-
-/**
- * Sets and updates the theme style to the daytime or nighttime theme when selecting a theme style in top menu Options > Style.
- * Used when daytime or nighttime theme setup is active.
- * @global
- */
-function setThemeDayNightStyle() {
-	const _day_night = grSet.themeSetupDay ? '_day' : '_night';
-
-	grSet[`theme${_day_night}`] = grSet.theme;
-	grSet[`styleNighttime${_day_night}`] = grSet.styleNighttime;
-	grSet[`styleBevel${_day_night}`] = grSet.styleBevel;
-	grSet[`styleBlend${_day_night}`] = grSet.styleBlend;
-	grSet[`styleBlend2${_day_night}`] = grSet.styleBlend2;
-	grSet[`styleGradient${_day_night}`] = grSet.styleGradient;
-	grSet[`styleGradient2${_day_night}`] = grSet.styleGradient2;
-	grSet[`styleAlternative${_day_night}`] = grSet.styleAlternative;
-	grSet[`styleAlternative2${_day_night}`] = grSet.styleAlternative2;
-	grSet[`styleBlackAndWhite${_day_night}`] = grSet.styleBlackAndWhite;
-	grSet[`styleBlackAndWhite2${_day_night}`] = grSet.styleBlackAndWhite2;
-	grSet[`styleBlackAndWhiteReborn${_day_night}`] = grSet.styleBlackAndWhiteReborn;
-	grSet[`styleBlackReborn${_day_night}`] = grSet.styleBlackReborn;
-	grSet[`styleRebornWhite${_day_night}`] = grSet.styleRebornWhite;
-	grSet[`styleRebornBlack${_day_night}`] = grSet.styleRebornBlack;
-	grSet[`styleRebornFusion${_day_night}`] = grSet.styleRebornFusion;
-	grSet[`styleRebornFusion2${_day_night}`] = grSet.styleRebornFusion2;
-	grSet[`styleRebornFusionAccent${_day_night}`] = grSet.styleRebornFusionAccent;
-	grSet[`styleRandomPastel${_day_night}`] = grSet.styleRandomPastel;
-	grSet[`styleRandomDark${_day_night}`] = grSet.styleRandomDark;
-	grSet[`styleRandomAutoColor${_day_night}`] = grSet.styleRandomAutoColor;
-	grSet[`styleTopMenuButtons${_day_night}`] = grSet.styleTopMenuButtons;
-	grSet[`styleTransportButtons${_day_night}`] = grSet.styleTransportButtons;
-	grSet[`styleProgressBarDesign${_day_night}`] = grSet.styleProgressBarDesign;
-	grSet[`styleProgressBar${_day_night}`] = grSet.styleProgressBar;
-	grSet[`styleProgressBarFill${_day_night}`] = grSet.styleProgressBarFill;
-	grSet[`styleVolumeBarDesign${_day_night}`] = grSet.styleVolumeBarDesign;
-	grSet[`styleVolumeBar${_day_night}`] = grSet.styleVolumeBar;
-	grSet[`styleVolumeBarFill${_day_night}`] = grSet.styleVolumeBarFill;
-	grSet[`themeBrightness${_day_night}`] = grSet.themeBrightness;
-	grSet[`preset${_day_night}`] = grSet.preset;
 }
 
 

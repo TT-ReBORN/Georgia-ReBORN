@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Initialization                           * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    25-11-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -19,6 +18,7 @@
 grm.ui       = new MainUI();
 grm.details  = new Details();
 grm.settings = new ThemeSettingsManager();
+grm.day      = new ThemeDayNight();
 grm.display  = new Display();
 grm.color    = new BaseColors();
 grm.theme    = new ThemeColors();
@@ -28,7 +28,7 @@ grm.preset   = new ThemePreset();
 grm.topMenu  = new TopMenu();
 grm.options  = new TopMenuOptions();
 grm.ctxMenu  = new ContextMenus();
-grm.inputBox = new InputBox();
+grm.inputBox = new MenuInputBox();
 grm.cusMenu  = new CustomMenu();
 grm.cthMenu  = new CustomThemeMenu();
 grm.gridMenu = new MetadataGridMenu();
@@ -54,9 +54,7 @@ grm.lyrics   = new Lyrics();
 // ! MAIN INITIALIZATION ! //
 /////////////////////////////
 if (grSet.systemFirstLaunch) {
-	grm.ui.initFonts();
 	grm.ui.initSystemFirstLaunch();
 } else {
-	grm.ui.initFonts();
 	grm.ui.initMain();
 }

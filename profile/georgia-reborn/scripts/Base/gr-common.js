@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Common                                   * //
 // * Author:         TT                                                      * //
-// * Org. Author:    TheQwertiest                                            * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -689,6 +688,7 @@ const Unicode = {
  * @property {RegExp} NumNonDigits - Matches non-digits `/\D/g`.
  * @property {RegExp} NumNonNumeric - Matches non-numeric `/[^0-9.,-]/g`.
  * @property {RegExp} NumNonNumericStrict - Matches anything not a digit, + or - `/[^0-9+-]/g`.
+ * @property {RegExp} NumThousandSeparator - Matches positions for inserting thousand separators `/\B(?=(\d{3})+(?!\d))/g`.
  * @property {RegExp} NumTrailing - Matches digits at end `/\d+$/`.
  *
  * @property {RegExp} CommaEnclosed - Matches ",something," (enclosed content) `/,[^,]+,/`.
@@ -1120,6 +1120,7 @@ const Regex = {
 	NumNonDigits: /\D/g,
 	NumNonNumeric: /[^0-9.,-]/g,
 	NumNonNumericStrict: /[^0-9+-]/g,
+	NumThousandSeparator: /\B(?=(\d{3})+(?!\d))/g,
 	NumTrailing: /\d+$/,
 
 	// * COMMAS * //

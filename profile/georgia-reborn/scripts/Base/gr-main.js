@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Main                                     * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-12-2025                                              * //
+// * Last change:    08-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -238,6 +237,8 @@ class MainUI {
 		this.currentLastPlayed = '';
 		/** @public @type {object} The current ratings for the artist, album, and track of the currently playing track. */
 		this.currentRatings = {};
+		/** @public @type {object} The current saved display panel state for restoring the visibility of panels. */
+		this.savedDisplayPanelState = {};
 		/** @public @type {string} Displays the active playlist of the current playing track in the metadata grid in Details. */
 		this.playingPlaylist = '';
 		/** @public @type {number} Saves last playback order. */
@@ -274,6 +275,8 @@ class MainUI {
 		this.libraryCanReload = true;
 		/** @public @type {boolean} The state if this.initTheme() needs to be fully executed to save performance. */
 		this.initThemeFull = false;
+		/** @private @type {boolean} The state if this.initTheme() is currently running to initialize colors and buttons. */
+		this.initThemeRunning = false;
 		/** @public @type {boolean} The state when the theme has completely loaded, used for pseudo delay background logo mask on startup or reload. */
 		this.loadingThemeComplete = false;
 		// #endregion
@@ -300,8 +303,6 @@ class MainUI {
 		this.presetIndicatorTimer = null;
 		/** @public @type {number} The timer for style auto color in Random theme. */
 		this.randomThemeAutoColorTimer = null;
-		/** @public @type {number} The 10 minute timer for theme day/night mode. */
-		this.themeDayNightModeTimer = null;
 		// #endregion
 
 		// * DEBUG * //
@@ -1639,26 +1640,17 @@ class MainUI {
 	// * MAIN - PUBLIC METHODS - INITIALIZATION * //
 	// #region PUBLIC METHODS - INITIALIZATION
 	/**
-	 * Initializes by recursively checking the loading state of album art or stub with a default or specified timeout.
-	 * Resolves the promise once the album art or stub is loaded, or handles an artwork error if the timeout is reached.
-	 * @param {number} timeout - The maximum time in milliseconds to wait for the album art or stub to load. Default is 5 seconds.
-	 * @returns {Promise<void>} A promise that resolves when the album art or stub is loaded or the timeout is reached.
+	 * Monitors the loading state of album art or the 'no album art' stub.
+	 * Utilizes a promise-based polling mechanism that resolves when artwork is ready or when the specified timeout is exceeded.
+	 * @param {number} [timeout=5000] - The maximum time in milliseconds to wait.
+	 * @returns {Promise<void>} Resolves when artwork is loaded or handleArtworkError is triggered.
 	 */
 	async initAlbumArtLoading(timeout = 5000) {
-		const startTime = Date.now();
+		const timedOut = await WaitUntil(() =>
+			this.albumArt || this.noAlbumArtStub, timeout
+		);
 
-		const checkAlbumArtLoadState = (resolve) => {
-			if (this.albumArt || this.noAlbumArtStub) {
-				resolve();
-			} else if (Date.now() - startTime >= timeout) {
-				this.handleArtworkError('albumArt');
-				resolve();
-			} else {
-				setTimeout(() => checkAlbumArtLoadState(resolve), 50);
-			}
-		};
-
-		return new Promise(checkAlbumArtLoadState);
+		if (timedOut) this.handleArtworkError('albumArt');
 	}
 
 	/**
@@ -1893,25 +1885,23 @@ class MainUI {
 		this.initCustomTheme();
 		grm.color.setThemeColors();
 		grm.theme.initMainColors(); // Init preloader background color
-		if (grSet.theme === 'random' && grSet.randomThemeAutoColor !== 'off') {
-			grm.color.getRandomThemeAutoColor();
-		}
 
 		// * Init main
 		this.initCacheDeletion();
 		this.clearPlaybackState(true);
+		this.initFonts();
 		this.createFonts();
 		this.setMainMetrics();
 		this.setMainComponents('all');
 
 		// * Init panels
 		// Wait for on_size to be loaded in gr-callbacks.js after gr-initialize.js
-		await MakeAsync(() => {}, () => typeof on_size !== 'undefined');
-		await MakeAsync(() => PlaylistRescale(true));
-		await MakeAsync(() => this.initPlaylist());
-		await MakeAsync(() => this.initLibraryPanel());
-		await MakeAsync(() => lib.lib.initialise());
-		await MakeAsync(() => this.initBiographyPanel());
+		await WaitUntil(() => typeof on_size !== 'undefined');
+		PlaylistRescale(true);
+		this.initPlaylist();
+		this.initLibraryPanel();
+		lib.lib.initialise();
+		this.initBiographyPanel();
 
 		// * Init state
 		if (fb.IsPlaying && fb.GetNowPlaying()) {
@@ -1944,6 +1934,7 @@ class MainUI {
 	 */
 	initTheme() {
 		SetDebugProfile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
+		this.initThemeRunning = true;
 
 		const fullInit =
 			this.initThemeFull || ['reborn', 'random'].includes(grSet.theme)
@@ -1954,7 +1945,7 @@ class MainUI {
 
 		// * SETUP COLORS * //
 		this.initCustomTheme();
-		this.initThemeDayNightState();
+		grm.day.initThemeDayNightMain();
 		grm.color.initThemeStyleProperties();
 		grm.color.setImageBrightness();
 		grm.color.setNoAlbumArtColors();
@@ -1999,6 +1990,7 @@ class MainUI {
 		UIWizard.WindowBgColor = grCol.bg;
 		window.Repaint();
 
+		this.initThemeRunning = false;
 		SetDebugProfile(false, 'print', 'initTheme');
 	}
 
@@ -2022,42 +2014,6 @@ class MainUI {
 		if (grSet.presetAutoRandomMode !== 'album' && grSet.presetSelectMode !== 'harmonic' && !this.hasThemeTags()) {
 			this.initTheme();
 			DebugLog('\n>>> initTheme => loadImageFromAlbumArtList >>>\n');
-		}
-	}
-
-	/**
-	 * Initializes the theme day and night state.
-	 * - Aborts if `grSet.themeDayNightMode` is falsy or if any custom GR theme tags are detected.
-	 * - Restores the day or night theme based on `grSet.themeDayNightTime` if the current theme does not match the expected day or night theme.
-	 * - Sets an interval to check and update the theme every 10 minutes based on the time of day.
-	 */
-	initThemeDayNightState() {
-		const customTheme  = $('[%GR_THEME%]');
-		const customStyle  = $('[%GR_STYLE%]');
-		const customPreset = $('[%GR_PRESET%]');
-
-		if (!grSet.themeDayNightMode || grSet.themeSetupDay || grSet.themeSetupNight ||
-			customTheme || customStyle || customPreset) {
-			return;
-		}
-
-		// * Restore day or night theme after custom GR theme tags usage
-		if (grSet.theme !== grSet.theme_day && grSet.themeDayNightTime === 'day' ||
-			grSet.theme !== grSet.theme_night && grSet.themeDayNightTime === 'night') {
-			this.resetTheme();
-			initThemeDayNightMode(new Date());
-			this.initThemeFull = true;
-			return;
-		}
-
-		// * Check every 10 minutes if it is day or night for the entire play session
-		if (!this.themeDayNightModeTimer) {
-			this.themeDayNightModeTimer = setInterval(() => {
-				initThemeDayNightMode(new Date());
-				this.initThemeFull = true;
-				this.initTheme();
-				DebugLog('\n>>> initTheme => initThemeDayNightState => themeDayNightModeTimer <<<\n');
-			}, 600000);
 		}
 	}
 
@@ -2284,8 +2240,9 @@ class MainUI {
 		if (!grSet.systemFirstLaunch) return;
 
 		await this.initMain();
-		await grm.settings.setThemeSettings(false, false, true);
-		await grm.display.autoDetectRes();
+		grm.settings.setThemeSettings(false, false, true);
+		grm.display.autoDetectRes();
+		this.setDesign('modern_day_night');
 
 		grSet.systemFirstLaunch = false;
 	}
@@ -3013,7 +2970,6 @@ class MainUI {
 	 * - 'presetAutoRandomMode'
 	 * - 'presetIndicator'
 	 * - 'randomThemeAutoColor'
-	 * - 'themeDayNightMode'.
 	 */
 	clearTimer(type, supressLog) {
 		const timers = {
@@ -3061,11 +3017,6 @@ class MainUI {
 				timer: this.randomThemeAutoColorTimer,
 				clear: clearInterval,
 				log: 'Timer => Random theme auto-color timer cleared'
-			},
-			themeDayNightMode: {
-				timer: this.themeDayNightModeTimer,
-				clear: clearInterval,
-				log: 'Timer => Theme day/night mode timer cleared'
 			}
 		};
 
@@ -3328,6 +3279,7 @@ class MainUI {
 	 */
 	resetStyle(group) {
 		const _day_night = grSet.themeSetupDay ? '_day' : '_night';
+		grSet.design = 'custom';
 
 		if (group === 'group_one') {
 			grSet.styleBlend     = false;
@@ -3506,64 +3458,384 @@ class MainUI {
 	}
 
 	/**
+	 * Gets the centralized configuration for all design presets.
+	 * @returns {object} The object containing configuration for each design preset (default, clean, modern_black, modern_white, modern_day_night).
+	 */
+	getDesignPresetConfig() {
+		return {
+			default: {
+				gr: {
+					theme: 'reborn',
+					themeBrightness: 'default',
+					styleDefault: true,
+					styleNighttime: false,
+					styleBevel: false,
+					styleBlend: false,
+					styleBlend2: false,
+					styleGradient: false,
+					styleGradient2: false,
+					styleAlternative: false,
+					styleAlternative2: false,
+					styleBlackAndWhite: false,
+					styleBlackAndWhite2: false,
+					styleBlackAndWhiteReborn: false,
+					styleBlackReborn: false,
+					styleRebornWhite: false,
+					styleRebornBlack: false,
+					styleRebornFusion: false,
+					styleRebornFusion2: false,
+					styleRebornFusionAccent: false,
+					styleRandomPastel: false,
+					styleRandomDark: false,
+					styleRandomAutoColor: 'off',
+					styleTopMenuButtons: 'default',
+					styleTransportButtons: 'default',
+					styleProgressBarDesign: 'default',
+					styleProgressBar: 'default',
+					styleProgressBarFill: 'default',
+					styleVolumeBarDesign: 'default',
+					styleVolumeBar: 'default',
+					styleVolumeBarFill: 'default',
+
+					presetSelectMode: 'default',
+					presetIndicator: true,
+					libraryLayout: 'normal',
+					libraryLayoutFullPreset: true,
+					libraryLayoutSplitPreset: true,
+					libraryLayoutSplitPreset2: false,
+					libraryLayoutSplitPreset3: false,
+					libraryLayoutSplitPreset4: false,
+					biographyLayout: 'normal',
+					biographyLayoutFullPreset: true,
+					savedLyricsLayout: 'normal',
+					lyricsLayout: 'normal',
+					lyricsBgImg: true,
+
+					showPause: true,
+					showLowerBarArtistFlags_default: true,
+					transportButtonSize_default: 32,
+					transportButtonSpacing_default: 5
+				},
+				pl: {
+					show_header: true
+				},
+				bio: {
+					style: 0,
+					sourceAll: false,
+					text_only: false
+				}
+			},
+			clean: {
+				gr: {
+					theme: 'reborn',
+					styleDefault: false,
+					styleRebornWhite: true,
+					styleTopMenuButtons: 'inner',
+					styleTransportButtons: 'bevel',
+					styleProgressBarDesign: 'rounded',
+					styleVolumeBarDesign: 'rounded',
+					libraryLayout: 'full',
+					biographyLayout: 'full',
+					biographyLayoutFullPreset: false,
+					lyricsLayout: 'full',
+					savedLyricsLayout: 'full'
+				},
+				bio: { style: 4 }
+			},
+			harmonic: {
+				gr: {
+					styleDefault: false,
+					presetSelectMode: 'harmonic',
+					presetIndicator: false,
+					libraryLayout: 'full',
+					biographyLayout: 'full',
+					lyricsLayout: 'left',
+					savedLyricsLayout: 'left'
+				}
+			},
+			minimal: {
+				gr: {
+					theme: 'black',
+					styleDefault: false,
+					styleAlternative: true,
+
+					showPause: false,
+					transportButtonSize_default: 36,
+					transportButtonSpacing_default: 3,
+					showLowerBarArtistFlags_default: false,
+
+					styleTopMenuButtons: 'minimal',
+					styleTransportButtons: 'minimal',
+					styleProgressBarDesign: 'thin',
+					libraryLayout: 'split',
+					libraryLayoutSplitPreset: false,
+					libraryLayoutSplitPreset2: true,
+					biographyLayout: 'full',
+					lyricsLayout: 'full',
+					savedLyricsLayout: 'full'
+				},
+				pl: {
+					show_header: false
+				},
+				bio: {
+					sourceAll: true,
+					text_only: true
+				}
+			},
+			modern_black: {
+				gr: {
+					theme: 'reborn',
+					styleDefault: false,
+					styleRebornBlack: true,
+					styleBevel: true,
+					styleBlend: true,
+					styleTopMenuButtons: 'inner',
+					styleTransportButtons: 'inner',
+					styleProgressBar: 'inner',
+					styleProgressBarFill: 'inner',
+					styleVolumeBar: 'inner',
+					styleVolumeBarFill: 'inner',
+					libraryLayout: 'full',
+					biographyLayout: 'full',
+					lyricsLayout: 'left',
+					savedLyricsLayout: 'left'
+				}
+			},
+			modern_white: {
+				gr: {
+					theme: 'reborn',
+					styleDefault: false,
+					styleRebornWhite: true,
+					styleBevel: true,
+					styleBlend: true,
+					styleTopMenuButtons: 'inner',
+					styleTransportButtons: 'inner',
+					styleProgressBar: 'inner',
+					styleProgressBarDesign: 'rounded',
+					styleProgressBarFill: 'bevel',
+					styleVolumeBar: 'inner',
+					styleVolumeBarDesign: 'rounded',
+					styleVolumeBarFill: 'bevel',
+					libraryLayout: 'full',
+					biographyLayout: 'full',
+					lyricsLayout: 'left',
+					savedLyricsLayout: 'left'
+				}
+			},
+			modern_day_night: {
+				gr: {
+					theme: 'reborn',
+					styleDefault: false,
+					styleBevel: true,
+					styleBlend: true,
+					styleTopMenuButtons: 'inner',
+					styleTransportButtons: 'inner',
+					styleProgressBar: 'inner',
+					styleProgressBarFill: 'inner',
+					styleVolumeBar: 'inner',
+					styleVolumeBarFill: 'inner',
+					libraryLayout: 'full',
+					biographyLayout: 'full',
+					lyricsLayout: 'left',
+					savedLyricsLayout: 'left'
+				}
+			}
+		};
+	}
+
+	/**
+	 * Checks which design preset is currently active by comparing current settings with preset configurations.
+	 * @returns {string} The active design preset: 'default', 'clean', 'modern_black', 'modern_white', 'modern_day_night', or 'custom'.
+	 */
+	getDesignPresetState() {
+		if (grSet.presetSelectMode === 'harmonic') {
+			return 'harmonic';
+		}
+
+		const config = this.getDesignPresetConfig();
+		const order = ['clean', 'modern_black', 'modern_white', 'modern_day_night', 'harmonic', 'minimal', 'default'];
+
+		for (const name of order) {
+			const preset = config[name];
+			if (!preset) continue;
+
+			// Check if current grSet matches the properties defined for this preset
+			const grMatch = Object.entries(preset.gr || {}).every(([key, val]) => {
+				if ((key === 'lyricsLayout' || key === 'savedLyricsLayout') &&
+					(grSet.lyricsLayout === 'normal' && val !== 'normal')) {
+					return !this.displayPlaylist && !this.displayLyrics;
+				}
+				return grSet[key] === val;
+			});
+
+			const plMatch = Object.entries(preset.pl || {}).every(([key, val]) => plSet[key] === val);
+			const bioMatch = Object.entries(preset.bio || {}).every(([key, val]) => bioSet[key] === val);
+
+			if (grMatch && plMatch && bioMatch) {
+				// If we match Black/White but grSet.design says we are in Day/Night mode
+				if (grSet.design === 'modern_day_night' && ['modern_black', 'modern_white'].includes(name)) {
+					return 'modern_day_night';
+				}
+				return name;
+			}
+		}
+
+		return 'custom';
+	}
+
+	/**
+	 * Saves or restores the panel display state.
+	* @param {string} action - The 'saveDisplayPanelState' or 'restoreDisplayPanelState' action.
+	*/
+	saveOrRestoreDisplayPanelState(action) {
+		const panels = ['displayPlaylist', 'displayDetails', 'displayLibrary', 'displayBiography', 'displayLyrics'];
+
+		if (action === 'saveDisplayPanelState') {
+			this.savedDisplayPanelState = {};
+			panels.forEach(p => this.savedDisplayPanelState[p] = this[p]);
+		}
+		else if (action === 'restoreDisplayPanelState' && this.savedDisplayPanelState) {
+			Object.assign(this, this.savedDisplayPanelState);
+
+			// Reconcile
+			if (this.displayBiography) {
+				this.displayPlaylist = grSet.biographyLayout === 'normal';
+			}
+			if (this.displayLibrary) {
+				if (grSet.libraryLayout === 'split') {
+					this.displayPlaylist = true;
+				}
+				if (grSet.libraryLayout === 'full') {
+					this.displayPlaylist = false;
+				}
+			}
+
+			this.savedDisplayPanelState = null;
+		}
+	}
+
+	/**
+	 * Reset settings to a baseline before applying a preset.
+	 * Sets grSet, plSet, and bioSet to the 'default' configuration values.
+	 * @param {string} preset - The design preset to apply.
+	 */
+	setDesignPresetSettings(preset) {
+		const presetConfig = this.getDesignPresetConfig();
+		if (!presetConfig[preset]) return;
+
+		if (preset === 'modern_day_night') {
+			grm.day.resolveConflicts('modern_day_night');
+		}
+
+		grSet.design = preset;
+
+		// * Reset everything to Default settings
+		Object.assign(grSet, presetConfig.default.gr);
+		Object.assign(plSet, presetConfig.default.pl);
+		Object.assign(bioSet, presetConfig.default.bio);
+
+		// * Apply preset override settings
+		const current = presetConfig[preset];
+		Object.assign(grSet, current.gr || {});
+		Object.assign(plSet, current.pl || {});
+		Object.assign(bioSet, current.bio || {});
+
+		// * Special modern_day_night handling
+		if (preset === 'modern_day_night') {
+			grm.day.initDesignPresetModernDynamic(new Date());
+		}
+	}
+
+	/**
+	 * Sets the chosen predefined design preset. Used when changing design in the top menu Options > Design.
+	 * @param {string} preset - The design preset to apply - 'default', 'clean', 'modern_black', 'modern_white', 'modern_day_night'.
+	 */
+	setDesign(preset) {
+		// * Save panel state
+		this.saveOrRestoreDisplayPanelState('saveDisplayPanelState');
+
+		// * Reset
+		this.resetStyle('all');
+		this.resetTheme();
+
+		// * Set design preset
+		this.setDesignPresetSettings(preset);
+
+		// * Set layout settings
+		this.initPlaylistLayoutState();
+		this.initLibraryLayoutState();
+		this.initBiographyLayoutState();
+		this.initLyricsLayoutState();
+		grm.display.setBiographyFontSize(preset === 'default' ? 12 : 14);
+
+		// * Restore panel state
+		this.saveOrRestoreDisplayPanelState('restoreDisplayPanelState');
+
+		// * Update display
+		this.createFonts();
+		grm.button.createButtons(this.ww, this.wh);
+		grm.button.initButtonState();
+		PlaylistRescale(true);
+		this.initPlaylist();
+		this.setPlaylistSize();
+		this.updateStyle();
+		this.resizeArtwork(true);
+		grm.day.applyFoobarTheme();
+	}
+
+	/**
 	 * Sets the chosen style based on its current state. Used when changing styles in the top menu Options > Style.
 	 * @param {string} style - The selected style.
 	 * @param {boolean|string} value - The value of the selected style.
 	 * @returns {void} No return value.
 	 */
 	setStyle(style, value) {
-		// * Check for active theme day/night mode and return if active
-		if (grSet.themeDayNightMode) {
-			const msg = grm.msg.getMessage('main', 'themeDayNightModeNotice');
-			const msgFb = grm.msg.getMessage('main', 'themeDayNightModeNotice', true);
-			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) grSet.themeDayNightMode = false;
-			});
-			if (grSet.themeDayNightMode) return;
-		}
+		grm.day.showStyleChangeWarning((shouldContinue) => {
+			if (!shouldContinue) return;
 
-		// * Reset all styles in the group of the chosen style to prevent compatibility issues
-		const styleGroups = {
-			styleBlend: 'group_one',
-			styleBlend2: 'group_one',
-			styleGradient: 'group_one',
-			styleGradient2: 'group_one',
-			styleAlternative: 'group_two',
-			styleAlternative2: 'group_two',
-			styleBlackAndWhite: 'group_two',
-			styleBlackAndWhite2: 'group_two',
-			styleBlackAndWhiteReborn: 'group_two',
-			styleBlackReborn: 'group_two',
-			styleRebornWhite: 'group_two',
-			styleRebornBlack: 'group_two',
-			styleRebornFusion: 'group_two',
-			styleRebornFusion2: 'group_two',
-			styleRebornFusionAccent: 'group_two',
-			styleRandomPastel: 'group_two',
-			styleRandomDark: 'group_two'
-		};
-		const resetTarget = (grSet.themeSetupDay || grSet.themeSetupNight) ? 'all_theme_day_night' : styleGroups[style];
-		this.resetStyle(resetTarget);
+			// * Reset all styles in the group of the chosen style to prevent compatibility issues
+			const styleGroups = {
+				styleBlend: 'group_one',
+				styleBlend2: 'group_one',
+				styleGradient: 'group_one',
+				styleGradient2: 'group_one',
+				styleAlternative: 'group_two',
+				styleAlternative2: 'group_two',
+				styleBlackAndWhite: 'group_two',
+				styleBlackAndWhite2: 'group_two',
+				styleBlackAndWhiteReborn: 'group_two',
+				styleBlackReborn: 'group_two',
+				styleRebornWhite: 'group_two',
+				styleRebornBlack: 'group_two',
+				styleRebornFusion: 'group_two',
+				styleRebornFusion2: 'group_two',
+				styleRebornFusionAccent: 'group_two',
+				styleRandomPastel: 'group_two',
+				styleRandomDark: 'group_two'
+			};
+			const resetTarget = (grSet.themeSetupDay || grSet.themeSetupNight) ? 'all_theme_day_night' : styleGroups[style];
+			this.resetStyle(resetTarget);
 
-		if (style === 'styleNighttime' && (grSet.styleRebornWhite || grSet.styleRebornBlack)) {
-			grSet.styleRebornWhite = false;
-			grSet.styleRebornBlack = false;
-		} else if ((style === 'styleRebornWhite' || style === 'styleRebornBlack') && grSet.styleNighttime) {
-			grSet.styleNighttime = false;
-		}
-
-		// * Then set and apply the chosen style
-		if (style) {
-			if (grSet.themeSandbox) {
-				grSet[style] = value;
-			} else {
-				this.restoreThemeStylePreset(true, true);
-				const savedStyleName = `savedStyle${style.charAt(5).toUpperCase()}${style.slice(6)}`;
-				grSet[savedStyleName] = grSet[style] = value;
+			if (style === 'styleNighttime' && (grSet.styleRebornWhite || grSet.styleRebornBlack)) {
+				grSet.styleRebornWhite = false;
+				grSet.styleRebornBlack = false;
+			} else if ((style === 'styleRebornWhite' || style === 'styleRebornBlack') && grSet.styleNighttime) {
+				grSet.styleNighttime = false;
 			}
-		}
 
-		if (grSet.themeSetupDay || grSet.themeSetupNight) setThemeDayNightStyle();
+			// * Then set and apply the chosen style
+			if (style) {
+				if (grSet.themeSandbox) {
+					grSet[style] = value;
+				} else {
+					this.restoreThemeStylePreset(true, true);
+					const savedStyleName = `savedStyle${style.charAt(5).toUpperCase()}${style.slice(6)}`;
+					grSet[savedStyleName] = grSet[style] = value;
+				}
+			}
+
+			if (grSet.themeSetupDay || grSet.themeSetupNight) grm.day.setThemeDayNightStyle();
+		});
 	}
 
 	/**
@@ -4444,13 +4716,14 @@ class MainUI {
 	 * Updates the Playlist when content has changed, e.g when adding/removing items or changing the active playlist.
 	 */
 	updatePlaylist() {
-		Debounce((playlistIndex) => {
-			this.traceCall && console.log('initPlaylistDebounced');
-			pl.call.on_playlist_items_added(playlistIndex);
-		}, 100, {
-			leading: false,
-			trailing: true
-		})(plman.ActivePlaylist);
+		if (!this.updatePlaylist.run) {
+			this.updatePlaylist.run = Debounce((playlistIndex) => {
+				this.traceCall && console.log('initPlaylistDebounced');
+				pl.call.on_playlist_items_added(playlistIndex);
+			}, 100, { leading: false });
+		}
+
+		this.updatePlaylist.run(plman.ActivePlaylist);
 	}
 	// #endregion
 
@@ -4858,7 +5131,7 @@ class MainUI {
 	 */
 	initBiographyLayout() {
 		if (grSet.biographyLayoutFullPreset) {
-			bioSet.style = grSet.biographyLayoutFullPreset && grSet.layout === 'default' && grSet.biographyLayout === 'full' ? 3 : 0;
+			bioSet.style = grSet.layout === 'default' && grSet.biographyLayout === 'full' ? 3 : 0;
 			bioSet.showFilmStrip = false;
 			bioSet.filmStripPos = 3;
 		}
