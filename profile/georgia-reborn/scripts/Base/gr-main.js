@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1720,10 +1720,10 @@ class MainUI {
 	 * Initializes auto deletion of theme cache on startup.
 	 */
 	initCacheDeletion() {
-		if (grSet.libraryAutoDelete) DeleteLibraryCache();
-		if (grSet.biographyAutoDelete) DeleteBiographyCache();
-		if (grSet.lyricsAutoDelete) DeleteLyrics();
-		if (grSet.waveformBarAutoDelete) DeleteWaveformBarCache();
+		if (grSet.libraryAutoDelete) grm.fman.deleteLibraryCache();
+		if (grSet.biographyAutoDelete) grm.fman.deleteBiographyCache();
+		if (grSet.lyricsAutoDelete) grm.fman.deleteLyrics();
+		if (grSet.waveformBarAutoDelete) grm.fman.deleteWaveformBarCache();
 	}
 
 	/**
@@ -1910,11 +1910,6 @@ class MainUI {
 		plman.SetActivePlaylistContext();
 		this.displayPanel(false, true);
 		this.initLyricsDisplayState('startup');
-
-		// * Restore backup workaround to successfully restore playlist files after foobar installation
-		if (grSet.restoreBackupPlaylist) {
-			await RestoreBackupPlaylist();
-		}
 
 		// * Wait for album art to load if player is playing, then hide loading screen
 		if (fb.IsPlaying) {

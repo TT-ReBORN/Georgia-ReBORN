@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -666,7 +666,6 @@ grSet.addProperties({
 	bgImgAlbumIdxLyrics:                ['Georgia-ReBORN - 16. System: Saved background image lyrics album index', 0], // The saved background image lyrics album index
 	bgImgCustomIdxLyrics:               ['Georgia-ReBORN - 16. System: Saved background image lyrics custom index', 0], // The saved background image lyrics custom index
 	checkForUpdates:                    ['Georgia-ReBORN - 16. System: Check for updates', true], // true: Check github repo to determine if updates exist
-	restoreBackupPlaylist:              ['Georgia-ReBORN - 16. System: Restore backup playlist', false], // false: Used to copy playlist files again after fb2k installation
 	savedBiographyLayoutFull:           ['Georgia-ReBORN - 16. System: Saved biography layout full width', false], // Biography layout at the moment - DO NOT CHANGE - used to restore the Biography layout to full width
 	savedLayout:                        ['Georgia-ReBORN - 16. System: Saved layout', 'default'], // Default saved layout
 	savedWidth_default:                 ['Georgia-ReBORN - 16. System: Saved layout width (Default)', 1140], // Default saved width for Default layout

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -71,6 +71,7 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @property {PeakmeterBar} peakBar - The instance of `PeakmeterBar` class for peak meter bar display operations.
  * @property {WaveformBar} waveBar - The instance of `WaveformBar` class for waveform bar display operations.
  * @property {Lyrics} lyrics - The instance of `Lyrics` class for lyrics-related operations.
+ * @property {FileManager} fman - The instance of `FileManager` class for file and backup operations.
  */
 /** @global @type {grm} */
 const grm = {};

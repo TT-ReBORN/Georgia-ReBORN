@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -48,6 +48,7 @@ grm.peakBar  = new PeakmeterBar();
 grm.waveBar  = new WaveformBar();
 
 grm.lyrics   = new Lyrics();
+grm.fman     = new FileManager();
 
 
 /////////////////////////////

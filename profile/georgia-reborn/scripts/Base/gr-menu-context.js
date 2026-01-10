@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1187,7 +1187,7 @@ class ContextMenus {
 			waveformBarAnalysisMenu.appendItem('Delete analysis files', () => {
 				const msg = grm.msg.getMessage('contextMenu', 'deleteWaveformBarCache');
 				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-					if (confirmed) DeleteWaveformBarCache();
+					if (confirmed) grm.fman.deleteWaveformBarCache();
 				});
 			});
 			waveformBarAnalysisMenu.separator();

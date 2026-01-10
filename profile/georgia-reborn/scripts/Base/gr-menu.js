@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3395,14 +3395,14 @@ class TopMenuOptions {
 			const msg = grm.msg.getMessage('menu', 'makeBackup');
 			const msgFb = grm.msg.getMessage('menu', 'makeBackup', true);
 			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) ManageBackup(true);
+				if (confirmed) grm.fman.makeBackup();
 			});
 		});
 
 		themeBackupMenu.addItem('Restore backup', false, () => {
 			const msg = grm.msg.getMessage('menu', 'restoreBackup');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) ManageBackup(false, true);
+				if (confirmed) grm.fman.restoreBackup();
 			});
 		});
 		themeBackupMenu.appendTo(settingsMenu);
@@ -3426,7 +3426,7 @@ class TopMenuOptions {
 		themeCacheLibraryMenu.addItem('Delete library cache', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteLibraryCache');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) DeleteLibraryCache();
+				if (confirmed) grm.fman.deleteLibraryCache();
 			});
 		});
 		themeCacheLibraryMenu.addSeparator();
@@ -3459,7 +3459,7 @@ class TopMenuOptions {
 		themeCacheBiographyMenu.addItem('Delete biography cache', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteBiographyCache');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) DeleteBiographyCache();
+				if (confirmed) grm.fman.deleteBiographyCache();
 			});
 		});
 		themeCacheBiographyMenu.addSeparator();
@@ -3488,7 +3488,7 @@ class TopMenuOptions {
 		themeCacheLyricsMenu.addItem('Delete lyrics', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteLyricsCache');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) DeleteLyrics();
+				if (confirmed) grm.fman.deleteLyrics();
 			});
 		});
 		themeCacheLyricsMenu.addSeparator();
@@ -3517,7 +3517,7 @@ class TopMenuOptions {
 		themeCacheWaveformBarMenu.addItem('Delete waveform bar cache', false, () => {
 			const msg = grm.msg.getMessage('menu', 'deleteWaveformBarCache');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) DeleteWaveformBarCache();
+				if (confirmed) grm.fman.deleteWaveformBarCache();
 			});
 		});
 

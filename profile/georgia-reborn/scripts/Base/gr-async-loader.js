@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -115,6 +115,7 @@ class FileLoader {
 			'base\\gr-main.js',
 			'base\\gr-main-components.js',
 			'base\\gr-lyrics.js',
+			'base\\gr-file-manager.js',
 			'base\\gr-initialize.js',
 			'base\\gr-callbacks.js'
 		];

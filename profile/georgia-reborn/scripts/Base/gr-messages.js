@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-01-2026                                              * //
+// * Last change:    10-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -709,6 +709,20 @@ class MessageManager {
 					+ 'If a backup already exist, you can use\n'
 					+ 'Options > Settings > Theme backup > Restore backup'
 			},
+			makeBackupError: {
+				msg: `>>> Theme backup was aborted <<<\n\n`
+					+ `"configuration" or\n`
+					+ `"dsp-presets" or\n`
+					+ `"georgia-reborn" or\n`
+					+ `"library" or\n`
+					+ `"playlist" directory\n`
+					+ `does not exist in:\n`
+					+ `${fb.ProfilePath}backup`
+			},
+			makeBackupSuccess: {
+				msg: `>>> Theme backup has been successfully saved <<<\n\n`
+					+ `${fb.ProfilePath}backup\n\n\n`
+			},
 			restoreBackup: {
 				msg: `Do you want to restore your backup of the theme?\n\n`
 					+ '>>> WARNING <<<\n\n'
@@ -719,6 +733,21 @@ class MessageManager {
 					+ 'It is recommended to make a new backup\n'
 					+ 'before you restore.\n\n'
 					+ 'Continue?\n\n\n'
+			},
+			restoreBackupError: {
+				msg: `>>> Theme backup restore was aborted <<<\n\n`
+					+ `"backup" directory does not exist in:\n${fb.ProfilePath}\n\nor\n\n`
+					+ `"configuration" or\n`
+					+ `"dsp-presets" or\n`
+					+ `"georgia-reborn" or\n`
+					+ `"library" or\n`
+					+ `"playlist" directory\n`
+					+ `does not exist in:\n`
+					+ `${fb.ProfilePath}backup`
+			},
+			restoreBackupNotFound: {
+				msg: `Georgia-ReBORN theme backup directory not found:\n`
+					+ `${fb.ProfilePath}`
 			},
 			saveSettingsConfig: {
 				msg: 'Do you want to save all current theme settings?\n\n'

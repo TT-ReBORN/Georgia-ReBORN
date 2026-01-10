@@ -339,7 +339,7 @@ class LibMenuItems {
 
 		libMenu.newItem({
 			str: 'Write theme to tags',
-			func: () => WriteThemeTags()
+			func: () => grm.fman.writeThemeTags()
 		});
 
 		const meta_manager = new PlaylistMetaManager();
