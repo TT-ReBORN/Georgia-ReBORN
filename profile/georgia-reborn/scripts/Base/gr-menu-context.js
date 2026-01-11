@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    11-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -912,7 +912,7 @@ class ContextMenus {
 		for (const style of transportButtonStyles) {
 			transportButtonStyleMenu.appendItem(style[0], ((style) => {
 				grSet.styleTransportButtons = style;
-				if (!grSet.themeSandbox) grSet.savedStyleTransportButtons = grSet.styleTransportButtons = style; else grSet.styleTransportButtons = style;
+				grm.ui.setStyle('styleTransportButtons', style);
 				grm.ui.updateStyle();
 			}).bind(null, style[1]), { is_radio_checked: style[1] === grSet.styleTransportButtons });
 		}
@@ -925,7 +925,7 @@ class ContextMenus {
 		for (const design of transportVolumeBarStylesDesign) {
 			transportVolumeBarStylesDesignMenu.appendItem(design[0], ((design) => {
 				grSet.styleVolumeBarDesign = design;
-				if (!grSet.themeSandbox) grSet.savedStyleVolumeBarDesign = grSet.styleVolumeBarDesign = design; else grSet.styleVolumeBarDesign = design;
+				grm.ui.setStyle('styleVolumeBarDesign', design);
 				grm.ui.updateStyle();
 			}).bind(null, design[1]), { is_radio_checked: design[1] === grSet.styleVolumeBarDesign });
 		}
@@ -936,7 +936,7 @@ class ContextMenus {
 		for (const style of transportVolumeBarStylesBg) {
 			transportVolumeBarStylesBgMenu.appendItem(style[0], ((style) => {
 				grSet.styleVolumeBar = style;
-				if (!grSet.themeSandbox) grSet.savedStyleVolumeBar = grSet.styleVolumeBar = style; else grSet.styleVolumeBar = style;
+				grm.ui.setStyle('styleVolumeBar', style);
 				grm.ui.updateStyle();
 			}).bind(null, style[1]), { is_radio_checked: style[1] === grSet.styleVolumeBar });
 		}
@@ -947,7 +947,7 @@ class ContextMenus {
 		for (const style of transportVolumeBarStylesFill) {
 			transportVolumeBarStylesFillMenu.appendItem(style[0], ((style) => {
 				grSet.styleVolumeBarFill = style;
-				if (!grSet.themeSandbox) grSet.savedStyleVolumeBarFill = grSet.styleVolumeBarFill = style; else grSet.styleVolumeBarFill = style;
+				grm.ui.setStyle('styleVolumeBarFill', style);
 				grm.ui.updateStyle();
 			}).bind(null, style[1]), { is_radio_checked: style[1] === grSet.styleVolumeBarFill });
 		}
@@ -986,14 +986,38 @@ class ContextMenus {
 		if (grSet.seekbar === 'progressbar') {
 			cm.separator();
 			const progressBarStyleMenu = new ContextMenu('Style');
-			const progressBarStyle = [['Default', 'default'], ['Rounded', 'rounded'], ['Lines', 'lines'], ['Blocks', 'blocks'], ['Dots', 'dots'], ['Thin', 'thin']];
-			for (const sec of progressBarStyle) {
-				progressBarStyleMenu.appendItem(sec[0], () => {
-					grSet.styleProgressBarDesign = sec[1];
-					grm.ui.setMainMetrics();
-					RepaintWindow();
-				}, { is_radio_checked: sec[1] === grSet.styleProgressBarDesign });
+			const progressBarStyleDesignMenu = new ContextMenu('Design');
+			const progressBarStyleDesign = [['Default', 'default'], ['Rounded', 'rounded'], ['Lines', 'lines'], ['Blocks', 'blocks'], ['Dots', 'dots'], ['Thin', 'thin']];
+			for (const design of progressBarStyleDesign) {
+				progressBarStyleDesignMenu.appendItem(design[0], (() => {
+					grSet.styleProgressBarDesign = design[1];
+					grm.ui.setStyle('styleProgressBarDesign', design[1]);
+					grm.ui.updateStyle();
+				}).bind(null, design[1]), { is_radio_checked: design[1] === grSet.styleProgressBarDesign });
 			}
+			progressBarStyleMenu.append(progressBarStyleDesignMenu);
+
+			const progressBarStyleBgMenu = new ContextMenu('Background');
+			const progressBarStylesBg = [['Default', 'default'], ['Bevel', 'bevel'], ['Inner', 'inner']];
+			for (const bg of progressBarStylesBg) {
+				progressBarStyleBgMenu.appendItem(bg[0], (() => {
+					grSet.styleProgressBar = bg[1];
+					grm.ui.setStyle('styleProgressBar', bg[1]);
+					grm.ui.updateStyle();
+				}).bind(null, bg[1]), { is_radio_checked: bg[1] === grSet.styleProgressBar });
+			}
+			progressBarStyleMenu.append(progressBarStyleBgMenu);
+
+			const progressBarStyleFillMenu = new ContextMenu('Fill');
+			const progressBarStyleFill = [['Default', 'default'], ['Bevel', 'bevel'], ['Inner', 'inner'], ['Blend', 'blend']];
+			for (const fill of progressBarStyleFill) {
+				progressBarStyleFillMenu.appendItem(fill[0], (() => {
+					grSet.styleProgressBarFill = fill[1];
+					grm.ui.setStyle('styleProgressBarFill', fill[1]);
+					grm.ui.updateStyle();
+				}).bind(null, fill[1]), { is_radio_checked: fill[1] === grSet.styleProgressBarFill });
+			}
+			progressBarStyleMenu.append(progressBarStyleFillMenu);
 			cm.append(progressBarStyleMenu);
 
 			const progressBarSeekSpeedMenu = new ContextMenu('Mouse wheel seek speed');
