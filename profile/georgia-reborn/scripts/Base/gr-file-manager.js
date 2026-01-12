@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    12-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -306,7 +306,6 @@ class FileManager {
 		const backupPaths = this._getBackupPaths();
 		const versionPaths = this._getVersionPaths(true);
 		const versionInfo = await this._checkVersion(versionPaths);
-		const msg = grm.msg.getMessage('menu', 'makeBackupSuccess');
 
 		await this._createBackupFolders(backupPaths, versionInfo.oldVersion);
 
@@ -318,11 +317,11 @@ class FileManager {
 		await this._copyBackupFolders(true, versionInfo);
 
 		if (DetectWine()) {
+			const msg = grm.msg.getMessage('menu', 'makeBackupSuccess');
 			fb.ShowPopupMessage(msg, 'Theme backup');
 		} else {
-			lib.popUpBox.confirm('Georgia-ReBORN', msg, 'OK', false, false, 'center', false);
+			grm.msg.showPopupNotice('menu', 'makeBackupSuccess');
 		}
-
 	}
 
 	/**
