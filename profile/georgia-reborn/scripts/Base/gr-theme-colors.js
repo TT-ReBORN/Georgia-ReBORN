@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    12-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2402,7 +2402,7 @@ class ThemeColors extends BaseColors {
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBAtoRGB(pl.col.header_nowplaying_bg, 255);
-		grCol.popupText = (grCol.lightBgBiography || grCol.lightBg) && !grm.ui.noAlbumArtStub ? grCol.darkAccent_75 : grCol.lightAccent_100;
+		grCol.popupText = grCol.lightBg && !grm.ui.noAlbumArtStub ? grCol.darkAccent_75 : grCol.lightAccent_100;
 
 		// * TOP MENU BUTTON COLORS * //
 		grCol.menuBgColor =
