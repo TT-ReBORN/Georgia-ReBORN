@@ -189,6 +189,18 @@ class LibMenuItems {
 			separator: () => true
 		});
 
+		if (grSet.theme === 'random') {
+			libMenu.newItem({
+				str: 'Generate new color',
+				func: () => {
+					grm.ui.getRandomThemeColorContextMenu = true;
+					grm.ui.initTheme();
+					setTimeout(() => { grm.ui.getRandomThemeColorContextMenu = false }, 200);
+				},
+				separator: () => true
+			});
+		}
+
 		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
 			libMenu.newItem({
 				str: !grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu',

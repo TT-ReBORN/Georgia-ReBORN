@@ -263,6 +263,18 @@ class BioMenuItems {
 		const n = b.toLowerCase();
 		const separator = !bioSet.artistView && (bioSet.showTrackRevOptions || bio.txt.isCompositionLoaded()) || !bio.panel.stndItem();
 
+		if (grSet.theme === 'random') {
+			bioMenu.newItem({
+				str: 'Generate new color',
+				func: () => {
+					grm.ui.getRandomThemeColorContextMenu = true;
+					grm.ui.initTheme();
+					setTimeout(() => { grm.ui.getRandomThemeColorContextMenu = false }, 200);
+				},
+				separator: true
+			});
+		}
+
 		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
 			bioMenu.newItem({
 				str: !grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu',
