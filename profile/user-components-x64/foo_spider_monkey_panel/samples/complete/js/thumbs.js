@@ -600,7 +600,7 @@ function _thumbs() {
 		tf : new _p('2K3.THUMBS.CUSTOM.FOLDER.TF', '$directory_path(%path%)'),
 		limit : new _p('2K3.THUMBS.DOWNLOAD.LIMIT', 10),
 		px : new _p('2K3.THUMBS.PX', 75),
-		cycle : new _p('2K3.THUMBS.CYCLE', 0),
+		cycle : new _p('2K3.THUMBS.CYCLE', 5),
 		sort : new _p('2K3.THUMBS.SORT', 0), // 0 a-z 1 newest first
 		aspect : new _p('2K3.THUMBS.ASPECT', image.crop_top),
 		auto_download : new _p('2K3.THUMBS.AUTO.DOWNLOAD', true),

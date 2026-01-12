@@ -144,8 +144,8 @@ function _text(mode, x, y, w, h) {
 	this.rbtn_up = (x, y) => {
 		switch (this.mode) {
 		case 'allmusic':
-			this.cb = _getClipboardData();
-			panel.m.AppendMenuItem(panel.metadb && _.isString(this.cb) && _tagged(this.artist) && _tagged(this.album) ? MF_STRING : MF_GRAYED, 1000, 'Paste text from clipboard');
+			this.cb = utils.GetClipboardText();
+			panel.m.AppendMenuItem(panel.metadb && this.cb.length && _tagged(this.artist) && _tagged(this.album) ? MF_STRING : MF_GRAYED, 1000, 'Paste text from clipboard');
 			panel.m.AppendMenuSeparator();
 			break;
 		case 'lastfm_bio':

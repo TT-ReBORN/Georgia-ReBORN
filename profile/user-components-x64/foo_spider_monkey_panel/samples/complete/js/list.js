@@ -931,11 +931,11 @@ function _list(mode, x, y, w, h) {
 		case 'properties':
 			this.add_meta = (f) => {
 				for (let i = 0; i < f.MetaCount; i++) {
-					let name = f.MetaName(i);
-					let num = f.MetaValueCount(i);
+					const name = f.MetaName(i);
+					const num = f.MetaValueCount(i);
 					for (let j = 0; j < num; j++) {
 						let url;
-						let value = f.MetaValue(i, j).replace(/\s{2,}/g, ' ');
+						const value = f.MetaValue(i, j).replace(/[\n\r\t]/gm, ' ');
 						if (_isUUID(value)) {
 							switch (name.toUpperCase()) {
 							case 'MUSICBRAINZ_ARTISTID':
@@ -1008,7 +1008,7 @@ function _list(mode, x, y, w, h) {
 				let tmp = [];
 				for (let i = 0; i < f.InfoCount; i++) {
 					const name = f.InfoName(i);
-					const value = f.InfoValue(i).replace(/\s{2,}/g, ' ');
+					const value = f.InfoValue(i).replace(/[\n\r\t]/gm, ' ');
 					tmp.push({
 						name : name.toUpperCase(),
 						value : value,
