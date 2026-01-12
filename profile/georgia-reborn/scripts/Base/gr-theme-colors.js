@@ -1177,7 +1177,7 @@ class BaseColors {
 	// * PUBLIC METHODS - RANDOM COLOR * //
 	// #region PUBLIC METHODS - RANDOM COLOR
 	/**
-	 * Generates a random theme color, used in Random theme.
+	 * Generates a random theme color using HSL color space for perceptually pleasing results, used in Random theme.
 	 */
 	getRandomThemeColor() {
 		if (grSet.theme !== 'random' || grm.ui.isStreaming || grm.ui.isPlayingCD ||
@@ -1186,13 +1186,42 @@ class BaseColors {
 		}
 
 		const generateRandomColor = () => {
-			const R = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
-			const G = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
-			const B = Math.floor((Math.random() * (grSet.styleRandomPastel ? 127 : 27)) + (grSet.styleRandomPastel ? 127 : 27));
-			return grSet.styleRandomPastel || grSet.styleRandomDark ? (R << 16) + (G << 8) + B : ((1 << 24) * Math.random() | 0);
+			let color;
+			let brightness;
+
+			do {
+				const h = Math.floor(Math.random() * 361); // Hue is always fully random (0-360)
+				let s;
+				let l;
+
+				if (grSet.styleRandomPastel) { // Pastel: soft, creamy colors
+					s = Math.floor(Math.random() * 36) + 35; // 35-70%
+					l = Math.floor(Math.random() * 21) + 65; // 65-85%
+				}
+				else if (grSet.styleRandomDark) { // Dark: rich, deep colors
+					s = Math.floor(Math.random() * 31) + 40; // 40-70%
+					l = Math.floor(Math.random() * 6) + 15;  // 15-20%
+				}
+				// ! TODO: my designer gut tells me, this will be cool with blending
+				// else if (grSet.styleRandomNeon) { // Neon: electric, high-vibrancy colors
+				// 	s = Math.floor(Math.random() * 11) + 90; // 90-100%
+				// 	l = Math.floor(Math.random() * 11) + 50; // 50-60%
+				// }
+				else { // General: full spectrum (covers dark, vibrant, and light)
+					s = Math.floor(Math.random() * 61) + 30; // 30-90%
+					l = Math.floor(Math.random() * 71) + 10; // 10-80%
+				}
+
+				const rgb = HSLtoRGB(h, s, l);
+				color = new Color(rgb);
+				brightness = color.brightness;
+			}
+			while (brightness > 210); // If extends brightness threshold (too bright), repeat the loop
+
+			return color;
 		};
 
-		const color = new Color(generateRandomColor());
+		const color = generateRandomColor();
 		const tObj = this.createThemeColorObject(color);
 		grm.color.setTheme(tObj);
 
@@ -1200,7 +1229,10 @@ class BaseColors {
 			console.log('Random generated color:', color.getRGB(true));
 			console.log('Random color brightness:', color.brightness);
 		}
-		if (grCfg.settings.showDebugThemeOverlay) grm.ui.selectedPrimaryColor = color.getRGB(true);
+
+		if (grCfg.settings.showDebugThemeOverlay) {
+			grm.ui.selectedPrimaryColor = color.getRGB(true);
+		}
 	}
 
 	/**

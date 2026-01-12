@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    12-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2223,6 +2223,37 @@ function HEXtoRGBA(hex, a) {
 	const g = parseInt(hex.substring(2, 4), 16);
 	const b = parseInt(hex.substring(4, 6), 16);
 	return RGBA(r, g, b, a);
+}
+
+
+/**
+ * Converts HSL values to a 32-bit RGB integer using c-x-m conversion.
+ * @param {number} h - The hue value (0-360).
+ * @param {number} s - The saturation value (0-100).
+ * @param {number} l - The lightness value (0-100).
+ * @returns {number} The RGB value as 32-bit integer.
+ */
+function HSLtoRGB(h, s, l) {
+	s /= 100;
+	l /= 100;
+
+	const c = (1 - Math.abs(2 * l - 1)) * s;
+	const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+	const m = l - c / 2;
+
+	const [r, g, b] =
+		h < 60  ? [c, x, 0] :
+		h < 120 ? [x, c, 0] :
+		h < 180 ? [0, c, x] :
+		h < 240 ? [0, x, c] :
+		h < 300 ? [x, 0, c] :
+				  [c, 0, x];
+
+	return RGB(
+		Math.round((r + m) * 255),
+		Math.round((g + m) * 255),
+		Math.round((b + m) * 255)
+	);
 }
 
 
