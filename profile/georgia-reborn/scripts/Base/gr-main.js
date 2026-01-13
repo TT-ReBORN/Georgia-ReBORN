@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    13-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1947,7 +1947,7 @@ class MainUI {
 		grm.color.getRandomThemeColor();
 		grm.style.setStyleBlend();
 		grm.style.initBlackAndWhiteReborn();
-		grm.color.setBackgroundColorDefinition();
+		grm.color.setBackgroundBrightnessRules();
 
 		// * INIT COLORS * //
 		grm.theme.initPlaylistColors();

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-01-2026                                              * //
+// * Last change:    13-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2300,6 +2300,42 @@ function GetBlend(c1, c2, f) {
 
 
 /**
+ * Gets the brightest color from an array that meets frequency and brightness criteria.
+ * @param {Array<{col: Color, freq: number}>} colors - The array of color objects.
+ * @param {number} minBrightness - The minimum brightness.
+ * @param {number} maxBrightness - The maximum brightness.
+ * @param {number} minFrequency - The minimum frequency.
+ * @returns {Color|null} The brightest color or null.
+ */
+function GetBrightestColor(colors, minBrightness, maxBrightness, minFrequency) {
+	let brightestCol = null;
+	let maxBrt = minBrightness - 1;
+
+	for (const c of colors) {
+		const brt = c.col.brightness;
+		if (brt >= minBrightness && brt <= maxBrightness && c.freq >= minFrequency && brt > maxBrt) {
+			maxBrt = brt;
+			brightestCol = c.col;
+		}
+	}
+
+	return brightestCol;
+}
+
+
+/**
+ * Calculates the circular hue difference between two hue values.
+ * @param {number} h1 - The first hue value (0-360).
+ * @param {number} h2 - The second hue value (0-360).
+ * @returns {number} The difference (0-180).
+ */
+function GetCircularHueDifference(h1, h2) {
+	const diff = Math.abs(h1 - h2);
+	return diff > 180 ? 360 - diff : diff;
+}
+
+
+/**
  * Returns the red value of a color.
  * @global
  * @param {number} color - The color value to convert, must be in the range of 0-255.
@@ -2462,6 +2498,26 @@ function ColorDistance(a, b, log) {
 		console.log('Distance from:', aCol.getRGB(), 'to:', bCol.getRGB(), '=', distance);
 	}
 	return distance;
+}
+
+
+/**
+ * Calculates the squared color distance between two colors using the Redmean formula.
+ * @param {number|Color} a - The first color.
+ * @param {number|Color} b - The second color.
+ * @returns {number} The squared color distance.
+ */
+function ColorDistanceSq(a, b) {
+	const rho  = (a.r + b.r) / 2;
+	const rDiff = a.r - b.r;
+	const gDiff = a.g - b.g;
+	const bDiff = a.b - b.b;
+
+	return ( // Redmean squared = (2 + r/256) * dr^2 + 4 * dg^2 + (2 + (255-r)/256) * db^2
+		(2 + rho / 256) * (rDiff * rDiff) +
+		(4 * (gDiff * gDiff)) +
+		(2 + (255 - rho) / 256) * (bDiff * bDiff)
+	);
 }
 
 

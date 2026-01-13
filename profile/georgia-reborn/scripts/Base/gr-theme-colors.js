@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-01-2026                                              * //
+// * Last change:    13-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -775,47 +775,56 @@ class BaseColors {
 	// * PUBLIC METHODS - SET THEME COLORS * //
 	// #region PUBLIC METHODS - SET THEME COLORS
 	/**
-	 * Sets Main, Playlist, Details, Library and Biography background color brightness rules.
-	 * Based on background color and image brightness, text colors in theme will change accordingly to black or white.
-	 * Used in White, Black, Reborn, Random and Custom themes.
+	 * Sets Main, Playlist, Details, Library and Biography background brightness rules.
+	 * Determines whether each panel's background is light or dark based on color and accent brightness.
+	 * Used to choose readable text/icon colors (black or white).
+	 * Applies to White, Black, Reborn, Random, Fusion, Gradient, and Custom themes.
 	 */
-	setBackgroundColorDefinition() {
+	setBackgroundBrightnessRules() {
 		const primaryBrightness = Color.BRT(grCol.primary);
 		const primaryBrightnessAlt = Color.BRT(grCol.primary_alt);
-		const colBrightness = grSet.styleRebornFusion ? primaryBrightnessAlt : primaryBrightness;
 		grCol.colBrightness = primaryBrightness;
 		grCol.colBrightness2 = primaryBrightnessAlt;
 
+		const customThemes  = grSet.theme.startsWith('custom');
 		const standardThemes = ['white', 'black', 'reborn', 'random', 'cream'].includes(grSet.theme) && !grSet.styleRebornFusion && !grSet.styleRebornFusion2;
-		const customThemes = grSet.theme.startsWith('custom');
+		const styleGradient = grSet.styleGradient || grSet.styleGradient2;
 
-		// * STANDARD THEMES * //
+		// * Standard themes – early exit when no extra styles
 		if (standardThemes) {
 			grCol.lightBg = this.isLightBgStandard(primaryBrightness);
+			if (!styleGradient && !customThemes) return;
 		}
 
-		// * GRADIENT STYLES, REBORN FUSION STYLES, CUSTOM THEMES * //
-		if (!(grSet.styleGradient || grSet.styleGradient2 || grSet.styleRebornFusion || grSet.styleRebornFusion2 || customThemes)) {
-			return;
-		}
-		else if (['reborn', 'random'].includes(grSet.theme)) {
-			grCol.styleGradient = grCol.darkAccent;
-			grCol.styleGradient2 = grCol.darkAccent;
+		// * Force darkAccent gradients for Reborn/Random
+		if (styleGradient && ['reborn', 'random'].includes(grSet.theme)) {
+			grCol.styleGradient = grCol.styleGradient2 = grCol.darkAccent;
 		}
 
-		const getColor = (styleGradient, styleGradient2, defaultColor, customColorKey) => {
-			if (grSet.styleGradient)  return colBrightness - (CalcBrightness('RGBA', styleGradient) * 0.5);
-			if (grSet.styleGradient2) return colBrightness - (CalcBrightness('RGBA', styleGradient2) * 0.5);
-			if (grSet.styleRebornFusion2) return primaryBrightnessAlt;
-			if (customThemes) return CalcBrightness('HEX', grCfg.cTheme[customColorKey]);
-			return defaultColor;
+		const getBrightness = (customThemeKey, mainBg = false) => {
+			if (customThemes) {
+				const color = grCfg.cTheme[customThemeKey];
+				return color ? CalcBrightness('HEX', color) : primaryBrightness;
+			}
+
+			// * Swap Pri/Alt according to fusion rules
+			const useAlt = mainBg && grSet.styleRebornFusion || !mainBg && grSet.styleRebornFusion2;
+			let brightness = useAlt ? primaryBrightnessAlt : primaryBrightness;
+
+			// * Gradient darkening only applies to Main section
+			if (mainBg && styleGradient) {
+				const gradCol = grSet.styleGradient ? grCol.styleGradient : grCol.styleGradient2;
+				brightness -= CalcBrightness('RGBA', gradCol) * 0.5;
+			}
+
+			return brightness;
 		};
 
-		grCol.lightBgMain      = this.isLightBg(getColor(grCol.styleGradient, grCol.styleGradient2, primaryBrightness, 'grCol_bg'));
-		grCol.lightBgPlaylist  = this.isLightBg(getColor(null, null, primaryBrightness, 'pl_col_bg'));
-		grCol.lightBgDetails   = this.isLightBg(getColor(null, null, primaryBrightness, 'grCol_detailsBg'));
-		grCol.lightBgLibrary   = this.isLightBg(getColor(null, null, primaryBrightness, 'lib_ui_col_bg'));
-		grCol.lightBgBiography = this.isLightBg(getColor(null, null, primaryBrightness, 'bio_ui_col_bg'));
+		grCol.lightBgMain      = this.isLightBg(getBrightness('grCol_bg', true));
+		grCol.lightBgPlaylist  = this.isLightBg(getBrightness('pl_col_bg'));
+		grCol.lightBgDetails   = this.isLightBg(getBrightness('grCol_detailsBg'));
+		grCol.lightBgLibrary   = this.isLightBg(getBrightness('lib_ui_col_bg'));
+		grCol.lightBgBiography = this.isLightBg(getBrightness('bio_ui_col_bg'));
 	}
 
 	/**
@@ -1253,166 +1262,305 @@ class BaseColors {
 	}
 	// #endregion
 
-	// * PUBLIC METHODS - ALBUM ART COLOR * //
-	// #region PUBLIC METHODS - ALBUM ART COLOR
+	// * PRIVATE METHODS - ALBUM ART COLOR * //
+	// #region PRIVATE METHODS - ALBUM ART COLOR
 	/**
-	 * Finds the brightest color based on given parameters.
-	 * @param {Array} colorsWeighted - Array of color objects with added weight properties.
-	 * @param {number} currentBrightness - The brightness level that colors must exceed.
-	 * @param {number} maxBrightness - The maximum brightness level that colors must not exceed.
-	 * @param {number} minFrequency - The minimum frequency threshold that colors must exceed.
-	 * @returns {Color|null} The brightest Color object or null if no color meets the criteria.
+	 * Adjusts a color's brightness to ensure it remains visible against the theme background.
+	 * Shades the color if it is too bright for light themes, or tints it if too dark.
+	 * @param {number} color - The RGB/HEX color value to check.
+	 * @returns {Color} The new Color object adjusted for visibility.
+	 * @private
 	 */
-	findBrightestColor(colorsWeighted, currentBrightness, maxBrightness, minFrequency) {
-		let brightestColor;
-		let maxWeight = 0;
+	_enforceBrightnessLimits(color) {
+		let currentVal = color;
+		let brt = CalcBrightness('RGBA', currentVal);
+		const brtMax = 210;
 
-		for (const c of colorsWeighted) {
-			if (!c.col.isCloseToGrayscale &&
-				(c.col.brightness > currentBrightness) &&
-				(c.col.brightness < maxBrightness) &&
-				(c.freq > minFrequency) &&
-				(c.weight > maxWeight)) {
-				maxWeight = c.weight;
-				brightestColor = c.col;
+		// * Shade if too bright
+		if (brt > brtMax) {
+			const initialShade = Math.min(Math.ceil((brt - brtMax) / 2), 15);
+			currentVal = ShadeColor(currentVal, initialShade);
+			let safety = 0;
+
+			while (CalcBrightness('RGBA', currentVal) > brtMax && safety++ < 8) {
+				currentVal = ShadeColor(currentVal, 5);
+			}
+			brt = CalcBrightness('RGBA', currentVal);
+		}
+
+		// * Tint if too dark (non-grayscale only)
+		const tempCol = new Color(currentVal);
+		if (!tempCol.isGrayscale && brt <= 17) {
+			const initialTint = Math.min(Math.ceil(17 - brt), 12);
+			currentVal = TintColor(currentVal, initialTint);
+			let safety = 0;
+
+			while (CalcBrightness('RGBA', currentVal) <= 17 && safety++ < 8) {
+				currentVal = TintColor(currentVal, 3);
 			}
 		}
 
-		return brightestColor ? new Color(brightestColor.val) : null;
+		return new Color(currentVal);
 	}
 
 	/**
+	 * Attempts to find a complementary color with circular hue difference of 150-210°.
+	 * Uses the global FindComplementaryColors helper and scores by frequency × distance.
+	 * @param {Array} candidates - The array of candidate colors sufficiently distant from primary.
+	 * @param {Color} primaryColor - The primary color to find complement for.
+	 * @returns {Color|null} The complementary color if found, null otherwise.
+	 * @private
+	 */
+	_getComplementaryColor(candidates, primaryColor) {
+		const compCandidates = candidates.filter(c => {
+			const hueDiff = GetCircularHueDifference(c.col.hue, primaryColor.hue);
+			const isComplementary = hueDiff >= 150 && hueDiff <= 210; // 150-210° range (30° tolerance around 180°)
+			const hasSaturation = c.col.saturation >= 20;
+			const hasDistinctBrightness = Math.abs(c.col.brightness - primaryColor.brightness) >= 20;
+
+			return isComplementary && hasSaturation && hasDistinctBrightness;
+		});
+
+		if (compCandidates.length === 0) return null;
+
+		// Score: frequency x distance
+		for (const c of compCandidates) {
+			const dist = ColorDistanceSq(primaryColor, c.col);
+			c.score = c.freq * Math.sqrt(dist);
+		}
+
+		compCandidates.sort((a, b) => b.score - a.score);
+		const selectedColor = compCandidates[0].col;
+
+		if (grCfg.settings.showDebugThemeLog) {
+			const hueDiff = GetCircularHueDifference(selectedColor.hue, primaryColor.hue);
+			console.log(`_getComplementaryColor => Secondary: Complementary (Δhue: ${hueDiff.toFixed(0)}°)`);
+		}
+
+		return selectedColor;
+	}
+
+	/**
+	 * Finds the color with maximum contrast to the primary color.
+	 * Uses logarithmic distance scaling to balance distance and frequency.
+	 * @param {Array} candidates - The array of candidate colors.
+	 * @param {Color} primaryColor - The primary color to contrast against.
+	 * @returns {Color} The color with maximum contrast score.
+	 * @private
+	 */
+	_getMaxContrastColor(candidates, primaryColor) {
+		for (const c of candidates) {
+			const distSq = ColorDistanceSq(primaryColor, c.col);
+			const satBonus = Math.max(c.col.saturation / 100, 0.5);
+			const grayBoost = primaryColor.isCloseToGrayscale && c.col.saturation > 40 ? 1.8 : 1.0;
+			c.score = Math.log(distSq + 1) * c.freq * satBonus * grayBoost;
+		}
+
+		candidates.sort((a, b) => b.score - a.score);
+
+		if (grCfg.settings.showDebugThemeLog) {
+			console.log('_getMaxContrastColor => Secondary: Max Contrast');
+		}
+
+		return candidates[0].col;
+	}
+
+	/**
+	 * Parses and weights colors from the image color scheme.
+	 * @param {GdiBitmap} image - The image to extract colors from.
+	 * @param {number} maxColorsToPull - The maximum number of colors to extract.
+	 * @param {number} maxBrightness - The maximum brightness threshold.
+	 * @param {number} minFreq - The minimum frequency threshold for valid primary colors.
+	 * @returns {Array} The array of color objects with weight and validity metadata.
+	 * @private
+	 */
+	_parseAndWeightColors(image, maxColorsToPull, maxBrightness, minFreq) {
+		const scheme = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull));
+
+		return scheme.map(c => {
+			const colObj = new Color(c.col);
+			const midBrightness = 127 - Math.abs(127 - colObj.brightness);
+
+			return {
+				col: colObj,
+				freq: c.freq,
+				weight: c.freq * midBrightness * 10,
+				isValidPrimary: c.freq >= minFreq && !colObj.isCloseToGrayscale && colObj.brightness < maxBrightness
+			};
+		});
+	}
+
+	/**
+	 * Selects the primary color from the weighted color array.
+	 * Prefers high-weighted valid colors, falls back to brightest if primary is too dark.
+	 * @param {Array} colors - The weighted and sorted color array.
+	 * @param {number} maxBrightness - The maximum allowed brightness.
+	 * @returns {Color} The selected primary color.
+	 * @private
+	 */
+	_selectPrimaryColor(colors, maxBrightness) {
+		const primaryObj = colors.find(c => c.isValidPrimary) || colors[0];
+		let selectedColor = primaryObj.col;
+
+		// Ensure primary isn't too dark
+		if (selectedColor.brightness < 37) {
+			const fallback = GetBrightestColor(colors, 37, maxBrightness, 0.01);
+
+			if (fallback) {
+				selectedColor = fallback;
+				if (grCfg.settings.showDebugThemeLog) {
+					console.log('_selectPrimaryColor => Primary too dark => highlight:', selectedColor.getRGB(true));
+				}
+			}
+		}
+
+		return selectedColor;
+	}
+
+	/**
+	 * Selects a secondary color that contrasts well with the primary color.
+	 * Strategy: Complementary -> Max Contrast -> Fallback.
+	 * @param {Array} colors - The weighted color objects.
+	 * @param {Color} primaryColor - The primary color to contrast against.
+	 * @param {number} minDistanceThreshold - The minimum color distance required.
+	 * @param {number} maxBrightness - The maximum allowed brightness.
+	 * @returns {Color} The selected secondary color.
+	 * @private
+	 */
+	_selectSecondaryColor(colors, primaryColor, minDistanceThreshold, maxBrightness) {
+		const minDistSq = minDistanceThreshold * minDistanceThreshold;
+
+		// Filter candidates: must be sufficiently distant and have minimum frequency
+		const candidates = colors.filter(c => {
+			const distSq = ColorDistanceSq(primaryColor, c.col);
+			return distSq >= minDistSq && c.freq >= 0.01;
+		});
+
+		if (candidates.length === 0) {
+			// Fallback: Use second highest weighted color, or primary if none exists
+			if (grCfg.settings.showDebugThemeLog) {
+				console.log('_selectSecondaryColor => Secondary: Fallback (no distinct colors)');
+			}
+			return colors[1] ? colors[1].col : primaryColor;
+		}
+
+		// Strategy A: Try to find complementary color
+		let selectedColor = this._getComplementaryColor(candidates, primaryColor);
+
+		// Strategy B: If no complementary color found, use maximum contrast
+		if (!selectedColor) {
+			selectedColor = this._getMaxContrastColor(candidates, primaryColor);
+		}
+
+		// Ensure result (Strategy A, B, or Fallback) is not too dark
+		if (selectedColor.brightness < 37) {
+			const fallback = GetBrightestColor(colors, 37, maxBrightness, 0.05);
+
+			if (fallback) {
+				const distSq = ColorDistanceSq(primaryColor, fallback);
+				const isDistinctEnough = candidates.length === 0 || distSq >= minDistSq;
+
+				if (isDistinctEnough) {
+					selectedColor = fallback;
+					if (grCfg.settings.showDebugThemeLog) {
+						console.log('_selectSecondaryColor => Secondary too dark => highlight');
+					}
+				}
+			}
+		}
+
+		return selectedColor;
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - ALBUM ART COLOR * //
+	// #region PUBLIC METHODS - ALBUM ART COLOR
+	/**
 	 * Extracts the primary and secondary optional color from an image.
+	 * Optimizes for distinctness: Complementary (with circular hue) → High Contrast.
 	 * @param {GdiBitmap} image - The image to extract the colors from.
 	 * @param {number} maxColorsToPull - The max number of colors in the palette.
-	 * @param {number} [secondaryColor] - The secondary picked color, used in Reborn fusion.
-	 * @returns {number|null} The primary color value if secondaryColor is not provided, otherwise the secondary color value.
-	 * Returns null on error.
+	 * @param {boolean} [secondaryColor] - If true, also calculates and returns a secondary color.
+	 * @returns {{primary: number, secondary?: number}|null} The object containing color values or null on error.
 	 */
-	getThemeColorsJson(image, maxColorsToPull, secondaryColor) {
-		const debugThemeLog = grCfg.settings.showDebugThemeLog;
-		const debugThemeOverlay = grCfg.settings.showDebugThemeOverlay;
+	getThemeColorsJson(image, maxColorsToPull, secondaryColor = false) {
 		const minFreq = 0.015;
-		const minFreqBrightestCol1 = 0.01;
-		const minFreqBrightestCol2 = 0.05;
-		const maxBrightness = grSet.theme === 'black' || grSet.styleBlend || ['reborn', 'random'].includes(grSet.theme) && grSet.styleBlend2 ? 255 : 212;
-		const midBrightness2Value = RandomMinMax(60, 120);
+		const minDistanceThreshold = 100;
+
+		const maxBrightness = (grSet.theme === 'black' || grSet.styleBlend ||
+			(['reborn', 'random'].includes(grSet.theme) && grSet.styleBlend2)) ? 255 : 212;
 
 		try {
-			const colorsWeighted = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull)).map(c => ({ ...c, col: new Color(c.col) }));
-			let maxWeight = 0;
-			let maxWeight2 = 0;
-			let selectedColor = new Color(colorsWeighted[0].col);  // Use first color in case no color selected below
-			let selectedColor2 = secondaryColor ? new Color(colorsWeighted[1].col) : null; // Use second color in case no color selected below
+			const colors = this._parseAndWeightColors(image, maxColorsToPull, maxBrightness, minFreq);
+			colors.sort((a, b) => b.weight - a.weight);
 
-			if (debugThemeLog) console.log('idx      color        bright  freq   weight');
+			const primary = this._selectPrimaryColor(colors, maxBrightness);
+			const secondary = secondaryColor ? this._selectSecondaryColor(
+				colors, primary, minDistanceThreshold, maxBrightness,
+			) : null;
 
-			for (const [i, c] of colorsWeighted.entries()) {
-				const col = c.col;
-				const midBrightness = 127 - Math.abs(127 - col.brightness); // Favors colors with brightness around 127
-				const midBrightness2 = midBrightness2Value - Math.abs(midBrightness2Value - col.brightness); // Favors colors with random brightness from 60 - 120
-				c.weight = c.freq * midBrightness * 10;
-				c.weight2 = c.freq * midBrightness2 * 10;
-
-				if (c.freq >= minFreq && !col.isCloseToGrayscale && col.brightness < maxBrightness) {
-					if (debugThemeLog) {
-						console.log(LeftPad(i, 2), col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, LeftPad(c.weight.toFixed(2), 7));
-					}
-					if (c.weight > maxWeight) {
-						maxWeight = c.weight;
-						selectedColor = col;
-					}
-					if (secondaryColor && c.weight2 > maxWeight2) {
-						maxWeight2 = c.weight2;
-						selectedColor2 = col;
-					}
-				}
-				else if (debugThemeLog) {
-					console.log(' -', col.getRGB(true, true), LeftPad(col.brightness, 4), ' ', `${LeftPad((c.freq * 100).toFixed(2), 5)}%`, col.isCloseToGrayscale ? '   grey' : (c.freq < minFreq) ? '   freq' : ' bright');
+			if (grCfg.settings.showDebugThemeLog) {
+				console.log('Primary:', primary.getRGB(true), `| Brt:${primary.brightness} Sat:${primary.saturation} Hue:${primary.hue.toFixed(0)}°`);
+				if (secondaryColor && secondary) {
+					console.log('Secondary:', secondary.getRGB(true), `| Brt:${secondary.brightness} Sat:${secondary.saturation} Hue:${secondary.hue.toFixed(0)}°`);
 				}
 			}
 
-			if (selectedColor.brightness < 37) {
-				selectedColor = this.findBrightestColor(colorsWeighted, selectedColor.brightness, maxBrightness, minFreqBrightestCol1) || selectedColor;
-				if (debugThemeLog) console.log(selectedColor.getRGB(true), 'brightness:', selectedColor.brightness, 'too dark -- searching for highlight color');
-			}
-			if (secondaryColor && selectedColor2.brightness < 37) {
-				selectedColor2 = this.findBrightestColor(colorsWeighted, selectedColor2.brightness, maxBrightness, minFreqBrightestCol2) || selectedColor2;
-				if (debugThemeLog) console.log(selectedColor2.getRGB(true), 'brightness:', selectedColor2.brightness, 'too dark -- searching for highlight color');
+			if (grCfg.settings.showDebugThemeOverlay) {
+				grm.ui.selectedPrimaryColor = primary.getRGB(true);
+				if (secondaryColor && secondary) grm.ui.selectedPrimaryColor2 = secondary.getRGB(true);
 			}
 
-			if (debugThemeLog) {
-				console.log('Primary color:', selectedColor.getRGB(true));
-				if (secondaryColor) console.log('Primary color 2:', selectedColor2.getRGB(true));
-			}
-			if (debugThemeOverlay) {
-				grm.ui.selectedPrimaryColor = selectedColor.getRGB(true);
-				if (secondaryColor) grm.ui.selectedPrimaryColor2 = selectedColor2.getRGB(true);
-			}
-
-			return secondaryColor ? selectedColor2.val : selectedColor.val;
+			return secondaryColor ? { primary: primary.val, secondary: secondary.val } : { primary: primary.val };
 		}
 		catch (e) {
-			console.log('\n>>> Error => GetColourSchemeJSON failed!\n');
+			console.log('\n>>> Error => GetColourSchemeJSON failed:', e);
 			return null;
 		}
 	}
 
 	/**
-	 * Sets the primary or secondary color from the value of getThemeColorsJson or from the custom GR-tag.
+	 * Sets the primary or secondary color from getThemeColorsJson or from custom GR-tag.
 	 * @param {GdiBitmap} image - The image from which the colors will be picked.
 	 */
 	getThemeColors(image) {
-		const debugThemeLog = grCfg.settings.showDebugThemeLog;
+		let colPrimaryVal;
+		let colSecondaryVal;
+		const overridePrimary = $('[%GR_THEMECOLOR%]');
+		const overrideSecondary = $('[%GR_THEMECOLOR2%]');
 		const rebornFusion = this.isRebornFusion();
-		const val = $('[%GR_THEMECOLOR%]');
-		const val2 = $('[%GR_THEMECOLOR2%]');
-		let color;
-		let color2;
-		let calculatedColor;
-		let calculatedColor2;
 
-		if (val.length) {
-			calculatedColor = ColStringToRGB(val);
-			calculatedColor2 = ColStringToRGB(val2);
+		if (overridePrimary.length) {
+			colPrimaryVal = ColStringToRGB(overridePrimary);
+			colSecondaryVal = overrideSecondary.length ? ColStringToRGB(overrideSecondary) : undefined;
 		} else {
-			calculatedColor = this.getThemeColorsJson(image, 14, false);
-			calculatedColor2 = rebornFusion ? this.getThemeColorsJson(image, 14, true) : undefined;
-		}
-
-		if (isNaN(calculatedColor)) return;
-
-		color = new Color(calculatedColor);
-		if (rebornFusion) color2 = new Color(calculatedColor2);
-
-		if (grSet.theme !== 'black') {
-			const shadeAmount = grSet.theme === 'white' ? 12 : 3;
-			while (color.brightness > 220) {
-				calculatedColor = ShadeColor(calculatedColor, shadeAmount);
-				color = new Color(calculatedColor);
-				if (debugThemeLog) console.log(' >> Shading: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
+			const colors = this.getThemeColorsJson(image, 14, rebornFusion);
+			if (colors) {
+				colPrimaryVal = colors.primary;
+				colSecondaryVal = colors.secondary;
 			}
 		}
 
-		if (!color.isGrayscale) {
-			while (color.brightness <= 17) {
-				calculatedColor = TintColor(calculatedColor, 3);
-				color = new Color(calculatedColor);
-				if (debugThemeLog) console.log(' >> Tinting: ', ColToRgb(calculatedColor), ' - brightness: ', color.brightness);
-			}
-		}
+		if (isNaN(colPrimaryVal)) return;
 
-		const tObj = this.createThemeColorObject(color);
-		if (rebornFusion) {
-			const tObj2 = this.createThemeColorObject(color, color2);
+		// Process colors
+		const primaryColorObj = this._enforceBrightnessLimits(colPrimaryVal);
+		const secondaryColorObj = rebornFusion && colSecondaryVal !== undefined ?
+			this._enforceBrightnessLimits(colSecondaryVal) : null;
+
+		// Apply theme
+		if (rebornFusion && secondaryColorObj) {
+			const tObj = this.createThemeColorObject(primaryColorObj);
+			const tObj2 = this.createThemeColorObject(primaryColorObj, secondaryColorObj);
 			grm.color.setTheme(tObj, tObj2);
 		} else {
+			const tObj = this.createThemeColorObject(primaryColorObj);
 			grm.color.setTheme(tObj);
 		}
 
-		if (debugThemeLog) {
-			console.log('Primary color brightness:', color.brightness);
-			if (color2) console.log('Primary color 2 brightness:', color2.brightness);
+		if (grCfg.settings.showDebugThemeLog) {
+			console.log('getThemeColors => Final Primary brightness:', primaryColorObj.brightness);
+			if (secondaryColorObj) console.log('getThemeColors => Final Secondary brightness:', secondaryColorObj.brightness);
 		}
 	}
 	// #endregion
