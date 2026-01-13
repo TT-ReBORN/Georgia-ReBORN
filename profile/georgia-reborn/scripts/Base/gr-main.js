@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-01-2026                                              * //
+// * Last change:    14-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3238,8 +3238,9 @@ class MainUI {
 
 	/**
 	 * Resets the theme when changing to a different one, used in top menu Options > Theme.
+	 * @param {boolean} [updatePrimaryColor] - The flag if primary color needs to be updated.
 	 */
-	resetTheme() {
+	resetTheme(updatePrimaryColor = false) {
 		this.initThemeFull = true;
 
 		const invalidNighttimeStyle = (grSet.theme !== 'reborn' && grSet.theme !== 'random' && !grSet.theme.startsWith('custom') || grSet.styleRebornWhite || grSet.styleRebornBlack) && grSet.styleNighttime;
@@ -3248,7 +3249,8 @@ class MainUI {
 		const invalidRebornThemeStyle = grSet.theme !== 'reborn' && (grSet.styleRebornWhite || grSet.styleRebornBlack || grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent);
 		const invalidGradientStyle = !['reborn', 'random', 'blue', 'darkblue', 'red'].includes(grSet.theme) && !grSet.theme.startsWith('custom') && (grSet.styleGradient || grSet.styleGradient2);
 
-		if (grCol.primary === RGB(255, 255, 255)) { // * Need when changing from grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2
+		// * Need when changing from grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 or when changing from theme 'Random' to 'Reborn'
+		if (grCol.primary === RGB(255, 255, 255) || updatePrimaryColor) {
 			grm.color.getThemeColors(this.albumArt); // * Update grCol.primary for dynamic themes
 		}
 

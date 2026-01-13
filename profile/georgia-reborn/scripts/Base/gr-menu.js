@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    14-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -385,7 +385,7 @@ class TopMenuOptions {
 		themeMenu.addRadioItems(['White', 'Black', 'Reborn', 'Random', 'Blue', 'Dark blue', 'Red', 'Cream', 'Neon blue', 'Neon green', 'Neon red', 'Neon gold'], grSet.theme,
 			['white', 'black', 'reborn', 'random', 'blue', 'darkblue', 'red', 'cream', 'nblue', 'ngreen', 'nred', 'ngold'], theme => {
 			this.applyThemeSetting('theme', theme);
-			grm.ui.resetTheme();
+			grm.ui.resetTheme(grSet.theme === 'reborn');
 			grm.ui.initTheme();
 			grm.day.applyFoobarTheme();
 			grm.details.setDiscArtShadow();
