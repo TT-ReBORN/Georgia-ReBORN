@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1240,7 +1240,7 @@ class BaseColors {
 		}
 
 		if (grCfg.settings.showDebugThemeOverlay) {
-			grm.ui.selectedPrimaryColor = color.getRGB(true);
+			grm.debug.selectedPrimaryColor = color.getRGB(true);
 		}
 	}
 
@@ -1258,7 +1258,7 @@ class BaseColors {
 		else if (grSet.styleRandomAutoColor === 'track') {
 			grm.ui.initTheme();
 		}
-		DebugLog('\n>>> initTheme => getRandomThemeAutoColor <<<\n');
+		grm.debug.debugLog('\n>>> initTheme => getRandomThemeAutoColor <<<\n');
 	}
 	// #endregion
 
@@ -1366,31 +1366,6 @@ class BaseColors {
 	}
 
 	/**
-	 * Parses and weights colors from the image color scheme.
-	 * @param {GdiBitmap} image - The image to extract colors from.
-	 * @param {number} maxColorsToPull - The maximum number of colors to extract.
-	 * @param {number} maxBrightness - The maximum brightness threshold.
-	 * @param {number} minFreq - The minimum frequency threshold for valid primary colors.
-	 * @returns {Array} The array of color objects with weight and validity metadata.
-	 * @private
-	 */
-	_parseAndWeightColors(image, maxColorsToPull, maxBrightness, minFreq) {
-		const scheme = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull));
-
-		return scheme.map(c => {
-			const colObj = new Color(c.col);
-			const midBrightness = 127 - Math.abs(127 - colObj.brightness);
-
-			return {
-				col: colObj,
-				freq: c.freq,
-				weight: c.freq * midBrightness * 10,
-				isValidPrimary: c.freq >= minFreq && !colObj.isCloseToGrayscale && colObj.brightness < maxBrightness
-			};
-		});
-	}
-
-	/**
 	 * Selects the primary color from the weighted color array.
 	 * Prefers high-weighted valid colors, falls back to brightest if primary is too dark.
 	 * @param {Array} colors - The weighted and sorted color array.
@@ -1476,6 +1451,30 @@ class BaseColors {
 	// * PUBLIC METHODS - ALBUM ART COLOR * //
 	// #region PUBLIC METHODS - ALBUM ART COLOR
 	/**
+	 * Gets parsed and weighted colors from the image color scheme.
+	 * @param {GdiBitmap} image - The image to extract colors from.
+	 * @param {number} maxColorsToPull - The maximum number of colors to extract.
+	 * @param {number} maxBrightness - The maximum brightness threshold.
+	 * @param {number} minFreq - The minimum frequency threshold for valid primary colors.
+	 * @returns {Array} The array of color objects with weight and validity metadata.
+	 */
+	getParsedAndWeightedColors(image, maxColorsToPull, maxBrightness, minFreq) {
+		const scheme = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull));
+
+		return scheme.map(c => {
+			const colObj = new Color(c.col);
+			const midBrightness = 127 - Math.abs(127 - colObj.brightness);
+
+			return {
+				col: colObj,
+				freq: c.freq,
+				weight: c.freq * midBrightness * 10,
+				isValidPrimary: c.freq >= minFreq && !colObj.isCloseToGrayscale && colObj.brightness < maxBrightness
+			};
+		});
+	}
+
+	/**
 	 * Extracts the primary and secondary optional color from an image.
 	 * Optimizes for distinctness: Complementary (with circular hue) → High Contrast.
 	 * @param {GdiBitmap} image - The image to extract the colors from.
@@ -1491,7 +1490,7 @@ class BaseColors {
 			(['reborn', 'random'].includes(grSet.theme) && grSet.styleBlend2)) ? 255 : 212;
 
 		try {
-			const colors = this._parseAndWeightColors(image, maxColorsToPull, maxBrightness, minFreq);
+			const colors = this.getParsedAndWeightedColors(image, maxColorsToPull, maxBrightness, minFreq);
 			colors.sort((a, b) => b.weight - a.weight);
 
 			const primary = this._selectPrimaryColor(colors, maxBrightness);
@@ -1507,8 +1506,8 @@ class BaseColors {
 			}
 
 			if (grCfg.settings.showDebugThemeOverlay) {
-				grm.ui.selectedPrimaryColor = primary.getRGB(true);
-				if (secondaryColor && secondary) grm.ui.selectedPrimaryColor2 = secondary.getRGB(true);
+				grm.debug.selectedPrimaryColor = primary.getRGB(true);
+				if (secondaryColor && secondary) grm.debug.selectedPrimaryColor2 = secondary.getRGB(true);
 			}
 
 			return secondaryColor ? { primary: primary.val, secondary: secondary.val } : { primary: primary.val };
@@ -1542,6 +1541,11 @@ class BaseColors {
 		}
 
 		if (isNaN(colPrimaryVal)) return;
+
+		// Track raw primary and secondary color
+		// Strip the alpha/sign here to ensure clean 24-bit comparison later
+		grCol.primary_raw = colPrimaryVal & 0xFFFFFF;
+		grCol.primary_alt_raw = colSecondaryVal !== undefined ? (colSecondaryVal & 0xFFFFFF) : undefined;
 
 		// Process colors
 		const primaryColorObj = this._enforceBrightnessLimits(colPrimaryVal);
@@ -5375,7 +5379,7 @@ class ThemeColors extends BaseColors {
 			}
 		}
 		catch (e) {
-			// DebugLog('Unable to create ActiveX chron.IChronControl object');
+			// grm.debug.debugLog('Unable to create ActiveX chron.IChronControl object');
 		}
 	}
 	// #endregion
@@ -6649,7 +6653,7 @@ class StyleColors extends BaseColors {
 		image.StackBlur(blurLevel);
 
 		if (grCfg.settings.showDebugThemeLog) console.log(`Blended image blur: ${blurLevel}`);
-		if (grCfg.settings.showDebugThemeOverlay) grm.ui.blendedImgBlur = blurLevel;
+		if (grCfg.settings.showDebugThemeOverlay) grm.debug.blendedImgBlur = blurLevel;
 
 		return image;
 	}
@@ -6711,7 +6715,7 @@ class StyleColors extends BaseColors {
 		}
 
 		if (grCfg.settings.showDebugThemeLog) console.log(`Blended image alpha: ${alpha}\nTheme brightness: ${grSet.themeBrightness}`);
-		if (grCfg.settings.showDebugThemeOverlay) grm.ui.blendedImgAlpha = alpha;
+		if (grCfg.settings.showDebugThemeOverlay) grm.debug.blendedImgAlpha = alpha;
 
 		return tempImg;
 	}
@@ -6724,11 +6728,11 @@ class StyleColors extends BaseColors {
 			return;
 		}
 
-		SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'setStyleBlend');
+		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'setStyleBlend');
 
 		grCol.imgBlended = this._formatStyleBlendImage(grm.ui.albumArt, grm.ui.ww, grm.ui.wh, grCol.imgBrightness);
 
-		SetDebugProfile(false, 'print', 'setStyleBlend');
+		grm.debug.setDebugProfile(false, 'print', 'setStyleBlend');
 	}
 	// #endregion
 }

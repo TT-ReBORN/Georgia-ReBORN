@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -813,409 +813,6 @@ function WebsiteOpen(website, metadb, openAll = false) {
 }
 
 
-///////////////
-// * DEBUG * //
-///////////////
-/**
- * A class that handles theme errors with detailed messages.
- * @augments {Error}
- */
-class ThemeError extends Error {
-	/**
-	 * Creates the `ThemeError` instance.
-	 * @param {string} msg - The error message.
-	 */
-	constructor(msg) {
-		super(msg);
-		/** @private @type {string} */
-		this.name = 'ThemeError';
-		/** @private @type {string} */
-		this.message = `\n${msg}\n`;
-	}
-}
-
-
-/**
- * A class that handles logic errors with detailed messages.
- * @augments {Error}
- */
-class LogicError extends Error {
-	/**
-	 * Creates the `LogicError` instance.
-	 * @param {string} msg - The error message.
-	 */
-	constructor(msg) {
-		super(msg);
-		/** @private @type {string} */
-		this.name = 'LogicError';
-		/** @private @type {string} */
-		this.message = `\n${msg}\n`;
-	}
-}
-
-
-/**
- * A class that handles invalid type errors with detailed messages.
- * @augments {Error}
- */
-class InvalidTypeError extends Error {
-	/**
-	 * Creates the `InvalidTypeError` instance.
-	 * @param {string} arg_name - The name of the argument that caused the error.
-	 * @param {string} arg_type - The actual type of the argument that was passed.
-	 * @param {string} valid_type - The expected type of the argument.
-	 * @param {string} [additional_msg] - An optional message to provide more information about the error.
-	 */
-	constructor(arg_name, arg_type, valid_type, additional_msg = '') {
-		super('');
-		/** @private @type {string} */
-		this.name = 'InvalidTypeError';
-		/** @private @type {string} */
-		this.message = `\n'${arg_name}' is not a ${valid_type}, it's a ${arg_type}${additional_msg ? `\n${additional_msg}` : ''}\n`;
-	}
-}
-
-
-/**
- * A class that handles argument errors with detailed messages.
- * @augments {Error}
- */
-class ArgumentError extends Error {
-	/**
-	 * Creates the `ArgumentError` instance.
-	 * @param {string} arg_name - The name of the argument that has an invalid value.
-	 * @param {*} arg_value - The value of the argument that is considered invalid.
-	 * @param {string} [additional_msg] - An optional message to provide more information about the error.
-	 */
-	constructor(arg_name, arg_value, additional_msg = '') {
-		super('');
-		/** @private @type {string} */
-		this.name = 'ArgumentError';
-		/** @private @type {string} */
-		this.message = `\n'${arg_name}' has invalid value: ${arg_value}${additional_msg ? `\n${additional_msg}` : ''}\n`;
-	}
-}
-
-
-/**
- * Asserts that a condition is true and throws an error if it is not.
- * @global
- * @param {boolean} predicate - The condition to evaluate.
- * @param {new (...args: any[]) => Error} ExceptionType - The error constructor to instantiate if the condition is false.
- * @param {...any} args - Additional arguments to pass to the error constructor.
- * @returns {void}
- * @throws {Error} Throws an error of the type specified by `ExceptionType` if `predicate` is false.
- */
-function Assert(predicate, ExceptionType, ...args) {
-	if (!predicate) throw new ExceptionType(...args);
-}
-
-
-/**
- * Calculates and logs the average execution time of given functions (code blocks) over a specified number of iterations.
- * Optionally compares the performance of two code blocks with their respective arguments.
- * @global
- * @param {number} iterations - The number of times the code blocks should be executed.
- * @param {Function} func1 - The first function whose performance is to be measured.
- * @param {Array} [args1] - The optional arguments for the first function as an array.
- * @param {Function} [func2] - The optional second function to measure and compare performance against the first.
- * @param {Array} [args2] - The optional arguments for the second function as an array.
- * @example
- * // Usage without arguments:
- * CalcExecutionTime(1000, function1, [], function2, []);
- * @example
- * // Usage with arguments:
- * CalcExecutionTime(1000, function1, ['arg1', 'arg2'], function2, ['arg1', 'arg2']);
- * @example
- * // Usage with methods, use .bind(this):
- * CalcExecutionTime(1000, this.method1.bind(this), [], this.method2.bind(this), []);
- */
-function CalcExecutionTime(iterations, func1, args1 = [], func2, args2 = []) {
-	// Measure and log function1 performance
-	const start1 = Date.now();
-	for (let i = 0; i < iterations; i++) {
-		func1.apply(this, args1);
-	}
-	const end1 = Date.now();
-	const totalTime1 = end1 - start1;
-	console.log(`Function 1 took: ${(totalTime1 / iterations).toFixed(3)} ms`);
-
-	if (!func2) return;
-
-	// Measure and log function2 performance
-	const start2 = Date.now();
-	for (let i = 0; i < iterations; i++) {
-		func2.apply(this, args2);
-	}
-	const end2 = Date.now();
-	const totalTime2 = end2 - start2;
-	console.log(`Function 2 took: ${(totalTime2 / iterations).toFixed(3)} ms`);
-
-	// Measure, log and compare both function1 and function2 performances
-	const diff = totalTime1 - totalTime2;
-	const percent = (Math.abs(diff) / ((totalTime1 + totalTime2) / 2)) * 100;
-	const faster = diff > 0 ? 'FUNCTION 2 IS FASTER' : 'FUNCTION 1 IS FASTER';
-	console.log(`${faster} BY: ${Math.abs(diff / iterations).toFixed(3)} ms - ${percent.toFixed(2)}%`);
-}
-
-
-/**
- * Calculates and logs one or two given functions over a specified duration and compares their performance if both are provided.
- * @global
- * @param {number} duration - The duration (in milliseconds) for which the functions should be executed.
- * @param {Function} func1 - The first function to be measured.
- * @param {Array} [args1] - The optional arguments for the first function as an array.
- * @param {Function} [func2] - The second function to be measured (optional).
- * @param {Array} [args2] - The optional arguments for the second function as an array.
- * @example
- * // Usage without arguments:
- * CalcExecutionDuration(5000, function1, [], function2, []);
- * @example
- * // Usage with arguments:
- * CalcExecutionDuration(5000, function1, ['arg1', 'arg2'], function2, ['arg1', 'arg2']);
- * @example
- * // Usage with methods, use .bind(this):
- * CalcExecutionDuration(5000, this.method1.bind(this), [], this.method2.bind(this), []);
- */
-function CalcExecutionDuration(duration, func1, args1, func2, args2) {
-	const profiler1 = fb.CreateProfiler('Performance Profiler 1');
-	const profiler2 = func2 ? fb.CreateProfiler('Performance Profiler 2') : null;
-
-	const measureFunc = (func, args, profiler) => {
-		console.log(`Starting performance measurement for ${func.name}...`);
-		const startTime = Date.now();
-		const endTime = startTime + duration;
-		let count = 0;
-
-		// Execute the function until the duration elapses
-		while (Date.now() < endTime) {
-			func(...args);
-			count++;
-		}
-
-		profiler.Print();
-		console.log(`Performance measurement for ${func.name} completed.`);
-		return { totalTime: Date.now() - startTime, count };
-	};
-
-	// Measure and log function1 performance
-	const result1 = measureFunc(func1, args1, profiler1);
-	const avgTime1 = result1.totalTime / result1.count;
-	console.log(`Function 1 (${func1.name}) took an average of ${avgTime1.toFixed(3)} ms per execution`);
-
-	if (!func2) return;
-
-	// Measure and log function2 performance
-	const result2 = measureFunc(func2, args2, profiler2);
-	const avgTime2 = result2.totalTime / result2.count;
-	console.log(`Function 2 (${func2.name}) took an average of ${avgTime2.toFixed(3)} ms per execution`);
-
-	// Measure, log and compare both function1 and function2 performances
-	const diff = avgTime1 - avgTime2;
-	const percent = (Math.abs(diff) / ((avgTime1 + avgTime2) / 2)) * 100;
-	const faster = diff > 0 ? 'FUNCTION 2 IS FASTER' : 'FUNCTION 1 IS FASTER';
-	console.log(`${faster} BY: ${Math.abs(diff).toFixed(3)} ms - ${percent.toFixed(2)}%`);
-}
-
-
-/**
- * Calculates and logs the performance of given functions either by iterations or duration.
- * @global
- * @param {string} mode - The mode of performance measurement ('time' for iterations or 'duration' for time-based).
- * @param {number} metric - The number of iterations or the duration in milliseconds.
- * @param {Function} func1 - The first function whose performance is to be measured.
- * @param {Array} [args1] - The optional arguments for the first function as an array.
- * @param {Function} [func2] - The optional second function to measure and compare performance against the first.
- * @param {Array} [args2] - The optional arguments for the second function as an array.
- * @example
- * // Measure performance by iterations:
- * CalcPerformance('time', 1000, function1, [], function2, []);
- * @example
- * // Measure performance by duration:
- * CalcPerformance('duration', 5000, function1, ['arg'], function2, ['arg']);
- * @example
- * // Measure performance by iterations with arguments:
- * CalcPerformance('time', 1000, function1, ['arg1', 'arg2'], function2, ['arg1', 'arg2']);
- * @example
- * // Measure performance by duration with methods, use .bind(this):
- * CalcPerformance('duration', 5000, this.method1.bind(this), [], this.method2.bind(this), []);
- */
-function CalcPerformance(mode, metric, func1, args1 = [], func2, args2 = []) {
-	if (mode === 'time') {
-		CalcExecutionTime(metric, func1, args1, func2, args2);
-	}
-	else if (mode === 'duration') {
-		CalcExecutionDuration(metric, func1, args1, func2, args2);
-	}
-	else {
-		console.log('Invalid mode. Use "time" for iteration-based or "duration" for time-based performance measurement.');
-	}
-}
-
-
-/**
- * Prints logs for specific callback actions.
- * Will be shown in the console when `Show panel calls` in Developer tools is active.
- * @global
- * @param {string} msg - The callback action message to log.
- */
-function CallLog(msg) {
-	if (!grm.ui.traceCall) return;
-	console.log(msg);
-}
-
-
-/**
- * Prints exclusive theme debug logs and avoids cluttering the console constantly.
- * Will be shown in the console when `Enable debug log` in Developer tools is active.
- * @global
- * @param {...any} args - The debug messages to log.
- */
-function DebugLog(...args) {
-	if (args.length === 0 || !grCfg.settings.showDebugLog) return;
-	console.log(...args);
-}
-
-
-/**
- * Prints logs for specific callback on_mouse_move actions.
- * Will be shown in the console when `Show panel moves` in Developer tools is active.
- * @global
- * @param {string} msg - The callback mouse move message to log.
- */
-function MoveLog(msg) {
-	if (!grm.ui.traceCall || !grm.ui.traceOnMove) return;
-	console.log(msg);
-}
-
-
-/**
- * Prints a color object to the console.
- * This is primarily for debugging and for the benefit of other tools that rely on color objects.
- * @global
- * @param {object} obj - The object to print.
- * @returns {void}
- */
-function PrintColorObj(obj) {
-	console.log('\tname: \'\',\n\tcolors: {');
-	for (const propName in obj) {
-		const propValue = obj[propName];
-
-		console.log(`\t\t${propName}: ${ColToRgb(propValue, true)},\t\t// #${ToPaddedHexString(0xffffff & propValue, 6)}`);
-	}
-	console.log(`\t},\n\thint: [${ColToRgb(obj.primary, true)}]`);
-}
-
-
-/**
- * Handles the profiler setup and printing based on the given condition and action.
- * @param {boolean} condition - The condition to check before proceeding with the profiler operation.
- * @param {string} action - The action to perform ('create' or 'print').
- * @param {string} message - The log message to use when creating the profiler (required for 'create' action).
- */
-function SetDebugProfile(condition, action, message) {
-	// Initialize properties on first call
-	if (typeof SetDebugProfile.profiler === 'undefined') {
-		SetDebugProfile.profiler = {};
-		SetDebugProfile.profilerActive = false;
-	}
-
-	if (condition && action === 'create') {
-		SetDebugProfile.profiler[message] = fb.CreateProfiler(message);
-		SetDebugProfile.profilerActive = condition;
-	}
-	else if (SetDebugProfile.profiler[message] && SetDebugProfile.profilerActive && action === 'print') {
-		SetDebugProfile.profiler[message].Print();
-		if (grCfg.settings.showDebugPerformanceOverlay) {
-			grm.ui.debugTimingsArray.push(`${message}: ${SetDebugProfile.profiler[message].Time} ms`);
-		}
-	}
-}
-
-
-/**
- * Mockup method to render all glyphs (symbols) side-by-side at a fixed baseline y-position (y=0 relative to the canvas).
- * @param {GdiGraphics} gr - The graphics context to draw on.
- * @param {number} [startX=25] - Starting x-position for the first glyph.
- * @param {number} [spacing=25] - Horizontal spacing between glyphs.
- * @param {number} [canvasHeight=50] - Height of the mockup canvas.
- * @param {boolean} [showPerGlyphCenters=true] - If true, draws thin vertical lines at each glyph's horizontal center for per-icon alignment checks.
- * @param {SmoothingMode} [SmoothRender=SmoothingMode.AntiAlias] - Smoothing mode for rendering.
- * @param {TextRenderingHint} [TextRender=TextRenderingHint.ClearTypeGridFit] - Text rendering hint.
- */
-function MockupGlyphAlignment(gr, startX = 25, spacing = 25, canvasHeight = 50, showPerGlyphCenters = true, SmoothRender = SmoothingMode.AntiAlias, TextRender = TextRenderingHint.ClearTypeGridFit) {
-	if (!grm.button.btnMap || IsEmpty(grm.button.btnMap)) {
-		grm.button.btnMap = grm.button._createButtonMap();
-	}
-
-	// Define the transport glyphs to test (extend as needed)
-	const glyphsToTest = [
-		{ key: 'Stop', ico: grm.button.btnMap.Stop.ico },
-		{ key: 'Previous', ico: grm.button.btnMap.Previous.ico },
-		{ key: 'Play', ico: grm.button.btnMap.Play.ico },
-		{ key: 'Pause', ico: grm.button.btnMap.Pause.ico },
-		{ key: 'Next', ico: grm.button.btnMap.Next.ico },
-		{ key: 'PlaybackDefault', ico: grm.button.btnMap.PlaybackDefault.ico },
-		{ key: 'PlaybackRepeatPlaylist', ico: grm.button.btnMap.PlaybackRepeatPlaylist.ico },
-		{ key: 'PlaybackRepeatTrack', ico: grm.button.btnMap.PlaybackRepeatTrack.ico },
-		{ key: 'PlaybackShuffle', ico: grm.button.btnMap.PlaybackShuffle.ico },
-		{ key: 'ShowVolume', ico: grm.button.btnMap.ShowVolume.ico },
-		{ key: 'Reload', ico: grm.button.btnMap.Reload.ico },
-		{ key: 'AddTracks', ico: grm.button.btnMap.AddTracks.ico }
-	];
-
-	const font = grFont.lowerBarBtn; // Use the transport button font
-	const color = grCol.transportIconNormal; // Default icon color
-	const baselineY = 0; // Fixed baseline y-position (relative to gr's origin)
-	let currentX = startX;
-	let totalWidth = 0; // Accumulate for accurate global center line
-
-	// Pre-compute box widths and totalWidth for precise centering
-	const boxWidths = glyphsToTest.map(({ ico }) => {
-		const measurements = gr.MeasureString(ico, font, 0, 0, Infinity, canvasHeight);
-		const glyphW = Math.ceil(measurements.Width);
-		return Math.max(glyphW + 4, 30); // Min width for visibility (outer box)
-	});
-
-	totalWidth = boxWidths.reduce((sum, bw) => sum + bw, 0) + spacing * (glyphsToTest.length - 1);
-	gr.SetSmoothingMode(SmoothRender);
-	gr.SetTextRenderingHint(TextRender);
-	gr.FillSolidRect(0, 0, grm.ui.ww, grm.ui.wh, RGB(0, 0, 0));
-
-	glyphsToTest.forEach(({ key, ico }, index) => {
-		const outerBoxW = boxWidths[index];
-		const glyphMeasurements = gr.MeasureString(ico, font, 0, 0, Infinity, canvasHeight);
-		const glyphW = Math.ceil(glyphMeasurements.Width);
-		const glyphH = Math.ceil(glyphMeasurements.Height);
-
-		// Draw a horizontal baseline line for reference (green, at vertical center of outer box)
-		const hCenter = canvasHeight / 2;
-
-		gr.DrawLine(currentX, baselineY + hCenter, currentX + outerBoxW, baselineY + hCenter, 1, RGBA(0, 255, 0, 180));
-		// Optional: Per-glyph vertical center line (purple, thin) for the outer box
-		if (showPerGlyphCenters) {
-		const vCenterX = currentX + outerBoxW / 2;
-			gr.DrawLine(vCenterX, baselineY, vCenterX, baselineY + canvasHeight, 1, RGBA(0, 255, 0, 100));
-		}
-
-		// Draw the glyph centered in the outer box
-		const drawX = currentX + 2;
-		const drawW = outerBoxW - 4;
-		gr.DrawString(ico, font, color, drawX, baselineY, drawW, canvasHeight, StringFormat(1, 1));
-
-		// Calculate tight inner bounding box position (centered within draw rect)
-		const innerBoxX = drawX + (drawW - glyphW) / 2;
-		const innerBoxY = baselineY + (canvasHeight - glyphH) / 2;
-		// Draw the new tight bounding box (wireframe, yellow) for exact glyph ink extents
-		gr.DrawRect(innerBoxX, innerBoxY, glyphW, glyphH, 1, RGB(255, 0, 0)); // Yellow outline for tight glyph bbox
-
-		// Draw label below for identification
-		gr.DrawString(key, gdi.Font('Segoe UI', 10, 0), color, currentX, baselineY + canvasHeight + 2, outerBoxW, 20, StringFormat(0, 0));
-		currentX += outerBoxW + spacing;
-	});
-}
-
-
 /////////////////
 // * PARSING * //
 /////////////////
@@ -1747,6 +1344,20 @@ function SaveFSO(file, value, bUTF16) {
 /////////////////
 // * ACTIONS * //
 /////////////////
+/**
+ * Asserts that a condition is true and throws an error if it is not.
+ * @global
+ * @param {boolean} predicate - The condition to evaluate.
+ * @param {new (...args: any[]) => Error} ExceptionType - The error constructor to instantiate if the condition is false.
+ * @param {...any} args - Additional arguments to pass to the error constructor.
+ * @returns {void}
+ * @throws {Error} Throws an error of the type specified by `ExceptionType` if `predicate` is false.
+ */
+function Assert(predicate, ExceptionType, ...args) {
+	if (!predicate) throw new ExceptionType(...args);
+}
+
+
 /**
  * Executes a given function with the provided arguments and returns the result or the error if an exception occurs.
  * @global
@@ -2332,6 +1943,54 @@ function GetBrightestColor(colors, minBrightness, maxBrightness, minFrequency) {
 function GetCircularHueDifference(h1, h2) {
 	const diff = Math.abs(h1 - h2);
 	return diff > 180 ? 360 - diff : diff;
+}
+
+
+/**
+ * Calculates the contrast ratio between two luminance values.
+ * @param {number} l1 - The first luminance value.
+ * @param {number} l2 - The second luminance value.
+ * @returns {number} The contrast ratio (1 to 21).
+ */
+function GetContrastRatio(l1, l2) {
+	const brighter = Math.max(l1, l2);
+	const darker = Math.min(l1, l2);
+	return (brighter + 0.05) / (darker + 0.05);
+}
+
+
+/**
+ * Calculates the relative luminance of a color using the sRGB gamma-corrected formula.
+ * Based on the W3C WCAG 2.x standard for perceptual brightness.
+ * @param {Color} color - The color object containing r, g, b properties.
+ * @returns {number} The relative luminance value from 0.0 (darkest black) to 1.0 (lightest white).
+ */
+function GetRelativeLuminance(color) {
+	const components = [color.r / 255, color.g / 255, color.b / 255];
+
+	const [rs, gs, bs] = components.map(val => {
+		return val <= 0.03928 ? val / 12.92 : ((val + 0.055) / 1.055) ** 2.4;
+	});
+
+	return (0.2126 * rs) + (0.7152 * gs) + (0.0722 * bs);
+}
+
+
+/**
+ * Gets a status color based on W3C WCAG contrast ratio thresholds.
+ * @param {number|string} contrastRatio - The calculated contrast ratio (1 to 21).
+ * @returns {number} The GDI RGB color value for the status indicator.
+ */
+function GetWCAGColor(contrastRatio) {
+	const ratio = parseFloat(contrastRatio);
+	// AAA (Bright Green) - Highest accessibility
+	if (ratio >= 7.0) return RGB(0, 255, 100);
+	// AA (Green) - Standard accessibility
+	if (ratio >= 4.5) return RGB(80, 200, 80);
+	// Large Text Only (Yellow) - Minimum for UI components
+	if (ratio >= 3.0) return RGB(255, 190, 50);
+	// Fail (Red) - Below accessibility standards
+	return RGB(255, 80, 80);
 }
 
 
@@ -4519,36 +4178,6 @@ function UpdateTimezoneOffset() {
 // * THEME SPECIFIC * //
 ////////////////////////
 /**
- * Displays red rectangles to show all repaint areas when activating "Draw areas" in dev tools, used for debugging.
- * @global
- */
-function RepaintRectAreas() {
-	const originalRepaintRect = window.RepaintRect.bind(window);
-
-	window.RepaintRect = (x, y, w, h, force = undefined) => {
-		if (grm.ui.drawRepaintRects) {
-			grm.ui.repaintRects.push({ x, y, w, h });
-			grm.ui.repaintRectCount++;
-			window.Repaint();
-			return;
-		}
-		grm.ui.repaintRectCount = 0;
-		originalRepaintRect(x, y, w, h, force);
-	};
-}
-
-
-/**
- * Prints logs for window.Repaint() in the console, used for debugging.
- * @global
- */
-function RepaintWindow() {
-	DebugLog('Paint => Repainting from RepaintWindow()');
-	window.Repaint();
-}
-
-
-/**
  * Centralizes and manages continuous calls to `window.RepaintRect` across different panels or components
  * within the application for a specified duration, providing a more efficient mechanism for repainting
  * specific areas of the UI. This method optimizes repaint requests by allowing for coordinated updates
@@ -4560,7 +4189,7 @@ function RepaintWindow() {
 function RepaintWindowRectAreas(duration = 500, interval = 100) {
 	const originalRepaintRect = window.RepaintRect.bind(window);
 	if (window.RepaintRect.overridden) return;
-	DebugLog('Paint => Repainting from RepaintWindowRectAreas()');
+	grm.debug.debugLog('Paint => Repainting from RepaintWindowRectAreas()');
 
 	let repaintAreas = [];
 
@@ -4577,6 +4206,6 @@ function RepaintWindowRectAreas(duration = 500, interval = 100) {
 		repaintAreas = [];
 		window.RepaintRect = originalRepaintRect;
 		delete window.RepaintRect.overridden;
-		DebugLog('Paint => Restored original RepaintRect function.');
+		grm.debug.debugLog('Paint => Restored original RepaintRect function.');
 	}, duration);
 }

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -363,7 +363,7 @@ class ThemeDayNight {
 				if (prevWhite !== grSet.styleRebornWhite) {
 					grm.ui.initThemeFull = true;
 					grm.ui.initTheme();
-					DebugLog('\n>>> ThemeDayNight: modern_day_night auto-switched (day <-> night) <<<\n');
+					grm.debug.debugLog('\n>>> ThemeDayNight: modern_day_night auto-switched (day <-> night) <<<\n');
 				}
 				return;
 			}
@@ -376,7 +376,7 @@ class ThemeDayNight {
 
 			grm.ui.initThemeFull = true;
 			grm.ui.initTheme();
-			DebugLog('\n>>> ThemeDayNight: Full theme auto-switched (day <-> night) <<<\n');
+			grm.debug.debugLog('\n>>> ThemeDayNight: Full theme auto-switched (day <-> night) <<<\n');
 		}, 600000); // 10 minutes
 	}
 
@@ -621,7 +621,7 @@ class ThemeDayNight {
 		} else {
 			grm.ui.themeNotification = '';
 		}
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 	// #endregion
 }

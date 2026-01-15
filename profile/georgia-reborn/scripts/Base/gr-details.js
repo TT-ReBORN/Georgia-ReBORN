@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -298,7 +298,7 @@ class Details {
 			return;
 		}
 
-		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> disc art');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> disc art');
 
 		if (!this.discArtRotation) {
 			this.setDiscArtRotation();
@@ -320,7 +320,7 @@ class Details {
 			this.drawDiscArtImage(gr);
 		}
 
-		SetDebugProfile(false, 'print', 'on_paint -> disc art');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> disc art');
 	}
 
 	/**
@@ -343,7 +343,7 @@ class Details {
 	drawGrid(gr) {
 		if (!fb.IsPlaying && !grSet.panelBrowseMode || !grm.ui.displayDetails) return;
 
-		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> metadata grid');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> metadata grid');
 
 		gr.SetSmoothingMode(SmoothingMode.HighQuality);
 		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
@@ -385,7 +385,7 @@ class Details {
 
 		gr.SetInterpolationMode(InterpolationMode.Default);
 
-		SetDebugProfile(false, 'print', 'on_paint -> metadata grid');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> metadata grid');
 	}
 
 	/**
@@ -674,7 +674,7 @@ class Details {
 			return;
 		}
 
-		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> band logo');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> band logo');
 
 		const availableSpace = grm.ui.albumArtSize.y + grm.ui.albumArtSize.h - this.gridTop;
 		const lightBg = Color.BRT(grCol.detailsText) < 140;
@@ -693,7 +693,7 @@ class Details {
 			gr.DrawImage(logo, logoX, logoY, logoW, logoH, 0, 0, logo.Width, logo.Height, 0);
 		}
 
-		SetDebugProfile(false, 'print', 'on_paint -> band logo');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> band logo');
 	}
 
 	/**
@@ -706,7 +706,7 @@ class Details {
 			return;
 		}
 
-		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> label logo');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> label logo');
 
 		if (this.labelLogo.length > 0) {
 			const lightBg = grSet.labelArtOnBg ? Color.BRT(grCol.bg) > 140 : Color.BRT(grCol.detailsText) < 140;
@@ -731,7 +731,7 @@ class Details {
 				}
 			}
 			if (!this.cachedLabelLastLeftEdge) { // We don't want to recalculate this every screen refresh
-				DebugLog('Logo => Recalculating lastLeftEdge');
+				grm.debug.debugLog('Logo => Recalculating lastLeftEdge');
 				this.shadowImgLabel = null;
 				labelWidth = Math.round(totalLabelWidth / labels.length);
 				labelHeight = Math.round(labels[0].Height * labelWidth / labels[0].Width); // Might be recalc'd below
@@ -812,7 +812,7 @@ class Details {
 			}
 		}
 
-		SetDebugProfile(false, 'print', 'on_paint -> label logo');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> label logo');
 	}
 	// #endregion
 
@@ -959,19 +959,19 @@ class Details {
 
 		if (clearArtCache) {
 			grm.artCache && grm.artCache.clear();
-			DebugLog('Details cache => Art cache cleared');
+			grm.debug.debugLog('Details cache => Art cache cleared');
 		}
 
 		if (type) {
 			// * Clear individual cache property
 			if (property && Object.hasOwnProperty.call(this, property)) {
 				this[property] = null;
-				DebugLog(`Details cache => Cleared property "${property}" in cache type "${type}"`);
+				grm.debug.debugLog(`Details cache => Cleared property "${property}" in cache type "${type}"`);
 			}
 			// * Clear specific cache type
 			else if (cacheActions[type]) {
 				cacheActions[type]();
-				DebugLog(`Details cache => Cleared cache type "${type}"`);
+				grm.debug.debugLog(`Details cache => Cleared cache type "${type}"`);
 			}
 			return;
 		}
@@ -980,7 +980,7 @@ class Details {
 		for (const action in cacheActions) {
 			cacheActions[action]();
 		}
-		DebugLog('Details cache => Cleared all caches');
+		grm.debug.debugLog('Details cache => Cleared all caches');
 	}
 
 	/**
@@ -1003,7 +1003,7 @@ class Details {
 				clear(timer);
 				timers[type].timer = null;
 			}
-			DebugLog(log);
+			grm.debug.debugLog(log);
 		};
 
 		if (type && timers[type]) {
@@ -1711,13 +1711,13 @@ class Details {
 	 * Fetches new disc art when a new album is being played.
 	 */
 	fetchDiscArt() {
-		SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchDiscArt');
+		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchDiscArt');
 
 		if (grSet.displayDiscArt && !grm.ui.isStreaming) {
 			this.loadDiscArt(this.findDiscArtPath());
 		}
 
-		SetDebugProfile(false, 'print', 'fetchDiscArt');
+		grm.debug.setDebugProfile(false, 'print', 'fetchDiscArt');
 	}
 
 	/**
@@ -1767,7 +1767,7 @@ class Details {
 			}
 
 			this.clearCache('metrics', 'cachedLabelLastLeftEdge'); // Recalc label location
-			RepaintWindow();
+			grm.debug.repaintWindow();
 		});
 	}
 
@@ -1917,7 +1917,7 @@ class Details {
 			if (performanceTierNew === performanceTierCurrent) return;
 			performanceTierCurrent = performanceTierNew;
 			const tier = performanceTiers[performanceTierCurrent];
-			DebugLog(`Disc art => Adapted to ${performanceTierCurrent} perf: batchSize=${tier.batchSize}, batchDelay=${tier.batchDelay}ms (avgFrameTime=${Math.round(frameTimeAvg)}ms)`);
+			grm.debug.debugLog(`Disc art => Adapted to ${performanceTierCurrent} perf: batchSize=${tier.batchSize}, batchDelay=${tier.batchDelay}ms (avgFrameTime=${Math.round(frameTimeAvg)}ms)`);
 		};
 
 		const precomputeBatch = () => {
@@ -1932,7 +1932,7 @@ class Details {
 				this.discArtArray[precomputeIndex] = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, rotationDegrees, grm.artCache.discArtImgMaxRes);
 				const frameTime = Date.now() - frameStart;
 				updatePerformanceTier(frameTime); // Update per-frame for quicker response
-				DebugLog(`Disc art => Precomputed discArtImg: ${precomputeIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
+				grm.debug.debugLog(`Disc art => Precomputed discArtImg: ${precomputeIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
 				computedInBatch++;
 				precomputeIndex = (precomputeIndex + 1) % grSet.spinDiscArtImageCount;
 			}
@@ -1940,7 +1940,7 @@ class Details {
 			batchCount++;
 
 			if (this.discArtArray.every(frame => !!frame)) {
-				DebugLog('Disc art => All frames precomputed');
+				grm.debug.debugLog('Disc art => All frames precomputed');
 				return;
 			}
 
@@ -1956,7 +1956,7 @@ class Details {
 		this.clearTimer = (type) => {
 			if (type === 'discArt' && precomputeTimer) {
 				clearTimeout(precomputeTimer);
-				DebugLog('Disc art => Cleared precompute timer');
+				grm.debug.debugLog('Disc art => Cleared precompute timer');
 			}
 			Details.prototype.clearTimer.call(this, type);
 			delete this.clearTimer; // Restore to prototype chain
@@ -1998,7 +1998,7 @@ class Details {
 			return;
 		}
 
-		DebugLog(`Disc art => Starting lazy spin with async precompute: ${grSet.spinDiscArtImageCount} frames, every ${grSet.spinDiscArtRedrawInterval}ms`);
+		grm.debug.debugLog(`Disc art => Starting lazy spin with async precompute: ${grSet.spinDiscArtImageCount} frames, every ${grSet.spinDiscArtRedrawInterval}ms`);
 
 		const rotationDegreeIncrement = 360 / grSet.spinDiscArtImageCount;
 		const combinedImg = this.combineDiscArtWithCover(false);
@@ -2030,12 +2030,12 @@ class Details {
 				}
 				if (!nearestFound) displayIndex = 0; // Ultimate fallback
 
-				DebugLog(`Disc art => Frame ${intendedIndex} not ready, displaying nearest ${displayIndex}`);
+				grm.debug.debugLog(`Disc art => Frame ${intendedIndex} not ready, displaying nearest ${displayIndex}`);
 
 				// Emergency compute intended (sync for immediacy, but only one frame)
 				const rotationDegrees = rotationDegreeIncrement * intendedIndex;
 				this.discArtArray[intendedIndex] = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, rotationDegrees, grm.artCache.discArtImgMaxRes);
-				DebugLog(`Disc art => Emergency computed discArtImg: ${intendedIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
+				grm.debug.debugLog(`Disc art => Emergency computed discArtImg: ${intendedIndex} (${this.discArtSize.w}x${this.discArtSize.h}) with rotation: ${rotationDegrees} degrees`);
 			}
 
 			this.discArtRotationIndex = intendedIndex; // Advance intended for next tick
@@ -2055,7 +2055,7 @@ class Details {
 			return;
 		}
 
-		SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'createDiscArtShadow');
+		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'createDiscArtShadow');
 
 		const discArtMargin = SCALE(2);
 
@@ -2077,7 +2077,7 @@ class Details {
 			}
 		}
 
-		SetDebugProfile(false, 'print', 'createDiscArtShadow');
+		grm.debug.setDebugProfile(false, 'print', 'createDiscArtShadow');
 	}
 
 	/**
@@ -2105,7 +2105,7 @@ class Details {
 		const testBandLogoPath = (imgDir, name) => {
 			const logoPath = `${imgDir}${name}.png`;
 			if (IsFile(logoPath)) {
-				DebugLog(`Logo => Found band logo: ${logoPath}`);
+				grm.debug.debugLog(`Logo => Found band logo: ${logoPath}`);
 				return logoPath;
 			}
 			return '';
@@ -2211,12 +2211,12 @@ class Details {
 			for (let year = startYear; year <= lastSearchYear; year++) {
 				const yearFolder = `${baseDir}${year}`;
 				if (IsFolder(yearFolder)) {
-					DebugLog(`Logo => Found folder for ${label} for year ${year}.`);
+					grm.debug.debugLog(`Logo => Found folder for ${label} for year ${year}.`);
 					return `${yearFolder}\\`;
 				}
 			}
 
-			DebugLog(`Logo => Found folder for ${label} and using latest logo.`);
+			grm.debug.debugLog(`Logo => Found folder for ${label} and using latest logo.`);
 			return baseDir;
 		};
 
@@ -2241,7 +2241,7 @@ class Details {
 		// * Load the record label image
 		if (IsFile(label)) {
 			recordLabel = gdi.Image(label);
-			DebugLog('Logo => Found Record label:', label, !recordLabel ? '<COULD NOT LOAD>' : '');
+			grm.debug.debugLog('Logo => Found Record label:', label, !recordLabel ? '<COULD NOT LOAD>' : '');
 		} else {
 			labelStr = cleanLabelString(labelStr);
 			label = searchFile(labelStr);

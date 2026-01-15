@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1816,6 +1816,7 @@ class ConfigDefaults {
 			doubleClickRefresh: false,
 			showDebugLog: false,
 			showDebugThemeLog: false,
+			showDebugColorOverlay: false,
 			showDebugThemeOverlay: false,
 			showDebugPerformanceOverlay: false,
 			showPanelContextMenu: false,
@@ -1860,6 +1861,7 @@ class ConfigDefaults {
 			doubleClickRefresh: 'Enables refreshing the theme by double-clicking, for example, on the lower bar',
 			showDebugLog: 'Enables extra logging in the console. Probably not needed unless you encounter a problem or you\'re asked to enable it.',
 			showDebugThemeLog: 'Logs the output of the algorithm which determines the primary theme color.',
+			showDebugColorOverlay: 'Displays color metadata of extracted colors from album art as an overlay.',
 			showDebugThemeOverlay: 'Displays various theme debug logs on the album art as an overlay.',
 			showDebugPerformanceOverlay: 'Displays various performance debug logs on the album art as an overlay.',
 			showPanelContextMenu: 'Displays the Spider Monkey Panel context menu when right clicking in the panel',

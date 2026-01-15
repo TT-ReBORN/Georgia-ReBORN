@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -74,7 +74,7 @@ class ContextMenus {
 	contextMenuTopBar(cm) {
 		const updateButtons = () => {
 			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
-			RepaintWindow();
+			grm.debug.repaintWindow();
 		};
 
 		const topMenuDisplayMenu = new ContextMenu('Display');
@@ -342,13 +342,13 @@ class ContextMenus {
 			grm.ui.newTrackFetchingArtwork = true;
 			grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 			grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-			RepaintWindow();
+			grm.debug.repaintWindow();
 		};
 		discArtMenu.appendItem('Show placeholder if no disc art found', () => {
 			grSet.showDiscArtStub = !grSet.showDiscArtStub;
 			grSet.noDiscArtStub = false;
 			grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showDiscArtStub });
 		discArtMenu.separator();
 		discArtMenu.appendItem('No placeholder', () => {
@@ -358,7 +358,7 @@ class ContextMenus {
 			grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 			grm.details.discArtArray = [];
 			if (!grSet.noDiscArtStub) grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.noDiscArtStub });
 		discArtMenu.separator();
 
@@ -453,7 +453,7 @@ class ContextMenus {
 				grPath.discArtCustomStub = `${fb.ProfilePath}georgia-reborn\\images\\custom\\discart\\${grSet.discArtStub}.png`;
 				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+				window.Repaint();
 				if (!IsFile(grPath.discArtCustomStub)) {
 					grm.msg.showPopupNotice('contextMenu', 'discArtCustomStub');
 				}
@@ -486,12 +486,12 @@ class ContextMenus {
 	contextMenuLowerBar(cm) {
 		const updateButtons = () => {
 			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
-			RepaintWindow();
+			grm.debug.repaintWindow();
 		};
 
 		const updateSeekbar = () => {
 			grm.ui.setMainMetrics();
-			RepaintWindow();
+			grm.debug.repaintWindow();
 		};
 
 		// * TRANSPORT BUTTON SIZE * //
@@ -715,15 +715,15 @@ class ContextMenus {
 		const showArtistMenu = new ContextMenu('Show artist');
 		showArtistMenu.appendItem('Default', () => {
 			grSet.showLowerBarArtist_default = !grSet.showLowerBarArtist_default;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarArtist_default });
 		showArtistMenu.appendItem('Artwork', () => {
 			grSet.showLowerBarArtist_artwork = !grSet.showLowerBarArtist_artwork;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarArtist_artwork });
 		showArtistMenu.appendItem('Compact', () => {
 			grSet.showLowerBarArtist_compact = !grSet.showLowerBarArtist_compact;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarArtist_compact });
 		transportButtonDisplayMenu.append(showArtistMenu);
 
@@ -732,17 +732,17 @@ class ContextMenus {
 		showTrackNumberMenu.appendItem('Default', () => {
 			grSet.showLowerBarTrackNum_default = !grSet.showLowerBarTrackNum_default;
 			on_metadb_changed();
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarTrackNum_default });
 		showTrackNumberMenu.appendItem('Artwork', () => {
 			grSet.showLowerBarTrackNum_artwork = !grSet.showLowerBarTrackNum_artwork;
 			on_metadb_changed();
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarTrackNum_artwork });
 		showTrackNumberMenu.appendItem('Compact', () => {
 			grSet.showLowerBarTrackNum_compact = !grSet.showLowerBarTrackNum_compact;
 			on_metadb_changed();
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarTrackNum_compact });
 		transportButtonDisplayMenu.append(showTrackNumberMenu);
 
@@ -750,15 +750,15 @@ class ContextMenus {
 		const showTitleMenu = new ContextMenu('Show track title');
 		showTitleMenu.appendItem('Default', () => {
 			grSet.showLowerBarTitle_default = !grSet.showLowerBarTitle_default;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarTitle_default });
 		showTitleMenu.appendItem('Artwork', () => {
 			grSet.showLowerBarTitle_artwork = !grSet.showLowerBarTitle_artwork;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarTitle_artwork });
 		showTitleMenu.appendItem('Compact', () => {
 			grSet.showLowerBarTitle_compact = !grSet.showLowerBarTitle_compact;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarTitle_compact });
 		transportButtonDisplayMenu.append(showTitleMenu);
 
@@ -766,15 +766,15 @@ class ContextMenus {
 		const showComposerMenu = new ContextMenu('Show composer');
 		showComposerMenu.appendItem('Default', () => {
 			grSet.showLowerBarComposer_default = !grSet.showLowerBarComposer_default;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarComposer_default });
 		showComposerMenu.appendItem('Artwork', () => {
 			grSet.showLowerBarComposer_artwork = !grSet.showLowerBarComposer_artwork;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarComposer_artwork });
 		showComposerMenu.appendItem('Compact', () => {
 			grSet.showLowerBarComposer_compact = !grSet.showLowerBarComposer_compact;
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarComposer_compact });
 		transportButtonDisplayMenu.append(showComposerMenu);
 
@@ -783,17 +783,17 @@ class ContextMenus {
 		showArtistFlagsMenu.appendItem('Default', () => {
 			grSet.showLowerBarArtistFlags_default = !grSet.showLowerBarArtistFlags_default;
 			grm.ui.loadCountryFlags();
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarArtistFlags_default });
 		showArtistFlagsMenu.appendItem('Artwork', () => {
 			grSet.showLowerBarArtistFlags_artwork = !grSet.showLowerBarArtistFlags_artwork;
 			grm.ui.loadCountryFlags();
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarArtistFlags_artwork });
 		showArtistFlagsMenu.appendItem('Compact', () => {
 			grSet.showLowerBarArtistFlags_compact = !grSet.showLowerBarArtistFlags_compact;
 			grm.ui.loadCountryFlags();
-			RepaintWindow();
+			window.Repaint();
 		}, { is_checked: grSet.showLowerBarArtistFlags_compact });
 		transportButtonDisplayMenu.append(showArtistFlagsMenu);
 
@@ -978,7 +978,7 @@ class ContextMenus {
 				}
 				if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 
-				RepaintWindow();
+				window.Repaint();
 			}, { is_radio_checked: type[1] === grSet.seekbar });
 		}
 
@@ -1054,7 +1054,7 @@ class ContextMenus {
 				peakmeterBarDesignMenu.appendItem(design[0], () => {
 					grSet.peakmeterBarDesign = design[1];
 					grm.peakBar.on_size(grm.ui.ww, grm.ui.wh);
-					RepaintWindow();
+					window.Repaint();
 				}, { is_radio_checked: design[1] === grSet.peakmeterBarDesign });
 			}
 			cm.append(peakmeterBarDesignMenu);
@@ -1066,7 +1066,7 @@ class ContextMenus {
 					peakmeterBarVertSizeMenu.appendItem(size[0], () => {
 						grSet.peakmeterBarVertSize = size[1];
 						grm.ui.setMainComponents('seekbar');
-						RepaintWindow();
+						window.Repaint();
 					}, { is_radio_checked: size[1] === grSet.peakmeterBarVertSize });
 				}
 				cm.append(peakmeterBarVertSizeMenu);
@@ -1077,7 +1077,7 @@ class ContextMenus {
 					peakmeterBarVertDbRangeMenu.appendItem(range[0], () => {
 						grSet.peakmeterBarVertDbRange = range[1];
 						grm.ui.setMainComponents('seekbar');
-						RepaintWindow();
+						window.Repaint();
 					}, { is_radio_checked: range[1] === grSet.peakmeterBarVertDbRange });
 				}
 				cm.append(peakmeterBarVertDbRangeMenu);
@@ -1087,36 +1087,36 @@ class ContextMenus {
 			if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
 				peakmeterBarDisplayMenu.appendItem('Show over bars', () => {
 					grSet.peakmeterBarOverBars = !grSet.peakmeterBarOverBars;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarOverBars });
 				peakmeterBarDisplayMenu.separator();
 				peakmeterBarDisplayMenu.appendItem('Show outer bars', () => {
 					grSet.peakmeterBarOuterBars = !grSet.peakmeterBarOuterBars;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarOuterBars });
 				peakmeterBarDisplayMenu.appendItem('Show outer peaks', () => {
 					grSet.peakmeterBarOuterPeaks = !grSet.peakmeterBarOuterPeaks;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarOuterPeaks });
 				peakmeterBarDisplayMenu.separator();
 				peakmeterBarDisplayMenu.appendItem('Show main bars', () => {
 					grSet.peakmeterBarMainBars = !grSet.peakmeterBarMainBars;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarMainBars });
 				peakmeterBarDisplayMenu.appendItem('Show main peaks', () => {
 					grSet.peakmeterBarMainPeaks = !grSet.peakmeterBarMainPeaks;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarMainPeaks });
 				peakmeterBarDisplayMenu.separator();
 				peakmeterBarDisplayMenu.appendItem('Show middle bars', () => {
 					grSet.peakmeterBarMiddleBars = !grSet.peakmeterBarMiddleBars;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarMiddleBars });
 			}
 
 			peakmeterBarDisplayMenu.appendItem('Show progress bar', () => {
 				grSet.peakmeterBarProgBar = !grSet.peakmeterBarProgBar;
-				RepaintWindow();
+				window.Repaint();
 			}, { is_checked: grSet.peakmeterBarProgBar });
 
 			if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
@@ -1124,28 +1124,28 @@ class ContextMenus {
 				peakmeterBarDisplayMenu.appendItem('Show gaps', () => {
 					grSet.peakmeterBarGaps = !grSet.peakmeterBarGaps;
 					grm.peakBar.on_size(grm.ui.ww, grm.ui.wh);
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarGaps });
 				peakmeterBarDisplayMenu.appendItem('Show grid', () => {
 					grSet.peakmeterBarGrid = !grSet.peakmeterBarGrid;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarGrid });
 			}
 
 			if (grSet.peakmeterBarDesign === 'vertical') {
 				peakmeterBarDisplayMenu.appendItem('Show peaks', () => {
 					grSet.peakmeterBarVertPeaks = !grSet.peakmeterBarVertPeaks;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarVertPeaks });
 				peakmeterBarDisplayMenu.appendItem('Show baseline', () => {
 					grSet.peakmeterBarVertBaseline = !grSet.peakmeterBarVertBaseline;
-					RepaintWindow();
+					window.Repaint();
 				}, { is_checked: grSet.peakmeterBarVertBaseline });
 			}
 
 			peakmeterBarDisplayMenu.appendItem(grSet.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', () => {
 				grSet.peakmeterBarInfo = !grSet.peakmeterBarInfo;
-				RepaintWindow();
+				window.Repaint();
 			}, { is_checked: grSet.peakmeterBarInfo });
 
 			cm.append(peakmeterBarDisplayMenu);
@@ -1188,7 +1188,7 @@ class ContextMenus {
 					grSet.waveformBarAnalysis = type[1];
 					grm.waveBar.updateConfig({ preset: { analysisMode: type[1] } });
 					grm.waveBar.updateBar();
-					RepaintWindow();
+					window.Repaint();
 				}, {
 					is_grayed_out: grSet.waveformBarMode === 'visualizer',
 					is_radio_checked: type[1] === grSet.waveformBarAnalysis
@@ -1250,7 +1250,7 @@ class ContextMenus {
 					grSet.waveformBarMode = mode[1];
 					grm.waveBar.updateConfig({ analysis: { binaryMode: grSet.waveformBarMode } });
 					grm.waveBar.updateBar(true);
-					RepaintWindow();
+					window.Repaint();
 				}, {
 					is_grayed_out: !found,
 					is_radio_checked: mode[1] === grSet.waveformBarMode
@@ -1272,7 +1272,7 @@ class ContextMenus {
 
 					grm.waveBar.updateConfig({ analysis: { resolution: res[1] } });
 					grm.waveBar.updateBar(true);
-					RepaintWindow();
+					window.Repaint();
 				}, {
 					is_radio_checked: res[1] === grSet.waveformBarResolution
 					}
@@ -1298,7 +1298,7 @@ class ContextMenus {
 					grSet.waveformBarSizeWave = size[1];
 					grm.waveBar.updateConfig({ ui: { sizeWave: size[1] } });
 					grm.waveBar.updateBar();
-					RepaintWindow();
+					window.Repaint();
 				}, { is_radio_checked: size[1] === grSet.waveformBarSizeWave });
 			}
 			waveformBarSizeMenu.append(waveformBarSizeWaveMenu);
@@ -1309,7 +1309,7 @@ class ContextMenus {
 					grSet.waveformBarSizeBars = size[1];
 					grm.waveBar.updateConfig({ ui: { sizeBars: size[1] } });
 					grm.waveBar.updateBar();
-					RepaintWindow();
+					window.Repaint();
 				}, { is_radio_checked: size[1] === grSet.waveformBarSizeBars });
 			}
 			waveformBarSizeMenu.append(waveformBarSizeBarsMenu);
@@ -1320,7 +1320,7 @@ class ContextMenus {
 					grSet.waveformBarSizeDots = size[1];
 					grm.waveBar.updateConfig({ ui: { sizeDots: size[1] } });
 					grm.waveBar.updateBar();
-					RepaintWindow();
+					window.Repaint();
 				}, { is_radio_checked: size[1] === grSet.waveformBarSizeDots });
 			}
 			waveformBarSizeMenu.append(waveformBarSizeDotsMenu);
@@ -1331,7 +1331,7 @@ class ContextMenus {
 					grSet.waveformBarSizeHalf = size[1];
 					grm.waveBar.updateConfig({ ui: { sizeHalf: size[1] } });
 					grm.waveBar.updateBar();
-					RepaintWindow();
+					window.Repaint();
 				}, { is_radio_checked: size[1] === grSet.waveformBarSizeHalf });
 			}
 			waveformBarSizeMenu.append(waveformBarSizeHalfMenu);
@@ -1340,7 +1340,7 @@ class ContextMenus {
 				grSet.waveformBarSizeNormalize = !grSet.waveformBarSizeNormalize;
 				grm.waveBar.updateConfig({ ui: { sizeNormalizeWidth: grSet.waveformBarSizeNormalize } });
 				grm.waveBar.updateBar();
-				RepaintWindow();
+				window.Repaint();
 			}, { is_checked: grSet.waveformBarSizeNormalize });
 			cm.append(waveformBarSizeMenu);
 

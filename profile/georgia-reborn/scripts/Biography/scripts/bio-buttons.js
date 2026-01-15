@@ -539,7 +539,7 @@ class BioButtons {
 		const n = bioSet.artistView ? 'bio' : 'rev';
 		if (bio.txt[n].loaded.txt && bio.txt.reader[n].lyrics) bio.txt.getText();
 		grm.ui.initTheme();
-		DebugLog('\n>>> initTheme => Biography => resetZoom <<<\n');
+		grm.debug.debugLog('\n>>> initTheme => Biography => resetZoom <<<\n');
 	}
 
 	scrollAlb() {

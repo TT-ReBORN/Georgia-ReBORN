@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -339,10 +339,10 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			query = query.replace(Regex.TFPlDiscNumberTotalDiscsSubtitle, '');
 		}
 
-		const profiler = grm.ui.traceListPerformance && fb.CreateProfiler();
+		const profiler = grm.debug.traceListPerformance && fb.CreateProfiler();
 		const tfo = fb.TitleFormat(query || '');
 		const rows_data = tfo.EvalWithMetadbs(rows_metadb);
-		grm.ui.traceListPerformance && console.log(`rows_data initialized in ${profiler.Time}ms`);
+		grm.debug.traceListPerformance && console.log(`rows_data initialized in ${profiler.Time}ms`);
 		const prepared_disc_data = showDiscHeader ? PlaylistDiscHeader.prepare_disc_header_data(rows_to_process, rows_metadb) : [];
 
 		return [Zip(rows_to_process, rows_data), prepared_disc_data];

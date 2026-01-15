@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -82,12 +82,12 @@ class ArtCache {
 
 		if (file && file.Size === cache[location].filesize) {
 			cacheIndexes.push(location);
-			DebugLog('Art cache => Cache hit:', location);
+			grm.debug.debugLog('Art cache => Cache hit:', location);
 			return cache[location].image;
 		}
 
 		// Size of file on disk has changed
-		DebugLog(`Art cache => Cache entry was stale: ${location} [old size: ${cache[location].filesize}, new size: ${file.Size}]`);
+		grm.debug.debugLog(`Art cache => Cache entry was stale: ${location} [old size: ${cache[location].filesize}, new size: ${file.Size}]`);
 		delete cache[location]; // Was removed from cacheIndexes already
 
 		return null;
@@ -233,7 +233,7 @@ class ArtCache {
 			// Maintain cache size
 			if (cacheIndexes.length > cacheMaxSize) {
 				const remove = cacheIndexes.shift();
-				DebugLog('Art cache => Removing img from cache:', remove);
+				grm.debug.debugLog('Art cache => Removing img from cache:', remove);
 				delete cache[remove];
 			}
 		} catch (e) {
@@ -249,9 +249,9 @@ class ArtCache {
 	 */
 	clear() {
 		if (grCfg.settings.showDebugLog) {
-			DebugLog(`Art cache => Total cache size for Cache 1: ${this.getTotalCacheSize(1, false)}`);
-			DebugLog(`Art cache => Total cache size for Cache 2: ${this.getTotalCacheSize(2, false)}`);
-			DebugLog(`Art cache => Total cache size cleared: ${this.getTotalCacheSize(0, false)}`);
+			grm.debug.debugLog(`Art cache => Total cache size for Cache 1: ${this.getTotalCacheSize(1, false)}`);
+			grm.debug.debugLog(`Art cache => Total cache size for Cache 2: ${this.getTotalCacheSize(2, false)}`);
+			grm.debug.debugLog(`Art cache => Total cache size cleared: ${this.getTotalCacheSize(0, false)}`);
 		}
 
 		const clearCache = (cacheIndexes, cache) => {
@@ -449,7 +449,7 @@ class BackgroundImage {
 
 			if (!enabled || !cycle) continue;
 
-			DebugLog(`\n>>> initImage => initImgCycle => Panel: ${CapitalizeString(panel)} - Cycle time: ${cycleTime} seconds <<<\n`);
+			grm.debug.debugLog(`\n>>> initImage => initImgCycle => Panel: ${CapitalizeString(panel)} - Cycle time: ${cycleTime} seconds <<<\n`);
 			this.imgCycleIntervals[panel] = setInterval(() => {
 				this.cycleBgImage(panel, 1);
 			}, cycleTime * 1000);
@@ -522,7 +522,7 @@ class BackgroundImage {
 		this.albumImgList = [];
 		this.customBgImg = null;
 		this.customImgList = [];
-		DebugLog('Main cache => Background image cache cleared');
+		grm.debug.debugLog('Main cache => Background image cache cleared');
 	}
 
 	/**
@@ -1122,7 +1122,7 @@ class Hyperlink {
 	 */
 	click() {
 		const populatePlaylist = (query) => {
-			DebugLog(query);
+			grm.debug.debugLog(query);
 			try {
 				const handle_list = fb.GetQueryItems(fb.GetLibraryItems(), query);
 				if (handle_list.Count) {
@@ -1381,7 +1381,7 @@ class JumpSearch {
 				// * Playlist advance
 				if (focusIndex >= 0 && focusIndex < search.length && (grm.ui.displayPlaylist || grm.ui.displayLibrarySplit(true))) {
 					this.matches = this.initials[text];
-					DebugLog('Playlist advance results', this.matches); // Debug
+					grm.debug.debugLog('Playlist advance results', this.matches); // Debug
 					this.ix = this.matches.indexOf(focusIndex);
 					this.ix++;
 					if (this.ix >= this.matches.length) this.ix = 0;
@@ -1391,7 +1391,7 @@ class JumpSearch {
 				// * Library advance
 				else if (lib.panel.pos >= 0 && lib.panel.pos < lib.pop.tree.length && !grm.ui.displayLibrarySplit(true)) {
 					this.matches = this.initials[text];
-					DebugLog('Library advance results', this.matches); // Debug, can remove this soon
+					grm.debug.debugLog('Library advance results', this.matches); // Debug, can remove this soon
 					this.ix = this.matches.indexOf(lib.panel.pos);
 					this.ix++;
 					if (this.ix >= this.matches.length) this.ix = 0;
@@ -1458,7 +1458,7 @@ class JumpSearch {
 							plman.ClearPlaylistSelection(plman.ActivePlaylist);
 							plman.SetPlaylistFocusItem(plman.ActivePlaylist, pos);
 							plman.SetPlaylistSelectionSingle(plman.ActivePlaylist, pos, true);
-							DebugLog(`Jumpsearch: "${name}" found in Playlist`); // Debug, can remove this soon
+							grm.debug.debugLog(`Jumpsearch: "${name}" found in Playlist`); // Debug, can remove this soon
 							return true;
 						}
 						return false;
@@ -1475,7 +1475,7 @@ class JumpSearch {
 								lib.pop.setPos(pos);
 								if (lib.pop.autoFill.key) lib.pop.getTreeSel();
 								lib.lib.treeState(false, libSet.rememberTree);
-								DebugLog(`Jumpsearch: "${name}" found in Library`); // Debug, can remove this soon
+								grm.debug.debugLog(`Jumpsearch: "${name}" found in Library`); // Debug, can remove this soon
 								return true;
 							}
 							return false;
@@ -1484,7 +1484,7 @@ class JumpSearch {
 
 					if (!foundInPlaylist && !foundInLibrary) {
 						this.jump_search = false;
-						DebugLog('Jumpsearch: No results were found'); // Debug, can remove this soon
+						grm.debug.debugLog('Jumpsearch: No results were found'); // Debug, can remove this soon
 					}
 
 					window.Repaint();
@@ -2096,7 +2096,7 @@ class ProgressBar {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
-		if (grm.ui.showDrawExtendedTiming) grm.ui.seekbarProfiler.Reset();
+		if (grm.debug.showDrawExtendedTiming) grm.ui.seekbarProfiler.Reset();
 
 		const styleRounded = grSet.styleProgressBarDesign === 'rounded';
 		if (styleRounded) this.arc = Math.min(this.w, this.h) / 2;
@@ -2543,7 +2543,7 @@ class PeakmeterBar {
 			return;
 		}
 
-		if (grSet.peakmeterBarRefreshRate === 'variable' || grm.ui.showDrawExtendedTiming) {
+		if (grSet.peakmeterBarRefreshRate === 'variable' || grm.debug.showDrawExtendedTiming) {
 			grm.ui.seekbarProfiler.Reset();
 		}
 
@@ -3676,7 +3676,7 @@ class WaveformBar {
 			return;
 		}
 
-		if (grSet.waveformBarRefreshRate === 'variable' || grm.ui.showDrawExtendedTiming) {
+		if (grSet.waveformBarRefreshRate === 'variable' || grm.debug.showDrawExtendedTiming) {
 			grm.ui.seekbarProfiler.Reset();
 		}
 
@@ -4117,7 +4117,7 @@ class WaveformBar {
 			);
 			const startTime = Date.now();
 
-			DebugLog(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
+			grm.debug.debugLog(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
 
 			const success = await new Promise((resolve) => {
 				const { metadata } = GetMetadata(handleList);
@@ -4157,7 +4157,7 @@ class WaveformBar {
 				}
 			}
 
-			DebugLog(`Audio Wizard => Analysis completed in ${(Date.now() - startTime) / 1000} seconds`);
+			grm.debug.debugLog(`Audio Wizard => Analysis completed in ${(Date.now() - startTime) / 1000} seconds`);
 			this.throttlePaint();
 		}
 		catch (e) {

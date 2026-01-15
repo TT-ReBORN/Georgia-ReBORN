@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1831,7 +1831,7 @@ class PlaylistHistory {
 				return true;
 			}
 		}
-		DebugLog(`Playlist history => checking for duplicate playlist states took: ${Date.now() - start}ms`);
+		grm.debug.debugLog(`Playlist history => checking for duplicate playlist states took: ${Date.now() - start}ms`);
 		return false;
 	}
 
@@ -1894,7 +1894,7 @@ class PlaylistHistory {
 					grm.button.btn.back.repaint();
 					grm.button.btn.forward.repaint();
 				}
-				DebugLog('Playlist history => stateIndex:', this.stateIndex, ' new items count:', plItems.Count, this.stateIndex);
+				grm.debug.debugLog('Playlist history => stateIndex:', this.stateIndex, ' new items count:', plItems.Count, this.stateIndex);
 			}
 		}
 	}
@@ -1937,7 +1937,7 @@ class PlaylistHistory {
 		if (this.stateIndex <= 0) {
 			this.stateIndex = 0;
 		}
-		DebugLog('Playlist history => pl.history back =>', this.stateIndex);
+		grm.debug.debugLog('Playlist history => pl.history back =>', this.stateIndex);
 		this._setPlaylistState();
 	}
 
@@ -1950,7 +1950,7 @@ class PlaylistHistory {
 		if (this.stateIndex >= this.length) {
 			this.stateIndex = this.length - 1;
 		}
-		DebugLog('Playlist history => pl.history forward =>', this.stateIndex);
+		grm.debug.debugLog('Playlist history => pl.history forward =>', this.stateIndex);
 		this._setPlaylistState();
 	}
 

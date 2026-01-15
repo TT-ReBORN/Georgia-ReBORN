@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Lyrics                                   * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred + WilB                                          * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -579,7 +578,7 @@ class Lyrics {
 			isHighlighted && grSet.lyricsLargerCurrentSync ? grFont.lyricsHighlight : grFont.lyrics;
 
 		const color =
-			bounds.outsideVisibleBounds	? RGBtoRGBA(grCol.lyricsNormal, 255 * (1 - Clamp(fadeFactor, 0, 1))) :
+			bounds.outsideVisibleBounds ? RGBtoRGBA(grCol.lyricsNormal, 255 * (1 - Clamp(fadeFactor, 0, 1))) :
 			(isHighlighted ? blendIn : grCol.lyricsNormal);
 
 		if (bounds.visibleBounds) {
@@ -596,7 +595,7 @@ class Lyrics {
 	drawLyrics(gr) {
 		if (!grm.ui.displayLyrics || this.lyrics.length === 0 || this.locus < 0) return;
 
-		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'on_paint -> lyrics');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> lyrics');
 
 		const top = this.lyrics[this.locus].yOffset - this.locusOffset + this.scrollDragOffset;
 		const y = this.y + this.scroll;
@@ -617,7 +616,7 @@ class Lyrics {
 
 		this.drawLyricsOffset(gr);
 
-		SetDebugProfile(false, 'print', 'on_paint -> lyrics');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> lyrics');
 	}
 
 	/**

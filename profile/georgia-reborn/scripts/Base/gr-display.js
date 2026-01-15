@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -369,7 +369,7 @@ class Display {
 
 		grm.ui.createFonts();
 		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -389,7 +389,7 @@ class Display {
 		grm.ui.clearCache('metrics');
 		grm.ui.createFonts();
 		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -399,7 +399,7 @@ class Display {
 	setNotificationFontSize(size) {
 		grSet.notificationFontSize_layout = size;
 		grm.ui.createFonts();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -414,7 +414,7 @@ class Display {
 		} else if (grm.ui.displayMetadataGridMenu) {
 			grm.ui.gridMenu.initMetadataGridMenu();
 		}
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -424,7 +424,7 @@ class Display {
 	setTooltipFontSize(size) {
 		grSet.tooltipFontSize_layout = size;
 		grm.ui.createFonts();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -443,7 +443,7 @@ class Display {
 
 		grm.details.clearCache('metrics');
 		grm.ui.createFonts();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -462,7 +462,7 @@ class Display {
 
 		grm.details.clearCache('metrics');
 		grm.ui.createFonts();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -481,7 +481,7 @@ class Display {
 
 		grm.details.clearCache('metrics');
 		grm.ui.createFonts();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -500,7 +500,7 @@ class Display {
 
 		grm.details.clearCache('metrics');
 		grm.ui.createFonts();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -519,7 +519,7 @@ class Display {
 
 		grm.details.clearCache('metrics');
 		grm.ui.createFonts();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -558,7 +558,7 @@ class Display {
 			lib.pop.createImages();
 			lib.panel.zoomReset();
 		}
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -578,7 +578,7 @@ class Display {
 		grm.ui.setLibrarySize();
 		lib.panel.zoomReset();
 		lib.pop.createImages();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -598,7 +598,7 @@ class Display {
 		grm.ui.setBiographySize();
 		bio.but.resetZoom();
 		bio.but.createImages();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -671,7 +671,7 @@ class Display {
 
 		grm.ui.createFonts();
 		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -689,7 +689,7 @@ class Display {
 		grSet.transportButtonSpacing_layout = newSize();
 
 		grm.button.createButtons(grm.ui.ww, grm.ui.wh);
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 	// #endregion
 

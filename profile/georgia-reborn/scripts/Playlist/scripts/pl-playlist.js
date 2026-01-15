@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -441,9 +441,9 @@ class Playlist extends BaseList {
 	 * This method does not contain any redraw calls, it's purely back-end.
 	 */
 	initialize_list() {
-		CallLog('initialize_list');
+		grm.debug.callLog('initialize_list');
 		const profiler = fb.CreateProfiler();
-		const profiler_part = grm.ui.traceListPerformance && fb.CreateProfiler();
+		const profiler_part = grm.debug.traceListPerformance && fb.CreateProfiler();
 
 		this.cur_playlist_idx = plman.ActivePlaylist;
 		this.playlist_items_array = plman.GetPlaylistItems(this.cur_playlist_idx).Convert();
@@ -454,9 +454,9 @@ class Playlist extends BaseList {
 		this.batch_processor.batchAlbumDirCache = null;
 
 		// * Initialize rows
-		grm.ui.traceListPerformance && profiler_part.Reset();
+		grm.debug.traceListPerformance && profiler_part.Reset();
 		this.cnt.rows = this._initialize_rows(this.playlist_items_array);
-		grm.ui.traceListPerformance && console.log(`Rows initialized in ${profiler_part.Time}ms`);
+		grm.debug.traceListPerformance && console.log(`Rows initialized in ${profiler_part.Time}ms`);
 
 		this.playing_item = undefined;
 		const playing_item_location = plman.GetPlayingItemLocation();
@@ -473,11 +473,11 @@ class Playlist extends BaseList {
 		}
 
 		// * Initialize headers
-		grm.ui.traceListPerformance && profiler_part.Reset();
+		grm.debug.traceListPerformance && profiler_part.Reset();
 		PlaylistHeader.grouping_handler.set_active_playlist(plman.GetPlaylistName(this.cur_playlist_idx));
 		this.cnt.sub_items = this.batch_processor.processHeaderBatches(this.cnt.rows, 0, true);
 		this.header_artwork.getHeaderArtwork(this.cnt.sub_items.slice(0, 10)); // Preload first 10 artworks
-		grm.ui.traceListPerformance && console.log(`Headers initialized in ${profiler_part.Time}ms`);
+		grm.debug.traceListPerformance && console.log(`Headers initialized in ${profiler_part.Time}ms`);
 
 		// * Initialize states
 		if (!this.was_on_size_called) { // First time init
@@ -514,7 +514,7 @@ class Playlist extends BaseList {
 
 		this.hyperlink_set_now_playing();
 
-		grm.ui.traceListPerformance && console.log(`Playlist initialized in ${profiler.Time}ms`);
+		grm.debug.traceListPerformance && console.log(`Playlist initialized in ${profiler.Time}ms`);
 	}
 
 	/**
@@ -1595,7 +1595,7 @@ class Playlist extends BaseList {
 		const setSorting = () => {
 			grm.ui.setPlaylistSortOrder();
 			pl.call.on_size(grm.ui.ww, grm.ui.wh);
-			RepaintWindow();
+			window.Repaint();
 		};
 
 		for (const direction of sortOrderDirection) {

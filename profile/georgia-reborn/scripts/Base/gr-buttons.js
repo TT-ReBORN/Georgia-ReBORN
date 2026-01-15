@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -682,7 +682,7 @@ class Button {
 	 * @private
 	 */
 	_createButtonMap() {
-		// DebugLog('Buttons => createButtons');
+		// grm.debug.debugLog('Buttons => createButtons');
 		const transportCircleSize = SCALE(Math.round(grSet.transportButtonSize_layout));
 		this.btnMap = {};
 
@@ -1002,8 +1002,8 @@ class Button {
 	 * @private
 	 */
 	_createButtonImages(createButtonMap = true) {
-		// DebugLog('Buttons => createButtonImages');
-		SetDebugProfile(grm.ui.showDrawExtendedTiming, 'create', 'createButtonImages');
+		// grm.debug.debugLog('Buttons => createButtonImages');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'createButtonImages');
 		if (createButtonMap || IsEmpty(this.btnMap)) {
 			this.btnMap = this._createButtonMap();
 		}
@@ -1071,7 +1071,7 @@ class Button {
 			this.btnImg[btnKey] = btnStateImages;
 		}
 
-		SetDebugProfile(false, 'print', 'createButtonImages');
+		grm.debug.setDebugProfile(false, 'print', 'createButtonImages');
 	}
 
 	/**
@@ -1222,14 +1222,14 @@ class Button {
 	 * @param {boolean} [createButtonConfigs] - Whether to create the button configurations, true by default.
 	 */
 	createButtons(ww, wh, createButtonImages = true, createButtonConfigs = true) {
-		// DebugLog('Buttons => createButtons');
+		// grm.debug.debugLog('Buttons => createButtons');
 		this.btn = {};
 
 		if (ww < 1 || wh < 1) {
 			return;
 		}
 		else if (createButtonImages === true || this.btnImg.File === undefined) {
-			// DebugLog('Buttons => createButtons => createButtonImages');
+			// grm.debug.debugLog('Buttons => createButtons => createButtonImages');
 			this._createButtonImages(createButtonConfigs);
 		}
 

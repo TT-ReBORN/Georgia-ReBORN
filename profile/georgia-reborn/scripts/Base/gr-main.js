@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -305,56 +305,10 @@ class MainUI {
 		this.randomThemeAutoColorTimer = null;
 		// #endregion
 
-		// * DEBUG * //
-		// #region DEBUG
-		/** @public @type {number} Shows the image alpha in showThemeDebugOverlay. */
-		this.blendedImgAlpha = 0;
-		/** @public @type {number} Shows the image blur in showThemeDebugOverlay. */
-		this.blendedImgBlur = 0;
-		/** @public @type {string} Shows the col.primary in showThemeDebugOverlay. */
-		this.selectedPrimaryColor = '';
-		/** @public @type {string} Shows the col.primary_alt in showThemeDebugOverlay. */
-		this.selectedPrimaryColor2 = '';
-		/** @public @type {Array} Used in drawDebugRectAreas(). */
-		this.repaintRects = [];
-		/** @public @type {number} Used in RepaintRectAreas(). */
-		this.repaintRectCount = 0;
-		/** @public @type {boolean} The auto-download bio state, auto-downloading of artist biographies during shuffle playback with a 5-seconds timer. */
-		this.autoDownloadBio = false;
-		/** @public @type {boolean} The auto-download lyrics state, auto-downloading of lyrics during repeat playlist playback with a 15-seconds timer. */
-		this.autoDownloadLyrics = false;
-		/** @public @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
-		this.traceCall = false;
-		/** @public @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
-		this.traceOnMove = false;
-		/** @public @type {boolean} DO NOT CHANGE, can be activated via Options > Developer tools. */
-		this.traceListPerformance = false;
-		/** @public @type {boolean} Spams the console with draw times. */
-		this.showDrawTiming = false;
-		/** @public @type {boolean} Spams the console with every section of the draw code to determine bottlenecks. */
-		this.showDrawExtendedTiming = false;
-		/** @public @type {boolean} Spams the console with debug timing. */
-		this.showDebugTiming = false;
-		/** @public @type {boolean} Draws all window.RepaintRect as red outlines in the theme. */
-		this.drawRepaintRects = false;
-		/** @public @type {boolean} Spams the console with panel trace call. */
-		this.showPanelTraceCall = false;
-		/** @public @type {boolean} Spams the console with panel trace on move. */
-		this.showPanelTraceOnMove = false;
-		/** @public @type {boolean} Spams the console with playlist list performance. */
-		this.showPlaylistTraceListPerf = false;
-		/** @public @type {Array} Stores the debug timing logs. */
-		this.debugTimingsArray = [];
-		// #endregion
-
 		// * REPAINT RECTS * //
 		// #region REPAINT RECTS
 		/** @public @type {Function} Throttles and limits the repaint requests for styled tooltips to 17 ms. */
 		this.repaintStyledTooltips = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), FPS._60);
-		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay to 1 sec. */
-		this.repaintDebugSystemOverlay = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), FPS._1);
-		/** @public @type {Function} Throttles and limits repaint requests for the debug system overlay seekbar area to 1 sec. */
-		this.repaintDebugSystemOverlaySeekbar = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), FPS._1);
 		// #endregion
 	}
 
@@ -365,7 +319,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawMain(gr) {
-		const drawTimingStart = (this.showDrawTiming || this.showDrawExtendedTiming) && new Date();
+		const drawTimingStart = (grm.debug.showDrawTiming || grm.debug.showDrawExtendedTiming) && new Date();
 
 		this.drawBackgrounds(gr);
 		this.drawDetails(gr);
@@ -385,10 +339,11 @@ class MainUI {
 		this.drawStyledTooltips(gr);
 		this.drawStartupBackground(gr);
 
-		this.drawDebugThemeOverlay(gr);
-		this.drawDebugPerformanceOverlay(gr);
-		this.drawDebugTiming(drawTimingStart);
-		this.drawDebugRectAreas(gr);
+		grm.debug.drawDebugColorOverlay(gr);
+		grm.debug.drawDebugThemeOverlay(gr);
+		grm.debug.drawDebugPerformanceOverlay(gr);
+		grm.debug.drawDebugTiming(drawTimingStart);
+		grm.debug.drawDebugRectAreas(gr);
 	}
 
 	/**
@@ -438,9 +393,9 @@ class MainUI {
 			this.displayLibrarySplit();
 
 		const drawPanel = (panel, label) => {
-			SetDebugProfile(this.showDrawExtendedTiming, 'create', `on_paint -> ${label}`);
+			grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', `on_paint -> ${label}`);
 			panel.call.on_paint(gr);
-			SetDebugProfile(false, 'print', `on_paint -> ${label}`);
+			grm.debug.setDebugProfile(false, 'print', `on_paint -> ${label}`);
 		};
 
 		// * Default && Artwork layout
@@ -473,7 +428,7 @@ class MainUI {
 			return;
 		}
 
-		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> album art');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> album art');
 
 		const padding = !grSet.filterAlbumArt && this.discArtImageDisplayed && this.discArtImagePNG && this.albumArtLoaded ? Math.round(this.edgeMargin * 0.75) : 0;
 		const imgAlpha = this.displayDetails && grm.details.discArt ? alpha : 255;
@@ -482,7 +437,7 @@ class MainUI {
 					 this.albumArtSize.w - padding * 2, this.albumArtSize.h - padding * 2,
 					 0, 0, this.albumArtScaled.Width, this.albumArtScaled.Height, 0, imgAlpha);
 
-		SetDebugProfile(false, 'print', 'on_paint -> album art');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> album art');
 	}
 
 	/**
@@ -756,7 +711,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawStyles(gr) {
-		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> theme styles');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> theme styles');
 
 		if (grSet.styleBevel) {
 			gr.SetSmoothingMode(SmoothingMode.None);
@@ -787,7 +742,7 @@ class MainUI {
 			FillGradRect(gr, 0, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight, grSet.styleAlternative2 ? 87 : -87, 0, grCol.styleAlternative);
 		}
 
-		SetDebugProfile(false, 'print', 'on_paint -> theme styles');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> theme styles');
 	}
 
 	/**
@@ -845,13 +800,13 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawShadows(gr) {
-		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> draw shadows');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> draw shadows');
 
 		gr.SetSmoothingMode(SmoothingMode.Default);
 		this.drawAlbumArtShadows(gr);
 		this.drawPanelShadows(gr);
 
-		SetDebugProfile(false, 'print', 'on_paint -> draw shadows');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> draw shadows');
 	}
 
 	/**
@@ -924,7 +879,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawTopMenuBar(gr) {
-		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> top menu bar');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> top menu bar');
 
 		const noPlaylistHistoryBtns = !this.displayPlaylist && !this.displayPlaylistArtwork;
 		const buttons = Object.values(grm.button.btn);
@@ -948,7 +903,7 @@ class MainUI {
 			}
 		}
 
-		SetDebugProfile(false, 'print', 'on_paint -> top menu bar');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> top menu bar');
 	}
 
 	/**
@@ -956,7 +911,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLowerBar(gr) {
-		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> lower bar');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> lower bar');
 
 		this.setLowerBarMetrics(gr);
 
@@ -1034,7 +989,7 @@ class MainUI {
 			grm.waveBar.draw(gr);
 		}
 
-		SetDebugProfile(false, 'print', 'on_paint -> lower bar');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> lower bar');
 	}
 
 	/**
@@ -1076,7 +1031,7 @@ class MainUI {
 	drawStyledTooltips(gr) {
 		if (!grSet.showStyledTooltips) return;
 
-		SetDebugProfile(this.showDrawExtendedTiming, 'create', 'on_paint -> styled tooltips');
+		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> styled tooltips');
 
 		const offset = SCALE(30);
 		const padding = SCALE(15);
@@ -1098,7 +1053,7 @@ class MainUI {
 
 		this.repaintStyledTooltips(this.styledToolTipX - offset * 2, this.styledToolTipY - offset, this.styledToolTipW + offset * 4, this.styledToolTipH + offset * 2);
 
-		SetDebugProfile(false, 'print', 'on_paint -> styled tooltips');
+		grm.debug.setDebugProfile(false, 'print', 'on_paint -> styled tooltips');
 	}
 
 	/**
@@ -1110,204 +1065,6 @@ class MainUI {
 		if (this.loadingThemeComplete) return;
 		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.loadingThemeBg);
 		if (grSet.showPreloaderLogo) grPreloader.drawLogo(gr);
-	}
-
-	/**
-	 * Draws the debug theme overlay in the album art area when `Enable debug theme overlay` in Developer tools is active.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawDebugThemeOverlay(gr) {
-		if (!grCfg.settings.showDebugThemeOverlay || !this.loadingThemeComplete) return;
-
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
-		const titleWidth = this.albumArtSize.w - SCALE(80);
-		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
-		const lineSpacing = titleHeight * 1.5;
-		const logColor = RGB(255, 255, 255);
-		const x = this.albumArtSize.x + this.edgeMargin;
-		let y = this.albumArtSize.y;
-
-		const createBlock = (obj) => Object.keys(obj).find(key => obj[key]) || '';
-
-		const tsBlock0 = createBlock({
-			'Nighttime,': grSet.styleNighttime
-		});
-
-		const tsBlock1 = createBlock({
-			'Bevel,': grSet.styleBevel
-		});
-
-		const tsBlock2 = createBlock({
-			'Blend,': grSet.styleBlend,
-			'Blend 2,': grSet.styleBlend2,
-			'Gradient,': grSet.styleGradient,
-			'Gradient 2,': grSet.styleGradient2
-		});
-
-		const tsBlock3 = createBlock({
-			'Alternative ': grSet.styleAlternative,
-			'Alternative 2': grSet.styleAlternative2,
-			'Black and white': grSet.styleBlackAndWhite,
-			'Black and white 2': grSet.styleBlackAndWhite2,
-			'Black and white reborn': grSet.styleBlackAndWhiteReborn,
-			'Black reborn': grSet.styleBlackReborn,
-			'Reborn white': grSet.styleRebornWhite,
-			'Reborn black': grSet.styleRebornBlack,
-			'Reborn fusion': grSet.styleRebornFusion,
-			'Reborn fusion 2': grSet.styleRebornFusion2,
-			'Reborn fusion accent': grSet.styleRebornFusionAccent,
-			'Random pastel': grSet.styleRandomPastel,
-			'Random dark': grSet.styleRandomDark
-		});
-
-		const tsTopMenuButtons = grSet.styleTopMenuButtons !== 'default' ? CapitalizeString(`${grSet.styleTopMenuButtons}`) : '';
-		const tsTransportButtons = grSet.styleTransportButtons !== 'default' ? CapitalizeString(`${grSet.styleTransportButtons}`) : '';
-		const tsProgressBar1 = grSet.styleProgressBarDesign === 'rounded' ? 'Rounded,' : '';
-		const tsProgressBar2 = grSet.styleProgressBar !== 'default' ? `Bg: ${CapitalizeString(`${grSet.styleProgressBar},`)}` : '';
-		const tsProgressBar3 = grSet.styleProgressBarFill !== 'default' ? `Fill: ${CapitalizeString(`${grSet.styleProgressBarFill}`)}` : '';
-		const tsVolumeBar1 = grSet.styleVolumeBarDesign === 'rounded' ? 'Rounded,' : '';
-		const tsVolumeBar2 = grSet.styleVolumeBar !== 'default' ? `Bg: ${CapitalizeString(`${grSet.styleVolumeBar},`)}` : '';
-		const tsVolumeBar3 = grSet.styleVolumeBarFill !== 'default' ? `Fill: ${CapitalizeString(`${grSet.styleVolumeBarFill}`)}` : '';
-
-		const propertiesLog = [
-			{ prop: this.selectedPrimaryColor, log: `Primary color: ${this.selectedPrimaryColor}` },
-			{ prop: this.selectedPrimaryColor2, log: `Primary 2 color: ${this.selectedPrimaryColor2}` },
-			{ prop: grCol.colBrightness, log: `Primary color brightness: ${grCol.colBrightness}` },
-			{ prop: grCol.colBrightness2, log: `Primary 2 color brightness: ${grCol.colBrightness2}` },
-			{ prop: grCol.imgBrightness, log: `Image brightness: ${grCol.imgBrightness}` },
-			{ prop: grSet.styleBlend || grSet.styleBlend2, log: `Image blur: ${this.blendedImgBlur}` },
-			{ prop: grSet.styleBlend || grSet.styleBlend2, log: `Image alpha: ${this.blendedImgAlpha}` },
-			{ prop: grSet.preset, log: `Theme preset: ${grSet.preset}` },
-			{ prop: grSet.themeBrightness !== 'default', log: `Theme brightness: ${grSet.themeBrightness}%` },
-			{ prop: tsBlock0 || tsBlock1 || tsBlock2 || tsBlock3, log: `Styles: ${tsBlock0} ${tsBlock1} ${tsBlock2} ${tsBlock3}` },
-			{ prop: tsTopMenuButtons, log: `Top menu button style: ${tsTopMenuButtons}` },
-			{ prop: tsTransportButtons, log: `Transport button style: ${tsTransportButtons}` },
-			{ prop: tsProgressBar1 || tsProgressBar2 || tsProgressBar3, log: tsProgressBar1 || tsProgressBar2 || tsProgressBar3 ? `Progressbar styles: ${tsProgressBar1} ${tsProgressBar2} ${tsProgressBar3}` : '' },
-			{ prop: tsVolumeBar1 || tsVolumeBar2 || tsVolumeBar3, log: `Volumebar styles: ${tsVolumeBar1} ${tsVolumeBar2} ${tsVolumeBar3}` }
-		];
-
-		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(fullW ? 0 : this.albumArtSize.x, fullW ? this.topMenuHeight : this.albumArtSize.y, fullW ? this.ww : this.albumArtSize.w, fullW ? this.wh - this.topMenuHeight - this.lowerBarHeight : this.albumArtSize.h, RGBA(0, 0, 0, 180));
-		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
-
-		const drawString = (str) => {
-			y += lineSpacing;
-			gr.DrawString(str, grFont.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-		};
-
-		for (const { prop, log } of propertiesLog) {
-			if (prop) drawString(log);
-			if (prop === grCol.imgBrightness) y += lineSpacing;
-		}
-	}
-
-	/**
-	 * Draws the debug performance overlay in the album art area when `Enable debug performance overlay` in Developer tools is active.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawDebugPerformanceOverlay(gr) {
-		if (!grCfg.settings.showDebugPerformanceOverlay || !this.loadingThemeComplete) return;
-
-		if (grm.cpuTrack.cpuTrackerTimer === null) {
-			grm.cpuTrack.start();
-		}
-
-		const debugTimingsSorted = this.debugTimingsArray.slice().sort((a, b) => a.localeCompare(b));
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && this.displayLyrics && this.noAlbumArtStub || grSet.layout === 'artwork';
-		const titleWidth = this.albumArtSize.w - SCALE(80);
-		const titleHeight = gr.CalcTextHeight(' ', grFont.popup);
-		const titleMaxWidthRepaint = gr.CalcTextWidth('Ram usage for current panel: 6291456 MB', grFont.popup);
-		const lineSpacing = titleHeight * 1.5;
-		const logColor = RGB(255, 255, 255);
-		const x = this.albumArtSize.x + this.edgeMargin;
-		let y = this.albumArtSize.y + lineSpacing;
-		let seekbarLogY = 0;
-
-		const seekbarLog = () => {
-			const seekbarTiming = `${this.seekbarTimerInterval} ms / ${(1000 / this.seekbarTimerInterval).toFixed(2)} Hz`;
-			const existingIndex = this.debugTimingsArray.findIndex(value => value.includes('Seekar'));
-			this.debugTimingsArray[existingIndex] = seekbarTiming;
-			return seekbarTiming;
-		};
-
-		const performanceLog = [
-			{ title: 'System: ', log: '' },
-			{ title: 'CPU usage: ', log: `${grm.cpuTrack.getCpuUsage()}%` },
-			{ title: 'GUI usage: ', log: `${grm.cpuTrack.getGuiCpuUsage()}%` },
-			{ title: 'Ram usage for current panel: ', log: FormatSize(window.JsMemoryStats.MemoryUsage) },
-			{ title: 'Ram usage for all panels: ', log: FormatSize(window.JsMemoryStats.TotalMemoryUsage) },
-			{ title: 'Ram usage limit: ', log: FormatSize(window.JsMemoryStats.TotalMemoryLimit) },
-			{ title: 'Separator', log: '' },
-			{ title: 'Timings: ', log: '' },
-			{ title: 'Seekbar: ', log: seekbarLog() },
-			{ title: '', log: debugTimingsSorted.join('\n') }
-		];
-
-		gr.SetSmoothingMode(SmoothingMode.None);
-		gr.FillSolidRect(fullW ? 0 : this.albumArtSize.x, fullW ? this.topMenuHeight : this.albumArtSize.y, fullW ? this.ww : this.albumArtSize.w, fullW ? this.wh - this.topMenuHeight - this.lowerBarHeight : this.albumArtSize.h, RGBA(0, 0, 0, 180));
-		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
-
-		const drawString = (title, log) => {
-			const lines = log.split('\n');
-			lines.forEach((line, index) => {
-				const fullString = title.length > 0 ? `${title} ${line}` : line;
-				gr.DrawString(fullString, grFont.popup, logColor, x, y, titleWidth, titleHeight, StringFormat(0, 0, 4));
-				y += lineSpacing;
-			});
-		};
-
-		for (const { title, log } of performanceLog) {
-			if (title !== 'Separator') {
-				drawString(title, log);
-				if (title === 'Seekbar: ') {
-					seekbarLogY = y - lineSpacing;
-				}
-			} else {
-				y += lineSpacing;
-			}
-		}
-
-		this.repaintDebugSystemOverlay(x, this.albumArtSize.y + lineSpacing * 2, titleMaxWidthRepaint, lineSpacing * 4);
-		this.repaintDebugSystemOverlaySeekbar(x, seekbarLogY, titleMaxWidthRepaint, lineSpacing);
-	}
-
-	/**
-	 * Draws the draw timing in the console when `Show draw timing` or `Show draw extended timing` in Developer tools is active.
-	 * @param {Date} drawTimingStart - The start time of the operation.
-	 */
-	drawDebugTiming(drawTimingStart) {
-		if (!drawTimingStart) return;
-
-		const drawTimingEnd = new Date();
-		const duration = drawTimingEnd - drawTimingStart;
-		const hours = String(drawTimingStart.getHours()).padStart(2, '0');
-		const minutes = String(drawTimingStart.getMinutes()).padStart(2, '0');
-		const seconds = String(drawTimingStart.getSeconds()).padStart(2, '0');
-		const milliseconds = String(drawTimingStart.getMilliseconds()).padStart(3, '0');
-		const time = `${hours}:${minutes}:${seconds}.${milliseconds}`;
-		const repaintRectCalls = this.repaintRectCount > 1 ? ` - ${this.repaintRectCount} repaintRect calls` : '';
-
-		if (this.showDrawExtendedTiming && fb.IsPlaying) {
-			console.log(`Spider Monkey Panel v${utils.Version}: profiler (on_paint -> seekbar): ${this.seekbarProfiler.Time} ms => refresh rate: ${this.seekbarTimerInterval} ms`);
-		}
-
-		console.log(`${time}: on_paint total: ${duration}ms${repaintRectCalls}`);
-	}
-
-	/**
-	 * Draws red rectangles for debugging to show all painted areas in all panels when `Show draw areas` in Developer tools is active.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawDebugRectAreas(gr) {
-		if (!this.repaintRects.length) return;
-		this.repaintRectCount = 0;
-
-		try {
-			for (const rect of this.repaintRects) {
-				gr.DrawRect(rect.x, rect.y, rect.w, rect.h, SCALE(2), RGBA(255, 0, 0, 200));
-			}
-			this.repaintRects = [];
-		} catch (e) {}
 	}
 	// #endregion
 
@@ -1861,15 +1618,15 @@ class MainUI {
 		if (resizeArtwork) this.resizeArtwork(true);
 
 		if (this.displayPlaylist && (this.noAlbumArtStub || pl.playlist.x !== this.albumArtSize.x + this.albumArtSize.w)) {
-			DebugLog('Init => initPanelWidthAuto -> Playlist');
+			grm.debug.debugLog('Init => initPanelWidthAuto -> Playlist');
 			this.setPlaylistSize();
 		}
 		if (this.displayLibrary && (this.noAlbumArtStub || lib.ui.x !== this.albumArtSize.x + this.albumArtSize.w)) {
-			DebugLog('Init => initPanelWidthAuto -> Library');
+			grm.debug.debugLog('Init => initPanelWidthAuto -> Library');
 			this.setLibrarySize();
 		}
 		if (this.displayBiography && (this.noAlbumArtStub || bio.ui.x + bio.ui.w !== this.albumArtSize.x + this.albumArtSize.w) || bio.ui.x + bio.ui.w > pl.playlist.x) {
-			DebugLog('Init => initPanelWidthAuto -> Biography');
+			grm.debug.debugLog('Init => initPanelWidthAuto -> Biography');
 			this.setBiographySize();
 		}
 	}
@@ -1879,7 +1636,7 @@ class MainUI {
 	 * @returns {Promise<void>} A promise that resolves when the initialization is complete.
 	 */
 	async initMain() {
-		DebugLog('Init => initMain');
+		grm.debug.debugLog('Init => initMain');
 
 		// * Init colors
 		this.initCustomTheme();
@@ -1917,7 +1674,7 @@ class MainUI {
 		}
 
 		// * Hide loading screen
-		DebugLog('\n>>> initTheme => initMain <<<\n');
+		grm.debug.debugLog('\n>>> initTheme => initMain <<<\n');
 		this.initThemeFull = true;
 		this.initTheme();
 		this.loadingThemeComplete = true;
@@ -1928,7 +1685,7 @@ class MainUI {
 	 * Initializes the theme when updating colors.
 	 */
 	initTheme() {
-		SetDebugProfile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
+		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
 		this.initThemeRunning = true;
 
 		const fullInit =
@@ -1986,7 +1743,7 @@ class MainUI {
 		window.Repaint();
 
 		this.initThemeRunning = false;
-		SetDebugProfile(false, 'print', 'initTheme');
+		grm.debug.setDebugProfile(false, 'print', 'initTheme');
 	}
 
 	/**
@@ -2008,7 +1765,7 @@ class MainUI {
 
 		if (grSet.presetAutoRandomMode !== 'album' && grSet.presetSelectMode !== 'harmonic' && !this.hasThemeTags()) {
 			this.initTheme();
-			DebugLog('\n>>> initTheme => loadImageFromAlbumArtList >>>\n');
+			grm.debug.debugLog('\n>>> initTheme => loadImageFromAlbumArtList >>>\n');
 		}
 	}
 
@@ -2068,21 +1825,21 @@ class MainUI {
 
 		// * 1. Set preset
 		if (customPreset.length) {
-			DebugLog('\n>>> initThemeTags => %GR_PRESET% loaded <<<');
+			grm.debug.debugLog('\n>>> initThemeTags => %GR_PRESET% loaded <<<');
 			grSet.preset = customPreset;
 			grm.preset.setThemePreset(customPreset);
 			this.themeRestoreState = true;
 		}
 		// * 2. Set theme
 		else if (customTheme.length) {
-			DebugLog('\n>>> initThemeTags => %GR_THEME% loaded <<<');
+			grm.debug.debugLog('\n>>> initThemeTags => %GR_THEME% loaded <<<');
 			grSet.theme = customTheme;
 			this.resetTheme();
 			this.themeRestoreState = true;
 		}
 		// * 3. Set styles
 		if (customStyle.length && !customPreset.length) {
-			DebugLog('\n>>> initThemeTags => %GR_STYLE% loaded <<<');
+			grm.debug.debugLog('\n>>> initThemeTags => %GR_STYLE% loaded <<<');
 			this.resetStyle('all');
 			for (const style of customStyle.split(Regex.PunctCommaSemicolonSpace)) {
 				const setStyle = themeStyles[style];
@@ -2378,7 +2135,7 @@ class MainUI {
 			grm.details.clearTimer();
 			grm.button.lowerPlayPause();
 			this.initTheme();
-			DebugLog('\n>>> initTheme => on_playback_stop <<<\n');
+			grm.debug.debugLog('\n>>> initTheme => on_playback_stop <<<\n');
 		}
 
 		this.initPanelWidthAuto(true);
@@ -2407,7 +2164,7 @@ class MainUI {
 		}
 		else { // Unpausing
 			this.clearTimer('seekbar'); // Clear to avoid multiple seekbarTimer which can happen depending on the playback state when theme is loaded
-			DebugLog(`Playback => on_playback_pause: creating refreshSeekbar() interval with delay = ${this.seekbarTimerInterval}`);
+			grm.debug.debugLog(`Playback => on_playback_pause: creating refreshSeekbar() interval with delay = ${this.seekbarTimerInterval}`);
 
 			this.seekbarTimer = setInterval(() => {
 				this.refreshSeekbar();
@@ -2436,7 +2193,7 @@ class MainUI {
 	handlePlaybackOrder(pbo) {
 		// Repaint playback order
 		if (pbo !== this.lastPlaybackOrder) {
-			DebugLog('Playback => Repainting on_playback_order_changed');
+			grm.debug.debugLog('Playback => Repainting on_playback_order_changed');
 			window.RepaintRect(0.5 * this.ww, this.wh - this.lowerBarHeight, 0.5 * this.ww, this.lowerBarHeight);
 		}
 		this.lastPlaybackOrder = pbo;
@@ -2892,31 +2649,31 @@ class MainUI {
 			},
 			albumArtCache: () => {
 				grm.artCache && grm.artCache.clear();
-				DebugLog('Main cache => Art cache cleared');
+				grm.debug.debugLog('Main cache => Art cache cleared');
 			},
 			flag: () => {
 				this.flagImgs = [];
 			},
 			debug: () => {
-				this.debugTimingsArray = [];
+				grm.debug.debugTimingsArray = [];
 			}
 		};
 
 		if (clearArtCache) {
 			grm.artCache && grm.artCache.clear();
-			DebugLog('Main cache => Art cache cleared');
+			grm.debug.debugLog('Main cache => Art cache cleared');
 		}
 
 		if (type) {
 			// * Clear individual cache property
 			if (property && Object.hasOwnProperty.call(this, property)) {
 				this[property] = null;
-				DebugLog(`Main cache => Cleared property "${property}" in cache type "${type}"`);
+				grm.debug.debugLog(`Main cache => Cleared property "${property}" in cache type "${type}"`);
 			}
 			// * Clear specific cache type
 			else if (cacheActions[type]) {
 				cacheActions[type]();
-				DebugLog(`Main cache => Cleared cache type "${type}"`);
+				grm.debug.debugLog(`Main cache => Cleared cache type "${type}"`);
 			}
 			return;
 		}
@@ -2925,7 +2682,7 @@ class MainUI {
 		for (const action in cacheActions) {
 			cacheActions[action]();
 		}
-		DebugLog('Main cache => Cleared all caches');
+		grm.debug.debugLog('Main cache => Cleared all caches');
 	}
 
 	/**
@@ -2949,7 +2706,7 @@ class MainUI {
 			grStr.year = '';
 		}
 
-		DebugLog('Playback => Playback state cleared');
+		grm.debug.debugLog('Playback => Playback state cleared');
 	}
 
 	/**
@@ -3021,7 +2778,7 @@ class MainUI {
 				clear(timer);
 				timers[type].timer = null;
 			}
-			if (!supressLog) DebugLog(log);
+			if (!supressLog) grm.debug.debugLog(log);
 		};
 
 		if (type && timers[type]) {
@@ -3154,7 +2911,7 @@ class MainUI {
 		this.clearTimer();
 		grm.details.clearCache(undefined, undefined, true);
 		grm.details.clearTimer();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 		on_playback_new_track(fb.GetNowPlaying());
 	}
 
@@ -3375,7 +3132,7 @@ class MainUI {
 		if (!this.themeRestoreState) return;
 
 		if (grSet.presetSelectMode === 'default') {
-			DebugLog('\n>>> restoreThemeState <<<\n');
+			grm.debug.debugLog('\n>>> restoreThemeState <<<\n');
 			this.resetStyle('all');
 			this.resetTheme();
 			this.restoreThemeStylePreset(); // * Retore saved grSet settings
@@ -3894,7 +3651,7 @@ class MainUI {
 		}
 
 		this.initTheme();
-		DebugLog('\n>>> initTheme => updateStyle <<<\n');
+		grm.debug.debugLog('\n>>> initTheme => updateStyle <<<\n');
 		this.initStyleState();
 		grm.preset.initThemePresetState();
 		grm.button.initButtonState();
@@ -4109,7 +3866,7 @@ class MainUI {
 	 * @param {boolean} resetDiscArtPosition - Whether the position of the disc art should be reset.
 	 */
 	resizeArtwork(resetDiscArtPosition) {
-		DebugLog('Artwork => Resizing artwork');
+		grm.debug.debugLog('Artwork => Resizing artwork');
 		this.hasArtwork = false;
 		this.resizeAlbumArt();
 		grm.details.resizeDiscArt(resetDiscArtPosition);
@@ -4200,7 +3957,7 @@ class MainUI {
 			this.newTrackFetchingArtwork = true;
 			grm.color.getThemeColors(this.albumArt);
 			this.initTheme();
-			DebugLog('\n>>> initTheme => on_mouse_wheel <<<\n');
+			grm.debug.debugLog('\n>>> initTheme => on_mouse_wheel <<<\n');
 		}
 
 		// Update positions
@@ -4209,7 +3966,7 @@ class MainUI {
 			this.setPlaylistSize();
 		}
 		grm.details.clearCache('metrics');
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -4223,7 +3980,7 @@ class MainUI {
 			return;
 		}
 
-		DebugLog(`Album art => Repainting in displayAlbumArtImage: ${this.albumArtIndex}`);
+		grm.debug.debugLog(`Album art => Repainting in displayAlbumArtImage: ${this.albumArtIndex}`);
 
 		const increment = direction === 'next' ? 1 : direction === 'prev' ? -1 : 0;
 		this.albumArtIndex = Number.isFinite(Number(this.albumArtIndex)) && this.albumArtIndex >= 0 ? Number(this.albumArtIndex) : 0;
@@ -4236,14 +3993,14 @@ class MainUI {
 				this.newTrackFetchingArtwork = true;
 				grm.color.getThemeColors(this.albumArt);
 				this.initTheme();
-				DebugLog('\n>>> initTheme => Album cover context menu => Display next/previous artwork <<<\n');
+				grm.debug.debugLog('\n>>> initTheme => Album cover context menu => Display next/previous artwork <<<\n');
 			}
 			window.Repaint();
 		}, 1);
 
 		grm.details.clearCache('metrics');
 		this.resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
-		RepaintWindow();
+		grm.debug.repaintWindow();
 
 		if (!timer) return;
 
@@ -4293,7 +4050,7 @@ class MainUI {
 			}
 			if (this.loadingThemeComplete) {
 				this.initTheme();  // Prevent incorrect theme brightness at startup/reload when using embedded art
-				DebugLog('\n>>> initTheme => fetchAlbumArt => albumArtEmbedded <<<\n');
+				grm.debug.debugLog('\n>>> initTheme => fetchAlbumArt => albumArtEmbedded <<<\n');
 			}
 		}
 
@@ -4311,11 +4068,11 @@ class MainUI {
 		this.albumArt = null;
 		grm.details.clearCache('discArt');
 		this.initTheme();
-		DebugLog('\n>>> initTheme => fetchAlbumArt => noAlbumArtStub <<<\n');
-		DebugLog('Album art => Repainting on_playback_new_track due to no cover image');
+		grm.debug.debugLog('\n>>> initTheme => fetchAlbumArt => noAlbumArtStub <<<\n');
+		grm.debug.debugLog('Album art => Repainting on_playback_new_track due to no cover image');
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
-		RepaintWindow();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -4326,7 +4083,7 @@ class MainUI {
 		this.albumArtList = [];
 		this.albumArtLoaded = false;
 
-		SetDebugProfile(this.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchAlbumArt');
+		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchAlbumArt');
 
 		if (this.isStreaming || this.isPlayingCD) {
 			this.fetchAlbumArtStreamingOrCD(metadb);
@@ -4334,7 +4091,7 @@ class MainUI {
 			this.fetchAlbumArtLocalFiles(metadb);
 		}
 
-		SetDebugProfile(false, 'print', 'fetchAlbumArt');
+		grm.debug.setDebugProfile(false, 'print', 'fetchAlbumArt');
 	}
 
 	/**
@@ -4359,7 +4116,7 @@ class MainUI {
 		}
 
 		this.initTheme();
-		DebugLog('\n>>> initTheme => fetchAlbumArt => isStreaming || isPlayingCD <<<\n');
+		grm.debug.debugLog('\n>>> initTheme => fetchAlbumArt => isStreaming || isPlayingCD <<<\n');
 	}
 
 	/**
@@ -4430,7 +4187,7 @@ class MainUI {
 				this.initPanelWidthAuto();
 				grm.details.clearCache('metrics');
 				grm.details.setDiscArtRotation();
-				RepaintWindow();
+				grm.debug.repaintWindow();
 			});
 		}
 
@@ -4715,7 +4472,7 @@ class MainUI {
 	updatePlaylist() {
 		if (!this.updatePlaylist.run) {
 			this.updatePlaylist.run = Debounce((playlistIndex) => {
-				this.traceCall && console.log('initPlaylistDebounced');
+				grm.debug.traceCall && console.log('initPlaylistDebounced');
 				pl.call.on_playlist_items_added(playlistIndex);
 			}, 100, { leading: false });
 		}

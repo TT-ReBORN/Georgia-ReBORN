@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -872,7 +872,7 @@ class ConfigurationManager {
 						this.lowerBarStoppedTime = '';
 						if (!fb.IsPlaying) {
 							grStr.time = this.lowerBarStoppedTime;
-							RepaintWindow();
+							window.Repaint();
 						}
 						if (openUrl) {
 							this.updateHyperlink.click();

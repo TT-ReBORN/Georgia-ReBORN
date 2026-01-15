@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -40,6 +40,7 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * A collection of all Georgia-ReBORN class instances that will be initialized at the end in gr.initialize.js.
  * @typedef  {object} grm - The Georgia-ReBORN main object.
  * @property {MainUI} ui - The instance of `MainUI` class for main user interface operations.
+ * @property {Debug} debug - The instance of `Debug` class for debugging operations.
  * @property {Details} details - The instance of `Details` class for details interface operations.
  * @property {ThemeDayNight} day - The instance of `ThemeDayNight` class for theme day/night mode operations.
  * @property {ThemeSettingsManager} settings - The instance of `ThemeSettingsManager` class for theme settings operations.
@@ -395,7 +396,9 @@ const grTF = {
  * @property {number} accent - The primary color shaded by 15%.
  * @property {number} accent_alt - The secondary primary color shaded by 15%.
  * @property {number} primary - The primary theme color generated from artwork.
+ * @property {number} primary_raw - The original, unadjusted primary color selected from the artwork palette.
  * @property {number} primary_alt - The secondary primary theme color generated from artwork.
+ * @property {number} primary_alt_raw - The original, unadjusted secondary color selected from the artwork palette.
  * @property {number} lightAccent - The primary color tinted by 20%.
  * @property {number} lightAccent_alt - The secondary primary color tinted by 20%.
  * @property {number} artist - The color of artist text on background.

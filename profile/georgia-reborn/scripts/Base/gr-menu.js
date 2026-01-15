@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1079,19 +1079,19 @@ class TopMenuOptions {
 
 		const playlistCallback = () => {
 			grm.ui.setPlaylistSize();
-			RepaintWindow();
+			window.Repaint();
 		};
 
 		const updateButtons = () => {
 			grm.ui.clearCache('metrics');
 			grm.details.clearCache('metrics');
 			grm.button.createButtons(grm.ui.ww, grm.ui.wh);
-			RepaintWindow();
+			window.Repaint();
 		};
 
 		const updateSeekbar = () => {
 			grm.ui.setMainMetrics();
-			RepaintWindow();
+			window.Repaint();
 		};
 
 		// * TOP MENU * //
@@ -1140,13 +1140,13 @@ class TopMenuOptions {
 					grm.ui.setPlaylistSize();
 					grm.ui.setLibrarySize();
 					grm.ui.setBiographySize();
-					RepaintWindow();
+					window.Repaint();
 				});
 				playerControlsAlbumArtNotPropMenu.addSeparator();
 			}
 			playerControlsAlbumArtNotPropMenu.addRadioItems(['Left album art bg', 'Full album art bg', 'No album art bg'], grSet.albumArtBg, ['left', 'full', 'none'], (type) => {
 				grSet.albumArtBg = type;
-				RepaintWindow();
+				window.Repaint();
 			});
 			playerControlsAlbumArtNotPropMenu.appendTo(playerControlsAlbumArtMenu);
 			const playerControlsAlbumArtScaleMenu = new Menu('When player size is maximized/fullscreen');
@@ -1154,7 +1154,7 @@ class TopMenuOptions {
 				playerControlsAlbumArtScaleMenu.addRadioItems(['Scale album art cropped', 'Scale album art stretched', 'Scale album art proportional'], grSet.albumArtScale, ['cropped', 'stretched', 'proportional'], (scale) => {
 					grSet.albumArtScale = scale;
 					grm.ui.fetchNewArtwork(grm.ui.initMetadb());
-					RepaintWindow();
+					window.Repaint();
 				});
 				playerControlsAlbumArtScaleMenu.addSeparator();
 				playerControlsAlbumArtScaleMenu.addRadioItems([
@@ -1166,7 +1166,7 @@ class TopMenuOptions {
 				], grSet.albumArtAspectRatioLimit, [false, 1.25, 1.5, 1.75, 2], (factor) => {
 					grSet.albumArtAspectRatioLimit = factor;
 					grm.ui.fetchNewArtwork(grm.ui.initMetadb());
-					RepaintWindow();
+					window.Repaint();
 				});
 				playerControlsAlbumArtScaleMenu.appendTo(playerControlsAlbumArtMenu);
 			}
@@ -1183,7 +1183,7 @@ class TopMenuOptions {
 			cycleAlbumArtMenu.addSeparator();
 			cycleAlbumArtMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.albumArtCycleTime, [5, 10, 15, 30, 60], (time) => {
 				grSet.albumArtCycleTime = time;
-				RepaintWindow();
+				window.Repaint();
 			});
 			cycleAlbumArtMenu.appendTo(playerControlsAlbumArtMenu);
 			playerControlsAlbumArtMenu.addSeparator();
@@ -1201,21 +1201,21 @@ class TopMenuOptions {
 			playerControlsAlbumArtMenu.addSeparator();
 
 			const showHiResAudioLogoMenu = new Menu('Show hi-res audio badge on album cover');
-			showHiResAudioLogoMenu.addToggleItem('Enabled', grSet, 'showHiResAudioBadge', () => { RepaintWindow(); });
+			showHiResAudioLogoMenu.addToggleItem('Enabled', grSet, 'showHiResAudioBadge', () => { window.Repaint(); });
 			showHiResAudioLogoMenu.addSeparator();
-			showHiResAudioLogoMenu.addToggleItem('Round', grSet, 'hiResAudioBadgeRound', () => { RepaintWindow(); }, !grSet.showHiResAudioBadge);
+			showHiResAudioLogoMenu.addToggleItem('Round', grSet, 'hiResAudioBadgeRound', () => { window.Repaint(); }, !grSet.showHiResAudioBadge);
 			showHiResAudioLogoMenu.addSeparator();
 			showHiResAudioLogoMenu.addRadioItems(['Small', 'Normal', 'Large'], grSet.hiResAudioBadgeSize, ['small', 'normal', 'large'], (size) => {
 				grSet.hiResAudioBadgeSize = size;
-				RepaintWindow();
+				window.Repaint();
 			}, !grSet.showHiResAudioBadge);
 			showHiResAudioLogoMenu.addSeparator();
 			showHiResAudioLogoMenu.addRadioItems(['Top left', 'Top right', 'Bottom left', 'Bottom right'], grSet.hiResAudioBadgePos, ['topleft', 'topright', 'bottomleft', 'bottomright'], (pos) => {
 				grSet.hiResAudioBadgePos = pos;
-				RepaintWindow();
+				window.Repaint();
 			}, !grSet.showHiResAudioBadge);
 			showHiResAudioLogoMenu.appendTo(playerControlsAlbumArtMenu);
-			playerControlsAlbumArtMenu.addToggleItem('Show pause on album cover', grSet, 'showPause', () => { RepaintWindow(); });
+			playerControlsAlbumArtMenu.addToggleItem('Show pause on album cover', grSet, 'showPause', () => { window.Repaint(); });
 			playerControlsAlbumArtMenu.appendTo(playerControlsMenu);
 		}
 
@@ -1338,7 +1338,7 @@ class TopMenuOptions {
 			grm.ui.setLibrarySize();
 			grm.ui.setBiographySize();
 			if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
-			RepaintWindow();
+			window.Repaint();
 		});
 		playerControlsPanelModeMenu.addToggleItem('Browse mode', grSet, 'panelBrowseMode', () => {
 			const msg = grm.msg.getMessage('menu', 'panelBrowseMode');
@@ -1359,13 +1359,13 @@ class TopMenuOptions {
 			});
 			showPanelOnStartupMenu.appendTo(playerControlsPanelMenu);
 		}
-		playerControlsPanelMenu.addToggleItem('Show logo on preloader', grSet, 'showPreloaderLogo', () => { RepaintWindow(); });
+		playerControlsPanelMenu.addToggleItem('Show logo on preloader', grSet, 'showPreloaderLogo', () => { window.Repaint(); });
 		playerControlsPanelMenu.addToggleItem('Show weblinks in context menu', grSet, 'showWeblinks');
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Return to home on playback stop', grSet, 'returnToHomeOnPlaybackStop');
 		playerControlsPanelMenu.addToggleItem('Switch to playlist when adding songs', grSet, 'addTracksPlaylistSwitch');
 		playerControlsPanelMenu.addSeparator();
-		playerControlsPanelMenu.addToggleItem('Hide middle panel shadow', grSet, 'hideMiddlePanelShadow', () => { RepaintWindow(); });
+		playerControlsPanelMenu.addToggleItem('Hide middle panel shadow', grSet, 'hideMiddlePanelShadow', () => { window.Repaint(); });
 		playerControlsPanelMenu.addSeparator();
 		playerControlsPanelMenu.addToggleItem('Lock player size', grSet, 'lockPlayerSize', () => { UIWizard.DisableWindowSizing = true; });
 		playerControlsPanelMenu.appendTo(playerControlsMenu);
@@ -1529,9 +1529,9 @@ class TopMenuOptions {
 
 		// * SHOW ARTIST COUNTRY FLAGS IN LOWER BAR * //
 		const showArtistFlagsMenu = new Menu('Show artist country flags');
-		showArtistFlagsMenu.addToggleItem('Default', grSet, 'showLowerBarArtistFlags_default', () => { grm.ui.loadCountryFlags(); RepaintWindow(); });
-		showArtistFlagsMenu.addToggleItem('Artwork', grSet, 'showLowerBarArtistFlags_artwork', () => { grm.ui.loadCountryFlags(); RepaintWindow(); });
-		showArtistFlagsMenu.addToggleItem('Compact', grSet, 'showLowerBarArtistFlags_compact', () => { grm.ui.loadCountryFlags(); RepaintWindow(); });
+		showArtistFlagsMenu.addToggleItem('Default', grSet, 'showLowerBarArtistFlags_default', () => { grm.ui.loadCountryFlags(); window.Repaint(); });
+		showArtistFlagsMenu.addToggleItem('Artwork', grSet, 'showLowerBarArtistFlags_artwork', () => { grm.ui.loadCountryFlags(); window.Repaint(); });
+		showArtistFlagsMenu.addToggleItem('Compact', grSet, 'showLowerBarArtistFlags_compact', () => { grm.ui.loadCountryFlags(); window.Repaint(); });
 		showArtistFlagsMenu.appendTo(playerControlsLowerBarMenu);
 
 		// * SHOW SOFTWARE VERSION IN LOWER BAR * //
@@ -1590,7 +1590,7 @@ class TopMenuOptions {
 		playerControlsLowerBarMenu.createRadioSubMenu('Playback time display', ['Default', 'Remaining', 'Percent'],
 			grSet.playbackTimeDisplay, ['default', 'remaining', 'percent'], (type) => {
 			grSet.playbackTimeDisplay = type;
-			RepaintWindow();
+			window.Repaint();
 		});
 		playerControlsLowerBarMenu.appendTo(playerControlsMenu);
 
@@ -1611,13 +1611,13 @@ class TopMenuOptions {
 			}
 			if (grSet.seekbar === 'waveformbar') grm.waveBar.updateBar();
 
-			RepaintWindow();
+			window.Repaint();
 		});
 		const playerControlsProgressBarMenu = new Menu('Progress bar');
 		playerControlsProgressBarMenu.createRadioSubMenu('Style', ['Default', 'Rounded', 'Lines', 'Blocks', 'Dots', 'Thin'], grSet.styleProgressBarDesign, ['default', 'rounded', 'lines', 'blocks', 'dots', 'thin'], (style) => {
 			grSet.styleProgressBarDesign = style;
 			grm.ui.setMainMetrics();
-			RepaintWindow();
+			window.Repaint();
 		});
 		playerControlsProgressBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.progressBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
 			grSet.progressBarWheelSeekSpeed = speed;
@@ -1644,41 +1644,41 @@ class TopMenuOptions {
 		const playerControlsPeakmeterBarMenu = new Menu('Peakmeter bar');
 		playerControlsPeakmeterBarMenu.createRadioSubMenu('Style', ['Horizontal', 'Horizontal center', 'Vertical'], grSet.peakmeterBarDesign, ['horizontal', 'horizontal_center', 'vertical'], (design) => {
 			grSet.peakmeterBarDesign = design;
-			RepaintWindow();
+			window.Repaint();
 		});
 		if (grSet.peakmeterBarDesign === 'vertical') {
 			playerControlsPeakmeterBarMenu.createRadioSubMenu('Size', ['  0 px', '  2 px', '  4 px', '  6 px', '  8 px', '10 px', grSet.layout !== 'default' ? '12 px (default)' : '12 px', '14 px', '16 px', '18 px', grSet.layout !== 'default' ? '20 px' : '20 px (default)', '25 px', '30 px', '35 px', '40 px', 'Minimum'], grSet.peakmeterBarVertSize, [0, 2, 4, 6, 8, 10, 20, 25, 30, 35, 40, 'min'], (size) => {
 				grSet.peakmeterBarVertSize = size;
-				RepaintWindow();
+				window.Repaint();
 			});
 			playerControlsPeakmeterBarMenu.createRadioSubMenu('Decibel range', ['2 to -20 db (default)', '2 to -15 db', '2 to -10 db', '3 to -20 db', '3 to -15 db', '3 to -10 db', '5 to -20 db', '5 to -15 db', '5 to -10 db'], grSet.peakmeterBarVertDbRange, [220, 215, 210, 320, 315, 310, 520, 515, 510], (range) => {
 				grSet.peakmeterBarVertDbRange = range;
-				RepaintWindow();
+				window.Repaint();
 			});
 		}
 		const playerControlsPeakmeterBarDisplayMenu = new Menu('Display');
 		if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show over bars', grSet, 'peakmeterBarOverBars', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show over bars', grSet, 'peakmeterBarOverBars', () => { window.Repaint(); });
 			playerControlsPeakmeterBarDisplayMenu.addSeparator();
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show outer bars', grSet, 'peakmeterBarOuterBars', () => { RepaintWindow(); });
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show outer peaks', grSet, 'peakmeterBarOuterPeaks', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show outer bars', grSet, 'peakmeterBarOuterBars', () => { window.Repaint(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show outer peaks', grSet, 'peakmeterBarOuterPeaks', () => { window.Repaint(); });
 			playerControlsPeakmeterBarDisplayMenu.addSeparator();
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show main bars', grSet, 'peakmeterBarMainBars', () => { RepaintWindow(); });
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show main peaks', grSet, 'peakmeterBarMainPeaks', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show main bars', grSet, 'peakmeterBarMainBars', () => { window.Repaint(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show main peaks', grSet, 'peakmeterBarMainPeaks', () => { window.Repaint(); });
 			playerControlsPeakmeterBarDisplayMenu.addSeparator();
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show middle bars', grSet, 'peakmeterBarMiddleBars', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show middle bars', grSet, 'peakmeterBarMiddleBars', () => { window.Repaint(); });
 		}
-		playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show progress bar', grSet, 'peakmeterBarProgBar', () => { RepaintWindow(); });
+		playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show progress bar', grSet, 'peakmeterBarProgBar', () => { window.Repaint(); });
 		if (grSet.peakmeterBarDesign === 'horizontal' || grSet.peakmeterBarDesign === 'horizontal_center') {
 			playerControlsPeakmeterBarDisplayMenu.addSeparator();
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show gaps', grSet, 'peakmeterBarGaps', () => { RepaintWindow(); });
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show grid', grSet, 'peakmeterBarGrid', () => { grm.peakBar.on_size(grm.ui.ww, grm.ui.wh); RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show gaps', grSet, 'peakmeterBarGaps', () => { window.Repaint(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show grid', grSet, 'peakmeterBarGrid', () => { grm.peakBar.on_size(grm.ui.ww, grm.ui.wh); window.Repaint(); });
 		}
 		if (grSet.peakmeterBarDesign === 'vertical') {
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show peaks', grSet, 'peakmeterBarVertPeaks', () => { RepaintWindow(); });
-			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show baseline', grSet, 'peakmeterBarVertBaseline', () => { RepaintWindow(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show peaks', grSet, 'peakmeterBarVertPeaks', () => { window.Repaint(); });
+			playerControlsPeakmeterBarDisplayMenu.addToggleItem('Show baseline', grSet, 'peakmeterBarVertBaseline', () => { window.Repaint(); });
 		}
-		playerControlsPeakmeterBarDisplayMenu.addToggleItem(grSet.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', grSet, 'peakmeterBarInfo', () => { RepaintWindow(); });
+		playerControlsPeakmeterBarDisplayMenu.addToggleItem(grSet.layout !== 'default' ? 'Show info (only available in Default layout)' : 'Show info', grSet, 'peakmeterBarInfo', () => { window.Repaint(); });
 		playerControlsPeakmeterBarDisplayMenu.appendTo(playerControlsPeakmeterBarMenu);
 		playerControlsPeakmeterBarMenu.createRadioSubMenu('Mouse wheel seek speed', ['  1 sec', '  2 sec', '  3 sec', '  4 sec', '  5 sec (default)', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.peakmeterBarWheelSeekSpeed, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (speed) => {
 			grSet.peakmeterBarWheelSeekSpeed = speed;
@@ -1709,7 +1709,7 @@ class TopMenuOptions {
 				grSet.waveformBarAnalysis = type;
 				grm.waveBar.updateConfig({ preset: { analysisMode: type } });
 				grm.waveBar.updateBar();
-				RepaintWindow();
+				window.Repaint();
 		});
 		playerControlsWaveformBarAnalysisMenu.addSeparator();
 		playerControlsWaveformBarAnalysisMenu.addRadioItems(
@@ -1738,7 +1738,7 @@ class TopMenuOptions {
 			grSet.waveformBarMode = mode;
 			grm.waveBar.updateConfig({ analysis: { binaryMode: mode } });
 			grm.waveBar.updateBar();
-			RepaintWindow();
+			window.Repaint();
 		});
 
 		playerControlsWaveformBarMenu.createRadioSubMenu('Resolution', ['Minimum', 'Very low', 'Low', 'Balanced', 'Standard (default)', 'High', 'Very high'], grSet.waveformBarResolution, [1, 5, 10, 15, 20, 50, 100], (res) => {
@@ -1865,7 +1865,7 @@ class TopMenuOptions {
 
 		const playlistCallback = () => {
 			grm.ui.setPlaylistSize();
-			RepaintWindow();
+			window.Repaint();
 		};
 
 		// * LAYOUT * //
@@ -1886,31 +1886,31 @@ class TopMenuOptions {
 			}
 			grm.bgImg.initBgImageCycle();
 			grm.ui.updatePlaylist();
-			RepaintWindow();
+			window.Repaint();
 		});
 		playlistBackgroundMenu.addToggleItem('Show now playing rows only', grSet, 'playlistBgRowNowPlaying', () => {
 			if (grSet.playlistBgRowNowPlaying) {
 				plSet.show_row_stripes = false;
 			}
 			grm.ui.updatePlaylist();
-			RepaintWindow();
+			window.Repaint();
 		});
 		playlistBackgroundMenu.addSeparator();
 		playlistBackgroundMenu.addToggleItem('Cycle images', grSet, 'playlistBgImgCycle', () => {
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		playlistBackgroundMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.playlistBgImgCycleTime, [5, 10, 15, 30, 60], (time) => {
 			grSet.playlistBgImgCycleTime = time;
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		playlistBackgroundMenu.addSeparator();
 		const playlistBackgroundImageSourceMenu = new Menu('Image source');
 		playlistBackgroundImageSourceMenu.addRadioItems(['Artist', 'Album', 'Custom'], grSet.playlistBgImgSource, ['artist', 'album', 'custom'], (source) => {
 			grSet.playlistBgImgSource = source;
 			grm.bgImg.initBgImage('playlist', true);
-			RepaintWindow();
+			window.Repaint();
 		});
 		playlistBackgroundImageSourceMenu.addSeparator();
 		playlistBackgroundImageSourceMenu.addToggleItem('Filter album art images', grSet, 'playlistBgImgAlbumArtFilter', () => {
@@ -1920,11 +1920,11 @@ class TopMenuOptions {
 		playlistBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.playlistBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
 			grSet.playlistBgImgScale = scale;
 			grm.bgImg.initBgImage('playlist', true);
-			RepaintWindow();
+			window.Repaint();
 		});
 		playlistBackgroundMenu.createRadioSubMenu('Image opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.playlistBgImgOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
 			grSet.playlistBgImgOpacity = value;
-			RepaintWindow();
+			window.Repaint();
 		});
 		playlistBackgroundMenu.addSeparator();
 		playlistBackgroundMenu.createRadioSubMenu('Row opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.playlistBgRowOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
@@ -1940,7 +1940,7 @@ class TopMenuOptions {
 		playlistManagerShowMenu.addToggleItem('Artwork', grSet, 'showPlaylistManager_artwork', playlistCallback);
 		playlistManagerShowMenu.addToggleItem('Compact', grSet, 'showPlaylistManager_compact', playlistCallback);
 		playlistManagerShowMenu.appendTo(playlistManagerMenu);
-		playlistManagerMenu.addToggleItem('Show playlist history', grSet, 'showPlaylistHistory',  () => { RepaintWindow(); });
+		playlistManagerMenu.addToggleItem('Show playlist history', grSet, 'showPlaylistHistory',  () => { window.Repaint(); });
 		playlistManagerMenu.addToggleItem('Auto-hide', grSet, 'autoHidePlman',  () => { grm.ui.initTheme(); });
 		playlistManagerMenu.appendTo(playlistMenu);
 
@@ -1959,7 +1959,7 @@ class TopMenuOptions {
 			PlaylistRescale(true);
 			grm.ui.initPlaylist();
 			grm.ui.setPlaylistSize();
-			RepaintWindow();
+			window.Repaint();
 		}, !plSet.show_header);
 		playlistAlbumMenu.addToggleItem('Auto collapse and expand', plSet, 'auto_collapse', () => {
 			grm.ui.initPlaylist();
@@ -2014,12 +2014,12 @@ class TopMenuOptions {
 		rowsMenu.addToggleItem('Show vinyl style numbering if available', grSet, 'showVinylNums', () => { grm.ui.updatePlaylist(); });
 		rowsMenu.addToggleItem('Show last.fm scrobbles on no local plays', grSet, 'lastFmScrobblesFallback', () => { grm.ui.updatePlaylist(); });
 		rowsMenu.addSeparator();
-		rowsMenu.addToggleItem('Row mouse hover', grSet, 'playlistRowHover', () => { RepaintWindow(); });
+		rowsMenu.addToggleItem('Row mouse hover', grSet, 'playlistRowHover', () => { window.Repaint(); });
 		rowsMenu.addSeparator();
 		rowsMenu.createRadioSubMenu('Playback time display', ['Default', 'Remaining', 'Percent'],
 			grSet.playlistPlaybackTimeDisplay, ['default', 'remaining', 'percent'], (type) => {
 			grSet.playlistPlaybackTimeDisplay = type;
-			RepaintWindow();
+			window.Repaint();
 		});
 		rowsMenu.addSeparator();
 		rowsMenu.addItem('Customize track row', false, () => { grm.inputBox.playlistCustomTrackRow(); grm.ui.updatePlaylist(); });
@@ -2035,7 +2035,7 @@ class TopMenuOptions {
 		const setSorting = () => {
 			grm.ui.setPlaylistSortOrder();
 			grm.ui.setPlaylistSize();
-			RepaintWindow();
+			window.Repaint();
 		};
 
 		const sortOrderWithDirection = ['artistDate', 'artistRating', 'artistPlaycount', 'albumRating', 'albumPlaycount', 'trackRating', 'trackPlaycount', 'year', 'genre', 'label', 'country'];
@@ -2095,14 +2095,14 @@ class TopMenuOptions {
 				grm.ui.newTrackFetchingArtwork = true;
 				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+				grm.debug.repaintWindow();
 			};
 
 			// * DISC ART PLACEHOLDER * //
 			displayDiscArtMenu.addToggleItem('Show placeholder if no disc art found', grSet, 'showDiscArtStub', () => {
 				grSet.noDiscArtStub = false;
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+				window.Repaint();
 			}, !grSet.displayDiscArt);
 			displayDiscArtMenu.addSeparator();
 			displayDiscArtMenu.addToggleItem('No placeholder', grSet, 'noDiscArtStub', () => {
@@ -2111,7 +2111,7 @@ class TopMenuOptions {
 				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.details.discArtArray = [];
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+				window.Repaint();
 			}, !grSet.displayDiscArt);
 			displayDiscArtMenu.addSeparator();
 
@@ -2162,7 +2162,7 @@ class TopMenuOptions {
 				grPath.discArtCustomStub = `${fb.ProfilePath}georgia-reborn\\images\\custom\\discart\\${grSet.discArtStub}.png`;
 				grm.details.discArtCover = grm.details.disposeDiscArt(grm.details.discArtCover);
 				grm.ui.fetchNewArtwork(fb.GetNowPlaying());
-				RepaintWindow();
+				window.Repaint();
 				if (!IsFile(grPath.discArtCustomStub)) {
 					grm.msg.showPopupNotice('menu', 'discArtStub');
 				}
@@ -2177,12 +2177,12 @@ class TopMenuOptions {
 				grm.details.clearTimer();
 				if (fb.IsPlaying) grm.ui.fetchNewArtwork(fb.GetNowPlaying());
 				grm.ui.resizeArtwork(true);
-				RepaintWindow();
+				window.Repaint();
 			});
 
 			discArtMenu.addToggleItem('Display disc art above cover', grSet, 'discArtOnTop', () => {
 				grSet.detailsAlbumArtDiscAreaOpacity = 255;
-				RepaintWindow();
+				window.Repaint();
 			}, !grSet.displayDiscArt);
 			discArtMenu.addSeparator();
 			discArtMenu.addToggleItem('Spin disc art while songs play (increases memory and CPU)', grSet, 'spinDiscArt', () => {
@@ -2198,25 +2198,25 @@ class TopMenuOptions {
 				grm.details.discArtRotationIndex = 0;
 				grm.details.discArtArray = [];
 				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
-				RepaintWindow();
+				window.Repaint();
 			}, !grSet.spinDiscArt);
 			discArtMenu.createRadioSubMenu('Spinning disc art redraw speed', ['250ms (very slow CPU)', '200ms', '150ms', '125ms', '100ms', '  75ms (default)', '  50ms', '  40ms', '  30ms', '  20ms', '  10ms (very fast CPU)'], grSet.spinDiscArtRedrawInterval, [250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10], interval => {
 				grSet.spinDiscArtRedrawInterval = interval;
 				grm.details.setDiscArtRotationTimer();
 			}, !grSet.spinDiscArt);
 			discArtMenu.addSeparator();
-			discArtMenu.addToggleItem('Rotate disc art as tracks change', grSet, 'rotateDiscArt', () => { RepaintWindow(); }, !grSet.displayDiscArt || grSet.spinDiscArt);
+			discArtMenu.addToggleItem('Rotate disc art as tracks change', grSet, 'rotateDiscArt', () => { window.Repaint(); }, !grSet.displayDiscArt || grSet.spinDiscArt);
 			discArtMenu.createRadioSubMenu('Disc art rotation amount', ['2 degrees', '3 degrees', '4 degrees', '5 degrees'], parseInt(grSet.rotationAmt), [2, 3, 4, 5], (rot) => {
 				grSet.rotationAmt = rot;
 				grm.details.setDiscArtRotation();
-				RepaintWindow();
+				window.Repaint();
 			}, !grSet.rotateDiscArt || grSet.spinDiscArt);
 			discArtMenu.appendTo(detailsMenu);
 
 			discArtMenu.createRadioSubMenu('Disc art display amount', ['Auto (Needs enough width)', '50%  (Needs enough width, default)', '45%', '40%', '35%', '30%', '25%', '20%', '15%', '10%'], grSet.discArtDisplayAmount, [1, 0.5, 0.455, 0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1], amount => {
 				grSet.discArtDisplayAmount = amount;
 				grm.ui.resizeArtwork(true);
-				RepaintWindow();
+				window.Repaint();
 			});
 
 			// * DISC ART ALBUM ART * //
@@ -2225,13 +2225,13 @@ class TopMenuOptions {
 				grSet.detailsAlbumArtOpacity = value;
 				grSet.detailsAlbumArtDiscAreaOpacity = 255;
 				grSet.discArtOnTop = false;
-				RepaintWindow();
+				window.Repaint();
 			});
 			albumArtOpacityMenu.createRadioSubMenu('Disc area opacity (very fast CPU needed when disc art spinning)', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.detailsAlbumArtDiscAreaOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
 				grSet.detailsAlbumArtDiscAreaOpacity = value;
 				grSet.detailsAlbumArtOpacity = 255;
 				grSet.discArtOnTop = false;
-				RepaintWindow();
+				window.Repaint();
 			});
 			albumArtOpacityMenu.appendTo(detailsMenu);
 		}
@@ -2243,13 +2243,13 @@ class TopMenuOptions {
 			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
 			grm.details.updateGridPos();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowArtistMenu.addToggleItem('Artwork', grSet, 'showGridArtist_artwork', () => {
 			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
 			grm.details.updateGridPos();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowArtistMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2259,13 +2259,13 @@ class TopMenuOptions {
 			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
 			grm.details.updateGridPos();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowTrackNumberMenu.addToggleItem('Artwork', grSet, 'showGridTrackNum_artwork', () => {
 			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
 			grm.details.updateGridPos();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowTrackNumberMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2276,14 +2276,14 @@ class TopMenuOptions {
 			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
 			grm.details.updateGridPos();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowTitleMenu.addToggleItem('Artwork', grSet, 'showGridTitle_artwork', () => {
 			grSet.showGridTrackNum_artwork = true;
 			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
 			grm.details.updateGridPos();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowTitleMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2293,7 +2293,7 @@ class TopMenuOptions {
 			on_playback_new_track(fb.GetNowPlaying());
 			grm.details.clearCache('metrics');
 			grm.ui.createFonts();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowPlaylingPlaylistMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2301,11 +2301,11 @@ class TopMenuOptions {
 		const detailsShowTimelineMenu = new Menu('Show timeline');
 		detailsShowTimelineMenu.addToggleItem('Default', grSet, 'showGridTimeline_default', () => {
 			grm.details.clearCache('metrics');
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowTimelineMenu.addToggleItem('Artwork', grSet, 'showGridTimeline_artwork', () => {
 			grm.details.clearCache('metrics');
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowTimelineMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2314,12 +2314,12 @@ class TopMenuOptions {
 		detailsShowArtistFlagsMenu.addToggleItem('Default', grSet, 'showGridArtistFlags_default', () => {
 			grm.details.clearCache('metrics');
 			grm.ui.loadCountryFlags();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowArtistFlagsMenu.addToggleItem('Artwork', grSet, 'showGridArtistFlags_artwork', () => {
 			grm.details.clearCache('metrics');
 			grm.ui.loadCountryFlags();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowArtistFlagsMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2329,13 +2329,13 @@ class TopMenuOptions {
 			grSet.showGridReleaseFlags_default = type;
 			grm.details.clearCache('metrics');
 			grm.details.loadGridReleaseCountryFlag();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowReleaseFlagsMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridReleaseFlags_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridReleaseFlags_artwork = type;
 			grm.details.clearCache('metrics');
 			grm.details.loadGridReleaseCountryFlag();
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowReleaseFlagsMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2345,13 +2345,13 @@ class TopMenuOptions {
 			grSet.showGridCodecLogo_default = type;
 			grm.details.clearCache('metrics');
 			grm.details.clearCache('codecLogo');
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowCodecLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridCodecLogo_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridCodecLogo_artwork = type;
 			grm.details.clearCache('metrics');
 			grm.details.clearCache('codecLogo');
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowCodecLogoMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2361,13 +2361,13 @@ class TopMenuOptions {
 			grSet.showGridChannelLogo_default = type;
 			grm.details.clearCache('metrics');
 			grm.details.clearCache('channelLogo');
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowChannelLogoMenu.createRadioSubMenu('Artwork', ['Disabled', 'Logo', 'Text + Logo'], grSet.showGridChannelLogo_artwork, [false, 'logo', 'textlogo'], type => {
 			grSet.showGridChannelLogo_artwork = type;
 			grm.details.clearCache('metrics');
 			grm.details.clearCache('channelLogo');
-			RepaintWindow();
+			window.Repaint();
 		});
 		detailsShowChannelLogoMenu.appendTo(detailsMetadataGridMenu);
 
@@ -2390,7 +2390,7 @@ class TopMenuOptions {
 				if (grSet.labelArtOnBg) {
 					grSet.labelArtOnBg = false;
 				}
-				RepaintWindow();
+				window.Repaint();
 			});
 			// * SHOW LABEL ART ON BACKGROUND IN DETAILS * //
 			detailsBackgroundMenu.addToggleItem('Show label art on background', grSet, 'labelArtOnBg', () => RepaintWindow(), grSet.noDiscArtBg);
@@ -2417,7 +2417,7 @@ class TopMenuOptions {
 				grm.ui.initLibraryLayoutState();
 			});
 			libraryLayoutMenu.addSeparator();
-			libraryLayoutMenu.addToggleItem('Use full preset', grSet, 'libraryLayoutFullPreset', () => { RepaintWindow(); });
+			libraryLayoutMenu.addToggleItem('Use full preset', grSet, 'libraryLayoutFullPreset', () => { window.Repaint(); });
 			libraryLayoutMenu.addSeparator();
 			libraryLayoutMenu.addToggleItem('Use split preset (collapse)', grSet, 'libraryLayoutSplitPreset', () => {
 				grm.ui.setLibrarySplitPreset(grSet.libraryLayoutSplitPreset ? 'libraryLayoutSplitPreset' : false);
@@ -2468,7 +2468,7 @@ class TopMenuOptions {
 		libraryThumbnailSizeMenu.addRadioItems(['Auto (default)', 'Playlist', 'Mini', 'Small', 'Regular', 'Medium', 'Large', 'XL', 'XXL', 'MAX'], grSet.libraryThumbnailSize, ['auto', 'playlist', 0, 1, 2, 3, 4, 5, 6, 7], (thumbnailSize) => {
 			grSet.savedLibraryThumbnailSize = libSet.thumbNailSize = grSet.libraryThumbnailSize = thumbnailSize;
 			grm.ui.setLibrarySize();
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryThumbnailSizeMenu.appendTo(libraryAlbumArtMenu);
 
@@ -2552,24 +2552,24 @@ class TopMenuOptions {
 				grm.bgImg.clearBgImageCache();
 			}
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryBackgroundMenu.addSeparator();
 		libraryBackgroundMenu.addToggleItem('Cycle images', grSet, 'libraryBgImgCycle', () => {
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryBackgroundMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.libraryBgImgCycleTime, [5, 10, 15, 30, 60], (time) => {
 			grSet.libraryBgImgCycleTime = time;
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryBackgroundMenu.addSeparator();
 		const libraryBackgroundImageSourceMenu = new Menu('Image source');
 		libraryBackgroundImageSourceMenu.addRadioItems(['Artist', 'Album', 'Custom'], grSet.libraryBgImgSource, ['artist', 'album', 'custom'], (source) => {
 			grSet.libraryBgImgSource = source;
 			grm.bgImg.initBgImage('library', true);
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryBackgroundImageSourceMenu.addSeparator();
 		libraryBackgroundImageSourceMenu.addToggleItem('Filter album art images', grSet, 'libraryBgImgAlbumArtFilter', () => {
@@ -2579,16 +2579,16 @@ class TopMenuOptions {
 		libraryBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.libraryBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
 			grSet.libraryBgImgScale = scale;
 			grm.bgImg.initBgImage('library', true);
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryBackgroundMenu.createRadioSubMenu('Image opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.libraryBgImgOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
 			grSet.libraryBgImgOpacity = value;
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryBackgroundMenu.addSeparator();
 		libraryBackgroundMenu.createRadioSubMenu('Row opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.libraryBgRowOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
 			grSet.libraryBgRowOpacity = value;
-			RepaintWindow();
+			window.Repaint();
 		});
 		libraryBackgroundMenu.appendTo(libraryMenu);
 
@@ -2646,8 +2646,8 @@ class TopMenuOptions {
 				});
 			}
 
-			RepaintWindow();
 			lib.panel.updateProp(1);
+			window.Repaint();
 		});
 		libraryControlsMenu.addSeparator();
 		libraryControlsMenu.createRadioSubMenu('Single-click action', ['Select', 'Send to playlist', 'Send to playlist and play', 'Send to playlist and play (add if playing)'], libSet.clickAction, [0, 1, 2, 3], (action) => {
@@ -2728,7 +2728,7 @@ class TopMenuOptions {
 		libraryTrackRowMenu.addToggleItem('Show row stripes', libSet, 'rowStripes', () => { lib.panel.updateProp(1); });
 		libraryTrackRowMenu.addSeparator();
 		libraryTrackRowMenu.addToggleItem('Row fully clickable', libSet, 'fullLineSelection', () => { lib.panel.updateProp(1); });
-		libraryTrackRowMenu.addToggleItem('Row mouse hover', grSet, 'libraryRowHover', () => { RepaintWindow(); });
+		libraryTrackRowMenu.addToggleItem('Row mouse hover', grSet, 'libraryRowHover', () => { window.Repaint(); });
 		libraryTrackRowMenu.appendTo(libraryMenu);
 
 		// * FILTER ORDER * //
@@ -2824,7 +2824,7 @@ class TopMenuOptions {
 				grm.ui.initBiographyLayoutState();
 			});
 			biographyLayoutMenu.addSeparator();
-			biographyLayoutMenu.addToggleItem('Use full preset', grSet, 'biographyLayoutFullPreset', () => { RepaintWindow(); });
+			biographyLayoutMenu.addToggleItem('Use full preset', grSet, 'biographyLayoutFullPreset', () => { window.Repaint(); });
 			biographyLayoutMenu.addSeparator();
 		}
 		biographyLayoutMenu.addRadioItems(['Top (default)', 'Right', 'Bottom', 'Left', 'Full overlay', 'Part overlay'], bioSet.style, [0, 1, 2, 3, 4, 5], (layout) => {
@@ -3121,24 +3121,24 @@ class TopMenuOptions {
 				grm.bgImg.clearBgImageCache();
 			}
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsBackgroundMenu.addSeparator();
 		lyricsBackgroundMenu.addToggleItem('Cycle images', grSet, 'lyricsBgImgCycle', () => {
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsBackgroundMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.lyricsBgImgCycleTime, [5, 10, 15, 30, 60], (time) => {
 			grSet.lyricsBgImgCycleTime = time;
 			grm.bgImg.initBgImageCycle();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsBackgroundMenu.addSeparator();
 		const lyricsBackgroundImageSourceMenu = new Menu('Image source');
 		lyricsBackgroundImageSourceMenu.addRadioItems(['Artist', 'Album', 'Custom'], grSet.lyricsBgImgSource, ['artist', 'album', 'custom'], (source) => {
 			grSet.lyricsBgImgSource = source;
 			grm.bgImg.initBgImage('lyrics', true);
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsBackgroundImageSourceMenu.addSeparator();
 		lyricsBackgroundImageSourceMenu.addToggleItem('Filter album art images', grSet, 'lyricsBgImgAlbumArtFilter', () => {
@@ -3148,11 +3148,11 @@ class TopMenuOptions {
 		lyricsBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.lyricsBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
 			grSet.lyricsBgImgScale = scale;
 			grm.bgImg.initBgImage('lyrics', true);
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsBackgroundMenu.createRadioSubMenu('Image opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.lyricsBgImgOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
 			grSet.lyricsBgImgOpacity = value;
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsBackgroundMenu.appendTo(lyricsMenu);
 
@@ -3160,17 +3160,17 @@ class TopMenuOptions {
 		lyricsDisplayMenu.createRadioSubMenu('Show drop shadow', ['None', 'Small', 'Normal', 'Large'], grSet.lyricsDropShadowLevel, [0, 1, 2, 3], (size) => {
 			grSet.lyricsDropShadowLevel = size;
 			grm.lyrics.initLyrics();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsDisplayMenu.addToggleItem('Show fade scroll', grSet, 'lyricsFadeScroll', () => {
 			grm.lyrics.initLyrics();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsDisplayMenu.addToggleItem('Show larger current sync', grSet, 'lyricsLargerCurrentSync', () => {
 			bioSet.largerSyncLyricLine = grSet.lyricsLargerCurrentSync;
 			grm.lyrics.initLyrics();
 			bio.ui.updateProp(1);
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsDisplayMenu.appendTo(lyricsMenu);
 
@@ -3180,12 +3180,12 @@ class TopMenuOptions {
 			grSet.savedLyricsDisplayed = grm.ui.displayLyrics && grSet.lyricsRememberPanelState;
 			if (grSet.displayLyrics) grm.lyrics.initLyrics();
 			grm.button.initButtonState();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsControlsMenu.addToggleItem('Auto-scroll unsynced lyrics', grSet, 'lyricsAutoScrollUnsynced', () => {
 			if (grSet.displayLyrics) grm.lyrics.initLyrics();
 			grm.button.initButtonState();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsControlsMenu.appendTo(lyricsMenu);
 
@@ -3228,20 +3228,20 @@ class TopMenuOptions {
 					break;
 			}
 			grm.lyrics.initLyrics();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsScrollSpeedMenu.appendTo(lyricsMenu);
 
 		const lyricsTranslationMenu = new Menu('Translation');
 		lyricsTranslationMenu.addToggleItem('Show translation', grSet, 'lyricsTranslation', () => {
 			grm.lyrics.initLyrics();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsTranslationMenu.addSeparator();
 		lyricsTranslationMenu.addRadioItems(['First line', 'Second Line'], grSet.lyricsTranslationLine, [1, 2], (line) => {
 			grSet.lyricsTranslationLine = line;
 			grm.lyrics.initLyrics();
-			RepaintWindow();
+			window.Repaint();
 		});
 		lyricsTranslationMenu.appendTo(lyricsMenu);
 		lyricsMenu.addSeparator();
@@ -3684,14 +3684,14 @@ class TopMenuOptions {
 		const debugMenu = new Menu('Developer tools');
 
 		const clearAutoDownloadBio = () => {
-			grm.ui.autoDownloadBio = false;
+			grm.debug.autoDownloadBio = false;
 			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
 			grm.ui.displayBiography = false;
 			grm.ui.clearTimer('autoDownloadBio');
 		};
 
 		const clearAutoDownloadLyrics = () => {
-			grm.ui.autoDownloadLyrics = false;
+			grm.debug.autoDownloadLyrics = false;
 			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
 			grm.ui.displayLyrics = false;
 			grm.ui.clearTimer('autoDownloadLyrics');
@@ -3699,14 +3699,14 @@ class TopMenuOptions {
 
 		debugMenu.addItem('Console', false, () => { fb.RunMainMenuCommand('View/Console'); }); // Top menu 'View' does not exist in Artwork/Compact layout
 		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Enable auto-download biography', grm.ui, 'autoDownloadBio', () => {
-			if (!grm.ui.autoDownloadBio) {
+		debugMenu.addToggleItem('Enable auto-download biography', grm.debug, 'autoDownloadBio', () => {
+			if (!grm.debug.autoDownloadBio) {
 				clearAutoDownloadBio();
 			} else {
 				const msg = grm.msg.getMessage('menu', 'autoDownloadBio');
 				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
-						grm.ui.autoDownloadBio = false;
+						grm.debug.autoDownloadBio = false;
 						return;
 					}
 					clearAutoDownloadLyrics();
@@ -3720,14 +3720,14 @@ class TopMenuOptions {
 			grm.button.initButtonState();
 			window.Repaint();
 		});
-		debugMenu.addToggleItem('Enable auto-download lyrics', grm.ui, 'autoDownloadLyrics', () => {
-			if (!grm.ui.autoDownloadLyrics) {
+		debugMenu.addToggleItem('Enable auto-download lyrics', grm.debug, 'autoDownloadLyrics', () => {
+			if (!grm.debug.autoDownloadLyrics) {
 				clearAutoDownloadLyrics();
 			} else {
 				const msg = grm.msg.getMessage('menu', 'autoDownloadLyrics');
 				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 					if (!confirmed) {
-						grm.ui.autoDownloadLyrics = false;
+						grm.debug.autoDownloadLyrics = false;
 						return;
 					}
 					clearAutoDownloadBio();
@@ -3755,20 +3755,33 @@ class TopMenuOptions {
 			grm.ui.albumArt = null;
 			on_playback_new_track(fb.GetNowPlaying());
 		});
-		debugMenu.addItem('Enable debug theme overlay', grCfg.settings.showDebugThemeOverlay, () => {
-			grCfg.settings.showDebugThemeOverlay = !grCfg.settings.showDebugThemeOverlay;
-			if (grCfg.settings.showDebugThemeOverlay) {
+		debugMenu.addItem('Enable debug color overlay', grCfg.settings.showDebugColorOverlay, () => {
+			grCfg.settings.showDebugColorOverlay = !grCfg.settings.showDebugColorOverlay;
+			if (grCfg.settings.showDebugColorOverlay) {
+				grCfg.settings.showDebugThemeOverlay = false;
 				grCfg.settings.showDebugPerformanceOverlay = false;
 				grm.ui.albumArt = null;
 				on_playback_new_track(fb.GetNowPlaying());
 				return;
 			}
-			RepaintWindow();
+			grm.debug.repaintWindow();
+		});
+		debugMenu.addItem('Enable debug theme overlay', grCfg.settings.showDebugThemeOverlay, () => {
+			grCfg.settings.showDebugThemeOverlay = !grCfg.settings.showDebugThemeOverlay;
+			if (grCfg.settings.showDebugThemeOverlay) {
+				grCfg.settings.showDebugColorOverlay = false;
+				grCfg.settings.showDebugPerformanceOverlay = false;
+				grm.ui.albumArt = null;
+				on_playback_new_track(fb.GetNowPlaying());
+				return;
+			}
+			grm.debug.repaintWindow();
 		});
 		debugMenu.addItem('Enable debug performance overlay', grCfg.settings.showDebugPerformanceOverlay, () => {
 			grCfg.settings.showDebugPerformanceOverlay = !grCfg.settings.showDebugPerformanceOverlay;
 			grm.ui.clearCache('debug');
 			if (grCfg.settings.showDebugPerformanceOverlay) {
+				grCfg.settings.showDebugColorOverlay = false;
 				grCfg.settings.showDebugThemeOverlay = false;
 				grm.cpuTrack.start();
 				grm.ui.albumArt = null;
@@ -3776,57 +3789,57 @@ class TopMenuOptions {
 				return;
 			}
 			grm.cpuTrack.stop();
-			RepaintWindow();
+			grm.debug.repaintWindow();
 		});
 		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Show draw areas', grm.ui, 'drawRepaintRects', () => {
-			if (grm.ui.drawRepaintRects) {
-				RepaintRectAreas();
+		debugMenu.addToggleItem('Show draw areas', grm.debug, 'drawRepaintRects', () => {
+			if (grm.debug.drawRepaintRects) {
+				grm.debug.repaintRectAreas();
 			} else {
-				RepaintWindow();
+				grm.debug.repaintWindow();
 			}
 		});
 		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Show draw timing', grm.ui, 'showDrawTiming', () => {
-			if (grm.ui.showDrawTiming) fb.RunMainMenuCommand('View/Console');
+		debugMenu.addToggleItem('Show draw timing', grm.debug, 'showDrawTiming', () => {
+			if (grm.debug.showDrawTiming) fb.RunMainMenuCommand('View/Console');
 			grm.ui.clearCache('debug');
 		});
-		debugMenu.addToggleItem('Show draw extended timing', grm.ui, 'showDrawExtendedTiming', () => {
-			if (grm.ui.showDrawExtendedTiming) fb.RunMainMenuCommand('View/Console');
+		debugMenu.addToggleItem('Show draw extended timing', grm.debug, 'showDrawExtendedTiming', () => {
+			if (grm.debug.showDrawExtendedTiming) fb.RunMainMenuCommand('View/Console');
 			grm.ui.clearCache('debug');
 		});
-		debugMenu.addToggleItem('Show debug timing', grm.ui, 'showDebugTiming', () => {
-			if (grm.ui.showDebugTiming) fb.RunMainMenuCommand('View/Console');
+		debugMenu.addToggleItem('Show debug timing', grm.debug, 'showDebugTiming', () => {
+			if (grm.debug.showDebugTiming) fb.RunMainMenuCommand('View/Console');
 			grm.ui.clearCache('debug');
 		});
 		debugMenu.addSeparator();
-		debugMenu.addToggleItem('Show panel calls', grm.ui, 'showPanelTraceCall', () => {
-			if (grm.ui.showPanelTraceCall) {
+		debugMenu.addToggleItem('Show panel calls', grm.debug, 'showPanelTraceCall', () => {
+			if (grm.debug.showPanelTraceCall) {
 				fb.RunMainMenuCommand('View/Console');
-				grm.ui.traceCall = true;
+				grm.debug.traceCall = true;
 			} else {
-				grm.ui.traceCall = false;
-				if (grm.ui.showPanelTraceOnMove) {
-					grm.ui.traceOnMove = false;
-					grm.ui.showPanelTraceOnMove = false;
+				grm.debug.traceCall = false;
+				if (grm.debug.showPanelTraceOnMove) {
+					grm.debug.traceOnMove = false;
+					grm.debug.showPanelTraceOnMove = false;
 				}
 			}
 		});
-		debugMenu.addToggleItem('Show panel moves', grm.ui, 'showPanelTraceOnMove', () => {
-			if (grm.ui.showPanelTraceOnMove) {
+		debugMenu.addToggleItem('Show panel moves', grm.debug, 'showPanelTraceOnMove', () => {
+			if (grm.debug.showPanelTraceOnMove) {
 				fb.RunMainMenuCommand('View/Console');
-				grm.ui.traceOnMove = true;
-				grm.ui.traceCall = true;
-				grm.ui.showPanelTraceCall = true;
+				grm.debug.traceOnMove = true;
+				grm.debug.traceCall = true;
+				grm.debug.showPanelTraceCall = true;
 				return;
 			}
-			grm.ui.traceOnMove = false;
-			grm.ui.traceCall = false;
-			grm.ui.showPanelTraceCall = false;
+			grm.debug.traceOnMove = false;
+			grm.debug.traceCall = false;
+			grm.debug.showPanelTraceCall = false;
 		});
-		debugMenu.addToggleItem('Show playlist performance', grm.ui, 'showPlaylistTraceListPerf', () => {
-			grm.ui.traceListPerformance = !grm.ui.traceListPerformance;
-			if (grm.ui.showPlaylistTraceListPerf) fb.RunMainMenuCommand('View/Console');
+		debugMenu.addToggleItem('Show playlist performance', grm.debug, 'showPlaylistTraceListPerf', () => {
+			grm.debug.traceListPerformance = !grm.debug.traceListPerformance;
+			if (grm.debug.showPlaylistTraceListPerf) fb.RunMainMenuCommand('View/Console');
 		});
 		debugMenu.addSeparator();
 		debugMenu.addToggleItem('Show panel context menu', grCfg.settings, 'showPanelContextMenu');

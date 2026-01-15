@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -25,15 +25,15 @@
  */
 function on_get_album_art_done(metadb, art_id, image, image_path) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_get_album_art_done');
+		grm.debug.callLog('Playlist => on_get_album_art_done');
 		pl.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
 	else if (grm.ui.displayLibrary) {
-		CallLog('Library => on_get_album_art_done');
+		grm.debug.callLog('Library => on_get_album_art_done');
 		lib.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_get_album_art_done');
+		grm.debug.callLog('Biography => on_get_album_art_done');
 		bio.call.on_get_album_art_done(metadb, art_id, image, image_path);
 	}
 }
@@ -47,7 +47,7 @@ function on_get_album_art_done(metadb, art_id, image, image_path) {
  * @param {string} image_path - The path that was originally supplied to gdi.LoadImageAsync.
  */
 function on_load_image_done(cookie, imagenullable, image_path) {
-	CallLog('Biography => on_load_image_done');
+	grm.debug.callLog('Biography => on_load_image_done');
 	bio.call.on_load_image_done(cookie, imagenullable, image_path);
 }
 
@@ -59,21 +59,21 @@ function on_load_image_done(cookie, imagenullable, image_path) {
  * @param {boolean} [fromhook] - True if notification is not from tag update, but a component that provides tag-like data from a database.
  */
 function on_metadb_changed(handle_list, fromhook) {
-	DebugLog(`Playback => on_metadb_changed(): ${handle_list ? handle_list.Count : '0'} handles, fromhook: ${fromhook}`);
+	grm.debug.debugLog(`Playback => on_metadb_changed(): ${handle_list ? handle_list.Count : '0'} handles, fromhook: ${fromhook}`);
 
 	grm.ui.handlePlaybackMetadb(handle_list);
 
 	// * Not called manually from on_playback_new_track
 	if (handle_list) {
-		CallLog('Playlist => on_metadb_changed');
+		grm.debug.callLog('Playlist => on_metadb_changed');
 		pl.call && pl.call.on_metadb_changed(handle_list, fromhook); // Always process for Playlist: keeps caches fresh even when hidden
 
 		if (grm.ui.displayLibrary) {
-			CallLog('Library => on_metadb_changed');
+			grm.debug.callLog('Library => on_metadb_changed');
 			lib.call && lib.call.on_metadb_changed(handle_list, fromhook);
 		}
 		if (grm.ui.displayBiography) {
-			CallLog('Biography => on_metadb_changed');
+			grm.debug.callLog('Biography => on_metadb_changed');
 			bio.call && bio.call.on_metadb_changed(handle_list, fromhook);
 		}
 	}
@@ -90,8 +90,8 @@ function on_metadb_changed(handle_list, fromhook) {
 function on_playback_new_track(metadb) {
 	if (!metadb) return; // Solve weird corner case
 
-	SetDebugProfile(grm.ui.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'on_playback_new_track');
-	DebugLog('Playback => on_playback_new_track()');
+	grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'on_playback_new_track');
+	grm.debug.debugLog('Playback => on_playback_new_track()');
 
 	grm.ui.handlePlaybackNewTrack(metadb);
 	pl.call.on_playback_new_track(metadb); // Always process for Playlist: updates now-playing state even when hidden
@@ -103,7 +103,7 @@ function on_playback_new_track(metadb) {
 		bio.call.on_playback_new_track();
 	}
 
-	SetDebugProfile(false, 'print', 'on_playback_new_track');
+	grm.debug.setDebugProfile(false, 'print', 'on_playback_new_track');
 }
 
 
@@ -128,7 +128,7 @@ function on_size() {
 	grm.ui.ww = window.Width;
 	grm.ui.wh = window.Height;
 
-	DebugLog(`in on_size() => width: ${grm.ui.ww}, height: ${grm.ui.wh}`);
+	grm.debug.debugLog(`in on_size() => width: ${grm.ui.ww}, height: ${grm.ui.wh}`);
 
 	if (grm.ui.ww < 1 || grm.ui.wh < 1) return;
 
@@ -169,11 +169,11 @@ function on_size() {
  */
 function on_download_file_done(path, success, error_text) {
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_download_file_done');
+		grm.debug.callLog('Library => on_download_file_done');
 		// lib.call.on_download_file_done(path, success, error_text);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_download_file_done');
+		grm.debug.callLog('Biography => on_download_file_done');
 		bio.call.on_download_file_done(path, success, error_text);
 	}
 }
@@ -191,11 +191,11 @@ function on_download_file_done(path, success, error_text) {
  */
 function on_http_request_done(task_id, success, response_text, status, content_type) {
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_http_request_done');
+		grm.debug.callLog('Library => on_http_request_done');
 		// lib.call.on_http_request_done(task_id, success, response_text, status, content_type);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_http_request_done');
+		grm.debug.callLog('Biography => on_http_request_done');
 		bio.call.on_http_request_done(task_id, success, response_text, status, content_type);
 	}
 }
@@ -214,11 +214,11 @@ function on_http_request_done(task_id, success, response_text, status, content_t
  */
 function on_char(code) {
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		CallLog('Custom menu => on_char');
+		grm.debug.callLog('Custom menu => on_char');
 		grm.cusMenu.on_char(code);
 	}
 	else if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || !grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayLibrarySplit(true)) {
-		CallLog('Playlist => on_char');
+		grm.debug.callLog('Playlist => on_char');
 		const text = String.fromCharCode(code);
 
 		if (!grSet.jumpSearchDisabled && !(grm.jSearch.jSearch === '' && text === ' ')) {
@@ -234,7 +234,7 @@ function on_char(code) {
 		}
 	}
 	else if (grm.ui.displayLibrary) {
-		CallLog('Library => on_char');
+		grm.debug.callLog('Library => on_char');
 		lib.call.on_char(code);
 	}
 }
@@ -254,7 +254,7 @@ function on_char(code) {
  */
 function on_drag_enter(action, x, y, mask) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_drag_enter');
+		grm.debug.callLog('Playlist => on_drag_enter');
 		pl.call.on_drag_enter(action, x, y, mask);
 	}
 }
@@ -274,7 +274,7 @@ function on_drag_enter(action, x, y, mask) {
  */
 function on_drag_over(action, x, y, mask) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_drag_over');
+		grm.debug.callLog('Playlist => on_drag_over');
 		pl.call.on_drag_over(action, x, y, mask);
 	}
 }
@@ -290,7 +290,7 @@ function on_drag_over(action, x, y, mask) {
  */
 function on_drag_leave() {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		CallLog('Playlist => on_drag_leave');
+		grm.debug.callLog('Playlist => on_drag_leave');
 		pl.call.on_drag_leave();
 	}
 }
@@ -310,7 +310,7 @@ function on_drag_leave() {
  */
 function on_drag_drop(action, x, y, mask) {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		CallLog('Playlist => on_drag_drop');
+		grm.debug.callLog('Playlist => on_drag_drop');
 		pl.call.on_drag_drop(action, x, y, mask);
 	}
 }
@@ -323,15 +323,15 @@ function on_drag_drop(action, x, y, mask) {
  */
 function on_focus(is_focused) {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		CallLog('Playlist => on_focus');
+		grm.debug.callLog('Playlist => on_focus');
 		pl.call.on_focus(is_focused);
 	}
 	else if (grm.ui.displayLibrary) {
-		CallLog('Library => on_focus');
+		grm.debug.callLog('Library => on_focus');
 		lib.call.on_focus(is_focused);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_focus');
+		grm.debug.callLog('Biography => on_focus');
 		bio.call.on_focus(is_focused);
 	}
 	if (is_focused) {
@@ -351,15 +351,15 @@ function on_focus(is_focused) {
  */
 function on_item_focus_change(playlistIndex, from, to) {
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		CallLog('Playlist => on_item_focus_change');
+		grm.debug.callLog('Playlist => on_item_focus_change');
 		pl.call.on_item_focus_change(playlistIndex, from, to);
 	}
 	else if (grm.ui.displayLibrary) {
-		CallLog('Library => on_item_focus_change');
+		grm.debug.callLog('Library => on_item_focus_change');
 		lib.call.on_item_focus_change();
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_item_focus_change');
+		grm.debug.callLog('Biography => on_item_focus_change');
 		bio.call.on_item_focus_change();
 	}
 }
@@ -378,21 +378,21 @@ function on_item_focus_change(playlistIndex, from, to) {
  */
 function on_key_down(vkey) {
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		CallLog('Custom menu => on_key_down');
+		grm.debug.callLog('Custom menu => on_key_down');
 		grm.cusMenu.on_key_down(vkey);
 	}
 	else {
 		if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-			CallLog('Playlist => on_key_down');
+			grm.debug.callLog('Playlist => on_key_down');
 			if (SuppressKey(vkey)) return;
 			pl.call.on_key_down(vkey);
 		}
 		else if (grm.ui.displayLibrary) {
-			CallLog('Library => on_key_down');
+			grm.debug.callLog('Library => on_key_down');
 			lib.call.on_key_down(vkey);
 		}
 		if (grm.ui.displayBiography) {
-			CallLog('Biography => on_key_down');
+			grm.debug.callLog('Biography => on_key_down');
 			bio.call.on_key_down(vkey);
 		}
 	}
@@ -413,11 +413,11 @@ function on_key_down(vkey) {
  */
 function on_key_up(vkey) {
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_key_up');
+		grm.debug.callLog('Library => on_key_up');
 		lib.call.on_key_up(vkey);
 	}
 	else if (grm.ui.displayBiography) {
-		CallLog('Biography => on_key_up');
+		grm.debug.callLog('Biography => on_key_up');
 		bio.call.on_key_up(vkey);
 	}
 }
@@ -429,10 +429,10 @@ function on_key_up(vkey) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_added(handle_list) {
-	CallLog('Library => on_library_items_added');
+	grm.debug.callLog('Library => on_library_items_added');
 	lib.call.on_library_items_added(handle_list);
 
-	CallLog('Biography => on_library_items_added');
+	grm.debug.callLog('Biography => on_library_items_added');
 	bio.call.on_library_items_added(handle_list);
 }
 
@@ -443,10 +443,10 @@ function on_library_items_added(handle_list) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_changed(handle_list) {
-	CallLog('Library => on_library_items_changed');
+	grm.debug.callLog('Library => on_library_items_changed');
 	lib.call.on_library_items_changed(handle_list);
 
-	CallLog('Biography => on_library_items_changed');
+	grm.debug.callLog('Biography => on_library_items_changed');
 	bio.call.on_library_items_changed(handle_list);
 }
 
@@ -457,10 +457,10 @@ function on_library_items_changed(handle_list) {
  * @param {FbMetadbHandleList} handle_list - The handle list of the library items.
  */
 function on_library_items_removed(handle_list) {
-	CallLog('Library => on_library_items_removed');
+	grm.debug.callLog('Library => on_library_items_removed');
 	lib.call.on_library_items_removed(handle_list);
 
-	CallLog('Biography => on_library_items_removed');
+	grm.debug.callLog('Biography => on_library_items_removed');
 	bio.call.on_library_items_removed(handle_list);
 }
 
@@ -476,22 +476,22 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) return;
 
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		CallLog('Playlist => on_mouse_lbtn_dblclk');
+		grm.debug.callLog('Playlist => on_mouse_lbtn_dblclk');
 		pl.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-		CallLog('Library => on_mouse_lbtn_dblclk');
+		grm.debug.callLog('Library => on_mouse_lbtn_dblclk');
 		lib.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
 	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		CallLog('Biography => on_mouse_lbtn_dblclk');
+		grm.debug.callLog('Biography => on_mouse_lbtn_dblclk');
 		bio.call.on_mouse_lbtn_dblclk(x, y, m);
 	}
 	else {
 		grm.ui.clearTimer('presetIndicator');
 		grm.ui.doubleClicked = true;
 		if (fb.IsPlaying && !grm.button.mouseInControl && mouseInLowerBar(x, y)) {
-			CallLog('Lower bar => on_mouse_lbtn_dblclk');
+			grm.debug.callLog('Lower bar => on_mouse_lbtn_dblclk');
 			// * Refresh theme
 			if (grCfg.settings.doubleClickRefresh) {
 				grm.ui.refreshTheme();
@@ -504,7 +504,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			// * Generate a new color in Random theme
 			else if (grSet.theme === 'random') {
 				grm.ui.initTheme();
-				DebugLog('\n>>> initTheme => on_mouse_lbtn_dblclk => random theme <<<\n');
+				grm.debug.debugLog('\n>>> initTheme => on_mouse_lbtn_dblclk => random theme <<<\n');
 			}
 		}
 	}
@@ -526,11 +526,11 @@ function on_mouse_lbtn_down(x, y, m) {
 	}
 
 	if (grSet.seekbar === 'progressbar' && grm.progBar.mouseInThis(x, y)) {
-		CallLog('Progress bar => on_mouse_lbtn_down');
+		grm.debug.callLog('Progress bar => on_mouse_lbtn_down');
 		grm.progBar.on_mouse_lbtn_down(x, y);
 	}
 	else if (grSet.seekbar === 'peakmeterbar' && grm.peakBar.mouseInThis(x, y)) {
-		CallLog('Peakmeter bar => on_mouse_lbtn_down');
+		grm.debug.callLog('Peakmeter bar => on_mouse_lbtn_down');
 		grm.peakBar.on_mouse_lbtn_down(x, y);
 	}
 	else if (!grm.volBtn.on_mouse_lbtn_down(x, y, m)) { // Not handled by volumeBtn
@@ -539,30 +539,30 @@ function on_mouse_lbtn_down(x, y, m) {
 		}
 
 		if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-			CallLog('Custom menu => on_mouse_lbtn_down');
+			grm.debug.callLog('Custom menu => on_mouse_lbtn_down');
 			grm.cusMenu.on_mouse_lbtn_down(x, y, m);
 		}
 
 		if (grCfg.updateHyperlink && !fb.IsPlaying && grCfg.updateHyperlink.trace(x, y)) {
-			CallLog('Hyperlink => on_mouse_lbtn_down');
+			grm.debug.callLog('Hyperlink => on_mouse_lbtn_down');
 			grCfg.updateHyperlink.click();
 		}
 
 		if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
 			if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
-			CallLog('Playlist => on_mouse_lbtn_down');
+			grm.debug.callLog('Playlist => on_mouse_lbtn_down');
 			pl.call.on_mouse_lbtn_down(x, y, m);
 		}
 		else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-			CallLog('Library => on_mouse_lbtn_down');
+			grm.debug.callLog('Library => on_mouse_lbtn_down');
 			lib.call.on_mouse_lbtn_down(x, y, m);
 		}
 		if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-			CallLog('Biography => on_mouse_lbtn_down');
+			grm.debug.callLog('Biography => on_mouse_lbtn_down');
 			bio.call.on_mouse_lbtn_down(x, y, m);
 		}
 		if (grm.ui.displayLyrics && mouseInLyrics(x, y)) {
-			MoveLog('Lyrics => on_mouse_lbtn_down');
+			grm.debug.moveLog('Lyrics => on_mouse_lbtn_down');
 			grm.lyrics.on_mouse_lbtn_down(x, y, m);
 		}
 
@@ -589,18 +589,18 @@ function on_mouse_lbtn_up(x, y, m) {
 	}
 
 	if (grSet.seekbar === 'progressbar') {
-		CallLog('Progress bar => on_mouse_lbtn_up');
+		grm.debug.callLog('Progress bar => on_mouse_lbtn_up');
 		grm.progBar.on_mouse_lbtn_up(x, y);
 	} else if (grSet.seekbar === 'peakmeterbar') {
-		CallLog('Peakmeter bar => on_mouse_lbtn_up');
+		grm.debug.callLog('Peakmeter bar => on_mouse_lbtn_up');
 		grm.peakBar.on_mouse_lbtn_up(x, y);
 	} else if (grSet.seekbar === 'waveformbar') {
-		CallLog('Waveform bar => on_mouse_lbtn_up');
+		grm.debug.callLog('Waveform bar => on_mouse_lbtn_up');
 		grm.waveBar.on_mouse_lbtn_up(x, y, m);
 	}
 
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		CallLog('Custom menu => on_mouse_lbtn_up');
+		grm.debug.callLog('Custom menu => on_mouse_lbtn_up');
 		grm.cusMenu.on_mouse_lbtn_up(x, y, m);
 	}
 
@@ -609,22 +609,22 @@ function on_mouse_lbtn_up(x, y, m) {
 	// Not handled by volumeBtn
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit()) && mouseInPlaylist(x, y)) {
 		if (grm.ui.displayCustomThemeMenu && grm.ui.displayBiography) return;
-		CallLog('Playlist => on_mouse_lbtn_up');
+		grm.debug.callLog('Playlist => on_mouse_lbtn_up');
 		pl.call.on_mouse_lbtn_up(x, y, m);
 
 		if (!grSet.lockPlayerSize) EnableWindowSizing(m);
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
 		if (grm.ui.displayCustomThemeMenu && grSet.libraryLayout === 'split') return;
-		CallLog('Library => on_mouse_lbtn_up');
+		grm.debug.callLog('Library => on_mouse_lbtn_up');
 		lib.call.on_mouse_lbtn_up(x, y, m);
 	}
 	if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		CallLog('Biography => on_mouse_lbtn_up');
+		grm.debug.callLog('Biography => on_mouse_lbtn_up');
 		bio.call.on_mouse_lbtn_up(x, y, m);
 	}
 	if (grm.ui.displayLyrics && mouseInLyrics(x, y)) {
-		MoveLog('Lyrics => on_mouse_lbtn_up');
+		grm.debug.moveLog('Lyrics => on_mouse_lbtn_up');
 		grm.lyrics.on_mouse_lbtn_up(x, y, m);
 	}
 
@@ -642,23 +642,23 @@ function on_mouse_lbtn_up(x, y, m) {
  */
 function on_mouse_leave() {
 	if (grSet.showVolumeBtn_layout && grm.volBtn) {
-		CallLog('Volume button => on_mouse_leave');
+		grm.debug.callLog('Volume button => on_mouse_leave');
 		grm.volBtn.on_mouse_leave();
 	}
 	if (grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) {
-		CallLog('Playlist => on_mouse_leave');
+		grm.debug.callLog('Playlist => on_mouse_leave');
 		pl.call.on_mouse_leave();
 	}
 	else if (grm.ui.displayLibrary) {
-		CallLog('Library => on_mouse_leave');
+		grm.debug.callLog('Library => on_mouse_leave');
 		lib.call.on_mouse_leave();
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_mouse_leave');
+		grm.debug.callLog('Biography => on_mouse_leave');
 		bio.call.on_mouse_leave();
 	}
 	if (grm.ui.displayLyrics) {
-		MoveLog('Lyrics => on_mouse_leave');
+		grm.debug.moveLog('Lyrics => on_mouse_leave');
 		grm.lyrics.on_mouse_leave();
 	}
 }
@@ -673,7 +673,7 @@ function on_mouse_leave() {
  */
 function on_mouse_mbtn_dblclk(x, y, m) {
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_mouse_mbtn_dblclk');
+		grm.debug.callLog('Library => on_mouse_mbtn_dblclk');
 		lib.call.on_mouse_mbtn_dblclk(x, y, m);
 	}
 }
@@ -688,7 +688,7 @@ function on_mouse_mbtn_dblclk(x, y, m) {
  */
 function on_mouse_mbtn_down(x, y, m) {
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_mouse_mbtn_down');
+		grm.debug.callLog('Library => on_mouse_mbtn_down');
 		lib.call.on_mouse_mbtn_down(x, y, m);
 	}
 }
@@ -703,11 +703,11 @@ function on_mouse_mbtn_down(x, y, m) {
  */
 function on_mouse_mbtn_up(x, y, m) {
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_mouse_mbtn_up');
+		grm.debug.callLog('Library => on_mouse_mbtn_up');
 		lib.call.on_mouse_mbtn_up(x, y, m);
 	}
 	else if (grm.ui.displayBiography) {
-		CallLog('Biography => on_mouse_mbtn_up');
+		grm.debug.callLog('Biography => on_mouse_mbtn_up');
 		bio.call.on_mouse_mbtn_up(x, y, m);
 	}
 }
@@ -750,41 +750,41 @@ function on_mouse_move(x, y, m) {
 	}
 
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
-		CallLog('Custom menu => on_mouse_move');
+		grm.debug.callLog('Custom menu => on_mouse_move');
 		grm.cusMenu.on_mouse_move(x, y, m);
 		return;
 	}
 
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		MoveLog('Playlist => on_mouse_move');
+		grm.debug.moveLog('Playlist => on_mouse_move');
 		if (SuppressMouseMove(x, y, m)) return;
 		DisableWindowSizing(m);
 		pl.call.on_mouse_move(x, y, m);
 		return;
 	}
 	if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-		MoveLog('Library => on_mouse_move');
+		grm.debug.moveLog('Library => on_mouse_move');
 		lib.call.on_mouse_move(x, y, m);
 		return;
 	}
 	if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		MoveLog('Biography => on_mouse_move');
+		grm.debug.moveLog('Biography => on_mouse_move');
 		bio.call.on_mouse_move(x, y, m);
 		return;
 	}
 	if (grm.ui.displayLyrics && mouseInLyrics(x, y)) {
-		MoveLog('Lyrics => on_mouse_move');
+		grm.debug.moveLog('Lyrics => on_mouse_move');
 		grm.lyrics.on_mouse_move(x, y, m);
 		return;
 	}
 	if (grm.ui.displayDetails && !mouseInLowerBar(x, y)) {
-		CallLog('Details => on_mouse_move');
+		grm.debug.callLog('Details => on_mouse_move');
 		grm.details.on_mouse_move(x, y, m);
 		return;
 	}
 
 	if (mouseInLowerBar(x, y, true)) {
-		CallLog('Lower bar tooltip => on_mouse_move');
+		grm.debug.callLog('Lower bar tooltip => on_mouse_move');
 		grm.ui.handleLowerBarTooltip(x, y);
 		return;
 	}
@@ -808,7 +808,7 @@ function on_mouse_move(x, y, m) {
 function on_mouse_rbtn_down(x, y, m) {
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y) &&
 		!(grm.ui.displayCustomThemeMenu && grm.ui.displayBiography)) {
-		CallLog('Playlist => on_mouse_rbtn_down');
+		grm.debug.callLog('Playlist => on_mouse_rbtn_down');
 		pl.call.on_mouse_rbtn_down(x, y, m);
 	}
 }
@@ -836,40 +836,40 @@ function on_mouse_rbtn_up(x, y, m) {
 	};
 
 	if (mouseInTopMenu(x, y)) {
-		CallLog('Top menu => on_mouse_rbtn_up');
+		grm.debug.callLog('Top menu => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuTopBar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInAlbumArt(x, y) || grm.ui.displayLyrics && mouseInLyrics(x, y) || grm.ui.displayDetails && grm.details.mouseInMetadataGrid(x, y, 'grid')) {
-		CallLog('Album art => on_mouse_rbtn_up');
+		grm.debug.callLog('Album art => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuAlbumCover(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInLowerBar(x, y) && !mouseInSeekbar(x, y)) {
-		CallLog('Lower bar => on_mouse_rbtn_up');
+		grm.debug.callLog('Lower bar => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuLowerBar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 	else if (mouseInSeekbar(x, y)) {
-		CallLog('Seekbar => on_mouse_rbtn_up');
+		grm.debug.callLog('Seekbar => on_mouse_rbtn_up');
 		grm.ctxMenu.contextMenuSeekbar(cmm);
 		handleContextMenu(x, y);
 		return true;
 	}
 
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(x, y)) {
-		CallLog('Playlist => on_mouse_rbtn_up');
+		grm.debug.callLog('Playlist => on_mouse_rbtn_up');
 		return pl.call.on_mouse_rbtn_up(x, y, m);
 	}
 	else if (grm.ui.displayLibrary && mouseInLibrary(x, y)) {
-		CallLog('Library => on_mouse_rbtn_up');
+		grm.debug.callLog('Library => on_mouse_rbtn_up');
 		return lib.call.on_mouse_rbtn_up(x, y, m);
 	}
 	else if (grm.ui.displayBiography && mouseInBiography(x, y)) {
-		CallLog('Biography => on_mouse_rbtn_up');
+		grm.debug.callLog('Biography => on_mouse_rbtn_up');
 		return bio.call.on_mouse_rbtn_up(x, y, m);
 	}
 	else {
@@ -961,7 +961,7 @@ function on_mouse_wheel(step) {
 		return;
 	}
 	if ((grm.ui.displayPlaylist && !grm.ui.displayLibrary || grm.ui.displayPlaylistArtwork || grm.ui.displayLibrarySplit(true)) && mouseInPlaylist(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		CallLog('Playlist => on_mouse_wheel');
+		grm.debug.callLog('Playlist => on_mouse_wheel');
 		KeyPressAction({
 			ctrlNoShift: () => grm.display.setPlaylistFontSize(step),
 			altNoShift: () => grm.display.setPlaylistFontSize(0),
@@ -969,7 +969,7 @@ function on_mouse_wheel(step) {
 			default: () => pl.call.on_mouse_wheel(step)
 		});
 	} else if (grm.ui.displayLibrary && mouseInLibrary(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		CallLog('Library => on_mouse_wheel');
+		grm.debug.callLog('Library => on_mouse_wheel');
 		KeyPressAction({
 			ctrlNoShift: () => grm.display.setLibraryFontSize(step),
 			altNoShift: () => grm.display.setLibraryFontSize(0),
@@ -977,7 +977,7 @@ function on_mouse_wheel(step) {
 			default: () => lib.call.on_mouse_wheel(step)
 		});
 	} else if (grm.ui.displayBiography && mouseInBiography(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
-		CallLog('Biography => on_mouse_wheel');
+		grm.debug.callLog('Biography => on_mouse_wheel');
 		KeyPressAction({
 			ctrlNoShift: () => grm.display.setBiographyFontSize(step),
 			altNoShift: () => grm.display.setBiographyFontSize(0),
@@ -1015,15 +1015,15 @@ function on_mouse_wheel(step) {
  */
 function on_notify_data(name, info) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_notify_data');
+		grm.debug.callLog('Playlist => on_notify_data');
 		pl.call.on_notify_data(name, info);
 	}
 	else if (grm.ui.displayLibrary) {
-		CallLog('Library => on_notify_data');
+		grm.debug.callLog('Library => on_notify_data');
 		lib.call.on_notify_data(name, info);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_notify_data');
+		grm.debug.callLog('Biography => on_notify_data');
 		bio.call.on_notify_data(name, info);
 	}
 }
@@ -1041,11 +1041,11 @@ function on_playback_dynamic_info_track() {
 	on_playback_new_track(metadb);
 
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playback_dynamic_info_track');
+		grm.debug.callLog('Playlist => on_playback_dynamic_info_track');
 		pl.call.on_playback_dynamic_info_track();
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_playback_dynamic_info_track');
+		grm.debug.callLog('Biography => on_playback_dynamic_info_track');
 		bio.call.on_playback_dynamic_info_track();
 	}
 	if (grm.ui.displayLyrics) { // No need to try retrieving them if we aren't going to display them now
@@ -1066,7 +1066,7 @@ function on_playback_dynamic_info_track() {
  * - 6 - Shuffle (folders).
  */
 function on_playback_order_changed(pbo) {
-	CallLog('Main => on_playback_order_changed');
+	grm.debug.callLog('Main => on_playback_order_changed');
 	grm.ui.handlePlaybackOrder(pbo);
 }
 
@@ -1080,15 +1080,15 @@ function on_playback_pause(state) {
 	grm.ui.handlePlaybackPause(state);
 
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playback_pause');
+		grm.debug.callLog('Playlist => on_playback_pause');
 		pl.call.on_playback_pause(state);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_playback_pause');
+		grm.debug.callLog('Biography => on_playback_pause');
 		bio.call.on_playback_pause(state);
 	}
 	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && grm.ui.displayLyrics) { // If we are displaying lyrics we need to refresh all the lyrics to avoid tearing at the edges of the pause button
-		CallLog('Lyrics => on_playback_pause');
+		grm.debug.callLog('Lyrics => on_playback_pause');
 		grm.lyrics.on_playback_pause(state);
 	}
 }
@@ -1103,7 +1103,7 @@ function on_playback_pause(state) {
  * - 2 - Playback advance.
  */
 function on_playback_queue_changed(origin) {
-	CallLog('Playlist => on_playback_queue_changed');
+	grm.debug.callLog('Playlist => on_playback_queue_changed');
 	pl.call.on_playback_queue_changed(origin);
 	lib.call.on_playback_queue_changed();
 }
@@ -1152,22 +1152,22 @@ function on_playback_starting(cmd, is_paused) {
  * - 3 - Fb2k is shutting down.
  */
 function on_playback_stop(reason) {
-	DebugLog('Playback => Repainting on_playback_stop:', reason);
+	grm.debug.debugLog('Playback => Repainting on_playback_stop:', reason);
 
 	grm.ui.handlePlaybackStop(reason);
 
 	// The playing playlist state always needs to be cleared when the Playlist is not displayed,
 	// i.e., when the startup panel is not set to `Playlist` and when clicking on the stop button.
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork || grSet.showPanelOnStartup !== 'playlist' || !grSet.returnToHomeOnPlaybackStop) {
-		CallLog('Playlist => on_playback_stop');
+		grm.debug.callLog('Playlist => on_playback_stop');
 		pl.call.on_playback_stop(reason);
 	}
 	else if (grm.ui.displayLibrary) {
-		CallLog('Library => on_playback_stop');
+		grm.debug.callLog('Library => on_playback_stop');
 		lib.call.on_playback_stop(reason);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_playback_stop');
+		grm.debug.callLog('Biography => on_playback_stop');
 		bio.call.on_playback_stop(reason);
 	}
 	if (grm.ui.displayLyrics) {
@@ -1196,7 +1196,7 @@ function on_playback_time() {
  */
 function on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex) {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playlist_item_ensure_visible');
+		grm.debug.callLog('Playlist => on_playlist_item_ensure_visible');
 		pl.call.on_playlist_item_ensure_visible(playlistIndex, playlistItemIndex);
 	}
 }
@@ -1212,15 +1212,15 @@ function on_playlist_items_added(playlistIndex) {
 		pl.history.playlistAltered(PlaylistMutation.Added);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playlist_items_added');
+		grm.debug.callLog('Playlist => on_playlist_items_added');
 		pl.call.on_playlist_items_added(playlistIndex);
 	}
 	if (grm.ui.displayLibrary || grm.ui.displayLibrarySplit()) {
-		CallLog('Library => on_playlist_items_added');
+		grm.debug.callLog('Library => on_playlist_items_added');
 		lib.call.on_playlist_items_added(playlistIndex);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_playlist_items_added');
+		grm.debug.callLog('Biography => on_playlist_items_added');
 		bio.call.on_playlist_items_added(playlistIndex);
 	}
 }
@@ -1236,15 +1236,15 @@ function on_playlist_items_removed(playlistIndex) {
 		pl.history.playlistAltered(PlaylistMutation.Removed);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playlist_items_removed');
+		grm.debug.callLog('Playlist => on_playlist_items_removed');
 		pl.call.on_playlist_items_removed(playlistIndex);
 	}
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_playlist_items_removed');
+		grm.debug.callLog('Library => on_playlist_items_removed');
 		lib.call.on_playlist_items_removed(playlistIndex);
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_playlist_items_removed');
+		grm.debug.callLog('Biography => on_playlist_items_removed');
 		bio.call.on_playlist_items_removed(playlistIndex);
 	}
 }
@@ -1261,11 +1261,11 @@ function on_playlist_items_reordered(playlistIndex) {
 		pl.history.playlistAltered(PlaylistMutation.Reordered);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playlist_items_reordered');
+		grm.debug.callLog('Playlist => on_playlist_items_reordered');
 		pl.call.on_playlist_items_reordered(playlistIndex);
 	}
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_playlist_items_reordered');
+		grm.debug.callLog('Library => on_playlist_items_reordered');
 		lib.call.on_playlist_items_reordered(playlistIndex);
 	}
 }
@@ -1277,7 +1277,7 @@ function on_playlist_items_reordered(playlistIndex) {
  */
 function on_playlist_items_selection_change() {
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playlist_items_selection_change');
+		grm.debug.callLog('Playlist => on_playlist_items_selection_change');
 		pl.call.on_playlist_items_selection_change();
 		grm.ui.initBrowseMode();
 	}
@@ -1293,15 +1293,15 @@ function on_playlist_switch() {
 		pl.history.playlistAltered(PlaylistMutation.Switch);
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playlist_switch');
+		grm.debug.callLog('Playlist => on_playlist_switch');
 		pl.call.on_playlist_switch();
 	}
 	if (grm.ui.displayLibrary || libSet.libSource === 0) {
-		CallLog('Library => on_playlist_switch');
+		grm.debug.callLog('Library => on_playlist_switch');
 		lib.call.on_playlist_switch();
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_playlist_switch');
+		grm.debug.callLog('Biography => on_playlist_switch');
 		bio.call.on_playlist_switch();
 	}
 }
@@ -1316,15 +1316,15 @@ function on_playlists_changed() {
 		pl.history.reset(); // When playlists are changed, indexes no longer apply, and so we have to wipe history
 	}
 	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		CallLog('Playlist => on_playlists_changed');
+		grm.debug.callLog('Playlist => on_playlists_changed');
 		pl.call.on_playlists_changed();
 	}
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_playlists_changed');
+		grm.debug.callLog('Library => on_playlists_changed');
 		lib.call.on_playlists_changed();
 	}
 	if (grm.ui.displayBiography) {
-		CallLog('Biography => on_playlists_changed');
+		grm.debug.callLog('Biography => on_playlists_changed');
 		bio.call.on_playlists_changed();
 	}
 }
@@ -1335,16 +1335,16 @@ function on_playlists_changed() {
  * @global
  */
 function on_script_unload() {
-	DebugLog('Unloading Script');
+	grm.debug.debugLog('Unloading Script');
 	grm.waveBar.on_script_unload();
 
 	// It appears we don't need to dispose the images which we loaded using gdi.Image in their declaration for some reason. Attempting to dispose them causes a script error.
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_script_unload');
+		grm.debug.callLog('Library => on_script_unload');
 		lib.call.on_script_unload();
 	}
 
-	CallLog('Biography => on_script_unload');
+	grm.debug.callLog('Biography => on_script_unload');
 	bio.call.on_script_unload();
 }
 
@@ -1355,7 +1355,7 @@ function on_script_unload() {
  */
 function on_selection_changed() {
 	if (grm.ui.displayLibrary) {
-		CallLog('Library => on_selection_changed');
+		grm.debug.callLog('Library => on_selection_changed');
 		lib.call.on_selection_changed();
 		grm.ui.initBrowseMode();
 	}
@@ -1368,7 +1368,7 @@ function on_selection_changed() {
  * @param {number} val - The volume level in dB. Minimum is -100. Maximum is 0.
  */
 function on_volume_change(val) {
-	CallLog('Volume bar => on_volume_change');
+	grm.debug.callLog('Volume bar => on_volume_change');
 	grm.volBtn.on_volume_change(val);
 }
 
@@ -1385,7 +1385,7 @@ function on_volume_change(val) {
  */
 function mouseInTopMenu(x, y) {
 	if (x < grm.ui.ww - SCALE(100) && y < grm.ui.topMenuHeight) {
-		MoveLog('mouseInTopMenu');
+		grm.debug.moveLog('mouseInTopMenu');
 		return true;
 	}
 
@@ -1415,7 +1415,7 @@ function mouseInAlbumArt(x, y) {
 		y > grm.ui.albumArtSize.y && y < grm.ui.albumArtSize.y + grm.ui.albumArtSize.h;
 
 	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && (displayAlbumArt && albumArtBounds)) {
-		MoveLog('mouseInAlbumArt');
+		grm.debug.moveLog('mouseInAlbumArt');
 		return true;
 	}
 
@@ -1455,7 +1455,7 @@ function mouseInPause(x, y) {
 		!grm.ui.displayCustomThemeMenu && !grm.ui.displayMetadataGridMenu && noAlbumArtBounds;
 
 	if ((grm.ui.albumArt || grm.ui.noAlbumArtStub) && (pauseOnAlbumArt || pauseOnNoAlbumArt)) {
-		MoveLog('mouseInPause');
+		grm.debug.moveLog('mouseInPause');
 		return true;
 	}
 
@@ -1479,12 +1479,12 @@ function mouseInLowerBar(x, y, tooltip) {
 		const zoneH = grm.ui.lowerBarHeight * 0.33;
 
 		if (zoneX <= x && zoneY <= y && zoneX + zoneW >= x && zoneY + zoneH >= y) {
-			MoveLog('mouseInLowerBar tooltip');
+			grm.debug.moveLog('mouseInLowerBar tooltip');
 			return true;
 		}
 	}
 	else if (y > grm.ui.wh - SCALE(120)) {
-		MoveLog('mouseInLowerBar');
+		grm.debug.moveLog('mouseInLowerBar');
 		return true;
 	}
 
@@ -1507,7 +1507,7 @@ function mouseInTransport(x, y) {
 	const endY = startY + buttonSize;
 
 	if (x >= startX && x <= endX && y >= startY && y <= endY) {
-		MoveLog('mouseInTransport');
+		grm.debug.moveLog('mouseInTransport');
 		return true;
 	}
 
@@ -1525,7 +1525,7 @@ function mouseInTransport(x, y) {
 function mouseInSeekbar(x, y) {
 	if (x >= grm.ui.edgeMargin && x < grm.ui.ww - grm.ui.edgeMargin &&
 		y >= grm.ui.seekbarY && y <= grm.ui.seekbarY + grm.ui.seekbarHeight * 2) {
-		MoveLog('mouseInSeekbar');
+		grm.debug.moveLog('mouseInSeekbar');
 		return true;
 	}
 
@@ -1542,7 +1542,7 @@ function mouseInSeekbar(x, y) {
  */
 function mouseInPanel(x, y) {
 	if (y > grm.ui.topMenuHeight && y < grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) {
-		MoveLog('mouseInPanel');
+		grm.debug.moveLog('mouseInPanel');
 		return true;
 	}
 
@@ -1560,7 +1560,7 @@ function mouseInPanel(x, y) {
 function mouseInPlaylist(x, y) {
 	if (x >= pl.playlist.x && x < pl.playlist.x + pl.playlist.w &&
 		y >= pl.playlist.y - SCALE(plSet.row_h) && y < pl.playlist.y + pl.playlist.h) {
-		MoveLog('Playlist => mouseInPlaylist');
+		grm.debug.moveLog('Playlist => mouseInPlaylist');
 		return true;
 	}
 
@@ -1587,7 +1587,7 @@ function mouseInPlaylist(x, y) {
  */
 function mouseInLibrary(x, y) {
 	if (x >= lib.ui.x && x < lib.ui.x + lib.ui.w && y >= lib.ui.y && y < lib.ui.y + lib.ui.h) {
-		MoveLog('Library => mouseInLibrary');
+		grm.debug.moveLog('Library => mouseInLibrary');
 		return true;
 	}
 
@@ -1610,7 +1610,7 @@ function mouseInLibrary(x, y) {
 function mouseInLibrarySearch(x, y) {
 	if (!lib.but.Dn && x > lib.ui.x + lib.but.q.h + lib.but.margin && x < lib.panel.search.x + lib.panel.search.w &&
 		y > lib.ui.y && y < lib.ui.y + lib.panel.search.h && libSet.searchShow) {
-		MoveLog('Library => mouseInLibrarySearch');
+		grm.debug.moveLog('Library => mouseInLibrarySearch');
 		return true;
 	}
 
@@ -1627,7 +1627,7 @@ function mouseInLibrarySearch(x, y) {
  */
 function mouseInBiography(x, y) {
 	if (x >= bio.ui.x && x < bio.ui.x + bio.ui.w && y >= bio.ui.y && y < bio.ui.y + bio.ui.h) {
-		MoveLog('Biography => mouseInBiography');
+		grm.debug.moveLog('Biography => mouseInBiography');
 		return true;
 	}
 
@@ -1657,7 +1657,7 @@ function mouseInBiography(x, y) {
 function mouseInLyrics(x, y) {
 	if (grSet.lyricsLayout !== 'normal' &&
 		(y > grm.ui.topMenuHeight && y < grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) || mouseInAlbumArt(x, y)) {
-		MoveLog('mouseInLyrics');
+		grm.debug.moveLog('mouseInLyrics');
 		grm.ui.mouseInLyricsAlbumArt = mouseInAlbumArt(x, y);
 		grm.ui.mouseInLyricsFullLayoutEdge = mouseInLyricsFullLayoutEdge(x, y);
 		return true;
@@ -1680,7 +1680,7 @@ function mouseInLyricsFullLayoutEdge(x, y) {
 	if (grSet.lyricsLayout === 'full' && grm.ui.displayLyrics &&
 		(y > grm.ui.topMenuHeight && y < grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight) &&
 		(x > grm.ui.ww - SCALE(50) && x <= grm.ui.ww)) {
-		MoveLog('mouseInLyricsEdgeBounds');
+		grm.debug.moveLog('mouseInLyricsEdgeBounds');
 		return true;
 	}
 

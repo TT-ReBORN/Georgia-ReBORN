@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    15-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -561,6 +561,7 @@ const RebornSymbols = {
  * @property {string} Apostrophe - '\u0027' `'` The Apostrophe.
  * @property {string} BeamedEighthNotes - '\u266B' `♫` The Beamed Eighth Notes.
  * @property {string} BlackSmallSquare - '\u25AA' `▪` The Black Small Square.
+ * @property {string} BlackCircle - '\u25CF' `●` The Black Circle.
  * @property {string} BlackStar - '\u2605' `★` The Black Star.
  * @property {string} BlackUpTriangle - '\u25B2' `▲` The Black Up-Pointing Triangle.
  * @property {string} BlackDownTriangle - '\u25BC' `▼` The Black Down-Pointing Triangle.
@@ -586,6 +587,7 @@ const Unicode = {
 	Apostrophe: '\u0027',
 	BeamedEighthNotes: '\u266B',
 	BlackSmallSquare: '\u25AA',
+	BlackCircle: '\u25CF',
 	BlackStar: '\u2605',
 	BlackUpTriangle: '\u25B2',
 	BlackDownTriangle: '\u25BC',
