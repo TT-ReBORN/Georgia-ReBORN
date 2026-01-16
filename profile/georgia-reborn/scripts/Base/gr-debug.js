@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    16-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -725,7 +725,7 @@ class Debug {
 	 * Prints logs for window.Repaint() in the console, used for debugging.
 	 */
 	repaintWindow() {
-		this.debugLog('Paint => Repainting from RepaintWindow()');
+		this.debugLog('Paint => Repainting from repaintWindow()');
 		window.Repaint();
 	}
 	// #endregion
