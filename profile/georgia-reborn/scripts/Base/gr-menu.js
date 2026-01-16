@@ -2372,7 +2372,7 @@ class TopMenuOptions {
 		detailsShowChannelLogoMenu.appendTo(detailsMetadataGridMenu);
 
 		detailsMetadataGridMenu.addSeparator();
-		detailsMetadataGridMenu.addToggleItem('Auto-hide full metadata on small player', grSet, 'autoHideGridMetadata', () => RepaintWindow());
+		detailsMetadataGridMenu.addToggleItem('Auto-hide full metadata on small player', grSet, 'autoHideGridMetadata', () => window.Repaint());
 
 		// * EDIT METADATA GRID IN DETAILS * //
 		if (fb.IsPlaying) {
@@ -2393,7 +2393,7 @@ class TopMenuOptions {
 				window.Repaint();
 			});
 			// * SHOW LABEL ART ON BACKGROUND IN DETAILS * //
-			detailsBackgroundMenu.addToggleItem('Show label art on background', grSet, 'labelArtOnBg', () => RepaintWindow(), grSet.noDiscArtBg);
+			detailsBackgroundMenu.addToggleItem('Show label art on background', grSet, 'labelArtOnBg', () => window.Repaint(), grSet.noDiscArtBg);
 			detailsBackgroundMenu.appendTo(detailsMenu);
 		}
 
