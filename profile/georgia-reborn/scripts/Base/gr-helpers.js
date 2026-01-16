@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    16-01-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -15,6 +15,7 @@
 /////////////
 // * API * //
 /////////////
+// #region API
 /**
  * Prepares COM-ready track metadata from metadb handle(s), with fallback to selected items if null.
  * @global
@@ -536,11 +537,13 @@ function UIWManageWindowState() {
 		console.log('Exited Maximized:', UIWizard.WindowState);
 	}, 4000);
 }
+// #endregion
 
 
 ///////////////////////
 // * COMPATIBILITY * //
 ///////////////////////
+// #region COMPATIBILITY
 /**
  * Detects if the user's system is running Wine on Linux or MacOs.
  * Caches result after first call for performance.
@@ -638,11 +641,13 @@ function GetWindowsVersion() {
 		return '6.1';
 	});
 }
+// #endregion
 
 
 /////////////
 // * WEB * //
 /////////////
+// #region WEB
 /**
  * Compares two versions to determine if a version has changed.
  * Release must be in form of 2.0.0-beta1, or 2.0.1.
@@ -811,11 +816,13 @@ function WebsiteOpen(website, metadb, openAll = false) {
 		RunCmd(url);
 	}
 }
+// #endregion
 
 
 /////////////////
 // * PARSING * //
 /////////////////
+// #region PARSING
 /**
  * Gets the meta values of a specified metadata field from a given metadb object.
  * Will strip leading and trailing %'s from name.
@@ -1016,11 +1023,13 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 
 	return result + (insideComment ? strip(jsonString.slice(offset)) : jsonString.slice(offset));
 }
+// #endregion
 
 
 /////////////////////////
 // * FILE MANAGEMENT * //
 /////////////////////////
+// #region FILE MANAGEMENT
 /**
  * Cleans a given file path by replacing illegal characters, normalizing dashes, and removing unnecessary spaces and trailing dots/spaces.
  * @param {string} value - The file path to clean.
@@ -1339,11 +1348,13 @@ function SaveFSO(file, value, bUTF16) {
 	console.log(`Error saving to ${file}`);
 	return false;
 }
+// #endregion
 
 
 /////////////////
 // * ACTIONS * //
 /////////////////
+// #region ACTIONS
 /**
  * Asserts that a condition is true and throws an error if it is not.
  * @global
@@ -1545,11 +1556,13 @@ function WaitUntil(condition, maxWait = 0) {
 		}, 50);
 	});
 }
+// #endregion
 
 
 //////////////////
 // * CONTROLS * //
 //////////////////
+// #region CONTROLS
 /**
  * Disables window resizing if certain conditions are met via UI Wizard.
  * @param {number} m - The mouse mask.
@@ -1690,11 +1703,13 @@ function SuppressMouseMove(x, y, m) {
 	SuppressMouseMove.savedM = m;
 	return false;
 }
+// #endregion
 
 
 ////////////////
 // * COLORS * //
 ////////////////
+// #region COLORS
 /**
  * Converts RGB values to a 32 bit integer.
  * @global
@@ -2309,11 +2324,13 @@ function TintColor(color, percent) {
 
 	return RGBA(LightenColorVal(red, percent), LightenColorVal(green, percent), LightenColorVal(blue, percent), GetAlpha(color));
 }
+// #endregion
 
 
 //////////////////
 // * GRAPHICS * //
 //////////////////
+// #region GRAPHICS
 /**
  * A class that represents the position and dimensions of an image.
  * @global
@@ -2833,11 +2850,13 @@ function ShadowRect(x, y, w, h, radius, color) {
 
 	return shadow;
 }
+// #endregion
 
 
 /////////////////
 // * DISPLAY * //
 /////////////////
+// #region DISPLAY
 /**
  * Sets the appropriate value based on detected display mode.
  * @template T
@@ -2894,11 +2913,13 @@ function SetCursor(symbol) {
 		window.SetCursor(Cursor.Arrow);
 	}
 }
+// #endregion
 
 
 ///////////////
 // * FONTS * //
 ///////////////
+// #region FONTS
 /**
  * Given an array of fonts, returns a single font which the given text will fully fit the availableWidth,
  * or the last font in the list (should be the smallest and text will be truncated).
@@ -2954,11 +2975,13 @@ function TestFont(fontName) {
 	}
 	return true;
 }
+// #endregion
 
 
 //////////////
 // * TEXT * //
 //////////////
+// #region TEXT
 /**
  * Calculates the maximum width of a text grid. It is used to determine the width of the grid's maximal text.
  * @global
@@ -3268,11 +3291,13 @@ function WriteFancyHeader(title) {
 	const line = '/'.repeat(title.length + 10);
 	return `${line}\n// * ${title.toUpperCase()} * //\n${line}`;
 }
+// #endregion
 
 
 /////////////////
 // * OBJECTS * //
 /////////////////
+// #region OBJECTS
 /**
  * Deep assign function that accepts objects as arguments.
  * The source objects are copied into the target object.
@@ -3405,11 +3430,13 @@ function IsObject(a) {
 function ToType(a) {
 	return ({}).toString.call(a).match(Regex.UtilObjectType)[1];
 }
+// #endregion
 
 
 ////////////////
 // * ARRAYS * //
 ////////////////
+// #region ARRAYS
 /**
  * Takes two arrays as input and returns a new array containing the elements
  * that are present in the first array but not in the second array.
@@ -3536,11 +3563,13 @@ function Zip(arr, ...args) {
 
 	return result;
 }
+// #endregion
 
 
 /////////////////
 // * NUMBERS * //
 /////////////////
+// #region NUMBERS
 /**
  * Takes a number and limits it to a specified range.
  * @global
@@ -3614,6 +3643,26 @@ function ConvertVolume(volume, type) {
 
 
 /**
+ * Linear Interpolation - maps a value from one range to another.
+ * @param {number} value - The input value to map.
+ * @param {number} inMin - The minimum of the input range.
+ * @param {number} inMax - The maximum of the input range.
+ * @param {number} outMin - The minimum of the output range.
+ * @param {number} outMax - The maximum of the output range.
+ * @returns {number} The mapped value, clamped to the output range.
+ */
+function Lerp(value, inMin, inMax, outMin, outMax) {
+	const normalized = (value - inMin) / (inMax - inMin);
+	const result = outMin + (outMax - outMin) * normalized;
+
+	const min = Math.min(outMin, outMax);
+	const max = Math.max(outMin, outMax);
+
+	return Math.max(min, Math.min(max, result));
+}
+
+
+/**
  * Generates a random number between a minimum and maximum value.
  * @global
  * @param {number} min - The minimum value that for the random number.
@@ -3655,11 +3704,13 @@ function ToFixed(number, precision) {
 	const factor = 10 ** precision;
 	return Math.round(number * factor) / factor;
 }
+// #endregion
 
 
 /////////////////
 // * STRINGS * //
 /////////////////
+// #region STRINGS
 /**
  * Formats a title and returns the result.
  * @global
@@ -3887,11 +3938,13 @@ function StringWidest(gr, arr, font) {
 function ToPaddedHexString(num, len) {
 	return PadNumber(num, len, 16);
 }
+// #endregion
 
 
 /////////////////////
 // * COMPARISONS * //
 /////////////////////
+// #region COMPARISONS
 /**
  * Compares two values, providing a safe comparison for strings and numbers.
  * If both values are strings, it uses the localeCompare function and returns -1, 0, or 1.
@@ -3981,11 +4034,13 @@ function SortKeyValuesByDsc(obj) {
 	const entries = obj instanceof Map ? obj.entries() : Object.entries(obj);
 	return [...entries].sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
 }
+// #endregion
 
 
 //////////////
 // * TIME * //
 //////////////
+// #region TIME
 /**
  * Calculate the age as the difference between the current time and the given date in seconds.
  * @global
@@ -4172,11 +4227,13 @@ function UpdateTimezoneOffset() {
 	const temp = new Date();
 	return temp.getTimezoneOffset() * 60 * 1000;
 }
+// #endregion
 
 
 ////////////////////////
 // * THEME SPECIFIC * //
 ////////////////////////
+// #region THEME SPECIFIC
 /**
  * Centralizes and manages continuous calls to `window.RepaintRect` across different panels or components
  * within the application for a specified duration, providing a more efficient mechanism for repainting
@@ -4209,3 +4266,4 @@ function RepaintWindowRectAreas(duration = 500, interval = 100) {
 		grm.debug.debugLog('Paint => Restored original RepaintRect function.');
 	}, duration);
 }
+// #endregion
