@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -901,17 +901,6 @@ class Playlist extends BaseList {
 		}
 		pl.cache_header = true;
 	}
-
-	/**
-	 * Iterates through all playlist rows and updates the title color of each item.
-	 * Used when updating title color in Reborn/Random theme.
-	 */
-	update_playlist_rows() {
-		for (let i = 0; i < this.cnt.rows.length; i++) {
-			const item = this.cnt.rows[i];
-			item.update_title_color();
-		}
-	}
 	// #endregion
 
 	// * PUBLIC METHODS - SCROLLING * //
@@ -921,7 +910,16 @@ class Playlist extends BaseList {
 	 */
 	show_now_playing() {
 		const playing_item_location = plman.GetPlayingItemLocation();
+
 		if (!playing_item_location.IsValid) {
+			// Queue-based playback: fall back to manually marked playing_item
+			if (this.playing_item && this.collapse_handler) {
+				this.collapse_handler.expand(this.playing_item.parent);
+			}
+			if (this.playing_item) {
+				this.selection_handler.update_selection(this.playing_item);
+				this.scroll_to_now_playing();
+			}
 			return;
 		}
 

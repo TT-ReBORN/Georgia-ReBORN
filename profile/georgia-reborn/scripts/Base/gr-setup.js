@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -45,9 +45,13 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @property {ThemeDayNight} day - The instance of `ThemeDayNight` class for theme day/night mode operations.
  * @property {ThemeSettingsManager} settings - The instance of `ThemeSettingsManager` class for theme settings operations.
  * @property {Display} display - The instance of `Display` class for UI display operations.
- * @property {BaseColors} color - The instance of `BaseColors` class for color-related utility operations.
- * @property {ThemeColors} theme - The instance of `ThemeColors` class for theme color operations.
- * @property {StyleColors} style - The instance of `StyleColors` class for style color operations.
+ * @property {Color} color - The instance of `Color` class for main color operations.
+ * @property {ColorDebug} colorDebug - The instance of `ColorDebug` class for color debug operations.
+ * @property {ColorSystem} colorSystem - The instance of `ColorSystem` class for color-system operations.
+ * @property {ColorPalette} colorPalette - The instance of `ColorPalette` class for storing default theme colors.
+ * @property {ColorManager} colorManager - The instance of `ColorManager` class for manaing theme color-related operations.
+ * @property {ColorThemes} colorThemes - The instance of `ColorThemes` class for theme color operations.
+ * @property {ColorStyles} colorStyles - The instance of `ColorStyles` class for style color operations.
  * @property {ThemePreset} preset - The instance of `ThemePreset` class for theme preset operations.
  * @property {TopMenu} topMenu - The instance of `TopMenu` class for top menu interface operations.
  * @property {TopMenuOptions} options - The instance of `TopMenuOptions` class for top menu option management operations.
@@ -62,7 +66,7 @@ grCfg.migrateCheck(grCfg.currentVersion, grCfg.configVersion);
  * @property {Scaling} scaling - The instance of `Scaling` class for scaling size operations.
  * @property {MessageManager} msg - The instance of `MessageManager` class for message operations.
  * @property {Button} button - The instance of `Button` class for button operations.
- * @property {PauseButton} pseBtn - The instance of `PauseButton` class for pause button operations.
+ * @property {PauseButton} pauseBtn - The instance of `PauseButton` class for pause button operations.
  * @property {VolumeButton} volBtn - The instance of `VolumeButton` class for volume button operations.
  * @property {TooltipHandler} ttip - The instance of `TooltipHandler` class for tooltip handling operations.
  * @property {Timeline} timeline - The instance of `Timeline` class for timeline operations.
@@ -391,16 +395,178 @@ const grTF = {
 /**
  * A collection of main colors and states used throughout the theme.
  * @typedef  {object} grCol - The Georgia-ReBORN color object.
- * @property {number} darkAccent - The primary color shaded by 30%.
- * @property {number} darkAccent_alt - The secondary primary color shaded by 30%.
- * @property {number} accent - The primary color shaded by 15%.
- * @property {number} accent_alt - The secondary primary color shaded by 15%.
- * @property {number} primary - The primary theme color generated from artwork.
+ *
+ * // BASE COLORS
+ * @property {number} primary - The primary theme color in RGB (adjusted for visibility).
+ * @property {number} secondary - The secondary theme color in RGB (adjusted for visibility).
  * @property {number} primary_raw - The original, unadjusted primary color selected from the artwork palette.
- * @property {number} primary_alt - The secondary primary theme color generated from artwork.
- * @property {number} primary_alt_raw - The original, unadjusted secondary color selected from the artwork palette.
- * @property {number} lightAccent - The primary color tinted by 20%.
- * @property {number} lightAccent_alt - The secondary primary color tinted by 20%.
+ * @property {number} secondary_raw - The original, unadjusted secondary color selected from the artwork palette.
+ *
+ * // PRIMARY RGB TONES
+ * @property {number} primary_rgb_t000 - The primary color with 0% tint.
+ * @property {number} primary_rgb_t002 - The primary color with 2% tint.
+ * @property {number} primary_rgb_t005 - The primary color with 5% tint.
+ * @property {number} primary_rgb_t007 - The primary color with 7% tint.
+ * @property {number} primary_rgb_t010 - The primary color with 10% tint.
+ * @property {number} primary_rgb_t015 - The primary color with 15% tint.
+ * @property {number} primary_rgb_t020 - The primary color with 20% tint.
+ * @property {number} primary_rgb_t025 - The primary color with 25% tint.
+ * @property {number} primary_rgb_t030 - The primary color with 30% tint.
+ * @property {number} primary_rgb_t035 - The primary color with 35% tint.
+ * @property {number} primary_rgb_t040 - The primary color with 40% tint.
+ * @property {number} primary_rgb_t045 - The primary color with 45% tint.
+ * @property {number} primary_rgb_t050 - The primary color with 50% tint.
+ * @property {number} primary_rgb_t060 - The primary color with 60% tint.
+ * @property {number} primary_rgb_t065 - The primary color with 65% tint.
+ * @property {number} primary_rgb_t075 - The primary color with 75% tint.
+ * @property {number} primary_rgb_t080 - The primary color with 80% tint.
+ * @property {number} primary_rgb_t090 - The primary color with 90% tint.
+ * @property {number} primary_rgb_t100 - The primary color with 100% tint.
+ *
+ * @property {number} primary_rgb_s000 - The primary color with 0% shade.
+ * @property {number} primary_rgb_s002 - The primary color with 2% shade.
+ * @property {number} primary_rgb_s005 - The primary color with 5% shade.
+ * @property {number} primary_rgb_s007 - The primary color with 7% shade.
+ * @property {number} primary_rgb_s010 - The primary color with 10% shade.
+ * @property {number} primary_rgb_s015 - The primary color with 15% shade.
+ * @property {number} primary_rgb_s020 - The primary color with 20% shade.
+ * @property {number} primary_rgb_s025 - The primary color with 25% shade.
+ * @property {number} primary_rgb_s030 - The primary color with 30% shade.
+ * @property {number} primary_rgb_s035 - The primary color with 35% shade.
+ * @property {number} primary_rgb_s040 - The primary color with 40% shade.
+ * @property {number} primary_rgb_s045 - The primary color with 45% shade.
+ * @property {number} primary_rgb_s050 - The primary color with 50% shade.
+ * @property {number} primary_rgb_s060 - The primary color with 60% shade.
+ * @property {number} primary_rgb_s065 - The primary color with 65% shade.
+ * @property {number} primary_rgb_s075 - The primary color with 75% shade.
+ * @property {number} primary_rgb_s080 - The primary color with 80% shade.
+ * @property {number} primary_rgb_s090 - The primary color with 90% shade.
+ * @property {number} primary_rgb_s100 - The primary color with 100% shade.
+ *
+ * // SECONDARY RGB TONES
+ * @property {number} secondary_rgb_t000 - The secondary color with 0% tint.
+ * @property {number} secondary_rgb_t002 - The secondary color with 2% tint.
+ * @property {number} secondary_rgb_t005 - The secondary color with 5% tint.
+ * @property {number} secondary_rgb_t007 - The secondary color with 7% tint.
+ * @property {number} secondary_rgb_t010 - The secondary color with 10% tint.
+ * @property {number} secondary_rgb_t015 - The secondary color with 15% tint.
+ * @property {number} secondary_rgb_t020 - The secondary color with 20% tint.
+ * @property {number} secondary_rgb_t025 - The secondary color with 25% tint.
+ * @property {number} secondary_rgb_t030 - The secondary color with 30% tint.
+ * @property {number} secondary_rgb_t035 - The secondary color with 35% tint.
+ * @property {number} secondary_rgb_t040 - The secondary color with 40% tint.
+ * @property {number} secondary_rgb_t045 - The secondary color with 45% tint.
+ * @property {number} secondary_rgb_t050 - The secondary color with 50% tint.
+ * @property {number} secondary_rgb_t060 - The secondary color with 60% tint.
+ * @property {number} secondary_rgb_t065 - The secondary color with 65% tint.
+ * @property {number} secondary_rgb_t075 - The secondary color with 75% tint.
+ * @property {number} secondary_rgb_t080 - The secondary color with 80% tint.
+ * @property {number} secondary_rgb_t090 - The secondary color with 90% tint.
+ * @property {number} secondary_rgb_t100 - The secondary color with 100% tint.
+ *
+ * @property {number} secondary_rgb_s000 - The secondary color with 0% shade.
+ * @property {number} secondary_rgb_s002 - The secondary color with 2% shade.
+ * @property {number} secondary_rgb_s005 - The secondary color with 5% shade.
+ * @property {number} secondary_rgb_s007 - The secondary color with 7% shade.
+ * @property {number} secondary_rgb_s010 - The secondary color with 10% shade.
+ * @property {number} secondary_rgb_s015 - The secondary color with 15% shade.
+ * @property {number} secondary_rgb_s020 - The secondary color with 20% shade.
+ * @property {number} secondary_rgb_s025 - The secondary color with 25% shade.
+ * @property {number} secondary_rgb_s030 - The secondary color with 30% shade.
+ * @property {number} secondary_rgb_s035 - The secondary color with 35% shade.
+ * @property {number} secondary_rgb_s040 - The secondary color with 40% shade.
+ * @property {number} secondary_rgb_s045 - The secondary color with 45% shade.
+ * @property {number} secondary_rgb_s050 - The secondary color with 50% shade.
+ * @property {number} secondary_rgb_s060 - The secondary color with 60% shade.
+ * @property {number} secondary_rgb_s065 - The secondary color with 65% shade.
+ * @property {number} secondary_rgb_s075 - The secondary color with 75% shade.
+ * @property {number} secondary_rgb_s080 - The secondary color with 80% shade.
+ * @property {number} secondary_rgb_s090 - The secondary color with 90% shade.
+ * @property {number} secondary_rgb_s100 - The secondary color with 100% shade.
+ *
+ * // PRIMARY OKLCH TONES - Perceptually uniform
+ * @property {number} primary_oklch_t000 - The primary color with 0% tint in OKLCH.
+ * @property {number} primary_oklch_t002 - The primary color with 2% tint in OKLCH.
+ * @property {number} primary_oklch_t005 - The primary color with 5% tint in OKLCH.
+ * @property {number} primary_oklch_t007 - The primary color with 7% tint in OKLCH.
+ * @property {number} primary_oklch_t010 - The primary color with 10% tint in OKLCH.
+ * @property {number} primary_oklch_t015 - The primary color with 15% tint in OKLCH.
+ * @property {number} primary_oklch_t020 - The primary color with 20% tint in OKLCH.
+ * @property {number} primary_oklch_t025 - The primary color with 25% tint in OKLCH.
+ * @property {number} primary_oklch_t030 - The primary color with 30% tint in OKLCH.
+ * @property {number} primary_oklch_t035 - The primary color with 35% tint in OKLCH.
+ * @property {number} primary_oklch_t040 - The primary color with 40% tint in OKLCH.
+ * @property {number} primary_oklch_t045 - The primary color with 45% tint in OKLCH.
+ * @property {number} primary_oklch_t050 - The primary color with 50% tint in OKLCH.
+ * @property {number} primary_oklch_t060 - The primary color with 60% tint in OKLCH.
+ * @property {number} primary_oklch_t065 - The primary color with 65% tint in OKLCH.
+ * @property {number} primary_oklch_t075 - The primary color with 75% tint in OKLCH.
+ * @property {number} primary_oklch_t080 - The primary color with 80% tint in OKLCH.
+ * @property {number} primary_oklch_t090 - The primary color with 90% tint in OKLCH.
+ * @property {number} primary_oklch_t100 - The primary color with 100% tint in OKLCH.
+ *
+ * @property {number} primary_oklch_s000 - The primary color with 0% shade in OKLCH.
+ * @property {number} primary_oklch_s002 - The primary color with 2% shade in OKLCH.
+ * @property {number} primary_oklch_s005 - The primary color with 5% shade in OKLCH.
+ * @property {number} primary_oklch_s007 - The primary color with 7% shade in OKLCH.
+ * @property {number} primary_oklch_s010 - The primary color with 10% shade in OKLCH.
+ * @property {number} primary_oklch_s015 - The primary color with 15% shade in OKLCH.
+ * @property {number} primary_oklch_s020 - The primary color with 20% shade in OKLCH.
+ * @property {number} primary_oklch_s025 - The primary color with 25% shade in OKLCH.
+ * @property {number} primary_oklch_s030 - The primary color with 30% shade in OKLCH.
+ * @property {number} primary_oklch_s035 - The primary color with 35% shade in OKLCH.
+ * @property {number} primary_oklch_s040 - The primary color with 40% shade in OKLCH.
+ * @property {number} primary_oklch_s045 - The primary color with 45% shade in OKLCH.
+ * @property {number} primary_oklch_s050 - The primary color with 50% shade in OKLCH.
+ * @property {number} primary_oklch_s060 - The primary color with 60% shade in OKLCH.
+ * @property {number} primary_oklch_s065 - The primary color with 65% shade in OKLCH.
+ * @property {number} primary_oklch_s075 - The primary color with 75% shade in OKLCH.
+ * @property {number} primary_oklch_s080 - The primary color with 80% shade in OKLCH.
+ * @property {number} primary_oklch_s090 - The primary color with 90% shade in OKLCH.
+ * @property {number} primary_oklch_s100 - The primary color with 100% shade in OKLCH.
+ *
+ * // SECONDARY OKLCH TONES
+ * @property {number} secondary_oklch_t000 - The secondary color with 0% tint in OKLCH.
+ * @property {number} secondary_oklch_t002 - The secondary color with 2% tint in OKLCH.
+ * @property {number} secondary_oklch_t005 - The secondary color with 5% tint in OKLCH.
+ * @property {number} secondary_oklch_t007 - The secondary color with 7% tint in OKLCH.
+ * @property {number} secondary_oklch_t010 - The secondary color with 10% tint in OKLCH.
+ * @property {number} secondary_oklch_t015 - The secondary color with 15% tint in OKLCH.
+ * @property {number} secondary_oklch_t020 - The secondary color with 20% tint in OKLCH.
+ * @property {number} secondary_oklch_t025 - The secondary color with 25% tint in OKLCH.
+ * @property {number} secondary_oklch_t030 - The secondary color with 30% tint in OKLCH.
+ * @property {number} secondary_oklch_t035 - The secondary color with 35% tint in OKLCH.
+ * @property {number} secondary_oklch_t040 - The secondary color with 40% tint in OKLCH
+ * @property {number} secondary_oklch_t045 - The secondary color with 45% tint in OKLCH
+ * @property {number} secondary_oklch_t050 - The secondary color with 50% tint in OKLCH.
+ * @property {number} secondary_oklch_t060 - The secondary color with 60% tint in OKLCH.
+ * @property {number} secondary_oklch_t065 - The secondary color with 65% tint in OKLCH.
+ * @property {number} secondary_oklch_t075 - The secondary color with 75% tint in OKLCH.
+ * @property {number} secondary_oklch_t080 - The secondary color with 80% tint in OKLCH.
+ * @property {number} secondary_oklch_t090 - The secondary color with 90% tint in OKLCH.
+ * @property {number} secondary_oklch_t100 - The secondary color with 100% tint in OKLCH.
+ *
+ * @property {number} secondary_oklch_s000 - The secondary color with 0% shade in OKLCH.
+ * @property {number} secondary_oklch_s002 - The secondary color with 2% shade in OKLCH.
+ * @property {number} secondary_oklch_s005 - The secondary color with 5% shade in OKLCH.
+ * @property {number} secondary_oklch_s007 - The secondary color with 7% shade in OKLCH.
+ * @property {number} secondary_oklch_s010 - The secondary color with 10% shade in OKLCH.
+ * @property {number} secondary_oklch_s015 - The secondary color with 15% shade in OKLCH.
+ * @property {number} secondary_oklch_s020 - The secondary color with 20% shade in OKLCH.
+ * @property {number} secondary_oklch_s025 - The secondary color with 25% shade in OKLCH.
+ * @property {number} secondary_oklch_s030 - The secondary color with 30% shade in OKLCH.
+ * @property {number} secondary_oklch_s035 - The secondary color with 35% shade in OKLCH.
+ * @property {number} secondary_oklch_s040 - The secondary color with 40% shade in OKLCH.
+ * @property {number} secondary_oklch_s045 - The secondary color with 45% shade in OKLCH.
+ * @property {number} secondary_oklch_s050 - The secondary color with 50% shade in OKLCH.
+ * @property {number} secondary_oklch_s060 - The secondary color with 60% shade in OKLCH.
+ * @property {number} secondary_oklch_s065 - The secondary color with 65% shade in OKLCH.
+ * @property {number} secondary_oklch_s075 - The secondary color with 75% shade in OKLCH.
+ * @property {number} secondary_oklch_s080 - The secondary color with 80% shade in OKLCH.
+ * @property {number} secondary_oklch_s090 - The secondary color with 90% shade in OKLCH.
+ * @property {number} secondary_oklch_s100 - The secondary color with 100% shade in OKLCH.
+ *
+ * // UI ELEMENT COLORS
  * @property {number} artist - The color of artist text on background.
  * @property {number} bg - The background of the main panel.
  * @property {number} rating - The color of rating stars in metadata grid.
@@ -408,35 +574,172 @@ const grTF = {
  * @property {number} timelineAdded - The background color for timeline block in Details from added to first played.
  * @property {number} timelinePlayed - The background color for timeline block in Details from first played to last played.
  * @property {number} timelineUnplayed - The background color for timeline block in Details from last played to present time.
- * @property {number} progressBar - The background of the progress bar. Fill will be col.primary.
+ * @property {number} progressBar - The background of the progress bar. Fill will be primary.
  * @property {number} shadow - The color of the shadow.
- * @property {number} colBrightness - The calculated primary color brightness used in grSet.theme === 'white, grSet.theme === 'black, grSet.theme === 'reborn, grSet.theme === 'random.
+ *
+ * // COLOR METRICS AND STATES
+ * @property {number} colBrightness - The calculated primary color brightness used in grSet.theme === 'white, 'black', 'reborn', 'random'.
  * @property {number} colBrightness2 - The calculated secondary color brightness used in grSet.styleRebornFusion, grSet.styleRebornFusion2, grSet.styleRebornFusionAccent.
+ * @property {number} colLuminance - The calculated primary color APCA luminance (0.0-1.0) used in grSet.theme === 'white', 'black', 'reborn', 'random'.
+ * @property {number} colLuminance2 - The calculated secondary color APCA luminance (0.0-1.0) used in grSet.styleRebornFusion, grSet.styleRebornFusion2, grSet.styleRebornFusionAccent.
  * @property {number} imgBrightness - The calculated image brightness used in grSet.styleBlend, grSet.styleBlend2, grSet.styleBlackAndWhite, grSet.styleBlackAndWhite2, grSet.styleBlackAndWhiteReborn.
- * @property {GdiBitmap} imgBlended - The blended image from grm.style.setStyleBlend().
+ * @property {GdiBitmap} imgBlended - The blended image from grm.colorStyles.setStyleBlend().
+ * @property {number} imgLuminance - The calculated image APCA luminance (0.0-1.0) used in grSet.styleBlend, grSet.styleBlend2, grSet.styleBlackAndWhite, grSet.styleBlackAndWhite2, grSet.styleBlackAndWhiteReborn.
+ * @property {number} imgSaturation - The calculated average image saturation (0-100) weighted by color frequency, used for saturation compensation in styleBlend.
  * @property {boolean} isColored - The color state that checks if background color is not full white RGB(255, 255, 255), used in Reborn/Random theme when init on start or when noAlbumArtStub displayed.
- * @property {boolean} lightBg - The color definition when to switch text and logos to white or black, used in grSet.theme === 'white', grSet.theme === 'black', grSet.theme === 'reborn', grSet.theme === 'random', grSet.styleBlend, grSet.styleBlend2.
- * @property {boolean} lightBgLib - The color definition when to switch text and logos to white or black, used in libSet.theme === 1 - 5.
- * @property {boolean} lightBgBio - The color definition when to switch text and logos to white or black, used in bioSet.theme === 1 - 4.
- * @property {boolean} lightBgMain - The color definition for col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgPlaylist - The color definition for pl.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgDetails - The color definition for col.detailsBg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgLibrary - The color definition for ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
- * @property {boolean} lightBgBiography - The color definition for bio.ui.col.bg when to lighten or darken custom theme colors, used in grSet.theme === 'custom01' - 'custom10'.
+ * @property {boolean} lightBgMain - The color definition for col.bg when to lighten or darken custom theme colors.
+ * @property {boolean} lightBgPlaylist - The color definition for pl.col.bg when to lighten or darken custom theme colors.
+ * @property {boolean} lightBgDetails - The color definition for col.detailsBg when to lighten or darken custom theme colors.
+ * @property {boolean} lightBgLibrary - The color definition for ui.col.bg when to lighten or darken custom theme colors.
+ * @property {boolean} lightBgBiography - The color definition for bio.ui.col.bg when to lighten or darken custom theme colors.
  */
 /** @global @type {grCol} */
 const grCol = {
 	colBrightness: 0,
 	colBrightness2: 0,
+	colLuminance: 0,
+	colLuminance2: 0,
 	imgBrightness: 0,
 	imgBlended: null,
+	imgLuminance: 0,
+	imgSaturation: 0,
 	isColored: false,
-	lightBg: false,
-	lightBgLib: false,
-	lightBgBio: false,
 	lightBgMain: false,
 	lightBgPlaylist: false,
 	lightBgDetails: false,
 	lightBgLibrary: false,
 	lightBgBiography: false
+};
+
+
+///////////////
+// * ALIAS * //
+///////////////
+/**
+ * A collection of A live "Namespace Alias" for grSet settings.
+ * @typedef  {object} grAlias     - The Georgia-ReBORN alias object.
+ * @property {string}  THEME      - Options > Theme.
+ * @property {boolean} DYNTHEME   - Options > Theme > White, Black, Reborn, Random.
+ * @property {boolean} CTHEME     - Options > Theme > Custom.
+ * @property {boolean} BEVEL      - Options > Style > Bevel.
+ * @property {boolean} BLEND      - Options > Style > Blend.
+ * @property {boolean} BLEND2     - Options > Style > Blend 2.
+ * @property {boolean} BLEND12    - Options > Style > Blend or Blend 2.
+ * @property {boolean} GRAD       - Options > Style > Gradient.
+ * @property {boolean} GRAD2      - Options > Style > Gradient 2.
+ * @property {boolean} GRAD12     - Options > Style > Gradient or Gradient 2.
+ * @property {boolean} ALT        - Options > Style > Alternative.
+ * @property {boolean} ALT2       - Options > Style > Alternative 2.
+ * @property {boolean} BW         - Options > Style > Black and white ( White theme ).
+ * @property {boolean} BW2        - Options > Style > Black and white 2 ( White theme ).
+ * @property {boolean} BWR        - Options > Style > Black and white reborn ( White theme ).
+ * @property {boolean} BR         - Options > Style > Black reborn ( Black theme ).
+ * @property {boolean} RW         - Options > Style > Reborn white ( Reborn theme ).
+ * @property {boolean} RB         - Options > Style > Reborn black ( Reborn theme ).
+ * @property {boolean} RF         - Options > Style > Reborn fusion ( Reborn theme ).
+ * @property {boolean} RF2        - Options > Style > Reborn fusion 2 ( Reborn theme ).
+ * @property {boolean} RF12       - Options > Style > Reborn fusion and Reborn fusion 2 ( Reborn theme ).
+ * @property {boolean} RFA        - Options > Style > Reborn fusion accent ( Reborn theme ).
+ * @property {boolean} RP         - Options > Style > Random pastel ( Random theme ).
+ * @property {boolean} RD         - Options > Style > Random dark ( Random theme ).
+ * @property {string}  RAC        - Options > Style > Auto color ( Random theme ).
+ * @property {string}  TMB        - Options > Style > Buttons > Top menu.
+ * @property {string}  TPB        - Options > Style > Buttons > Transport.
+ * @property {string}  PBD        - Options > Style > Progress bar > Design.
+ * @property {string}  PB         - Options > Style > Progress bar > Background.
+ * @property {string}  PBF        - Options > Style > Progress bar > Progress fill.
+ * @property {string}  VBD        - Options > Style > Volume bar > Design.
+ * @property {string}  VB         - Options > Style > Volume bar > Background.
+ * @property {string}  VBF        - Options > Style > Volume bar > Volume fill.
+ * @property {string|number} BRT  - Options > Display > Brightness.
+ * @property {string}  LAYOUT     - Options > Layout.
+ * @property {boolean} NIGHTTIME  - The state when theme is nighttime.
+ * @property {function} update    - Updates the values of all style flags based on current grSet settings.
+ *
+ * Template:
+ * const {
+ *	THEME, DYNTHEME, CTHEME, BEVEL, BLEND, BLEND2, BLEND12, GRAD, GRAD2, GRAD12, ALT, ALT2,
+ *	BW, BW2, BWR, BR, RW, RB, RF, RF2, RF12, RFA, RP, RD, RAC,
+ *	TMB, TPB, PBD, PB, PBF, VBD, VB, VBF, LAYOUT, NIGHTTIME
+ *} = grAlias;
+ */
+/** @global @type {grAlias} */
+const grAlias = {
+	THEME: '',
+	DYNTHEME: false,
+	CTHEME: false,
+	BEVEL: false,
+	BLEND: false,
+	BLEND2: false,
+	BLEND12: false,
+	GRAD: false,
+	GRAD2: false,
+	GRAD12: false,
+	ALT: false,
+	ALT2: false,
+	BW: false,
+	BW2: false,
+	BWR: false,
+	BR: false,
+	RW: false,
+	RB: false,
+	RF: false,
+	RF2: false,
+	RF12: false,
+	RFA: false,
+	RP: false,
+	RD: false,
+	RAC: '',
+	TMB: '',
+	TPB: '',
+	PBD: '',
+	PB: '',
+	PBF: '',
+	VBD: '',
+	VB: '',
+	VBF: '',
+	BRT: '',
+	LAYOUT: '',
+	NIGHTTIME: false,
+
+	update() {
+		this.THEME     = grSet.theme;
+		this.DYNTHEME  = ['white', 'black', 'reborn', 'random'].includes(grSet.theme);
+		this.CTHEME    = grSet.theme.startsWith('custom');
+		this.BEVEL     = grSet.styleBevel;
+		this.BLEND     = grSet.styleBlend;
+		this.BLEND2    = grSet.styleBlend2;
+		this.BLEND12   = grSet.styleBlend || grSet.styleBlend2;
+		this.GRAD      = grSet.styleGradient;
+		this.GRAD2     = grSet.styleGradient2;
+		this.GRAD12    = grSet.styleGradient || grSet.styleGradient2;
+		this.ALT       = grSet.styleAlternative;
+		this.ALT2      = grSet.styleAlternative2;
+		this.BW        = grSet.styleBlackAndWhite;
+		this.BW2       = grSet.styleBlackAndWhite2;
+		this.BWR       = grSet.styleBlackAndWhiteReborn;
+		this.BR        = grSet.styleBlackReborn;
+		this.RW        = grSet.styleRebornWhite;
+		this.RB        = grSet.styleRebornBlack;
+		this.RF        = grSet.styleRebornFusion;
+		this.RF2       = grSet.styleRebornFusion2;
+		this.RF12      = grSet.styleRebornFusion || grSet.styleRebornFusion2;
+		this.RFA       = grSet.styleRebornFusionAccent;
+		this.RP        = grSet.styleRandomPastel;
+		this.RD        = grSet.styleRandomDark;
+		this.RAC       = grSet.styleRandomAutoColor;
+		this.TMB       = grSet.styleTopMenuButtons;
+		this.TPB       = grSet.styleTransportButtons;
+		this.PBD       = grSet.styleProgressBarDesign;
+		this.PB        = grSet.styleProgressBar;
+		this.PBF       = grSet.styleProgressBarFill;
+		this.VBD       = grSet.styleVolumeBarDesign;
+		this.VB        = grSet.styleVolumeBar;
+		this.VBF       = grSet.styleVolumeBarFill;
+		this.BRT       = grSet.themeBrightness;
+		this.LAYOUT    = grSet.layout;
+		this.NIGHTTIME = !grSet.styleRebornWhite &&
+			(['reborn', 'random'].includes(grSet.theme) && grSet.styleNighttime ||
+			grSet.themeDayNightEnabled && grSet.themeDayNightTime === 'night');
+	}
 };

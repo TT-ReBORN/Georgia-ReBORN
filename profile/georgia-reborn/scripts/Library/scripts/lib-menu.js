@@ -565,8 +565,7 @@ class LibMenuItems {
 
 	loadView(clearCache, view, sel) {
 		lib.ui.getColours();
-		grm.theme.initLibraryColors();
-		grm.theme.themeColorAdjustments();
+		grm.colorThemes.initThemeColors('library');
 		lib.sbar.setCol();
 		lib.but.createImages();
 		if (clearCache) libImg.clearCache();
@@ -800,8 +799,8 @@ class LibMenuItems {
 				}
 
 				grm.ui.setLibrarySize();
-				grm.theme.initLibraryColors();
-				grm.theme.themeColorAdjustments();
+				grm.colorThemes.initThemeColors('library');
+				grm.colorStyles.initStyleColors();
 				if (grSet.libraryDesign === 'traditional') lib.pop.createImages();
 				window.Repaint();
 				break;

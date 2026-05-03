@@ -176,12 +176,12 @@ class BioScrollbar {
 			bio.ui.col.sbarHoveredRGBA = RGBtoRGBA(bio.ui.col.sbarHovered, this.alpha);
 			bio.ui.col.sbarDragRGBA    = RGBtoRGBA(bio.ui.col.sbarDrag, this.alpha2);
 			// Reborn/Random theme scrollbar colors - black text color
-			bio.ui.col.darkAccentRGBA_75 = RGBtoRGBA(grCol.darkAccent_75, this.alpha - 50);
-			bio.ui.col.darkAccentRGBA_50 = this.hover ? RGBtoRGBA(grCol.lightAccent_50, this.alpha) : RGBtoRGBA(grCol.darkAccent_75, this.alpha);
+			bio.ui.col.darkAccentRGBA_75 = RGBtoRGBA(grCol.primary_rgb_s075, this.alpha - 50);
+			bio.ui.col.darkAccentRGBA_50 = this.hover ? RGBtoRGBA(grCol.primary_rgb_t050, this.alpha) : RGBtoRGBA(grCol.primary_rgb_s075, this.alpha);
 			// Reborn/Random theme scrollbar colors - white text color
-			bio.ui.col.lightAccentRGBA_80  = RGBtoRGBA(grCol.lightAccent_80, this.alpha);
-			bio.ui.col.lightAccentRGBA_50  = RGBtoRGBA(grCol.lightAccent_50, this.alpha);
-			bio.ui.col.lightAccentRGBA2_50 = RGBtoRGBA(grCol.lightAccent_50, this.alpha2);
+			bio.ui.col.lightAccentRGBA_80  = RGBtoRGBA(grCol.primary_rgb_t080, this.alpha);
+			bio.ui.col.lightAccentRGBA_50  = RGBtoRGBA(grCol.primary_rgb_t050, this.alpha);
+			bio.ui.col.lightAccentRGBA2_50 = RGBtoRGBA(grCol.primary_rgb_t050, this.alpha2);
 			// Reborn/Random theme scrollbar colors - for nearly white album art
 			bio.ui.col.lightAccentRGBA_100  = RGBA(140, 140, 140, this.alpha2 - this.alpha);
 			bio.ui.col.lightAccentRGBA2_100 = RGBA(255, 255, 255, this.alpha);
@@ -190,13 +190,13 @@ class BioScrollbar {
 			let thumbColors = [bio.ui.col.sbarNormalRGBA, bio.ui.col.sbarHoveredRGBA, bio.ui.col.sbarDragRGBA];
 
 			if (pl.col.bg !== RGB(255, 255, 255) && !grSet.styleRebornFusion && !grSet.styleRebornFusion2) {
-				if (['reborn', 'random'].includes(grSet.theme) && grCol.lightBg) {
+				if (['reborn', 'random'].includes(grSet.theme) && grCol.lightBgMain) {
 					thumbColors = [bio.ui.col.darkAccentRGBA_75, bio.ui.col.darkAccentRGBA_50, bio.ui.col.lightAccentRGBA2_50];
 				}
-				else if (['reborn', 'random'].includes(grSet.theme) && !grCol.lightBg) {
+				else if (['reborn', 'random'].includes(grSet.theme) && !grCol.lightBgMain) {
 					thumbColors = [bio.ui.col.lightAccentRGBA_80, bio.ui.col.lightAccentRGBA_50, bio.ui.col.lightAccentRGBA2_50];
 				}
-				if (['reborn', 'random'].includes(grSet.theme) && grCol.imgBrightness > 230) {
+				if (['reborn', 'random'].includes(grSet.theme) && (grCol.imgLuminance > 0.70)) {
 					thumbColors = [bio.ui.col.lightAccentRGBA_100, bio.ui.col.lightAccentRGBA2_100, bio.ui.col.lightAccentRGBA3_100];
 				}
 			}

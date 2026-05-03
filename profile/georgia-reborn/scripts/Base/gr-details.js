@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -144,12 +144,6 @@ class Details {
 		this.timelineH = SCALE(8);
 		/** @public @type {number} The color of the played portion of the timeline. */
 		this.timelinePlayCol = RGBA(255, 255, 255, 150);
-		/** @public @type {number} The color of the added portion of the timeline. */
-		this.timelineAddedCol = 0;
-		/** @public @type {number} The color of the played portion of the timeline. */
-		this.timelinePlayedCol = 0;
-		/** @public @type {number} The color of the unplayed portion of the timeline. */
-		this.timelineUnplayedCol = 0;
 		/** @public @type {number} The ratio of the first played segment in the timeline. */
 		this.timelineFirstPlayedRatio = 0;
 		/** @public @type {number} The ratio of the last played segment in the timeline. */
@@ -194,8 +188,8 @@ class Details {
 		this.discArtArray = [];
 		/** @public @type {number} The scale factor of the disc art used in Details. */
 		this.discArtScaleFactor = 0;
-		/** @private @type {GdiBitmap} The shadow behind the disc art used in Details. */
-		this.discArtShadowImg = null;
+		/** @private @type {{image: GdiBitmap|null, size: number}} The shadow behind the disc art used in Details. */
+		this.discArtShadowImg = { image: null, size: 0 }
 		/** @public @type {object} The disc art position used in Details (offset from albumArtSize). */
 		this.discArtSize = new ImageSize(0, 0, 0, 0);
 		/** @public @type {GdiBitmap} The rotated disc art from the RotateImg helper used in Details. */
@@ -328,10 +322,16 @@ class Details {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawDiscArtImage(gr) {
-		if (!grSet.filterAlbumArt && grm.ui.discArtImageDisplayed) return;
-
 		const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
-		this.discArtShadowImg && gr.DrawImage(this.discArtShadowImg, -this.discArtShadow, grm.ui.albumArtSize.y - this.discArtShadow, this.discArtShadowImg.Width, this.discArtShadowImg.Height, 0, 0, this.discArtShadowImg.Width, this.discArtShadowImg.Height);
+
+		if (!grSet.filterAlbumArt && grm.ui.discArtImageDisplayed || !discArtImg) {
+			return;
+		}
+
+		if (this.discArtShadowImg.image) {
+			const shadowImg = this.discArtShadowImg.image;
+			gr.DrawImage(shadowImg, -this.discArtShadow, grm.ui.albumArtSize.y - this.discArtShadow, shadowImg.Width, shadowImg.Height, 0, 0, shadowImg.Width, shadowImg.Height);
+		}
 
 		gr.DrawImage(discArtImg, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, discArtImg.Width, discArtImg.Height, 0);
 	}
@@ -540,10 +540,10 @@ class Details {
 
 					if (gridDropShadow) {
 						const gridBorderWidth = SCALE(0.5);
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft + gridBorderWidth), Math.round(this.gridTop + gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft - gridBorderWidth), Math.round(this.gridTop + gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft + gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
-						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.darkAccent_50, Math.round(this.gridColumnValueLeft - gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.primary_rgb_s050, Math.round(this.gridColumnValueLeft + gridBorderWidth), Math.round(this.gridTop + gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.primary_rgb_s050, Math.round(this.gridColumnValueLeft - gridBorderWidth), Math.round(this.gridTop + gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.primary_rgb_s050, Math.round(this.gridColumnValueLeft + gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
+						gr.DrawString(this.gridColumnValue, grFont.gridVal, grCol.primary_rgb_s050, Math.round(this.gridColumnValueLeft - gridBorderWidth), Math.round(this.gridTop - gridBorderWidth), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
 					}
 					gr.DrawString(this.gridColumnKey, grFont.gridKey, grCol.detailsText, this.gridMarginLeft, Math.round(this.gridTop), this.gridColumnKeyWidth, this.gridColumnCellHeight, Stringformat.Trim_Ellipsis_Char);
 					gr.DrawString(this.gridColumnValue, grFont.gridVal, gridValueColor, this.gridColumnValueLeft, Math.round(this.gridTop), this.gridColumnValueWidth, this.gridColumnCellHeight, StringFormat(0, 0, 4));
@@ -629,8 +629,10 @@ class Details {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawGridCodecLogo(gr) {
-		if (this.gridCodecLogo == null) this.loadGridCodecLogo();
-		if (this.gridCodecLogo == null) return;
+		if (this.gridCodecLogo == null) {
+			this.loadGridCodecLogo();
+			if (this.gridCodecLogo == null) return;
+		}
 
 		const logoOnly = grSet.showGridCodecLogo_layout === 'logo';
 		this.drawGridImage(gr, this.gridCodecLogo, logoOnly, SCALE(logoOnly ? 0 : 8), logoOnly ? -1 : 2);
@@ -641,8 +643,10 @@ class Details {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawGridChannelLogo(gr) {
-		if (this.gridChannelLogo == null) this.loadGridChannelLogo();
-		if (this.gridChannelLogo == null) return;
+		if (this.gridChannelLogo == null) {
+			this.loadGridChannelLogo();
+			if (this.gridChannelLogo == null) return;
+		}
 
 		const logoOnly = grSet.showGridChannelLogo_layout === 'logo';
 		this.drawGridImage(gr, this.gridChannelLogo, logoOnly, SCALE(logoOnly ? 0 : 8), logoOnly ? -1 : 2);
@@ -657,7 +661,7 @@ class Details {
 
 		const lastFmImg = gdi.Image(grPath.lastFmImageRed);
 		const lastFmWhiteImg = gdi.Image(grPath.lastFmImageWhite);
-		const lastFmLogo = ColorDistance(grCol.primary, RGB(185, 0, 0), false) < 133 ? lastFmWhiteImg : lastFmImg;
+		const lastFmLogo = grCol.lightBgDetails ? lastFmImg : lastFmWhiteImg;
 		const lineHeight = this.gridTxtRec.Height / this.gridTxtRec.Lines;
 		const yCorr = (this.gridTxtRec.Lines - 1) * lineHeight;
 
@@ -677,8 +681,7 @@ class Details {
 		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> band logo');
 
 		const availableSpace = grm.ui.albumArtSize.y + grm.ui.albumArtSize.h - this.gridTop;
-		const lightBg = Color.BRT(grCol.detailsText) < 140;
-		const logo = lightBg || grm.ui.noAlbumArtStub ? (this.bandLogoInverted || this.bandLogo) : this.bandLogo;
+		const logo = grCol.lightBgDetails || grm.ui.noAlbumArtStub ? (this.bandLogoInverted || this.bandLogo) : this.bandLogo;
 
 		if (logo && availableSpace > 75) {
 			let logoWidth = Math.min(HD_4K(logo.Width / 2, logo.Width), grm.ui.albumArtSize.x - grm.ui.ww * 0.05);
@@ -709,7 +712,7 @@ class Details {
 		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> label logo');
 
 		if (this.labelLogo.length > 0) {
-			const lightBg = grSet.labelArtOnBg ? Color.BRT(grCol.bg) > 140 : Color.BRT(grCol.detailsText) < 140;
+			const lightBg = grSet.labelArtOnBg ? grCol.lightBgMain : grCol.lightBgDetails;
 			const labels = lightBg || grm.ui.noAlbumArtStub ? (this.labelLogoInverted.length ? this.labelLogoInverted : this.labelLogo) : this.labelLogo;
 			const rightSideGap = 20; // How close last label is to right edge
 			const leftEdgeGap = (grm.ui.albumArtOffCenter ? 20 : 40) * HD_4K(1, 1.8); // Space between art and label
@@ -1240,8 +1243,7 @@ class Details {
 			logoName = HDCD && codecName === 'pcm-wav' ? 'pcm-hdcd' : HDCD ? `${codecName}-hdcd` : codecName;
 		}
 
-		const lightBg = Color.BRT(grCol.detailsText) < 140;
-		const bw = lightBg ? 'black' : 'white';
+		const bw = grCol.lightBgDetails ? 'black' : 'white';
 		const path = `${grPath.images}codec\\${logoName}-${bw}.png`;
 
 		this.gridCodecLogo = gdi.Image(path);
@@ -1262,8 +1264,7 @@ class Details {
 			(grSet.layout === 'default' && grSet.showGridChannelLogo_default === 'textlogo' ||
 			 grSet.layout === 'artwork' && grSet.showGridChannelLogo_artwork === 'textlogo') ? '_text' : '';
 
-		const lightBg = Color.BRT(grCol.detailsText) < 140;
-		const bw = lightBg ? 'black' : 'white';
+		const bw = grCol.lightBgDetails ? 'black' : 'white';
 
 		const channelFormat = {
 			'mono':   '10_mono',
@@ -1370,10 +1371,8 @@ class Details {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawGridTimeline(gr) {
-		if (!this.timelineAddedCol && !this.timelinePlayedCol && !this.timelineUnplayedCol) return;
-
 		gr.SetSmoothingMode(SmoothingMode.None); // Disable smoothing
-		gr.FillSolidRect(this.gridMarginLeft, this.timelineY, this.timelineDrawWidth + this.timelineExtraLeftSpace + this.timelineLineWidth, this.timelineH, this.timelineAddedCol);
+		gr.FillSolidRect(this.gridMarginLeft, this.timelineY, this.timelineDrawWidth + this.timelineExtraLeftSpace + this.timelineLineWidth, this.timelineH, grCol.timelineAdded);
 
 		if (grSet.theme.startsWith('custom')) {
 			gr.DrawRect(this.timelineX - 2, this.timelineY - 2, this.timelineW + 3, this.timelineH + 3, 1, grCol.timelineFrame);
@@ -1382,8 +1381,8 @@ class Details {
 		if (this.timelineFirstPlayedPercent >= 0 && this.timelineLastPlayedPercent >= 0) {
 			const x1 = Math.floor(this.timelineDrawWidth * this.timelineFirstPlayedPercent) + this.timelineExtraLeftSpace;
 			const x2 = Math.floor(this.timelineDrawWidth * this.timelineLastPlayedPercent)  + this.timelineExtraLeftSpace;
-			gr.FillSolidRect(x1 + this.gridMarginLeft, this.timelineY, this.timelineDrawWidth - x1 + this.timelineExtraLeftSpace, this.timelineH, this.timelinePlayedCol);
-			gr.FillSolidRect(x2 + this.gridMarginLeft, this.timelineY, this.timelineDrawWidth - x2 + this.timelineExtraLeftSpace + this.timelineLineWidth, this.timelineH, this.timelineUnplayedCol);
+			gr.FillSolidRect(x1 + this.gridMarginLeft, this.timelineY, this.timelineDrawWidth - x1 + this.timelineExtraLeftSpace, this.timelineH, grCol.timelinePlayed);
+			gr.FillSolidRect(x2 + this.gridMarginLeft, this.timelineY, this.timelineDrawWidth - x2 + this.timelineExtraLeftSpace + this.timelineLineWidth, this.timelineH, grCol.timelineUnplayed);
 		}
 
 		for (let i = 0; i < this.timelinePlayedTimesPercents.length; i++) {
@@ -1460,18 +1459,6 @@ class Details {
 		this.timelineExtraLeftSpace = SCALE(3); // Add a little space to the left so songs that were played a long time ago show more in the "added" stage
 		this.timelineDrawWidth = Math.floor(this.timelineW - this.timelineExtraLeftSpace - 1 - this.timelineLineWidth / 2);
 		this.timelineLeeway = (1 / this.timelineDrawWidth) * (this.timelineLineWidth + SCALE(2)) / 2;
-	}
-
-	/**
-	 * Sets the colors of the three timeline bars.
-	 * @param {number} addedCol - The color for the added bar.
-	 * @param {number} playedCol - The color for the played bar.
-	 * @param {number} unplayedCol - The color for the unplayed bar.
-	 */
-	setGridTimelineColors(addedCol, playedCol, unplayedCol) {
-		this.timelineAddedCol = addedCol;
-		this.timelinePlayedCol = playedCol;
-		this.timelineUnplayedCol = unplayedCol;
 	}
 
 	/**
@@ -1587,7 +1574,6 @@ class Details {
 	 */
 	updateGridTimeline(updateLastPlayed, metadb) {
 		this.setGridTimelineSize(this.gridMarginLeft, this.gridTop + Math.floor(this.gridLineSpacing * 0.33), grm.ui.albumArtSize.x - this.gridMarginLeft * 2, this.timelineH);
-		this.setGridTimelineColors(grCol.timelineAdded, grCol.timelinePlayed, grCol.timelineUnplayed);
 
 		if (!updateLastPlayed) return;
 
@@ -1711,6 +1697,8 @@ class Details {
 	 * Fetches new disc art when a new album is being played.
 	 */
 	fetchDiscArt() {
+		if (!grm.ui.displayDetails) return;
+
 		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchDiscArt');
 
 		if (grSet.displayDiscArt && !grm.ui.isStreaming) {
@@ -1743,6 +1731,44 @@ class Details {
 	}
 
 	/**
+	 * Initializes the disc art when the Details panel is opened or closed.
+	 */
+	initDiscArt() {
+		if (!grm.ui.displayDetails) {
+			this.clearCache('discArt');
+			this.clearTimer('discArt');
+			return;
+		}
+
+		if (!this.discArtCover && grm.ui.albumArtList.length) {
+			const artIndex = grm.ui.albumArtList[grm.ui.albumArtIndex];
+			if (artIndex && grm.artCache) {
+				this.discArtCover = grm.artCache.getImage(artIndex, 2) ||
+					(grm.ui.albumArt && grm.artCache.encache(grm.ui.albumArt, artIndex, 2));
+			}
+		}
+
+		if (grSet.displayDiscArt && !grm.ui.isStreaming) {
+			if (this.discArt) {
+				this.updateDiscArt();
+			} else {
+				this.fetchDiscArt();
+			}
+		}
+	}
+
+	initDiscArtStub() {
+		if (!grSet.displayDiscArt || grSet.noDiscArtStub) return;
+
+		const stubPath = grPath.discArtStubPaths()[grSet.discArtStub] || grPath.discArtCustomStub;
+		if (!stubPath || grm.artCache.getImage(stubPath)) return; // already cached
+
+		gdi.LoadImageAsyncV2(window.ID, stubPath).then(img => {
+			if (img) grm.artCache.encache(img, stubPath);
+		});
+	}
+
+	/**
 	 * Loads the disc art from the given path.
 	 * @param {string} discArtPath - The path to the disc art.
 	 */
@@ -1752,7 +1778,7 @@ class Details {
 		if (tempDiscArt) {
 			this.disposeDiscArt(this.discArt);
 			this.discArt = tempDiscArt;
-			this.updateDiscArt();
+			if (grm.ui.displayDetails) this.updateDiscArt();
 			return;
 		}
 
@@ -2050,34 +2076,48 @@ class Details {
 	 * Sets the drop shadow for disc art.
 	 */
 	setDiscArtShadow() {
-		if (!this.discArt || !grm.ui.hasArtwork && !grm.ui.noAlbumArtStub ||
-			!grm.ui.displayDetails || !grSet.displayDiscArt || grSet.layout === 'compact') {
-			return;
-		}
+		const isDisabled = !grm.ui.displayDetails || !grSet.displayDiscArt || grSet.layout === 'compact';
+		const isMissing = !this.discArt || !grm.ui.hasArtwork && !grm.ui.noAlbumArtStub;
+		const isCached = this.discArtShadowImg && this.discArtShadowImg.image && this.discArtShadowImg.size === this.discArtSize.h;
 
-		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'createDiscArtShadow');
+		if (isDisabled || isMissing || isCached) return;
+
+		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'setDiscArtShadow');
 
 		const discArtMargin = SCALE(2);
 
 		if (grm.ui.albumArtSize.w > 0 || this.discArtSize.w > 0) {
-			this.discArtShadowImg = this.discArt ?
-				gdi.CreateImage(this.discArtSize.x + this.discArtSize.w + 2 * this.discArtShadow, this.discArtSize.h + discArtMargin + 2 * this.discArtShadow) :
-				gdi.CreateImage(grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + 2 * this.discArtShadow, grm.ui.albumArtSize.h + 2 * this.discArtShadow);
-			if (grSet.layout === 'default' && this.discArtShadowImg) {
-				const shimg = this.discArtShadowImg.GetGraphics();
+			const width = this.discArt
+				? this.discArtSize.x + this.discArtSize.w + 2 * this.discArtShadow
+				: grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + 2 * this.discArtShadow;
+
+			const height = this.discArt
+				? this.discArtSize.h + discArtMargin + 2 * this.discArtShadow
+				: grm.ui.albumArtSize.h + 2 * this.discArtShadow;
+
+			const newShadowImg = gdi.CreateImage(width, height);
+
+			if (grSet.layout === 'default' && newShadowImg) {
+				const shimg = newShadowImg.GetGraphics();
+
 				if (this.discArt) {
 					const offset = this.discArtSize.w * 0.40; // Don't change this value
 					const xVal = this.discArtSize.x;
 					const shadowOffset = this.discArtShadow * 2;
-					shimg.DrawEllipse(xVal + shadowOffset, shadowOffset + discArtMargin, this.discArtSize.w - shadowOffset, this.discArtSize.w - shadowOffset, this.discArtShadow * 2, grCol.discArtShadow); // outer shadow
+
+					shimg.DrawEllipse(xVal + shadowOffset, shadowOffset + discArtMargin, this.discArtSize.w - shadowOffset, this.discArtSize.w - shadowOffset, shadowOffset, grCol.discArtShadow); // outer shadow
 					shimg.DrawEllipse(xVal + this.discArtShadow + offset, offset + this.discArtShadow + discArtMargin, this.discArtSize.w - offset * 2, this.discArtSize.h - offset * 2, 60, grCol.discArtShadow); // inner shadow
 				}
-				this.discArtShadowImg.ReleaseGraphics(shimg);
-				this.discArtShadowImg.StackBlur(this.discArtShadow);
+
+				newShadowImg.ReleaseGraphics(shimg);
+				newShadowImg.StackBlur(this.discArtShadow);
 			}
+
+			this.discArtShadowImg.image = newShadowImg;
+			this.discArtShadowImg.size = this.discArtSize.h;
 		}
 
-		grm.debug.setDebugProfile(false, 'print', 'createDiscArtShadow');
+		grm.debug.setDebugProfile(false, 'print', 'setDiscArtShadow');
 	}
 
 	/**
@@ -2086,7 +2126,9 @@ class Details {
 	updateDiscArt() {
 		grm.ui.resizeArtwork(true);
 		this.setDiscArtRotation();
+
 		if (!grSet.spinDiscArt) return;
+
 		this.discArtArray = []; // Clear last image
 		this.setDiscArtRotationTimer();
 	}

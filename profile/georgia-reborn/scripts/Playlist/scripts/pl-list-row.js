@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -135,7 +135,7 @@ class PlaylistRow extends BaseListItem {
 			this.title_color = grSet.playlistRowHover && this.is_hovered ? pl.col.row_title_hovered : pl.col.row_title_normal;
 		}
 
-		if (this.is_playing && pl.col.row_nowplaying_bg !== '') { // * Wait until nowplaying bg has a new color to prevent flashing
+		if (this.is_playing && pl.col.row_nowplaying_bg !== null) { // * Wait until nowplaying bg has a new color to prevent flashing
 			this.title_color = pl.col.row_title_playing;
 			title_font = pl.font.title_playing;
 
@@ -146,14 +146,14 @@ class PlaylistRow extends BaseListItem {
 				title_artist_color = this.title_color;
 			}
 
-			if (grCol.lightBg && (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2 || grSet.theme === 'black')) {
-				this.title_color = RGB(20, 20, 20);
-				title_artist_color = RGB(0, 0, 0);
-			}
-			if (!grCol.lightBg && grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2 && !grm.ui.isStreaming && grSet.layout === 'default') {
-				this.title_color = RGB(240, 240, 240);
-				title_artist_color = RGB(220, 220, 220);
-			}
+			// if (grCol.lightBgMain && (grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2 || grSet.theme === 'black')) {
+			// 	this.title_color = RGB(20, 20, 20);
+			// 	title_artist_color = RGB(0, 0, 0);
+			// }
+			// if (!grCol.lightBgMain && grSet.theme === 'white' && !grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2 && !grm.ui.isStreaming && grSet.layout === 'default') {
+			// 	this.title_color = RGB(240, 240, 240);
+			// 	title_artist_color = RGB(220, 220, 220);
+			// }
 			if (grSet.theme === 'white' && (grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2) || !['white', 'black', 'cream'].includes(grSet.theme)) {
 				gr.FillSolidRect(this.x, this.y, SCALE(8), this.h, pl.col.row_sideMarker);
 			}
@@ -213,7 +213,7 @@ class PlaylistRow extends BaseListItem {
 		if (plSet.show_rating) {
 			this.rating.x = this.x + this.w - this.rating.w - right_pad;
 			this.rating.y = this.y;
-			this.rating.draw(gr, pl.col.row_rating_color);
+			this.rating.draw(gr);
 
 			right_pad += this.rating.w + this.rating_right_pad + this.rating_left_pad;
 		}
@@ -504,15 +504,6 @@ class PlaylistRow extends BaseListItem {
 		} else {
 			grm.ttip.stop();
 		}
-	}
-
-	/**
-	 * Updates and determines the color of the playlist row title text.
-	 */
-	update_title_color() {
-		const panelWhite = grCol.colBrightness > 210 && grSet.styleRebornFusion || grCol.colBrightness2 > 210 && grSet.styleRebornFusion2 || grSet.styleBlackAndWhite2;
-		const panelBlack = grCol.colBrightness <  25 && grSet.styleRebornFusion || grCol.colBrightness2 < 25  && grSet.styleRebornFusion2 || grSet.styleBlackAndWhite;
-		this.title_color = panelWhite ? RGB(80, 80, 80) : panelBlack ? RGB(200, 200, 200) : pl.col.row_title_normal;
 	}
 	// #endregion
 }

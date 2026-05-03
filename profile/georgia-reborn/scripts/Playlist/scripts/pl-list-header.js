@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -453,36 +453,16 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		}
 
 		if (!cache_header || !this.header_image) {
-			let artist_color = pl.col.header_artist_normal;
-			let album_color = pl.col.header_album_normal;
-			let info_color = pl.col.header_info_normal;
-			let date_color = pl.col.header_date_normal;
-			let line_color = pl.col.header_line_normal;
-			let artist_font = pl.font.artist_normal;
-			const date_font = pl.font.date;
-			const updatedNowpBg = pl.col.header_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
+			const updatedNowpBg = pl.col.header_nowplaying_bg !== null; // * Wait until nowplaying bg has a new color to prevent flashing
+			const state = this.is_playing() && updatedNowpBg ? 'playing' : 'normal';
 
-			if (this.is_playing() && updatedNowpBg) {
-				artist_color = pl.col.header_artist_playing;
-				album_color = pl.col.header_album_playing;
-				info_color = pl.col.header_info_playing;
-				date_color = pl.col.header_date_playing;
-				line_color = pl.col.header_line_playing;
-				artist_font = pl.font.artist_playing;
-
-				if (grCol.lightBg && grSet.theme === 'black') {
-					artist_color = RGB(0, 0, 0);
-					album_color = RGB(20, 20, 20);
-					info_color = RGB(20, 20, 20);
-					date_color = RGB(20, 20, 20);
-				} else if (grCol.lightBg && grSet.theme === 'white' && grSet.layout !== 'default') {
-					artist_color  = RGB(60, 60, 60);
-					album_color = RGB(60, 60, 60);
-					info_color = RGB(60, 60, 60);
-					date_color = RGB(60, 60, 60);
-					line_color = RGB(100, 100, 100);
-				}
-			}
+			const artist_color = pl.col[`header_artist_${state}`];
+			const album_color  = pl.col[`header_album_${state}`];
+			const info_color   = pl.col[`header_info_${state}`];
+			const date_color   = pl.col[`header_date_${state}`];
+			const line_color   = pl.col[`header_line_${state}`];
+			const artist_font  = pl.font[`artist_${state}`];
+			const date_font    = pl.font.date;
 
 			this.clipImg = gdi.CreateImage(this.w, this.h);
 			const grClip = this.clipImg.GetGraphics();
@@ -816,32 +796,16 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw_compact_header(gr) {
-		let artist_color = pl.col.header_artist_normal;
-		let album_color = pl.col.header_album_normal;
-		let date_color = pl.col.header_date_normal;
-		let line_color = pl.col.header_line_normal;
-		let artist_font = pl.font.artist_normal_compact;
-		const date_font = pl.font.date_compact;
-		const updatedNowpBg = pl.col.header_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
+		// * Wait until nowplaying bg has a new color to prevent flashing
+		const updatedNowpBg = pl.col.header_nowplaying_bg !== null;
+		const state = this.is_playing() && updatedNowpBg ? 'playing' : 'normal';
 
-		if (this.is_playing() && updatedNowpBg) {
-			artist_color = pl.col.header_artist_playing;
-			album_color = pl.col.header_album_playing;
-			date_color = pl.col.header_date_playing;
-			line_color = pl.col.header_line_playing;
-			artist_font = pl.font.artist_playing_compact;
-
-			if (grCol.lightBg && ['white', 'black'].includes(grSet.theme)) {
-				artist_color = RGB(0, 0, 0);
-				album_color = RGB(20, 20, 20);
-				date_color = RGB(20, 20, 20);
-			}
-			else if (!grCol.lightBg && ['white', 'black'].includes(grSet.theme)) {
-				artist_color = RGB(240, 240, 240);
-				album_color = RGB(220, 220, 220);
-				date_color = RGB(220, 220, 220);
-			}
-		}
+		const artist_color = pl.col[`header_artist_${state}`];
+		const album_color  = pl.col[`header_album_${state}`];
+		const date_color   = pl.col[`header_date_${state}`];
+		const line_color   = pl.col[`header_line_${state}`];
+		const artist_font  = pl.font[`artist_${state}_compact`];
+		const date_font    = pl.font.date_compact;
 
 		const clipImg = gdi.CreateImage(this.w, this.h);
 		const grClip = clipImg.GetGraphics();

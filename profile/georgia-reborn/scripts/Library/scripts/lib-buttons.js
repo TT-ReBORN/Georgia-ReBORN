@@ -91,7 +91,7 @@ class LibButtons {
 			g.SetSmoothingMode(2);
 			if (lib.ui.sbar.col) {
 				this.scr.arrow == 0 ? g.FillPolygon(lib.ui.col.text, 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) :
-				g.DrawString(this.scr.arrow, iconFont, lib.ui.col.sbarBtns, 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
+				g.DrawString(this.scr.arrow, iconFont, lib.ui.col.text, 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));
 			} else {
 				this.scr.arrow == 0 ? g.FillPolygon(RGBA(lib.ui.col.t, lib.ui.col.t, lib.ui.col.t, 255), 1, [50 * sc, 0, 100 * sc, 76 * sc, 0, 76 * sc]) :
 					g.DrawString(this.scr.arrow, iconFont, RGBA(lib.ui.col.t, lib.ui.col.t, lib.ui.col.t, 255), 0, sz * this.scr.pad, sz, sz, StringFormat(1, 1));

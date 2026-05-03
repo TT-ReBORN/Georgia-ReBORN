@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -520,7 +520,7 @@ class ThemeDayNight {
 				grSet.themeDayNightEnabled = false;
 				if (grSet.presetAutoRandomMode !== 'off') {
 					grSet.presetAutoRandomMode = 'dblclick';
-					grm.preset.getRandomThemePreset();
+					grm.preset.generateRandomThemePreset();
 				}
 			}
 		});

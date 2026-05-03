@@ -913,7 +913,7 @@ class LibPopulate {
 		const f = Math.min(b + lib.panel.rows, this.tree.length);
 		const nm = [];
 		const nowp_c = [];
-		const updatedNowpBg = pl.col.header_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
+		const updatedNowpBg = pl.col.header_nowplaying_bg !== null; // * Wait until nowplaying bg has a new color to prevent flashing
 		const colNowPlaying = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.nowPlayingBg, grSet.libraryBgRowOpacity) : lib.ui.col.nowPlayingBg;
 		const colRowStripes = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.rowStripes, grSet.libraryBgRowOpacity) : lib.ui.col.rowStripes;
 		const row = [];

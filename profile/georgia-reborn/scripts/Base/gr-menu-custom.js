@@ -2,11 +2,10 @@
 // * Georgia-ReBORN: A Clean - Full Dynamic Color Reborn - Foobar2000 Player * //
 // * Description:    Georgia-ReBORN Custom Menu                              * //
 // * Author:         TT                                                      * //
-// * Org. Author:    Mordred                                                 * //
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-11-2025                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -500,8 +499,7 @@ class CustomMenuDropDown extends CustomMenu {
 		gr.SetSmoothingMode(SmoothingMode.None);
 		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
-		const lightBg = grm.color.isLightBg(Color.BRT(grCol.bg));
-		const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
+		const textColor = grCol.lightBgMain ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		const lineHeight = this.hovered || this.focus ? this.h : 1;
 		const optionH = this.optionHeight + this.padding * 2;
 		let optionY = this.getFirstOptionY();
@@ -736,8 +734,7 @@ class CustomMenuInputField extends CustomMenu {
 		gr.SetTextRenderingHint(TextRenderingHint.AntiAlias);
 		const margin = SCALE(20);
 		const textX = this.inputX + this.padding * 4;
-		const lightBg = grm.color.isLightBg(Color.BRT(pl.col.bg));
-		const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
+		const textColor = grCol.lightBgMain ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		const outlineColor = this.focus ? HEXtoRGB(this.value) : RGB(120, 120, 120);
 
 		gr.GdiDrawText(this.label, this.font, textColor, this.inputX + this.inputW + margin * 2, this.y, this.labelW, this.h, StringFormat(0, 0, 4));
@@ -755,7 +752,7 @@ class CustomMenuInputField extends CustomMenu {
 			const start = textX + this.getCursorX(selStartIndex);
 			const end = textX + this.getCursorX(selEndIndex);
 			const maxWidth = Math.min(this.inputW - (start - textX), end - start);
-			const lightBg = grm.color.isLightBg(Color.BRT(HEXtoRGB(this.value)));
+			const lightBg = grm.colorSystem.isLightBackground(HEXtoRGB(this.value));
 			const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 			gr.FillSolidRect(start, this.y, maxWidth, this.h, HEXtoRGB(this.value));
@@ -1183,8 +1180,7 @@ class CustomMenuInputField2 extends CustomMenu {
 			const start = textX + this.getCursorX(selStartIndex);
 			const end = textX + this.getCursorX(selEndIndex);
 			const maxWidth = Math.min(this.inputW - (start - textX), end - start);
-			const lightBg = grm.color.isLightBg(Color.BRT(pl.col.bg));
-			const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
+			const textColor = grCol.lightBgPlaylist ? RGB(0, 0, 0) : RGB(255, 255, 255);
 			gr.FillSolidRect(start, this.y, maxWidth, this.h, HEXtoRGB(this.value2));
 			gr.GdiDrawText(this.value2.slice(selStartIndex, selEndIndex), this.font, textColor, start, this.y, maxWidth, this.h, StringFormat(0, 0, 4));
 		}
@@ -1713,8 +1709,7 @@ class CustomMenuInfo extends CustomMenu {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	draw(gr) {
-		const lightBg = grm.color.isLightBg(Color.BRT(pl.col.bg));
-		const textColor = lightBg ? RGB(0, 0, 0) : RGB(255, 255, 255);
+		const textColor = grCol.lightBgPlaylist ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		gr.DrawString(this.text, this.font, textColor, this.x, this.y, this.w, this.h, StringFormat(0, 0, 4));
 	}
 

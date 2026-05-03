@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -108,32 +108,30 @@ class Lyrics {
 		const embeddedLyrics = $(grTF.lyrics);
 		const foundLyrics = this.findLyrics();
 
-		 // * Start ESLyric callback listener when lyrics change
+		// * Start ESLyric callback listener when lyrics change
 		esl.SetPlayingLyricChangedCallback(this.changeLyrics.bind(this));
 
 		if (foundLyrics) {
 			if (grm.ui.displayLyrics) console.log('Found Lyrics:', this.fileName);
-			rawLyrics = utils.ReadTextFile(this.fileName, 65001).split('\n');
+			rawLyrics = utils.ReadTextFile(this.fileName, 65001).split(Regex.BreakLine);
 		}
 		else if (embeddedLyrics.length) {
-			if (embeddedLyrics === '.') {
-				rawLyrics = [
-					'Lyrics cannot be displayed.',
-					'For %LYRICS% or %UNSYNCED LYRICS% to always display properly, you must edit LargeFieldsConfig.txt and comment out or remove those specific entries under "fieldSpam"'
-				];
-			} else {
-				rawLyrics = embeddedLyrics.split('\n');
-				if (rawLyrics.length === 1) {
-					rawLyrics = embeddedLyrics.split('\r');
-				}
-			}
+			rawLyrics = embeddedLyrics === '.' ? [
+				'Lyrics cannot be displayed.',
+				'For %LYRICS% or %UNSYNCED LYRICS% to always display properly, you must edit LargeFieldsConfig.txt and comment out or remove those specific entries under "fieldSpam"'
+			] : embeddedLyrics.split(Regex.BreakLine);
 		}
 
-		if (rawLyrics.length) { // * Lyrics found
+		// * Lyrics found
+		if (rawLyrics.length) {
 			this.loadLyrics(rawLyrics);
-		} else if (Component.ESLyric) { // * No lyrics found locally, searching...
+		}
+		// * No lyrics found locally, searching...
+		else if (Component.ESLyric) {
 			this.searchLyrics();
-		} else { // * Search completed, no lyrics were found
+		}
+		// * Search completed, no lyrics were found
+		else {
 			this.loadLyrics(this.stringNoLyrics);
 		}
 
@@ -567,7 +565,7 @@ class Lyrics {
 	drawLyric(gr, lyric, line_y, bounds) {
 		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
 		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
-		const blendIn = this.type.synced ? GetBlend(grCol.lyricsHighlight, grCol.lyricsNormal, transition_factor_in) : grCol.lyricsNormal;
+		const blendIn = this.type.synced ? BlendColors(grCol.lyricsNormal, grCol.lyricsHighlight, transition_factor_in) : grCol.lyricsNormal;
 
 		const fadeFactor =
 			grSet.lyricsFadeScroll && bounds.outsideVisibleBounds ? (bounds.aboveTop ? (this.top - line_y) / this.lineHeight :

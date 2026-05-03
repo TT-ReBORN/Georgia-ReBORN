@@ -81,7 +81,7 @@ class BioLyrics {
 	drawLyric(gr, lyric, font, line_y, bounds) {
 		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
 		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
-		const blendIn = this.type.synced ? GetBlend(bio.ui.col.lyricsHighlight, bio.ui.col.lyricsNormal, transition_factor_in) : bio.ui.col.lyricsNormal;
+		const blendIn = this.type.synced ? BlendColors(bio.ui.col.lyricsNormal, bio.ui.col.lyricsHighlight, transition_factor_in) : bio.ui.col.lyricsNormal;
 
 		if (bounds.visibleBounds) {
 			this.drawShadow(gr, lyric.content, font, line_y);

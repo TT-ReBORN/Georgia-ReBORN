@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -280,32 +280,6 @@ class PlaylistCallbacks {
 			pl.playlist.focused_item.repaint();
 		}
 		pl.playlist.is_in_focus = is_focused;
-	}
-
-	/**
-	 * Assigns album art to a header item and repaints if the art is not already loaded.
-	 * @param {FbMetadbHandle} metadb - The metadb of the track.
-	 * @param {number} art_id - The id for the album art is used to associate the album art with the specific header.
-	 * @param {GdiBitmap} image - The album art image that was retrieved.
-	 * @param {string} image_path - The file path where the album art image is stored.
-	 */
-	on_get_album_art_done(metadb, art_id, image, image_path) {
-		if (!this.is_activated) {
-			return;
-		}
-
-		if (!image) {
-			image = null;
-		}
-
-		/** @type {Array<PlaylistRow|PlaylistBaseHeader>} */
-		const items = pl.playlist.items_to_draw;
-		for (const item of items) {
-			if (item instanceof PlaylistHeader && (!item.is_art_loaded() && item.get_first_row().metadb.Compare(metadb))) {
-				item.assign_art(image);
-				item.repaint();
-			}
-		}
 	}
 
 	/**

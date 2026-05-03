@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -146,6 +146,172 @@ const RES = {
 	_4K: false,
 	_QHD: false,
 	_HD: false
+};
+
+
+///////////////
+// * COLOR * //
+///////////////
+/**
+ * A collection of precise APCA relative luminance (Y) reference metrics.
+ * These values are the computed APCA luminance from the corresponding 8-bit neutral gray references.
+ * For full details including OKLCH Lightness and gray values, see LUM_REF.
+ * @typedef {Object} LUM
+ * @property {number} Y0 - The pure black (Y: 0.000 · L: 0.000 · Gray: 0).
+ * @property {number} Y0_1 - The ultra-low dark reference (Y: 0.0009 · L: 0.164 · Gray: 14).
+ * @property {number} Y0_2 - The ultra-low dark reference (Y: 0.0020 · L: 0.187 · Gray: 19).
+ * @property {number} Y0_5 - The very low dark (Y: 0.0050 · L: 0.226 · Gray: 28) – below APCA low clamp.
+ * @property {number} Y1_0 - The low dark (Y: 0.0097 · L: 0.265 · Gray: 37) – below APCA low clamp.
+ * @property {number} Y1_8 - The APCA black clamp flip point (Y: 0.0182 · L: 0.309 · Gray: 48).
+ * @property {number} Y3_5 - The dark UI zone (Y: 0.0349 · L: 0.368 · Gray: 63).
+ * @property {number} Y5_5 - The approaching mid-dark (Y: 0.0547 · L: 0.417 · Gray: 76).
+ * @property {number} Y7_5 - The mid-dark boundary (Y: 0.0757 · L: 0.457 · Gray: 87).
+ * @property {number} Y10 - The mid-dark range (Y: 0.1008 · L: 0.496 · Gray: 98).
+ * @property {number} Y15 - The lower mid-range (Y: 0.1510 · L: 0.559 · Gray: 116).
+ * @property {number} Y16 - The perceptual middle (Y: 0.1606 · L: 0.569 · Gray: 119) – true human-perceived middle gray (≈18.4% reflectance, LAB L*≈50, photographer's 18% gray card).
+ * @property {number} Y19 - The digital middle (Y: 0.1913 · L: 0.600 · Gray: 128) – numerical/code midpoint (exact 50% in 8-bit, gray 128 – the common "digital lie").
+ * @property {number} Y22 - The perceptual middle under simplified 2.4 gamma model (Y: 0.2212 · L: 0.627 · Gray: 136) – approximate M50 equivalent in LAB within pure power-law assumption.
+ * @property {number} Y26 - The soft-mid (Y: 0.2666 · L: 0.663 · Gray: 147).
+ * @property {number} Y32 - The upper mid-range (Y: 0.3219 · L: 0.703 · Gray: 159).
+ * @property {number} Y36_2 - The perceptual lower pivot - last stable White text (Y: 0.3621 · L: 0.728 · Gray: 167).
+ * @property {number} Y36_7 - The perceptual upper pivot - first stable Black text (Y: 0.3673 · L: 0.732 · Gray: 168).
+ * @property {number} Y40 - The upper mid-range (Y: 0.3996 · L: 0.751 · Gray: 174).
+ * @property {number} Y45 - The mid-to-bright transition (Y: 0.4510 · L: 0.779 · Gray: 183).
+ * @property {number} Y50 - The mathematical middle (Y: 0.4998 · L: 0.805 · Gray: 191).
+ * @property {number} Y60 - The bright range (Y: 0.5992 · L: 0.851 · Gray: 206).
+ * @property {number} Y67 - The very bright reference (Y: 0.6714 · L: 0.882 · Gray: 216) – near key APCA thresholds.
+ * @property {number} Y75 - The very bright (Y: 0.7485 · L: 0.913 · Gray: 226).
+ * @property {number} Y80 - The paper-soft (Y: 0.7970 · L: 0.931 · Gray: 232).
+ * @property {number} Y85 - The near white (Y: 0.8474 · L: 0.949 · Gray: 238) – important APCA high-end zone.
+ * @property {number} Y90 - The near-white reference (Y: 0.8996 · L: 0.967 · Gray: 244).
+ * @property {number} Y95 - The approaching pure white (Y: 0.9536 · L: 0.985 · Gray: 250).
+ * @property {number} Y100 - The pure white (Y: 1.000 · L: 1.000 · Gray: 255).
+ */
+/** @global @type {LUM} */
+const LUM = {
+	// * VERY DARK ZONE * //
+	Y0:    0.0000,
+	Y0_1:  0.0009,
+	Y0_2:  0.0020,
+	Y0_5:  0.0050,
+	Y1_0:  0.0097,
+	Y1_8:  0.0182,
+
+	// * DARK ZONE * //
+	Y3_5:  0.0349,
+	Y5_5:  0.0547,
+	Y7_5:  0.0757,
+	Y10:   0.1008,
+	Y15:   0.1510,
+
+	// * MID ZONE * //
+	Y16:   0.1606,
+	Y19:   0.1913,
+	Y22:   0.2212,
+	Y26:   0.2666,
+	Y32:   0.3219,
+
+	// * THE PERCEPTUAL PIVOT * //
+	Y36_2: 0.3621,
+	Y36_7: 0.3673,
+	Y40:   0.3996,
+
+	// * MID-BRIGHT ZONE * //
+	Y45:   0.4510,
+	Y50:   0.4998,
+	Y60:   0.5992,
+	Y67:   0.6714,
+	Y75:   0.7485,
+
+	// * VERY BRIGHT ZONE * //
+	Y80:   0.7970,
+	Y85:   0.8474,
+	Y90:   0.8996,
+	Y95:   0.9536,
+	Y100:  1.0000
+};
+
+
+/**
+* A collection of APCA relative luminance (Y), OKLCH Lightness, and 8-Bit Gray RGB reference metrics.
+ * Y values are the computed APCA luminance from the integer gray.
+ * @typedef {Object} LUM_REF
+ * @property {string} name - The Y anchor name (Y0, Y0_5, Y1_0, etc.).
+ * @property {number} Y - The APCA relative luminance (0.0-1.0).
+ * @property {number} L - The OKLCH Lightness value (0.0-1.0).
+ * @property {number} gray - The neutral gray RGB value (0-255).
+ * @property {LUM_REF} Y0 - The pure black (Y: 0.000 · L: 0.000 · Gray: 0).
+ * @property {LUM_REF} Y0_1 - The ultra-low dark reference (Y: 0.0009 · L: 0.164 · Gray: 14).
+ * @property {LUM_REF} Y0_2 - The ultra-low dark reference (Y: 0.0020 · L: 0.187 · Gray: 19).
+ * @property {LUM_REF} Y0_5 - The very low dark (Y: 0.0050 · L: 0.226 · Gray: 28) – below APCA low clamp.
+ * @property {LUM_REF} Y1_0 - The low dark (Y: 0.0097 · L: 0.265 · Gray: 37) – below APCA low clamp.
+ * @property {LUM_REF} Y1_8 - The APCA black clamp flip point (Y: 0.0182 · L: 0.309 · Gray: 48).
+ * @property {LUM_REF} Y3_5 - The dark UI zone (Y: 0.0349 · L: 0.368 · Gray: 63).
+ * @property {LUM_REF} Y5_5 - The approaching mid-dark (Y: 0.0547 · L: 0.417 · Gray: 76).
+ * @property {LUM_REF} Y7_5 - The mid-dark boundary (Y: 0.0757 · L: 0.457 · Gray: 87).
+ * @property {LUM_REF} Y10 - The mid-dark range (Y: 0.1008 · L: 0.496 · Gray: 98).
+ * @property {LUM_REF} Y15 - The lower mid-range (Y: 0.1510 · L: 0.559 · Gray: 116).
+ * @property {LUM_REF} Y16 - The perceptual middle (Y: 0.1606 · L: 0.569 · Gray: 119) – true human-perceived middle gray (≈18.4% reflectance, LAB L*≈50, photographer's 18% gray card).
+ * @property {LUM_REF} Y19 - The digital middle (Y: 0.1913 · L: 0.600 · Gray: 128) – numerical/code midpoint (exact 50% in 8-bit, gray 128 – the common "digital lie").
+ * @property {LUM_REF} Y22 - The perceptual middle under simplified 2.4 gamma model (Y: 0.2212 · L: 0.627 · Gray: 136) – approximate M50 equivalent in LAB within pure power-law assumption.
+ * @property {LUM_REF} Y26 - The soft-mid (Y: 0.2666 · L: 0.663 · Gray: 147).
+ * @property {LUM_REF} Y32 - The upper mid-range (Y: 0.3219 · L: 0.703 · Gray: 159).
+ * @property {LUM_REF} Y36_2 - The perceptual lower pivot - last stable White text (Y: 0.3621 · L: 0.728 · Gray: 167).
+ * @property {LUM_REF} Y36_7 - The perceptual upper pivot - first stable Black text (Y: 0.3673 · L: 0.732 · Gray: 168).
+ * @property {LUM_REF} Y40 - The upper mid-range (Y: 0.3996 · L: 0.751 · Gray: 174).
+ * @property {LUM_REF} Y45 - The mid-to-bright transition (Y: 0.4510 · L: 0.779 · Gray: 183).
+ * @property {LUM_REF} Y50 - The mathematical middle (Y: 0.4998 · L: 0.805 · Gray: 191).
+ * @property {LUM_REF} Y60 - The bright range (Y: 0.5992 · L: 0.851 · Gray: 206).
+ * @property {LUM_REF} Y67 - The very bright reference (Y: 0.6714 · L: 0.882 · Gray: 216) – near key APCA thresholds.
+ * @property {LUM_REF} Y75 - The very bright (Y: 0.7485 · L: 0.913 · Gray: 226).
+ * @property {LUM_REF} Y80 - The paper-soft (Y: 0.7970 · L: 0.931 · Gray: 232).
+ * @property {LUM_REF} Y85 - The near white (Y: 0.8474 · L: 0.949 · Gray: 238) – important APCA high-end zone.
+ * @property {LUM_REF} Y90 - The near-white reference (Y: 0.8996 · L: 0.967 · Gray: 244).
+ * @property {LUM_REF} Y95 - The approaching pure white (Y: 0.9536 · L: 0.985 · Gray: 250).
+ * @property {LUM_REF} Y100 - The pure white (Y: 1.000 · L: 1.000 · Gray: 255).
+ */
+/** @global @type {LUM_REF} */
+const LUM_REF = {
+	// * VERY DARK ZONE * //
+	Y0:    { Y: 0.0000, L: 0.0000, gray:   0 },
+	Y0_1:  { Y: 0.0009, L: 0.1638, gray:  14 },
+	Y0_2:  { Y: 0.0020, L: 0.1867, gray:  19 },
+	Y0_5:  { Y: 0.0050, L: 0.2264, gray:  28 },
+	Y1_0:  { Y: 0.0097, L: 0.2645, gray:  37 },
+	Y1_8:  { Y: 0.0182, L: 0.3092, gray:  48 },
+
+	// * DARK ZONE * //
+	Y3_5:  { Y: 0.0349, L: 0.3677, gray:  63 },
+	Y5_5:  { Y: 0.0547, L: 0.4165, gray:  76 },
+	Y7_5:  { Y: 0.0757, L: 0.4568, gray:  87 },
+	Y10:   { Y: 0.1008, L: 0.4962, gray:  98 },
+
+	// * MID ZONE * //
+	Y15:   { Y: 0.1510, L: 0.5590, gray: 116 },
+	Y16:   { Y: 0.1606, L: 0.5693, gray: 119 },
+	Y19:   { Y: 0.1913, L: 0.5999, gray: 128 },
+	Y22:   { Y: 0.2212, L: 0.6268, gray: 136 },
+	Y26:   { Y: 0.2666, L: 0.6633, gray: 147 },
+	Y32:   { Y: 0.3219, L: 0.7025, gray: 159 },
+
+	// * THE PERCEPTUAL PIVOT * //
+	Y36_2: { Y: 0.3621, L: 0.7284, gray: 167 },
+	Y36_7: { Y: 0.3673, L: 0.7316, gray: 168 },
+	Y40:   { Y: 0.3996, L: 0.7508, gray: 174 },
+
+	// * MID-BRIGHT ZONE * //
+	Y45:   { Y: 0.4510, L: 0.7794, gray: 183 },
+	Y50:   { Y: 0.4998, L: 0.8047, gray: 191 },
+	Y60:   { Y: 0.5992, L: 0.8514, gray: 206 },
+	Y67:   { Y: 0.6714, L: 0.8822, gray: 216 },
+	Y75:   { Y: 0.7485, L: 0.9128, gray: 226 },
+
+	// * VERY BRIGHT ZONE * //
+	Y80:   { Y: 0.7970, L: 0.9310, gray: 232 },
+	Y85:   { Y: 0.8474, L: 0.9491, gray: 238 },
+	Y90:   { Y: 0.8996, L: 0.9672, gray: 244 },
+	Y95:   { Y: 0.9536, L: 0.9851, gray: 250 },
+	Y100:  { Y: 1.0000, L: 1.0000, gray: 255 }
 };
 
 
@@ -533,32 +699,16 @@ const RebornSymbols = {
 	Lock: '\uF023',
 	Medical: '\u271A',
 	Microphone: '\uF130',
-	MusicNote: '\uF001',
-
-	// Library Explorer
-	Add: '\uF0CA',
-	Artist: '\uF007',
-	Details: '\uF044',
-	Edit: '\uF4FF',
-	Links: '\uF08E',
-	Missing: '\uF51F',
-	Now: '\uF001',
-	Similar: '\uF500',
-	Sort: '\uF0DC',
-	Stats: '\uF201',
-	ChevronLeft: '\uF053',
-	ChevronRight: '\uF054',
-	ChevronUp: '\uF057',
-	ChevronDown: '\uF058',
-	Download: '\uF019',
-	Download2: '\uF361',
-	External: '\uF360'
+	MusicNote: '\uF001'
 };
 
 /**
  * A set of icon mapping unicodes.
  * @typedef {object} Unicode
+ * @property {string} Alpha - '\u03B1' `α` The Greek Small Letter Alpha.
  * @property {string} Apostrophe - '\u0027' `'` The Apostrophe.
+ * @property {string} ArtistPalette - '\u{1F3A8}' `🎨` The Artist Palette emoji.
+ * @property {string} BallotX - '\u2717' `✗` The Ballot X.
  * @property {string} BeamedEighthNotes - '\u266B' `♫` The Beamed Eighth Notes.
  * @property {string} BlackSmallSquare - '\u25AA' `▪` The Black Small Square.
  * @property {string} BlackCircle - '\u25CF' `●` The Black Circle.
@@ -568,7 +718,11 @@ const RebornSymbols = {
  * @property {string} BrokenBar - '\u00A6' `¦` The Bullet.
  * @property {string} Bullet - '\u2022' `•` The Bullet.
  * @property {string} BulletOperator - '\u2219' `∙` The Bullet Operator.
+ * @property {string} CheckMark - '\u2713' `✓` The Check Mark.
+ * @property {string} Delta - '\u0394' `Δ` The Greek Capital Letter Delta.
+ * @property {string} GreaterThanOrEqualTo - '\u2265' `≥` The Greater-Than or Equal To sign.
  * @property {string} NotSign - '\u00AC' `¬` The Not Sign.
+ * @property {string} Fire - '\u{1F525}' `🔥` The Fire emoji.
  * @property {string} Hyphen - '\u2010' `-` The Hyphen.
  * @property {string} SoftHyphen - '\u00AD' ` ` The Soft Hyphen.
  * @property {string} ArmenianHyphen - '\u058A' `֊` The Armenian Hyphen.
@@ -580,11 +734,17 @@ const RebornSymbols = {
  * @property {string} InformationSeparatorOne - '\u001F' `﹘` The Information Separator One.
  * @property {string} ReplacementCharacter - '\uFFFD' `�` The Replacement Character.
  * @property {string} MiddleDot - '\u00B7' `·` The Middle Dot.
+ * @property {string} RightArrow - '\u2192' `→` The Rightwards Arrow.
+ * @property {string} TriangularBullet - '\u2023' `‣` The Triangular Bullet.
+ * @property {string} WarningSign - '\u26A0' `⚠️` The Warning Sign.
+ * @property {string} WhiteHeavyCheckMark - '\u{2705}' `✅` The White Heavy Check Mark emoji.
  * @property {string} ZeroWidthSpace - '\u200B' `﹘` The Zero Width Space.
  */
 /** @global @enum @type {Unicode} */
 const Unicode = {
 	Apostrophe: '\u0027',
+	ArtistPalette: '\u{1F3A8}',
+	BallotX: '\u2717',
 	BeamedEighthNotes: '\u266B',
 	BlackSmallSquare: '\u25AA',
 	BlackCircle: '\u25CF',
@@ -594,6 +754,10 @@ const Unicode = {
 	BrokenBar: '\u00A6',
 	Bullet: '\u2022',
 	BulletOperator: '\u2219',
+	CheckMark: '\u2713',
+	Delta: '\u0394',
+	Fire: '\u{1F525}',
+	GreaterThanOrEqualTo: '\u2265',
 	NotSign: '\u00AC',
 	Hyphen: '\u2010',
 	SoftHyphen: '\u00AD',
@@ -606,6 +770,10 @@ const Unicode = {
 	InformationSeparatorOne:'\u001F',
 	ReplacementCharacter: '\uFFFD',
 	MiddleDot: '\u00B7',
+	RightArrow: '\u2192',
+	TriangularBullet: '\u2023',
+	WarningSign: '\u26A0',
+	WhiteHeavyCheckMark: '\u{2705}',
 	ZeroWidthSpace: '\u200B'
 };
 
@@ -690,6 +858,7 @@ const Unicode = {
  * @property {RegExp} NumNonDigits - Matches non-digits `/\D/g`.
  * @property {RegExp} NumNonNumeric - Matches non-numeric `/[^0-9.,-]/g`.
  * @property {RegExp} NumNonNumericStrict - Matches anything not a digit, + or - `/[^0-9+-]/g`.
+ * @property {RegExp} NumSign - Matches plus or minus signs `/[\-+]/`.
  * @property {RegExp} NumThousandSeparator - Matches positions for inserting thousand separators `/\B(?=(\d{3})+(?!\d))/g`.
  * @property {RegExp} NumTrailing - Matches digits at end `/\d+$/`.
  *
@@ -1122,6 +1291,7 @@ const Regex = {
 	NumNonDigits: /\D/g,
 	NumNonNumeric: /[^0-9.,-]/g,
 	NumNonNumericStrict: /[^0-9+-]/g,
+	NumSign: /[\-+]/,
 	NumThousandSeparator: /\B(?=(\d{3})+(?!\d))/g,
 	NumTrailing: /\d+$/,
 

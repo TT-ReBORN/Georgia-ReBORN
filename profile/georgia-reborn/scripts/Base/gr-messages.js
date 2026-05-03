@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -479,99 +479,6 @@ class MessageManager {
 					+ '{content}Continue?\n\n',
 				msgFb: 'Library\'s player mode enabled:\n\n'
 					+ '{content}'
-			},
-			explorerFullThemeColorChange: {
-				content: 'This will update the entire theme primary color\n'
-					+ 'every time a new artwork is loaded in the Explorer.\n\n'
-					+ 'The theme colors change as you browse albums/artists.\n'
-					+ 'It works best with dynamic themes such as\n'
-					+ '(White/Black/Reborn/Random).\n\n',
-				msg: 'Do you want to enable\n'
-					+ 'full theme color change on new artwork?\n\n'
-					+ '{content}Continue?\n\n',
-				msgFb: 'Full theme color change enabled:\n\n'
-					+ '{content}'
-			},
-			explorerAlbumImageDLAutoEnable: {
-				content: 'This will automatically download missing album covers\n'
-					+ 'whenever you view an album in the Explorer.\n\n'
-					+ 'The covers are saved to cache for faster loading.\n'
-					+ 'The quality and post-action are configurable below.\n'
-					+ 'It can generate many files over time.\n\n',
-				msg: 'Do you want to enable\n'
-					+ 'auto-download for album covers?\n\n'
-					+ '{content}Continue?\n\n',
-				msgFb: 'Auto-download album covers enabled:\n\n'
-					+ '{content}'
-			},
-			explorerArtistImageDLAutoEnable: {
-				content: 'This will automatically download artist images\n'
-					+ 'whenever you view an artist in grid views.\n\n'
-					+ 'Up to 20 high-quality images per artist.\n'
-					+ 'The images are saved to cache for cycling.\n'
-					+ 'It can use significant disk space over time.\n\n',
-				msg: 'Do you want to enable\n'
-					+ 'auto-download for artist images?\n\n'
-					+ '{content}Continue?\n\n',
-				msgFb: 'Auto-download artist images enabled:\n\n'
-					+ '{content}'
-			},
-			explorerMissingSimilarImageDLAutoEnable: {
-				content: 'This will automatically download thumbnails\n'
-					+ 'for Missing Releases and Similar Artists views.\n\n'
-					+ 'It improves the visual experience in grid views.\n'
-					+ 'The images are cached for performance.\n'
-					+ 'The file sizes are generally small.\n\n',
-				msg: 'Do you want to enable\n'
-					+ 'auto-download for grid thumbnails?\n\n'
-					+ '{content}Continue?\n\n',
-				msgFb: 'Auto-download grid thumbnails enabled:\n\n'
-					+ '{content}'
-			},
-			explorerAlbumImageAutoEmbed: {
-				content: 'This will automatically embed downloaded album covers\n'
-					+ 'directly into the tags of every track in the album.\n\n'
-					+ 'The cover becomes part of the music files.\n'
-					+ 'The files will increase in size (usually ~100-300 KB per track).\n'
-					+ 'The changes are permanent; consider backing up your files.\n\n'
-					+ 'The downloaded covers will be limited to medium quality\n'
-					+ 'to keep file size reasonable.\n\n',
-				msg: 'Do you want to enable\n'
-					+ 'auto-embed album covers into tracks?\n\n'
-					+ '{content}Continue?\n\n',
-				msgFb: 'Auto-embed album covers enabled:\n\n'
-					+ '{content}'
-			},
-			explorerAlbumImageAutoEmbedFail: {
-				msg: '>>> Auto-embed album cover failed! <<<\n\n'
-					+ 'The downloaded cover could not be embedded\n'
-					+ 'into the track tags for this album.\n\n'
-					+ 'Please check:\n'
-					+ '- File permissions (read-only?)\n'
-					+ '- Tracks are on a connected drive\n'
-					+ '- No external program is locking the files\n\n'
-			},
-			explorerAlbumImageAutoMove: {
-				content: 'This will automatically move downloaded\n'
-					+ 'album covers into each album\'s folder on disk.\n\n'
-					+ 'The cover becomes part of your music collection.\n'
-					+ 'The filename will be configurable (cover/folder/front).\n'
-					+ 'Existing files with the same name will NOT be overwritten.\n\n',
-				msg: 'Do you want to enable\n'
-					+ 'auto-move album covers to folders?\n\n'
-					+ '{content}Continue?\n\n',
-				msgFb: 'Auto-move album covers enabled:\n\n'
-					+ '{content}'
-			},
-			explorerAlbumImageAutoMoveFail: {
-				msg: '>>> Auto-move album cover failed! <<<\n\n'
-					+ 'The downloaded cover could not be moved\n'
-					+ 'to the album folder on disk.\n\n'
-					+ 'Please check:\n'
-					+ '- Folder permissions\n'
-					+ '- Album directory is on a connected drive\n'
-					+ '- No file with the same name already exists\n'
-					+ '- No external program is locking the folder\n\n'
 			}
 		};
 

@@ -585,7 +585,7 @@ class BioUserInterface {
 		this.blur.level = bioSet.theme == 2 ? 91.05 - $Bio.clamp(bioSet.blurTemp, 1.05, 90) : $Bio.clamp(bioSet.blurTemp * 2, 0, 254);
 
 		grm.ui.setBiographySize();
-		grm.theme.initBiographyColors();
+		grm.colorThemes.initThemeColors('biography');
 		bio.txt.artCalc(); bio.txt.albCalc(); // Refresh text color
 
 		bio.img.mask.reset = true;

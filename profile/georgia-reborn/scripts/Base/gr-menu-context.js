@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1034,12 +1034,7 @@ class ContextMenus {
 			for (const rate of progressBarRefresh) {
 				progressBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.progressBarRefreshRate = rate[1];
-					grm.ui.setSeekbarRefresh();
-					if (rate[1] < FPS._20) {
-						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
-					} else if (rate[1] < FPS._10) {
-						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
-					}
+					grm.ui.setSeekbarRefresh(rate[1]);
 				}, { is_radio_checked: rate[1] === grSet.progressBarRefreshRate });
 				if (rate[1] === FPS._60) progressBarRefreshMenu.separator();
 			}
@@ -1164,15 +1159,10 @@ class ContextMenus {
 			for (const rate of peakmeterBarRefresh) {
 				peakmeterBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.peakmeterBarRefreshRate = rate[1];
-					grm.ui.setSeekbarRefresh();
 					if (rate[1] != 'variable') {
 						this.audioWizard.SetMonitoringRefreshRate(rate[1]);
 					}
-					if (rate[1] < FPS._20) {
-						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
-					} else if (rate[1] < FPS._10) {
-						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
-					}
+					grm.ui.setSeekbarRefresh(rate[1]);
 				}, { is_radio_checked: rate[1] === grSet.peakmeterBarRefreshRate });
 				if (rate[1] === FPS._60) peakmeterBarRefreshMenu.separator();
 			}
@@ -1435,11 +1425,7 @@ class ContextMenus {
 				waveformBarRefreshMenu.appendItem(rate[0], () => {
 					grSet.waveformBarRefreshRate = rate[1];
 					grm.waveBar.updateConfig({ ui: { refreshRate: rate[1] === 'variable' ? FPS._5 : rate[1] } });
-					if (rate[1] < FPS._20) {
-						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
-					} else if (rate[1] < FPS._10) {
-						grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
-					}
+					grm.ui.setSeekbarRefresh(rate[1]);
 				}, {
 					is_grayed_out: waveformBarRefreshMenuDisabled,
 					is_radio_checked: rate[1] === grSet.waveformBarRefreshRate

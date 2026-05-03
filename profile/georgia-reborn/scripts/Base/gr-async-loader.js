@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -36,12 +36,16 @@ class FileLoader {
 		/** @global @type {number} The load start time when foobar was started. */
 		this.loadStartTime = Date.now();
 
+		/** @global @type {number} The state of the file loading completion. */
+		this.filesLoaded = false;
+
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-common.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-helpers.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-config.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-config-defaults.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-settings.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-setup.js`);
+		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-color-palette.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-theme-daynight.js`);
 
 		/** @private @type {string} The file list that contains all Georgia-ReBORN script files. */
@@ -101,11 +105,14 @@ class FileLoader {
 			'biography\\scripts\\bio-popupbox.js',
 			'biography\\scripts\\bio-initialise.js',
 			'biography\\scripts\\bio-callbacks.js',
+			'base\\gr-color.js',
+			'base\\gr-color-system.js',
+			'base\\gr-color-manager.js',
+			'base\\gr-color-themes.js',
+			'base\\gr-color-styles.js',
 			'base\\gr-debug.js',
 			'base\\gr-details.js',
 			'base\\gr-display.js',
-			'base\\gr-color.js',
-			'base\\gr-theme-colors.js',
 			'base\\gr-theme-presets.js',
 			'base\\gr-menu-manager.js',
 			'base\\gr-menu-context.js',
@@ -168,11 +175,13 @@ class FileLoader {
 				}
 				await this.loadAsyncFile(`${fb.ProfilePath}georgia-reborn\\scripts\\${fileList[i]}`);
 			}
+			this.filesLoaded = true;
 			return;
 		}
 		for (const filePath of fileList) {
 			include(`${fb.ProfilePath}georgia-reborn\\scripts\\${filePath}`);
 		}
+		this.filesLoaded = true;
 	}
 
 	/**
@@ -292,79 +301,39 @@ class Preloader {
 	 * Sets background, lower bar title, progress bar, progress bar fill, progress bar frame, and UI hacks frame colors.
 	 */
 	initColors() {
-		const themeNight = this.styleNight || this.themeNight;
-		const rebornDark = (themeNight || grSet.styleRebornBlack);
-		const rebornDark2 = this.styleNight || grSet.styleRebornBlack;
-		const themeCustom = (key, defCol) => this.themeCustom && this.customTheme[key] !== '' ? HEXtoRGB(this.customTheme[key]) : defCol;
+		const isBlackAndWhite = grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn;
+		const isNight = this.styleNight || this.themeNight;
+		const isRebornDark = isNight || grSet.styleRebornBlack;
+		const themeMap = { reborn: 'black', random: 'black' };
+		const themeName = isRebornDark && themeMap[grSet.theme] || grSet.theme;
 
-		this.col.bg = ({
-			white: grSet.styleBlackAndWhite ? RGB(230, 230, 230) : grSet.styleBlackAndWhite2 ? RGB(25, 25, 25) : RGB(245, 245, 245),
-			black: RGB(25, 25, 25),
-			reborn: rebornDark ? RGB(25, 25, 25) : RGB(245, 245, 245),
-			random: rebornDark ? RGB(25, 25, 25) : RGB(245, 245, 245),
-			blue: RGB(5, 110, 195),
-			darkblue: RGB(22, 40, 63),
-			red: RGB(100, 20, 20),
-			cream: RGB(255, 247, 240)
-		}[grSet.theme] ||
-			(this.themeNeon ? RGB(20, 20, 20) :
-			themeCustom('grCol_preloaderBg', themeNight ? RGB(25, 25, 25) : RGB(245, 245, 245)))
-		);
+		const palette = isBlackAndWhite
+			? grSet.styleBlackAndWhite2 ? { ...ColorPalette.blackMainTheme } : { ...ColorPalette.whiteMainTheme }
+			: ColorPalette[`${themeName}Theme`];
+
+		const customKey = {
+			bg:               'grCol_preloaderBg',
+			lowerBarTitle:    'grCol_preloaderLowerBarTitle',
+			progressBar:      'grCol_preloaderProgressBar',
+			progressBarFill:  'grCol_preloaderProgressBarFill',
+			progressBarFrame: 'grCol_preloaderProgressBarFrame'
+		};
+
+		const getColor = (prop, nightCol, dayCol) => {
+			const palValue = palette ? palette[`grCol_${prop}`] : undefined;
+			const customValue = (this.themeCustom && this.customTheme[customKey[prop]]);
+			const defaultColor = isNight ? nightCol : dayCol;
+
+			return palValue != null ? palValue : (customValue ? HEXtoRGB(customValue) : defaultColor);
+		};
+
+		this.col.bg               = getColor('bg',               RGB(25, 25, 25),    RGB(245, 245, 245));
+		this.col.lowerBarTitle    = getColor('lowerBarTitle',    RGB(200, 200, 200), RGB(120, 120, 120));
+		this.col.progressBar      = getColor('progressBar',      RGB(35, 35, 35),    RGB(220, 220, 220));
+		this.col.progressBarFill  = getColor('progressBarFill',  RGB(225, 225, 195), RGB(50, 25, 70));
+		this.col.progressBarFrame = getColor('progressBarFrame', RGB(25, 25, 25),    RGB(255, 255, 255));
+
 		UIWizard.WindowBgColor = this.col.bg;
-
-		this.col.lowerBarTitle = ({
-			white: RGB(120, 120, 120),
-			black: RGB(200, 200, 200),
-			reborn: rebornDark ? RGB(200, 200, 200) : RGB(120, 120, 120),
-			random: rebornDark ? RGB(200, 200, 200) : RGB(120, 120, 120),
-			blue: RGB(255, 255, 255),
-			darkblue: RGB(255, 255, 255),
-			red: RGB(220, 220, 220),
-			cream: RGB(100, 100, 100)
-		}[grSet.theme] ||
-			(this.themeNeon ? RGB(200, 200, 200) :
-			themeCustom('grCol_preloaderLowerBarTitle', themeNight ? RGB(200, 200, 200) : RGB(120, 120, 120)))
-		);
-
-		this.col.progressBar = ({
-			white: grSet.styleBlackAndWhite ? RGB(210, 210, 210) : grSet.styleBlackAndWhite2 ? RGB(40, 40, 40) : RGB(220, 220, 220),
-			black: RGB(35, 35, 35),
-			reborn: rebornDark2 ? RGB(50, 50, 50) : this.themeNight ? RGB(35, 35, 35) : RGB(220, 220, 220),
-			random: rebornDark2 ? RGB(50, 50, 50) : this.themeNight ? RGB(35, 35, 35) : RGB(220, 220, 220),
-			blue: RGB(10, 130, 220),
-			darkblue: RGB(27, 55, 90),
-			red: RGB(140, 25, 25),
-			cream: RGB(255, 255, 255)
-		}[grSet.theme] ||
-			(this.themeNeon ? RGB(35, 35, 35) :
-			themeCustom('grCol_preloaderProgressBar', themeNight ? RGB(35, 35, 35) : RGB(220, 220, 220)))
-		);
-
-		this.col.progressBarFill = ({
-			white: grSet.styleBlackAndWhite ? RGB(255, 255, 255) : grSet.styleBlackAndWhite2 ? RGB(210, 210, 210) : RGB(25, 160, 240),
-			black: RGB(175, 205, 225),
-			reborn: this.styleNight ? RGB(195, 225, 230) : (grSet.styleRebornBlack || this.themeNight) ? RGB(255, 255, 255) : RGB(90, 90, 90),
-			random: this.styleNight ? RGB(140, 215, 215) : this.themeNight ? RGB(255, 255, 255) : RGB(70, 70, 70),
-			blue: RGB(242, 230, 170),
-			darkblue: RGB(255, 202, 128),
-			red: RGB(245, 212, 165),
-			cream: RGB(120, 170, 130),
-			nblue: RGB(0, 200, 255),
-			ngreen: RGB(0, 200, 0),
-			nred: RGB(240, 10, 60),
-			ngold: RGB(255, 205, 5)
-		}[grSet.theme] ||
-			themeCustom('grCol_preloaderProgressBarFill', themeNight ? RGB(225, 225, 195) : RGB(50, 25, 70))
-		);
-
-		this.col.progressBarFrame = ({
-			blue: RGB(22, 107, 186),
-			darkblue: RGB(22, 37, 54),
-			red: RGB(92, 21, 21),
-			cream: RGB(230, 230, 230)
-		}[grSet.theme] ||
-			themeCustom('grCol_preloaderProgressBarFrame', themeNight ? RGB(25, 25, 25) : RGB(255, 255, 255))
-		);
 	}
 
 	/**
@@ -423,22 +392,24 @@ class Preloader {
 
 		// * BACKGROUND * //
 		gr.FillSolidRect(0, 0, this.ww, this.wh, this.col.bg);
-
 		if (this.ww < 1 || this.wh < 1) return;
 
-		// * LOGO/TEXT * //
+		// * LOGO / TEXT * //
 		if (grSet.showPreloaderLogo) {
 			this.drawLogo(gr);
-		} else {
+		}
+		else if (!grFileLoader.filesLoaded) {
 			gr.DrawString(grFileLoader.loadStr.loading, this.ft_lower_bar_bold, this.col.lowerBarTitle, this.seekbarX, this.lowerBarTextY, this.seekbarW, this.lowerBarTextH);
 			gr.DrawString(grFileLoader.loadStr.fileName, this.ft_lower_bar_light, this.col.lowerBarTitle, this.seekbarX + this.lowerBarTextW + this.SCALE(20), this.lowerBarTextY, this.seekbarW - this.lowerBarTextW - this.SCALE(20), this.lowerBarTextH);
 		}
 
 		// * SEEKBAR * //
-		gr.FillSolidRect(this.seekbarX, this.seekbarY, this.seekbarW, this.seekbarH, this.col.progressBar);
-		gr.FillSolidRect(this.seekbarX, this.seekbarY, this.seekbarW * (grFileLoader.loadStr.fileIndex + this.SCALE(1)) / grFileLoader.fileList.length, this.seekbarH, this.col.progressBarFill);
-		if ((['blue', 'darkblue', 'red', 'cream'].includes(grSet.theme) || this.themeCustom) && !grSet.systemFirstLaunch) {
-			gr.DrawRect(this.seekbarX - this.SCALE(2), this.seekbarY - this.SCALE(2), this.seekbarW + this.SCALE(3), this.seekbarH + this.SCALE(3), this.SCALE(1), this.col.progressBarFrame);
+		if (!grFileLoader.filesLoaded) {
+			gr.FillSolidRect(this.seekbarX, this.seekbarY, this.seekbarW, this.seekbarH, this.col.progressBar);
+			gr.FillSolidRect(this.seekbarX, this.seekbarY, this.seekbarW * (grFileLoader.loadStr.fileIndex + this.SCALE(1)) / grFileLoader.fileList.length, this.seekbarH, this.col.progressBarFill);
+			if ((['blue', 'darkblue', 'red', 'cream'].includes(grSet.theme) || this.themeCustom) && !grSet.systemFirstLaunch) {
+				gr.DrawRect(this.seekbarX - this.SCALE(2), this.seekbarY - this.SCALE(2), this.seekbarW + this.SCALE(3), this.seekbarH + this.SCALE(3), this.SCALE(1), this.col.progressBarFrame);
+			}
 		}
 	}
 

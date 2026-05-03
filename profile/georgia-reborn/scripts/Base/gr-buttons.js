@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -264,6 +264,8 @@ class Button {
 		grm.ui.displayLyrics = grSet.savedLyricsDisplayed || lyricsLayoutFull;
 		grm.ui.displayMetadataGridMenu = grm.ui.displayDetails && grm.ui.displayMetadataGridMenu;
 
+		grm.details.initDiscArt();
+
 		if (grm.ui.displayPlaylist) {
 			if (grSet.layout === 'artwork') { // Details panel in Artwork layout
 				grm.ui.displayLyrics = false;
@@ -319,6 +321,7 @@ class Button {
 		// The Library's on_playback_new_track in gr-callbacks.js is only called when Library panel is active to improve performance.
 		// Therefore, we need to call it now and update the Library's nowPlaying state when a new song is played from the active Playlist panel.
 		lib.call.on_playback_new_track();
+		grm.ui.initUIComponents('library');
 		grm.ui.handlePanelLayout('all', 'initLayout');
 		this._updatePanelState();
 	}
@@ -348,6 +351,7 @@ class Button {
 			bio.call.on_playback_new_track(); // Refresh
 		}
 
+		grm.ui.initUIComponents('biography');
 		grm.ui.handlePanelLayout('all', 'initLayout');
 		this._updatePanelState();
 	}
@@ -1525,6 +1529,502 @@ class Button {
 				grm.ttip.showDelayed(this.lowerTransportTooltip('pbo'));
 			}
 		}
+	}
+	// #endregion
+}
+
+
+//////////////////////
+// * PAUSE BUTTON * //
+//////////////////////
+/**
+ * A class that creates a pause button on the album art when playback is being paused.
+ */
+class PauseButton {
+	/**
+	 * Creates the `PauseButton` instance.
+	 */
+	constructor() {
+		/** @public @type {number} The x-coordinate of the button. */
+		this.x = 0;
+		/** @public @type {number} The y-coordinate of the button. */
+		this.y = 0;
+	}
+
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Draws the pause button on the album art cover.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	draw(gr) {
+		if (this.x < 1) return;
+
+		const { x, y } = this;
+		const size = grm.ui.pauseSize;
+		const radius = size * 0.1;
+		const barW = size * 0.12;
+		const barH = size * 0.5;
+		const barY = y + size * 0.25;
+		const border = SCALE(2);
+
+		gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+
+		gr.FillRoundRect(x, y, size, size, radius, radius, RGBA(0, 0, 0, 150));
+		gr.DrawRoundRect(x + border / 2, y + border / 2, size - border, size - border, radius, radius, border, RGBA(128, 128, 128, 60));
+		gr.FillRoundRect(x + size * 0.26, barY, barW, barH, 2, 2, RGBA(255, 255, 255, 160));
+		gr.FillRoundRect(x + size * 0.62, barY, barW, barH, 2, 2, RGBA(255, 255, 255, 160));
+	}
+
+	/**
+	 * Sets the coordinates of the center point of the pause button.
+	 * @param {number} xCenter - The centered x-coordinate.
+	 * @param {number} yCenter - The centered y-coordinate.
+	 */
+	setCoords(xCenter, yCenter) {
+		this.x = Math.round(xCenter - grm.ui.pauseSize / 2);
+		this.y = Math.round(yCenter - grm.ui.pauseSize / 2);
+	}
+
+	/**
+	 * Updates the pause button state.
+	 */
+	repaint() {
+		if (grm.ui.displayLyrics && grSet.lyricsLayout !== 'normal') {
+			window.RepaintRect(grm.ui.albumArtSize.x - 1, grm.ui.albumArtSize.y - 1, grm.ui.albumArtSize.w + 2, grm.ui.albumArtSize.h + 2);
+		} else {
+			window.RepaintRect(this.x - 1, this.y - 1, grm.ui.pauseSize + 2, grm.ui.pauseSize + 2);
+		}
+	}
+	// #endregion
+
+	// * CALLBACKS * //
+	// #region CALLBACKS
+	/**
+	 * Checks if the mouse is within the boundaries of the pause button.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	mouseInThis(x, y) {
+		return (x >= this.x && y >= this.y && x < this.x + grm.ui.pauseSize + 1 && y <= this.y + grm.ui.pauseSize + 1);
+	}
+	// #endregion
+}
+
+
+///////////////////////
+// * VOLUME BUTTON * //
+///////////////////////
+/**
+ * A class that creates and manages the volume button and volume bar in the lower bar.
+ */
+class VolumeButton {
+	/**
+	 * Creates the `VolumeButton` instance.
+	 */
+	constructor() {
+		// * Position and dimensions
+		/** @public @type {number} The x-coordinate of the volume bar. */
+		this.x = 0;
+		/** @public @type {number} The y-coordinate of the volume bar. */
+		this.y = 0;
+		/** @public @type {number} The width of the volume bar. */
+		this.w = SCALE(100);
+		/** @public @type {number} The height of the volume bar. */
+		this.h = SCALE(12);
+
+		// * Mouse tracking
+		/** @private @type {number} The current x-coordinate of the mouse cursor. */
+		this.mx = 0;
+		/** @private @type {number} The current y-coordinate of the mouse cursor. */
+		this.my = 0;
+		/** @private @type {number} The x-coordinate where the mouse was clicked. */
+		this.clickX = 0;
+		/** @private @type {number} The y-coordinate where the mouse was clicked. */
+		this.clickY = 0;
+
+		// * Interaction state
+		/** @private @type {boolean} The state indicating if the volume bar is being dragged. */
+		this.drag = false;
+		/** @private @type {number} The volume level during a drag operation. */
+		this.dragVol = 0;
+		/** @private @type {boolean} The state indicating if the mouse is within the volume bar area. */
+		this.mouseInVolumeBar = false;
+		/** @private @type {boolean} The state indicating if the volume bar should be displayed. */
+		this.displayVolumeBar = !grSet.autoHideVolumeBar;
+
+		// * UI settings
+		/** @private @type {number} The padding area around the volume button for mouse interaction. */
+		this.inThisPadding = this.w * 0.5;
+
+		// * Tooltip management
+		/** @private @type {TooltipHandler} The tooltip handler instance for displaying volume information. */
+		this.tooltipHandler = new TooltipHandler();
+		/** @private @type {number} The timeout ID for clearing the volume tooltip. */
+		this.tooltipTimeout = null;
+	}
+
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Clears the volume bar tooltip after a delay.
+	 */
+	clearTooltip() {
+		clearTimeout(this.tooltipTimeout);
+		this.tooltipTimeout = null;
+
+		this.tooltipTimeout = setTimeout(() => {
+			this.tooltipHandler.stop();
+			window.Repaint();
+		}, 2000);
+	}
+
+	/**
+	 * Displays the volume bar tooltip showing current volume.
+	 */
+	displayTooltip() {
+		const volTooltip = grSet.showTooltipVolumeInPercent ? `${Math.ceil(ConvertVolume(fb.Volume, 'toPercent'))} %` : `${Math.ceil(fb.Volume.toFixed(2))} dB`;
+		this.tooltipHandler.showImmediate(volTooltip);
+
+		const offset = SCALE(30);
+		grm.ui.repaintStyledTooltips(grm.ui.styledToolTipX - offset * 2, grm.ui.styledToolTipY - offset, grm.ui.styledToolTipW + offset * 4, grm.ui.styledToolTipH + offset * 2);
+	}
+
+	/**
+	 * Draws the volume bar with its background, frame, and fill.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 */
+	draw(gr) {
+		if (!this.displayVolumeBar) return;
+
+		const { x, y, w, h } = this;
+		const p = 2;
+		const fillWidth = this.fillSize('w');
+		const arcBg = SCALE(6);
+		const arcFill = SCALE(3);
+
+		gr.SetSmoothingMode(grSet.styleVolumeBarDesign === 'rounded' ? SmoothingMode.AntiAlias : SmoothingMode.None);
+
+		// * Default background
+		if (grSet.styleVolumeBarDesign === 'rounded' && grSet.styleTransportButtons !== 'minimal') {
+			FillRoundRect(gr, x - SCALE(2), y + HD_4K(p, p + 1), w + SCALE(2), h, arcBg, arcBg, grCol.volumeBar);
+			DrawRoundRect(gr, x - HD_4K(this.showReloadBtn ? 3 : 2, 5), y + SCALE(1), w + HD_4K(3, 5), h + 2, arcBg, arcBg, 1, grCol.volumeBarFrame);
+		}
+		else if (grSet.styleVolumeBarDesign !== 'rounded' && grSet.styleTransportButtons !== 'minimal') {
+			gr.FillSolidRect(x - SCALE(2), y + HD_4K(p, p + 1), w + SCALE(2), h, grCol.volumeBar);
+			gr.DrawRect(x - HD_4K(this.showReloadBtn ? 3 : 2, 5), y + SCALE(1), w + HD_4K(3, 5), h + 1, 1, grCol.volumeBarFrame);
+		}
+		// * Style background
+		if ((grSet.styleVolumeBar === 'bevel' || grSet.styleVolumeBar === 'inner') && grSet.styleTransportButtons !== 'minimal') {
+			if (grSet.styleVolumeBarDesign === 'rounded') {
+				FillGradRoundRect(gr, x - SCALE(2), y + HD_4K(p, p + 1) - (grSet.styleVolumeBar === 'inner' ? 1 : 0), w + SCALE(5), h + SCALE(4), arcBg, arcBg,
+				grSet.styleVolumeBar === 'inner' ? -89 : 89, grSet.styleVolumeBar === 'inner' ? grCol.styleVolumeBar : 0, grSet.styleVolumeBar === 'inner' ? 0 : grCol.styleVolumeBar, grSet.styleVolumeBar === 'inner' ? 0 : 1);
+			} else {
+				FillGradRect(gr, x - SCALE(2), y + HD_4K(p, p + (grSet.styleVolumeBar === 'inner' ? 0 : 2)), w + SCALE(2), h, grSet.styleVolumeBar === 'inner' ? -90 : 90, 0, grCol.styleVolumeBar);
+			}
+		}
+		// * Default fill
+		if (grSet.styleVolumeBarDesign === 'rounded') {
+			FillRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(3), h - SCALE(4), arcFill, arcFill, grCol.volumeBarFill);
+		} else {
+			gr.FillSolidRect(x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(4), grCol.volumeBarFill);
+		}
+		// * Style fill
+		if ((grSet.styleVolumeBarFill === 'bevel' || grSet.styleVolumeBarFill === 'inner')) {
+			if (grSet.styleVolumeBarDesign === 'rounded') {
+				FillGradRoundRect(gr, x + 1, y + HD_4K(4, 7), fillWidth - SCALE(1), h - SCALE(2), arcFill, arcFill, grSet.styleVolumeBarFill === 'inner' ? -89 : 89, 0, grCol.styleVolumeBarFill, 1);
+			} else {
+				FillGradRect(gr, x, y + HD_4K(4, 7), fillWidth - SCALE(2), h - SCALE(3), grSet.styleVolumeBarFill === 'inner' ? -90 : 90, grSet.styleBlackAndWhite ? grCol.styleVolumeBarFill : 0, grSet.styleBlackAndWhite ? 0 : grCol.styleVolumeBarFill);
+			}
+		}
+	}
+
+	/**
+	 * Calculates the size of the fill portion of the volume bar based on current volume.
+	 * @param {string} type - Either 'h' or 'w' for vertical or horizontal volume bars.
+	 * @returns {number} The calculated size based on the type parameter.
+	 */
+	fillSize(type) {
+		return Math.ceil((type === 'w' ? this.w : this.h) * (10 ** (fb.Volume / 50) - 0.01) / 0.99);
+	}
+
+	/**
+	 * Checks if the given coordinates are within the boundaries of the volume bar on left mouse down click.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	lbtnDown(x, y) {
+		if (this.trace(x, y)) {
+			this.clickX = x;
+			this.clickY = y;
+			this.move(x, y);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Checks if the left mouse click is within the boundaries of the volume bar and adjusts the volume accordingly.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	lbtnUp(x, y) {
+		this.clickX = 0;
+		this.clickY = 0;
+
+		if (this.drag) {
+			this.drag = false;
+			return true;
+		}
+
+		const inVolumeSlider = this.trace(x, y);
+
+		if (inVolumeSlider) {
+			// We had not started a drag
+			this.drag = true;
+			this.move(x, y); // Adjust volume
+			this.drag = false;
+		}
+
+		return inVolumeSlider;
+	}
+
+	/**
+	 * Releases volume drag when mouse is out of the boundaries of the volume bar.
+	 */
+	leave() {
+		this.drag = false;
+	}
+
+	/**
+	 * Handles mouse move events on the volume bar, i.e when dragging the bar.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	move(x, y) {
+		if (this.clickX && this.clickY && (this.clickX !== x || this.clickY !== y)) {
+			this.drag = true;
+		}
+
+		if (this.trace(x, y) || this.drag) {
+			if (this.drag) {
+				x -= this.x;
+				const pos = Clamp(x / this.w, 0, 1);
+				this.dragVol = ConvertVolume(pos, 'toDecibel');
+				fb.Volume = this.dragVol;
+			}
+
+			return true;
+		}
+
+		this.drag = false;
+		return false;
+	}
+
+	/**
+	 * Checks if the mouse is within the boundaries of the volume button.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	mouseInThis(x, y) {
+		return x > this.x - this.inThisPadding && x <= this.x + this.w + this.inThisPadding &&
+			   y > this.y - this.h - this.inThisPadding * 0.2 && y <= this.y - this.h + this.inThisPadding;
+	}
+
+	/**
+	 * Updates the volume bar state and repaints the necessary area.
+	 */
+	repaint() {
+		const xyPadding = SCALE(3);
+		const whPadding = xyPadding * 2;
+		window.RepaintRect(this.x - xyPadding, this.y, this.w + whPadding, this.h + whPadding);
+	}
+
+	/**
+	 * Sets the metrics for the volume bar based on position and layout settings.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 */
+	setMetrics(x, y) {
+		const buttonSize = SCALE(grSet.transportButtonSize_layout);
+		const center = Math.floor(buttonSize / 2 + SCALE(4));
+		const volumeBarWidth = Math.ceil((grm.ui.ww - grm.ui.lowerBarTotalBtnW) / 2 - SCALE(40));
+
+		this.x = x + (grSet.transportButtonSize_layout * SCALE(1.25));
+		this.y = y + (center - this.h);
+		this.w = grm.ui.ww < SCALE(600) ? volumeBarWidth : SCALE(100);
+		this.h = Math.min(grm.ui.wh - this.y, this.h);
+	}
+
+	/**
+	 * Shows or hides the volume bar and stops a tooltip if it is shown.
+	 * @param {boolean} show - Whether to show or hide the volume bar.
+	 */
+	showVolumeBar(show) {
+		this.displayVolumeBar = show;
+		this.repaint();
+		if (show) this.tooltipHandler.stop();
+	}
+
+	/**
+	 * Toggles the display state of the volume bar.
+	 */
+	toggleVolumeBar() {
+		this.showVolumeBar(!this.displayVolumeBar);
+	}
+
+	/**
+	 * Checks if the mouse is within the boundaries of the volume bar.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @returns {boolean} True or false.
+	 */
+	trace(x, y) {
+		const margin = 5; // The area the mouse can go outside physical bounds of the volume control
+		return x > this.x - margin && x < this.x + this.w + margin && y > this.y - margin && y < this.y + this.h + margin;
+	}
+
+	/**
+	 * Handles mouse wheel events and adjusts the volume.
+	 * @param {number} scrollAmt - The amount of scrolling that has occurred.
+	 * @returns {boolean} True if the mouse is over the component and the volume was adjusted, false otherwise.
+	 */
+	wheel(scrollAmt) {
+		if (!this.trace(this.mx, this.my)) {
+			return false;
+		}
+
+		if (scrollAmt > 0) {
+			fb.VolumeUp();
+		} else {
+			fb.VolumeDown();
+		}
+
+		return true;
+	}
+	// #endregion
+
+	// * CALLBACKS * //
+	// #region CALLBACKS
+	/**
+	 * Handles left mouse button down click events and initiates volume bar interaction.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @param {number} m - The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
+	on_mouse_lbtn_down(x, y, m) {
+		if (this.displayVolumeBar) {
+			return this.lbtnDown(x, y);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Handles left mouse button up click events and completes volume bar interaction.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @param {number} m - The mouse mask.
+	 * @returns {boolean} True or false.
+	 */
+	on_mouse_lbtn_up(x, y, m) {
+		if (!grSet.lockPlayerSize) EnableWindowSizing(m);
+
+		if (this.displayVolumeBar) {
+			return this.lbtnUp(x, y);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Handles mouse leave events and performs actions such as hiding the volume bar if necessary.
+	 */
+	on_mouse_leave() {
+		if (this.drag) return;
+
+		this.mouseInVolumeBar = false;
+
+		if (this.displayVolumeBar && grSet.autoHideVolumeBar) {
+			this.showVolumeBar(false);
+			this.repaint();
+		}
+
+		if (grSet.autoHideVolumeBar) {
+			this.leave();
+		}
+	}
+
+	/**
+	 * Handles mouse movement events and performs actions related to the volume bar display.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @param {number} m - The mouse mask.
+	 */
+	on_mouse_move(x, y, m) {
+		this.mx = x;
+		this.my = y;
+		this.mouseInVolumeBar = this.trace(x, y);
+
+		if (!this.displayVolumeBar) return;
+
+		DisableWindowSizing(m);
+
+		if (this.drag || this.mouseInThis(x, y)) {
+			this.move(x, y);
+			return;
+		}
+
+		if (grSet.autoHideVolumeBar) {
+			this.showVolumeBar(false);
+			this.repaint();
+		}
+	}
+
+	/**
+	 * Handles mouse wheel events and controls the volume on the volume bar.
+	 * @param {number} step - The wheel scroll direction.
+	 * @returns {boolean} True or false.
+	 */
+	on_mouse_wheel(step) {
+		if (!this.mouseInVolumeBar) {
+			return false;
+		}
+
+		if (this.displayVolumeBar && this.wheel(step)) {
+			return true;
+		}
+
+		if (step > 0) {
+			fb.VolumeUp();
+		} else {
+			fb.VolumeDown();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Updates the volume bar and displays a tooltip with the current volume in either percentage or decibels.
+	 * @param {number} val - The new volume value that triggered the update.
+	 */
+	on_volume_change(val) {
+		if (grSet.showTooltipVolume) {
+			this.displayTooltip();
+		}
+
+		if (this.displayVolumeBar) {
+			this.repaint();
+		}
+
+		this.clearTooltip();
 	}
 	// #endregion
 }

@@ -2345,7 +2345,7 @@ class BioText {
 				}
 				break;
 		}
-		grm.theme.initBiographyColors();
+		grm.colorThemes.initThemeColors('biography');
 		this.artCalc(); this.albCalc(); // Refresh text color
 	}
 

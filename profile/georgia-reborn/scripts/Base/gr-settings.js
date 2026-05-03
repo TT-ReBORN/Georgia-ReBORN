@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -774,7 +774,7 @@ class ThemeSettingsManager {
 		this.setSettingsLayout();
 		this.setSettingsNotInConfig();
 
-		grm.style.setStyleBlend();
+		grm.colorStyles.setStyleBlend();
 
 		// * Reinitialize theme presets when user has reset style settings by clicking on "Default" and reloading the config file
 		grm.preset.initThemePresetState();

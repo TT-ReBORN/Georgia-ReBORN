@@ -1327,8 +1327,7 @@ class LibPanel {
 		}
 
 		if (libImg.labels.overlayDark) lib.ui.getItemColours();
-		grm.theme.initLibraryColors();
-		grm.theme.themeColorAdjustments();
+		grm.colorThemes.initThemeColors('library');
 
 		this.setRootName();
 		lib.but.setSbarIcon();

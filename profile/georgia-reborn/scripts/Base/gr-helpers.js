@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -211,6 +211,7 @@ async function AWStartFullTrackMetricsSingle(metadb, chunkDuration = 200) {
 
 /**
  * Starts waveform analysis for single or multiple tracks.
+ * @global
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
  * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
  * @returns {Promise<{success: boolean, tracks?: Array<{index: number, path: string, duration: number, channels: number, waveformData: Array}>}>}
@@ -280,6 +281,7 @@ async function AWStartWaveformAnalysis(metadb, resolution = 1) {
 
 /**
  * Analyzes tracks and saves multi-channel waveform data to JSON.
+ * @global
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
  * @param {string} cachePath - The folder where .awz.json files will be stored.
  * @param {number} [resolution] - Resolution in points/sec.
@@ -619,6 +621,7 @@ function DetectWine() {
 /**
  * Gets the major and minor version of Windows operating system from the registry.
  * Falls back to a default version if registry read is unsuccessful.
+ * @global
  * @returns {string} The Windows version in 'major.minor' format or a default if not obtainable.
  */
 function GetWindowsVersion() {
@@ -706,6 +709,7 @@ function MakeHttpRequest(type, url, successCB) {
 
 /**
  * Extracts the domain name from a given URL and formats it.
+ * @global
  * @param {string} url - The URL from which to extract the domain name.
  * @returns {string} The formatted domain name.
  */
@@ -717,6 +721,7 @@ function WebsiteExtractDomainName(url) {
 
 /**
  * Generates labels and values for predefined and custom website links.
+ * @global
  * @param {Array} customWebsiteLinks - Array of custom website URLs.
  * @returns {object} - Object containing combined labels and values.
  */
@@ -736,6 +741,7 @@ function WebsiteGenerateLinks(customWebsiteLinks) {
 
 /**
  * Opens a website (or all predefined websites) based on the provided site name using track metadata.
+ * @global
  * @param {string} [website] - The name of the website to open (optional if openAll is true).
  * @param {FbMetadbHandle} metadb - The metadata handle of the track.
  * @param {boolean} [openAll=false] - Whether to open all predefined websites.
@@ -834,9 +840,11 @@ function WebsiteOpen(website, metadb, openAll = false) {
 function GetMetaValues(name, metadb = undefined) {
 	const vals = [];
 	const searchName = name.replace(/%/g, '');
+
 	for (let i = 0; i < parseInt($(`$meta_num(${searchName})`, metadb)); i++) {
 		vals.push($(`$meta(${searchName},${i})`, metadb));
 	}
+
 	if (!vals.length) {
 		// This is a fallback in case the `name` property is a complex tf field and meta_num evaluates to 0.
 		// In that case we want to evaluate the entire field, after wrapping in brackets and split on commas.
@@ -887,6 +895,7 @@ function JsonParseFile(file, codePage = 0) {
  */
 function ParseJson(json, label, log) {
 	let parsed = [];
+
 	try {
 		if (log) {
 			console.log(label + json);
@@ -896,6 +905,7 @@ function ParseJson(json, label, log) {
 	catch (e) {
 		console.log(json);
 	}
+
 	return parsed;
 }
 
@@ -1032,6 +1042,7 @@ function StripJsonComments(jsonString, options = { whitespace: false }) {
 // #region FILE MANAGEMENT
 /**
  * Cleans a given file path by replacing illegal characters, normalizing dashes, and removing unnecessary spaces and trailing dots/spaces.
+ * @global
  * @param {string} value - The file path to clean.
  * @returns {string} - The cleaned file path.
  */
@@ -1240,6 +1251,7 @@ function IsFolder(folder) {
 /**
  * Normalizes a path to an absolute Windows-style path ending with a backslash.
  * Handles arrays (uses first element), evaluates title format strings with '%', and ensures string type.
+ * @global
  * @param {string|string[]|*} path - The path to normalize (string, array, or evaluable).
  * @returns {string} The normalized absolute path.
  */
@@ -1314,12 +1326,20 @@ function OpenFile(filePath) {
  * @returns {boolean} True if saved or false with error.
  */
 function Save(file, value, bBOM = false) {
-	if (file.startsWith('.\\')) { file = fb.FoobarPath + file.replace('.\\', ''); }
+	if (file.startsWith('.\\')) {
+		file = fb.FoobarPath + file.replace('.\\', '');
+	}
+
 	const filePath = utils.SplitFilePath(file)[0];
-	if (!IsFolder(filePath)) { CreateFolder(filePath); }
+
+	if (!IsFolder(filePath)) {
+		CreateFolder(filePath);
+	}
+
 	if (IsFolder(filePath) && utils.WriteTextFile(file, value, bBOM)) {
 		return true;
 	}
+
 	console.log(`Error saving to ${file}`);
 	return false;
 }
@@ -1334,9 +1354,16 @@ function Save(file, value, bBOM = false) {
  * @returns {boolean} True if file was saved.
  */
 function SaveFSO(file, value, bUTF16) {
-	if (file.startsWith('.\\')) { file = fb.FoobarPath + file.replace('.\\', ''); }
+	if (file.startsWith('.\\')) {
+		file = fb.FoobarPath + file.replace('.\\', '');
+	}
+
 	const filePath = utils.SplitFilePath(file)[0];
-	if (!IsFolder(filePath)) { CreateFolder(filePath); }
+
+	if (!IsFolder(filePath)) {
+		CreateFolder(filePath);
+	}
+
 	if (IsFolder(filePath)) {
 		try {
 			const fileObj = fso.CreateTextFile(file, true, bUTF16);
@@ -1345,6 +1372,7 @@ function SaveFSO(file, value, bUTF16) {
 			return true;
 		} catch (e) {}
 	}
+
 	console.log(`Error saving to ${file}`);
 	return false;
 }
@@ -1409,6 +1437,11 @@ function Debounce(func, delay, { leading } = {}) {
 
 /**
  * Runs a heavy task and waits for a specific state change before proceeding.
+ * @global
+ * @param {Function} func - The synchronous task to execute.
+ * @param {Function} condition - The predicate function that returns true when the state is met.
+ * @param {number} [maxWait] - The maximum time to wait in milliseconds.
+ * @returns {Promise<boolean>} Resolves to true if the condition was met, or false/rejects on timeout.
  */
 async function ExecuteAndWait(func, condition, maxWait = 5000) {
 	func(); // Execute the synchronous heavy lifting
@@ -1473,6 +1506,7 @@ function RunCmd(command, wait, show) {
 /**
  * Throttles the execution rate of a function to ensure it is executed no more frequently than the specified delay period.
  * This is the fastest throttle helper with minimal overhead.
+ * @global
  * @param {Function} func - The function to be throttled.
  * @param {number} delay - The minimum time interval, in milliseconds, that must pass between consecutive function executions.
  * @returns {Function} The throttled version of the provided function.
@@ -1494,6 +1528,7 @@ function Throttle(func, delay) {
 /**
  * Throttles the execution rate of a function to ensure it is executed no more frequently than the specified delay period.
  * This advanced version has additional features but incurs slightly more overhead.
+ * @global
  * @param {Function} fn - The function to be throttled.
  * @param {number} delay - The minimum time interval, in milliseconds, that must pass between consecutive function executions.
  * @param {boolean} [immediate] - Whether to execute the function immediately on the first call.
@@ -1540,6 +1575,7 @@ function TryMethod(fn, parent) {
 
 /**
  * Pauses execution until a condition is true or a timeout is reached.
+ * @global
  * @param {function} condition - Function that returns true/false.
  * @param {number} maxWait - Max time in ms (0 = infinite).
  * @returns {Promise<boolean>} Resolves true if timed out, false if condition met.
@@ -1565,6 +1601,7 @@ function WaitUntil(condition, maxWait = 0) {
 // #region CONTROLS
 /**
  * Disables window resizing if certain conditions are met via UI Wizard.
+ * @global
  * @param {number} m - The mouse mask.
  */
 function DisableWindowSizing(m) {
@@ -1580,6 +1617,7 @@ function DisableWindowSizing(m) {
 
 /**
  * Enables window resizing if certain conditions are met via UI Wizard.
+ * @global
  * @param {number} m - The mouse mask.
  */
 function EnableWindowSizing(m) {
@@ -1661,6 +1699,7 @@ function KeyPressAction(action = {}) {
 
 /**
  * Suppresses key events for SHIFT, CONTROL, and MENU keys if they are triggered in quick succession.
+ * @global
  * @param {number} key - The keycode of the key to potentially suppress.
  * @returns {boolean} Whether the key event should be suppressed.
  */
@@ -1681,6 +1720,7 @@ function SuppressKey(key) {
 
 /**
  * Suppresses mouse movement events if the current position and modifier keys are the same as the last.
+ * @global
  * @param {number} x - The current x-coordinate of the mouse.
  * @param {number} y - The current y-coordinate of the mouse.
  * @param {number} m - The current mouse mask.
@@ -1706,10 +1746,105 @@ function SuppressMouseMove(x, y, m) {
 // #endregion
 
 
-////////////////
-// * COLORS * //
-////////////////
-// #region COLORS
+/////////////////////////////
+// * COLORS - BRIGHTNESS * //
+/////////////////////////////
+// #region COLORS - BRIGHTNESS
+/**
+ * Calculates the average brightness of an image using the HSP (High Saturated Perceptual) method.
+ * This is better than standard weighted averages because it accounts for the non-linear
+ * way the human eye perceives brightness in highly saturated colors.
+ * @global
+ * @param {GdiBitmap} image - The image to calculate brightness for.
+ * @param {Array} [colorCache] - The optional cache array. If provided, uses/updates cache.
+ * @returns {number} The average brightness (0-255).
+ */
+function CalcImgBrightness(image, colorCache) {
+	if (!image) return 0;
+
+	try {
+		const colorSchemeArray = colorCache
+			? GetAlbumArtColors(image, colorCache)
+			: JSON.parse(image.GetColourSchemeJSON(14));
+
+		if (colorSchemeArray.length === 0) return 0;
+
+		let totalBrightnessSq = 0;
+		let totalFreq = 0;
+
+		for (const v of colorSchemeArray) {
+			const col = ToRGB(v.col);
+
+			// HSP Formula (Weighted Sum of Squares)
+			const rSq = col[0] * col[0] * 0.299;
+			const gSq = col[1] * col[1] * 0.587;
+			const bSq = col[2] * col[2] * 0.114;
+
+			totalBrightnessSq += (rSq + gSq + bSq) * v.freq;
+			totalFreq += v.freq;
+		}
+
+		if (totalFreq === 0) return 0;
+
+		// Normalize: Take the square root at the end to return to 0-255 scale
+		const avgBrightness = Math.round(Math.sqrt(totalBrightnessSq / totalFreq));
+
+		if (grCfg.settings.showDebugThemeLog) {
+			console.log('HSP Image brightness:', avgBrightness);
+		}
+
+		return avgBrightness;
+	}
+	catch (e) {
+		console.log('\n>>> Error => CalcImgBrightness failed!\n');
+		return 0;
+	}
+}
+
+
+/**
+ * Gets the brightest color from an array that meets frequency and brightness criteria.
+ * @global
+ * @param {Array<{col: Color, freq: number}>} colors - The array of color objects.
+ * @param {number} minBrightness - The minimum brightness.
+ * @param {number} maxBrightness - The maximum brightness.
+ * @param {number} minFrequency - The minimum frequency.
+ * @returns {Color|null} The brightest color or null.
+ */
+function GetBrightestColor(colors, minBrightness, maxBrightness, minFrequency) {
+	let brightestCol = null;
+	let maxBrt = minBrightness - 1;
+
+	for (const c of colors) {
+		const brt = c.col.brightness;
+		if (brt >= minBrightness && brt <= maxBrightness && c.freq >= minFrequency && brt > maxBrt) {
+			maxBrt = brt;
+			brightestCol = c.col;
+		}
+	}
+
+	return brightestCol;
+}
+
+
+/**
+ * Calculates the circular hue difference between two hue values.
+ * @global
+ * @param {number} h1 - The first hue value (0-360).
+ * @param {number} h2 - The second hue value (0-360).
+ * @returns {number} The difference (0-180).
+ */
+function GetCircularHueDifference(h1, h2) {
+	const diff = Math.abs(h1 - h2);
+	return diff > 180 ? 360 - diff : diff;
+}
+// #endregion
+
+
+/////////////////////////////
+// * COLORS - COMPONENTS * //
+/////////////////////////////
+// #region COLORS - COMPONENTS
 /**
  * Converts RGB values to a 32 bit integer.
  * @global
@@ -1773,7 +1908,12 @@ function RGBtoHEX(r, g, b) {
 	r = r.toString(16);
 	g = g.toString(16);
 	b = b.toString(16);
-	return (r.length === 1 ? `0${r}` : r) + (g.length === 1 ? `0${g}` : g) + (b.length === 1 ? `0${b}` : b);
+
+	return (
+		(r.length === 1 ? `0${r}` : r) +
+		(g.length === 1 ? `0${g}` : g) +
+		(b.length === 1 ? `0${b}` : b)
+	);
 }
 
 
@@ -1787,10 +1927,16 @@ function RGBFtoHEX(rgb) {
 	let r = rgb >> 16 & 0xff;
 	let g = rgb >> 8 & 0xff;
 	let b = rgb & 0xff;
+
 	r = r.toString(16);
 	g = g.toString(16);
 	b = b.toString(16);
-	return (r.length === 1 ? `0${r}` : r) + (g.length === 1 ? `0${g}` : g) + (b.length === 1 ? `0${b}` : b);
+
+	return (
+		(r.length === 1 ? `0${r}` : r) +
+		(g.length === 1 ? `0${g}` : g) +
+		(b.length === 1 ? `0${b}` : b)
+	);
 }
 
 
@@ -1808,7 +1954,13 @@ function RGBAtoHEX(r, g, b, a) {
 	r = r.toString(16);
 	g = g.toString(16);
 	b = b.toString(16);
-	return (a.length === 1 ? `0${a}` : a) + (r.length === 1 ? `0${r}` : r) + (g.length === 1 ? `0${g}` : g) + (b.length === 1 ? `0${b}` : b);
+
+	return (
+		(a.length === 1 ? `0${a}` : a) +
+		(r.length === 1 ? `0${r}` : r) +
+		(g.length === 1 ? `0${g}` : g) +
+		(b.length === 1 ? `0${b}` : b)
+	);
 }
 
 
@@ -1830,9 +1982,12 @@ function HEX(hex) {
  * @returns {number} The RGB in the hex string.
  */
 function HEXtoRGB(hex) {
+	if (!hex) return null;
+
 	const r = parseInt(hex.substring(0, 2), 16);
 	const g = parseInt(hex.substring(2, 4), 16);
 	const b = parseInt(hex.substring(4, 6), 16);
+
 	return RGB(r, g, b);
 }
 
@@ -1845,15 +2000,19 @@ function HEXtoRGB(hex) {
  * @returns {number} The hex string to RGBA.
  */
 function HEXtoRGBA(hex, a) {
+	if (!hex) return null;
+
 	const r = parseInt(hex.substring(0, 2), 16);
 	const g = parseInt(hex.substring(2, 4), 16);
 	const b = parseInt(hex.substring(4, 6), 16);
+
 	return RGBA(r, g, b, a);
 }
 
 
 /**
  * Converts HSL values to a 32-bit RGB integer using c-x-m conversion.
+ * @global
  * @param {number} h - The hue value (0-360).
  * @param {number} s - The saturation value (0-100).
  * @param {number} l - The lightness value (0-100).
@@ -1884,6 +2043,39 @@ function HSLtoRGB(h, s, l) {
 
 
 /**
+ * Converts RGB values to HSL.
+ * @global
+ * @param {number} r - Red value (0-255).
+ * @param {number} g - Green value (0-255).
+ * @param {number} b - Blue value (0-255).
+ * @returns {object} An object containing {h, s, l}.
+ */
+function RGBtoHSL(r, g, b) {
+	r /= 255;
+	g /= 255;
+	b /= 255;
+
+	const max = Math.max(r, g, b);
+	const min = Math.min(r, g, b);
+	const delta = max - min;
+
+	const h = delta === 0 ? 0 :
+		max === r ? ((g - b) / delta) % 6 :
+		max === g ? ((b - r) / delta) + 2 :
+					((r - g) / delta) + 4;
+
+	const l = (max + min) / 2;
+	const s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+
+	return {
+		h: Math.round((h < 0 ? h + 6 : h) * 60),
+		s: Math.round(s * 100),
+		l: Math.round(l * 100)
+	};
+}
+
+
+/**
  * Checks if a string is a valid hexadecimal number.
  * @global
  * @param {string} hex - The string to check.
@@ -1891,6 +2083,88 @@ function HSLtoRGB(h, s, l) {
  */
 function IsHEX(hex) {
 	return typeof hex === 'string' && hex.length === 6 && !isNaN(Number(`0x${hex}`))
+}
+// #endregion
+
+
+/////////////////////////////
+// * COLORS - EXTRACTION * //
+/////////////////////////////
+// #region COLORS - EXTRACTION
+/**
+ * Calculates the frequency-weighted average saturation of an image.
+ * Higher saturation values indicate more vivid, colorful images that appear
+ * more prominent even at lower alpha levels, enabling saturation compensation.
+ * @global
+ * @param {GdiBitmap} image - The image to analyze.
+ * @param {Array} colorCache - The cached color array from GetAlbumArtColors.
+ * @returns {number} The average saturation (0-100), weighted by color frequency.
+ */
+function CalcImgSaturation(image, colorCache) {
+	if (!image) return 0;
+
+	const colors = GetAlbumArtColors(image, colorCache);
+
+	if (!colors || colors.length === 0) return 0;
+
+	let totalSat = 0;
+	let totalFreq = 0;
+
+	for (const c of colors) {
+		const colorObj = new Color(c.col);
+		totalSat += colorObj.saturation * c.freq;
+		totalFreq += c.freq;
+	}
+
+	const avgSaturation = totalFreq === 0 ? 0 : totalSat / totalFreq;
+
+	if (grCfg.settings.showDebugThemeLog) {
+		console.log('Image saturation:', avgSaturation.toFixed(1));
+	}
+
+	return avgSaturation;
+}
+
+/**
+ * Extracts colors from an image and caches them in the provided array.
+ * Returns cached colors if available, otherwise extracts fresh colors.
+ * Caller is responsible for clearing cache when image changes.
+ * @global
+ * @param {GdiBitmap} image - The image to extract colors from.
+ * @param {Array} colorCache - The cache array to store/retrieve colors.
+ * @param {number} [maxColorsToPull] - The optional maximum number of colors to extract.
+ * @returns {Array} The parsed color scheme array from GetColourSchemeJSON.
+ */
+function GetAlbumArtColors(image, colorCache, maxColorsToPull = 14) {
+	if (!image) {
+		if (Array.isArray(colorCache)) {
+			colorCache.length = 0;
+		}
+		return [];
+	}
+
+	// Return cached colors if available
+	if (Array.isArray(colorCache) && colorCache.length > 0) {
+		return colorCache;
+	}
+
+	try {
+		// Extract colors
+		const colors = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull));
+
+		// Store in cache if provided
+		if (Array.isArray(colorCache)) {
+			colorCache.length = 0;
+			colorCache.push(...colors);
+		}
+
+		return colors;
+	}
+	catch (e) {
+		console.log('\n>>> Error => GetAlbumArtColors failed:', e);
+		if (Array.isArray(colorCache)) colorCache.length = 0;
+		return [];
+	}
 }
 
 
@@ -1902,110 +2176,6 @@ function IsHEX(hex) {
  */
 function GetAlpha(color) {
 	return ((color >> 24) & 0xff);
-}
-
-
-/**
- * Returns a blended color based on blend factor.
- * @global
- * @param {number} c1 - The color to blend with c2.
- * @param {number} c2 - The color to blend with c1.
- * @param {number} f - The blend factor from 0-1.
- * @returns {number} The blended color as RGBA.
- */
-function GetBlend(c1, c2, f) {
-	const nf = 1 - f;
-	c1 = ToRGBA(c1);
-	c2 = ToRGBA(c2);
-	const r = c1[0] * f + c2[0] * nf;
-	const g = c1[1] * f + c2[1] * nf;
-	const b = c1[2] * f + c2[2] * nf;
-	const a = c1[3] * f + c2[3] * nf;
-	return RGBA(Math.round(r), Math.round(g), Math.round(b), Math.round(a));
-}
-
-
-/**
- * Gets the brightest color from an array that meets frequency and brightness criteria.
- * @param {Array<{col: Color, freq: number}>} colors - The array of color objects.
- * @param {number} minBrightness - The minimum brightness.
- * @param {number} maxBrightness - The maximum brightness.
- * @param {number} minFrequency - The minimum frequency.
- * @returns {Color|null} The brightest color or null.
- */
-function GetBrightestColor(colors, minBrightness, maxBrightness, minFrequency) {
-	let brightestCol = null;
-	let maxBrt = minBrightness - 1;
-
-	for (const c of colors) {
-		const brt = c.col.brightness;
-		if (brt >= minBrightness && brt <= maxBrightness && c.freq >= minFrequency && brt > maxBrt) {
-			maxBrt = brt;
-			brightestCol = c.col;
-		}
-	}
-
-	return brightestCol;
-}
-
-
-/**
- * Calculates the circular hue difference between two hue values.
- * @param {number} h1 - The first hue value (0-360).
- * @param {number} h2 - The second hue value (0-360).
- * @returns {number} The difference (0-180).
- */
-function GetCircularHueDifference(h1, h2) {
-	const diff = Math.abs(h1 - h2);
-	return diff > 180 ? 360 - diff : diff;
-}
-
-
-/**
- * Calculates the contrast ratio between two luminance values.
- * @param {number} l1 - The first luminance value.
- * @param {number} l2 - The second luminance value.
- * @returns {number} The contrast ratio (1 to 21).
- */
-function GetContrastRatio(l1, l2) {
-	const brighter = Math.max(l1, l2);
-	const darker = Math.min(l1, l2);
-	return (brighter + 0.05) / (darker + 0.05);
-}
-
-
-/**
- * Calculates the relative luminance of a color using the sRGB gamma-corrected formula.
- * Based on the W3C WCAG 2.x standard for perceptual brightness.
- * @param {Color} color - The color object containing r, g, b properties.
- * @returns {number} The relative luminance value from 0.0 (darkest black) to 1.0 (lightest white).
- */
-function GetRelativeLuminance(color) {
-	const components = [color.r / 255, color.g / 255, color.b / 255];
-
-	const [rs, gs, bs] = components.map(val => {
-		return val <= 0.03928 ? val / 12.92 : ((val + 0.055) / 1.055) ** 2.4;
-	});
-
-	return (0.2126 * rs) + (0.7152 * gs) + (0.0722 * bs);
-}
-
-
-/**
- * Gets a status color based on W3C WCAG contrast ratio thresholds.
- * @param {number|string} contrastRatio - The calculated contrast ratio (1 to 21).
- * @returns {number} The GDI RGB color value for the status indicator.
- */
-function GetWCAGColor(contrastRatio) {
-	const ratio = parseFloat(contrastRatio);
-	// AAA (Bright Green) - Highest accessibility
-	if (ratio >= 7.0) return RGB(0, 255, 100);
-	// AA (Green) - Standard accessibility
-	if (ratio >= 4.5) return RGB(80, 200, 80);
-	// Large Text Only (Yellow) - Minimum for UI components
-	if (ratio >= 3.0) return RGB(255, 190, 50);
-	// Fail (Red) - Below accessibility standards
-	return RGB(255, 80, 80);
 }
 
 
@@ -2065,137 +2235,6 @@ function ToRGBA(c) {
 
 
 /**
- * Calculates the brightness of a color.
- * @global
- * @param {number} c - The color to calculate the brightness of, must be in the range of 0-255.
- * @returns {number} The brightness of the color in the range of 0-255.
- */
-function CalcBrightnessOld(c) {
-	const r = GetRed(c);
-	const g = GetGreen(c);
-	const b = GetBlue(c);
-	return Math.round(Math.sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b));
-}
-
-
-/**
- * Calculates the brightness of a color based on the provided color type.
- * @global
- * @param {string} type - The type of the color. Supported types are 'RGB', 'RGBA', 'HEX', 'IMG', 'IMGCOLOR'.
- * @param {number} color - The color to calculate the brightness of, must be in the range of 0-255.
- * @param {GdiBitmap} image - The image to calculate brightness for, used for 'IMG' and 'IMGCOLOR' color types.
- * @returns {number} The brightness of the color.
- */
-function CalcBrightness(type, color, image) {
-	const colorTypes = {
-		RGB: (color) => Color.BRT(color),
-		RGBA: (color) => Color.BRT(RGBAtoRGB(color)),
-		HEX: (color) => Color.BRT(HEXtoRGB(color)),
-		IMG: (color, image) => CalcImgBrightness(image),
-		IMGCOLOR: (color, image) => Color.BRT(color) + CalcImgBrightness(image)
-	};
-
-	return colorTypes[type](color, image);
-}
-
-
-/**
- * Calculates the average brightness of an image.
- * @global
- * @param {GdiBitmap} image - The image to calculate brightness for.
- * @returns {number} The average brightness of the image.
- */
-function CalcImgBrightness(image) {
-	try {
-		const colorSchemeArray = JSON.parse(image.GetColourSchemeJSON(15));
-		let rTot = 0;
-		let gTot = 0;
-		let bTot = 0;
-		let freqTot = 0;
-
-		for (const v of colorSchemeArray) {
-			const col = ToRGB(v.col);
-			rTot += col[0] ** 2 * v.freq;
-			gTot += col[1] ** 2 * v.freq;
-			bTot += col[2] ** 2 * v.freq;
-			freqTot += v.freq;
-		}
-
-		const avgCol =
-			Math.round([
-			Clamp(Math.round(Math.sqrt(rTot / freqTot)), 0, 255) +
-			Clamp(Math.round(Math.sqrt(gTot / freqTot)), 0, 255) +
-			Clamp(Math.round(Math.sqrt(bTot / freqTot)), 0, 255)
-			] / 3);
-
-		if (grCfg.settings.showDebugThemeLog) console.log('Image brightness:', avgCol);
-		return avgCol;
-	}
-	catch (e) {
-		console.log('\n>>> Error => CalcImgBrightness failed!\n');
-		return 0;
-	}
-}
-
-
-/**
- * Calculates the color distance between two colors.
- * Currently uses the redmean calculation from https://en.wikipedia.org/wiki/Color_difference.
- * The purpose of this method is mostly to determine whether a color drawn next to another color will
- * provide enough visual separation. As such, adding some additional weighting based on individual colors differences.
- * @global
- * @param {number} a - The first color in numeric form (i.e. RGB(150,250,255)).
- * @param {number} b - The second color in numeric form (i.e. RGB(150,250,255)).
- * @param {boolean} [log] - Whether to print the distance in the console. Also requires that settings.showDebugThemeLog is true.
- * @returns {number} The color distance as a numeric value.
- */
-function ColorDistance(a, b, log) {
-	const aCol = new Color(a);
-	const bCol = new Color(b);
-
-	const rho = (aCol.r + bCol.r) / 2;
-	const rDiff = aCol.r - bCol.r;
-	const gDiff = aCol.g - bCol.g;
-	const bDiff = aCol.b - bCol.b;
-	const deltaR = rDiff ** 2;
-	const deltaG = gDiff ** 2;
-	const deltaB = bDiff ** 2;
-
-	// const distance = Math.sqrt(2 * deltaR + 4 * deltaG + 3 * deltaB + (rho * (deltaR - deltaB))/256); // Old version
-	let distance = Math.sqrt((2 + rho / 256) * deltaR + 4 * deltaG + (2 + (255 - rho) / 256) * deltaB); // Redmean calculation
-	if (rDiff >= 50 || gDiff >= 50 || bDiff >= 50) {
-		// Because the colors we are diffing against are usually shades of grey, if one of the colors has a diff of 50 or more,
-		// then it's very likely there will be enough visual separation between the two, so bump up the diff percentage.
-		distance *= 1.1;
-	}
-	if (log && grCfg.settings.showDebugThemeLog) {
-		console.log('Distance from:', aCol.getRGB(), 'to:', bCol.getRGB(), '=', distance);
-	}
-	return distance;
-}
-
-
-/**
- * Calculates the squared color distance between two colors using the Redmean formula.
- * @param {number|Color} a - The first color.
- * @param {number|Color} b - The second color.
- * @returns {number} The squared color distance.
- */
-function ColorDistanceSq(a, b) {
-	const rho  = (a.r + b.r) / 2;
-	const rDiff = a.r - b.r;
-	const gDiff = a.g - b.g;
-	const bDiff = a.b - b.b;
-
-	return ( // Redmean squared = (2 + r/256) * dr^2 + 4 * dg^2 + (2 + (255-r)/256) * db^2
-		(2 + rho / 256) * (rDiff * rDiff) +
-		(4 * (gDiff * gDiff)) +
-		(2 + (255 - rho) / 256) * (bDiff * bDiff)
-	);
-}
-
-
-/**
  * Converts a color to RGB. If the alpha is less than 255, it will be converted to RGBA.
  * @global
  * @param {number} c - The color to convert.
@@ -2203,9 +2242,13 @@ function ColorDistanceSq(a, b) {
  * @returns {string} The color in RGB format.
  */
 function ColToRgb(c, showPrefix) {
-	if (typeof showPrefix === 'undefined') showPrefix = true;
+	if (typeof showPrefix === 'undefined') {
+		showPrefix = true;
+	}
+
 	const alpha = GetAlpha(c);
 	let prefix = '';
+
 	if (alpha < 255) {
 		if (showPrefix) prefix = 'RGBA';
 		return `${prefix}(${GetRed(c)}, ${GetGreen(c)}, ${GetBlue(c)}, ${alpha})`;
@@ -2226,8 +2269,9 @@ function ColToRgb(c, showPrefix) {
 function ColStringToRGB(colorStr) {
 	// If the color is in hex format
 	if (colorStr.startsWith('#')) {
-		return parseInt(colorStr.slice(1), 16);
+		return 0xFF000000 | parseInt(colorStr.slice(1), 16);
 	}
+
 	// If the color is in rgb format
 	const rgb = colorStr.match(Regex.ColorRGBLoose);
 	if (rgb) return RGB(parseInt(rgb[1]), parseInt(rgb[2]), parseInt(rgb[3]));
@@ -2245,25 +2289,86 @@ function ColStringToRGB(colorStr) {
 function ColorToHSLString(col) {
 	return `${LeftPad(col.hue, 3)} ${LeftPad(col.saturation, 3)} ${LeftPad(col.lightness, 3)}`;
 }
+// #endregion
+
+
+///////////////////////////////
+// * COLORS - MANIPULATION * //
+///////////////////////////////
+// #region COLORS - MANIPULATION
+/**
+ * Blends two 32-bit colors (ARGB/RGBA) based on a fraction 0-1.
+ * Handles both opaque and transparent colors consistently.
+ * @global
+ * @param {number} c1 - The first color (Result when f=0)
+ * @param {number} c2 - The second color (Result when f=1)
+ * @param {number} f - The blend fraction (0 to 1)
+ */
+function BlendColors(c1, c2, f) {
+	const a1 = (c1 >>> 24) & 0xff;
+	const r1 = (c1 >> 16) & 0xff;
+	const g1 = (c1 >> 8) & 0xff;
+	const b1 = c1 & 0xff;
+
+	const a2 = (c2 >>> 24) & 0xff;
+	const r2 = (c2 >> 16) & 0xff;
+	const g2 = (c2 >> 8) & 0xff;
+	const b2 = c2 & 0xff;
+
+	const r = Math.round(r1 + f * (r2 - r1));
+	const g = Math.round(g1 + f * (g2 - g1));
+	const b = Math.round(b1 + f * (b2 - b1));
+	const a = Math.round(a1 + f * (a2 - a1));
+
+	return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0;
+}
 
 
 /**
- * Combines two colors based on a fraction. The fraction should be between 0 and 1.
+ * Predicts the resulting RGB color when an overlay is applied with transparency.
  * @global
- * @param {number} c1 - The first color to combine. This can be an array of [red, green, blue] values or a color object.
- * @param {number} c2 - The second color to combine. This can be an array of [red, green, blue] values or a color object.
- * @param {number} f - The fraction of the colors to combine. 0 means c1 is the same as c2 100% means c2 is the same as c1.
- * @returns {number} When f is 0, result is 100% color1. When f is 1, result is 100% color2.
+ * @param {number} bg - The background color (RGB).
+ * @param {number} overlay - The overlay color (RGB).
+ * @param {number} alpha - The alpha value (0-255).
+ * @returns {number} The blended RGB color.
  */
-function CombineColors(c1, c2, f) {
-	c1 = ToRGB(c1);
-	c2 = ToRGB(c2);
+function GetOverlayColor(bg, overlay, alpha) {
+	const b = new Color(bg);
+	const o = new Color(overlay);
+	const a = alpha / 255;
 
-	const r = Math.round(c1[0] + f * (c2[0] - c1[0]));
-	const g = Math.round(c1[1] + f * (c2[1] - c1[1]));
-	const b = Math.round(c1[2] + f * (c2[2] - c1[2]));
+	const r = Math.round((1 - a) * b.r + a * o.r);
+	const g = Math.round((1 - a) * b.g + a * o.g);
+	const bl = Math.round((1 - a) * b.b + a * o.b);
 
-	return (0xff000000 | (r << 16) | (g << 8) | (b));
+	return RGB(r, g, bl);
+}
+
+
+/**
+ * Creates a perceptually "inkier" black for hover states.
+ * Uses complementary hue to create chromatic edge contrast against colored backgrounds.
+ * Falls back to pure black for grayscale backgrounds to avoid washed-out look.
+ * @global
+ * @param {number} primaryColor - The background color (primary).
+ * @param {number} [richness] - Amount of complementary tint (0.05 = 5%, default).
+ * @returns {number} The rich black RGB value.
+ */
+function GetRichBlack(primaryColor, richness = 0.05) {
+	// Check if background is colorful enough to warrant rich black
+	const primaryOKLCH = RGBtoOKLCH(primaryColor);
+	const isGrayScale = primaryOKLCH.C < 0.05; // Low chroma = grayscale/near-gray
+	const pureBlack = RGB(0, 0, 0);
+
+	if (isGrayScale) {
+		return pureBlack; // Pure black for gray bgs
+	}
+
+	// Get complementary color for chromatic contrast
+	const compColor = grm.colorManager.getComplementaryColor(primaryColor, false);
+
+	// Blend: 95% pure black + 5% complementary hue
+	return BlendColors(pureBlack, compColor, richness);
 }
 
 
@@ -2306,7 +2411,12 @@ function ShadeColor(color, percent) {
 	const green = GetGreen(color);
 	const blue = GetBlue(color);
 
-	return RGBA(DarkenColorVal(red, percent), DarkenColorVal(green, percent), DarkenColorVal(blue, percent), GetAlpha(color));
+	return RGBA(
+		DarkenColorVal(red, percent),
+		DarkenColorVal(green, percent),
+		DarkenColorVal(blue, percent),
+		GetAlpha(color)
+	);
 }
 
 
@@ -2322,7 +2432,688 @@ function TintColor(color, percent) {
 	const green = GetGreen(color);
 	const blue = GetBlue(color);
 
-	return RGBA(LightenColorVal(red, percent), LightenColorVal(green, percent), LightenColorVal(blue, percent), GetAlpha(color));
+	return RGBA(
+		LightenColorVal(red, percent),
+		LightenColorVal(green, percent),
+		LightenColorVal(blue, percent),
+		GetAlpha(color)
+	);
+}
+// #endregion
+
+
+//////////////////////////
+// * COLORS - METRICS * //
+//////////////////////////
+// #region COLORS - METRICS
+/**
+ * Calculates the color distance between two colors.
+ * Currently uses the redmean calculation from https://en.wikipedia.org/wiki/Color_difference.
+ * The purpose of this method is mostly to determine whether a color drawn next to another color will
+ * provide enough visual separation. As such, adding some additional weighting based on individual colors differences.
+ * @global
+ * @param {number} a - The first color in numeric form (i.e. RGB(150,250,255)).
+ * @param {number} b - The second color in numeric form (i.e. RGB(150,250,255)).
+ * @param {boolean} [log] - Whether to print the distance in the console. Also requires that settings.showDebugThemeLog is true.
+ * @returns {number} The color distance as a numeric value.
+ */
+function ColorDistance(a, b, log) {
+	const aCol = new Color(a);
+	const bCol = new Color(b);
+
+	const rho = (aCol.r + bCol.r) / 2;
+	const rDiff = aCol.r - bCol.r;
+	const gDiff = aCol.g - bCol.g;
+	const bDiff = aCol.b - bCol.b;
+	const deltaR = rDiff ** 2;
+	const deltaG = gDiff ** 2;
+	const deltaB = bDiff ** 2;
+
+	// const distance = Math.sqrt(2 * deltaR + 4 * deltaG + 3 * deltaB + (rho * (deltaR - deltaB))/256); // Old version
+	let distance = Math.sqrt((2 + rho / 256) * deltaR + 4 * deltaG + (2 + (255 - rho) / 256) * deltaB); // Redmean calculation
+
+	if (rDiff >= 50 || gDiff >= 50 || bDiff >= 50) {
+		// Because the colors we are diffing against are usually shades of grey, if one of the colors has a diff of 50 or more,
+		// then it's very likely there will be enough visual separation between the two, so bump up the diff percentage.
+		distance *= 1.1;
+	}
+
+	if (log && grCfg.settings.showDebugThemeLog) {
+		console.log('Distance from:', aCol.getRGB(), 'to:', bCol.getRGB(), '=', distance);
+	}
+
+	return distance;
+}
+
+
+/**
+ * Calculates the squared color distance between two colors using the Redmean formula.
+ * @global
+ * @param {number|Color} a - The first color.
+ * @param {number|Color} b - The second color.
+ * @returns {number} The squared color distance.
+ */
+function ColorDistanceSq(a, b) {
+	const rho  = (a.r + b.r) / 2;
+	const rDiff = a.r - b.r;
+	const gDiff = a.g - b.g;
+	const bDiff = a.b - b.b;
+
+	return ( // Redmean squared = (2 + r/256) * dr^2 + 4 * dg^2 + (2 + (255-r)/256) * db^2
+		(2 + rho / 256) * (rDiff * rDiff) +
+		(4 * (gDiff * gDiff)) +
+		(2 + (255 - rho) / 256) * (bDiff * bDiff)
+	);
+}
+// #endregion
+
+
+///////////////////////////////
+// * COLORS - PERCEPTUAL *   //
+///////////////////////////////
+// #region COLORS - PERCEPTUAL
+/**
+ * Core HSL adjustment with Hunt Effect saturation compensation.
+ * Shifts lightness from original to target value while boosting saturation
+ * to preserve perceptual vividness (darkening) or prevent washout (lightening).
+ * @global
+ * @param {number} h - The original hue (0-360).
+ * @param {number} s - The original saturation (0-100).
+ * @param {number} l - The original lightness (0-100).
+ * @param {number} newL - The target lightness (0-100).
+ * @param {number} [alpha] - The alpha channel value (0-255).
+ * @returns {number} The adjusted RGB/RGBA color value.
+ */
+function AdjustHSL(h, s, l, newL, alpha = 255) {
+	// Clamp inputs
+	h = ((h % 360) + 360) % 360;
+	s = Math.max(0, Math.min(100, s));
+	l = Math.max(0, Math.min(100, l));
+	newL = Math.max(0, Math.min(100, newL));
+
+	let adjustedS = s;
+	const isDarkening = newL < l;
+
+	if (isDarkening && l > 0) {
+		// Hunt Effect: Darker colors need more chroma to appear equally vivid
+		const darkenRatio = (l - newL) / l;
+		if (darkenRatio > 0.1) {
+			const baseBoost = 0.15;
+			const adaptiveBoost =
+				s < 30 ? baseBoost * 1.5 :
+				s < 60 ? baseBoost :
+				baseBoost * 0.7;
+			adjustedS = Math.min(100, s * (1 + darkenRatio * adaptiveBoost));
+		}
+	}
+	else if (!isDarkening && l < 100) {
+		// Washout prevention: Lightened colors need saturation boost
+		const lightenRatio = (newL - l) / (100 - l);
+		if (lightenRatio > 0.1) {
+			const adaptiveBoost =
+				s < 30 ? 0.12 :
+				s < 60 ? 0.10 :
+				0.08;
+			adjustedS = Math.min(100, s * (1 + lightenRatio * adaptiveBoost));
+		}
+	}
+
+	// Convert to RGB with preserved alpha
+	const newRGB = HSLtoRGB(h, adjustedS, newL);
+	return alpha !== 255 ? ((alpha << 24) | (newRGB & 0x00FFFFFF)) : newRGB;
+}
+
+
+/**
+ * Checks if two colors have sufficient hue separation for perceptual distinction.
+ * Note: Uses 90° threshold by default. True complementary colors are 180° apart.
+ * @global
+ * @param {Color|number} color1 - The first color or hue value.
+ * @param {Color|number} color2 - The second color or hue value.
+ * @param {number} [threshold] - The minimum hue distance (degrees). Use 150-210 for true complementary.
+ * @returns {boolean} True if hue distance exceeds threshold.
+ */
+function AreDistinctHues(color1, color2, threshold = 90) {
+	const h1 = typeof color1 === 'number' && color1 < 360 ? color1 : (color1.hue || 0);
+	const h2 = typeof color2 === 'number' && color2 < 360 ? color2 : (color2.hue || 0);
+
+	const hueDiff = Math.abs(h1 - h2);
+	const circularHueDist = Math.min(hueDiff, 360 - hueDiff);
+
+	return circularHueDist > threshold;
+}
+
+
+/**
+ * Fast Helmholtz-Kohlrausch approximation for luminance boost.
+ * Optimized for APCA text contrast.
+ * @global
+ * @param {number} Y - The linear luminance (0.0-1.0+).
+ * @param {number} S - The saturation (0-100, HSV-style).
+ * @returns {number} The H-K adjusted luminance (can exceed 1.0).
+ */
+function CalcHelmholtzKohlrausch(Y, S) {
+	// Early exit for grayscale/black
+	if (S < 5 || Y <= 0) return Y;
+	// Fast CIELAB L*
+	const L = 116 * Math.cbrt(Y) - 16;
+	// Approximate CIELAB Chroma from HSV Saturation.
+	// sRGB max C* varies by hue (80-120). Using 0.8×S gives ~80 at full saturation,
+	const C = S * 0.8;
+	// Apply H-K effect: JHK = sqrt(JA^2 + 32*C)
+	// Coefficient 32 from Hellwig & Stolitzka Eq. 12 (simplified with f(h)=1)
+	const L_HK = Math.sqrt(L * L + 32 * C);
+	// Convert back to linear luminance. Allow >1.0 for HDR/saturated brights.
+	return ((L_HK + 16) / 116) ** 3;
+}
+
+
+/**
+ * Calculates Just Noticeable Difference (JND) threshold based on background luminance.
+ * The JND increases as brightness decreases (Inverse Square Law adaptation for LCD black crush).
+ * @global
+ * @param {number} bgLum - The background luminance (0.0-1.0).
+ * @returns {number} The minimum Weber contrast needed for visibility (0.05-0.30).
+ */
+function CalcJNDThreshold(bgLum) {
+	if (bgLum < 0.05) return 0.30;
+	if (bgLum < 0.20) return 0.15;
+	if (bgLum < 0.50) return 0.08;
+	return 0.05;
+}
+
+
+/**
+ * Calculates perceptually-adjusted luminance when blending background with image overlay.
+ * Combines Weber-Fechner law, blur dominance (Stevens' Power Law), and Helmholtz-Kohlrausch.
+ * @global
+ * @param {number} bgLum - The background luminance (0.0-1.0, linear).
+ * @param {number} imgLum - The image luminance (0.0-1.0, linear).
+ * @param {number} alpha - The overlay opacity (0.0-1.0).
+ * @param {number} [blurLevel] - The blur radius (0-290).
+ * @param {number} [imgSaturation] - The image saturation (0-100).
+ * @returns {number} The final linear luminance (0.0-1.0).
+ */
+function CalcPerceptualBlendLuminance(bgLum, imgLum, alpha, blurLevel = 0, imgSaturation = 0) {
+	// Base linear blend (standard alpha compositing)
+	const baseLum = bgLum * (1 - alpha) + imgLum * alpha;
+
+	if (!blurLevel || blurLevel <= 0) {
+		return CalcHelmholtzKohlrausch(baseLum, imgSaturation);
+	}
+
+	const MAX_DOMINANCE = 0.33;
+	const lumDiff = Math.abs(imgLum - bgLum);
+
+	// WEBER-FECHNER LAW FOR EXTREME CONTRAST
+	const weberRatio = CalcWeberContrast(imgLum, bgLum);
+	const weberBoost = Math.max(0, Math.min(0.08, (weberRatio - 5.0) * 0.02));
+
+	// PERCEPTUAL BLUR DOMINANCE (Stevens' Power Law, exponent ~1.5)
+	const normalizedBlur = Math.min(blurLevel / 280, 1.0);
+	const perceptualBlur = normalizedBlur ** 1.5;
+	const totalDominance = (perceptualBlur * (MAX_DOMINANCE + weberBoost)) * lumDiff;
+
+	// Apply directional shift
+	const rawLum = imgLum < bgLum
+		? Math.max(0.01, baseLum - totalDominance)  // Dark image pulls darker
+		: Math.min(0.99, baseLum + totalDominance); // Bright image pulls brighter
+
+	return CalcHelmholtzKohlrausch(rawLum, imgSaturation);
+}
+
+
+/**
+ * Calculates Weber contrast for perceptual visibility assessment.
+ * The Weber contrast = ΔL / L_bg, more accurate than absolute difference for human vision.
+ * @global
+ * @param {number} fgLum - The foreground luminance (0.0-1.0).
+ * @param {number} bgLum - The background luminance (0.0-1.0).
+ * @returns {number} The Weber contrast ratio. Values > 0.05-0.30 indicate visibility depending on luminance zone.
+ */
+function CalcWeberContrast(fgLum, bgLum) {
+	if (bgLum === 0) return fgLum > 0 ? 1 : 0;
+	if (bgLum < 0) return 0;
+	return Math.abs(fgLum - bgLum) / bgLum;
+}
+
+
+/**
+ * Checks if two colors have sufficient perceptual contrast using Weber calculation.
+ * @global
+ * @param {Color|number} fgColor - The foreground color or luminance value.
+ * @param {Color|number} bgColor - The background color or luminance value.
+ * @param {number} [minContrast] - The minimum Weber contrast required (defaults to JND threshold).
+ * @returns {boolean} True if contrast meets perceptual visibility requirements.
+ */
+function HasPerceptualContrast(fgColor, bgColor, minContrast) {
+	const fgLum = typeof fgColor === 'number' && fgColor <= 1.0 ? fgColor : Color.LUM(fgColor);
+	const bgLum = typeof bgColor === 'number' && bgColor <= 1.0 ? bgColor : Color.LUM(bgColor);
+
+	const threshold = minContrast || CalcJNDThreshold(bgLum);
+	const contrast = CalcWeberContrast(fgLum, bgLum);
+
+	return contrast >= threshold;
+}
+// #endregion
+
+
+//////////////////////////////
+// * COLORS - OKLAB/OKLCH * //
+//////////////////////////////
+// #region COLORS - OKLAB/OKLCH
+/**
+ * Calculates the perceived color difference between two colors using OKLAB Euclidean distance.
+ *
+ * OKLAB is perceptually uniform by design, meaning straight-line Euclidean distance in
+ * OKLAB space directly corresponds to perceived color difference, no weighting or
+ * correction factors are needed.
+ *
+ * This avoids the geometric error of operating in OKLCH polar space, where angular hue
+ * differences are not valid Cartesian distance components. Near-gray colors with large
+ * hue angles (but near-zero chroma) correctly contribute near-zero distance.
+ *
+ * @global
+ * @param {number} color1 - The first RGB color (packed integer).
+ * @param {number} color2 - The second RGB color (packed integer).
+ * @returns {number} The perceptual color difference (0 = identical, higher = more different).
+ *   Typical range: 0–1.0 for most color pairs; max theoretical ~1.4.
+ */
+function OKLABColorDistance(color1, color2) {
+	const c1 = RGBtoOKLAB(color1);
+	const c2 = RGBtoOKLAB(color2);
+
+	const dL = c1.L - c2.L;
+	const da = c1.a - c2.a;
+	const db = c1.b - c2.b;
+
+	return Math.sqrt(dL * dL + da * da + db * db);
+}
+
+
+/**
+ * Converts an RGB color to OKLAB color space.
+ * OKLAB is a perceptually uniform Cartesian color space where Euclidean distance
+ * corresponds directly to perceived color difference.
+ * Accepts either a packed RGB integer OR separate r, g, b values.
+ *
+ * @global
+ * @param {number} r - The red value (0-255) OR packed RGB color.
+ * @param {number} [g] - The green value (0-255).
+ * @param {number} [b] - The blue value (0-255).
+ * @returns {{L: number, a: number, b: number}} OKLAB components:
+ *   - L: Perceptual lightness (0–1)
+ *   - a: Green–red axis (approx –0.23 to +0.28)
+ *   - b: Blue–yellow axis (approx –0.31 to +0.20)
+ */
+function RGBtoOKLAB(r, g, b) {
+	// Smart input handling - detect packed color vs separate values
+	if (arguments.length === 1) {
+		[r, g, b] = ToRGB(r);
+	}
+
+	// Normalize RGB to 0-1
+	r /= 255;
+	g /= 255;
+	b /= 255;
+
+	// Convert sRGB to linear RGB (inverse gamma correction)
+	const toLinear = (c) => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+	const lr = toLinear(r);
+	const lg = toLinear(g);
+	const lb = toLinear(b);
+
+	// Convert linear RGB to LMS cone response (using OKLAB matrix)
+	const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+	const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+	const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+
+	// Apply cube root (nonlinear transformation)
+	const l_ = Math.cbrt(l);
+	const m_ = Math.cbrt(m);
+	const s_ = Math.cbrt(s);
+
+	return {
+		L:  0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
+		a:  1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
+		b:  0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
+	};
+}
+
+/**
+ * Converts RGB to OKLCH color space (cylindrical OKLAB).
+ * Accepts either a packed RGB integer OR separate r, g, b values.
+ * OKLCH is a perceptually uniform color space with intuitive cylindrical coordinates:
+ * - L (Lightness): How bright the color is (0 = black, 1 = white)
+ * - C (Chroma): How colorful it is (0 = gray, higher = more vivid)
+ * - H (Hue): The color angle (0° = red, 120° = green, 240° = blue)
+ * @global
+ * @param {number} r - The red value (0-255) OR packed RGB color
+ * @param {number} [g] - The green value (0-255)
+ * @param {number} [b] - The blue value (0-255)
+ * @returns {object} An object containing {L, C, H} where:
+ * - L: Perceptual lightness (0-1)
+ * - C: Chroma/colorfulness (0-0.4 typical range)
+ * - H: Hue angle in degrees (0-360)
+ * @example
+ * // Both work:
+ * const oklch1 = RGBtoOKLCH(color);        // Packed integer
+ * const oklch2 = RGBtoOKLCH(255, 100, 50); // Separate values
+ */
+function RGBtoOKLCH(r, g, b) {
+	// Smart input handling - detect packed color vs separate values
+	if (arguments.length === 1) {
+		[r, g, b] = ToRGB(r);
+	}
+
+	// Normalize RGB to 0-1
+	r /= 255;
+	g /= 255;
+	b /= 255;
+
+	// Convert sRGB to linear RGB (inverse gamma correction)
+	const toLinear = (c) => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+	const lr = toLinear(r);
+	const lg = toLinear(g);
+	const lb = toLinear(b);
+
+	// Convert linear RGB to LMS cone response (using OKLAB matrix)
+	const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+	const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+	const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+
+	// Apply cube root (nonlinear transformation)
+	const l_ = Math.cbrt(l);
+	const m_ = Math.cbrt(m);
+	const s_ = Math.cbrt(s);
+
+	// Convert to OKLAB
+	const L     = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
+	const a     = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
+	const b_val = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+
+	// Convert OKLAB to OKLCH (Cartesian to Polar)
+	const C = Math.sqrt(a * a + b_val * b_val);
+	let H = Math.atan2(b_val, a) * 180 / Math.PI;
+	if (H < 0) H += 360;
+
+	return { L, C, H };
+}
+
+
+/**
+ * Converts OKLCH color space values to RGB.
+ * @global
+ * @param {number} L - The perceptual lightness (0-1).
+ * @param {number} C - The chroma/colorfulness (typically 0-0.4).
+ * @param {number} H - The hue angle in degrees (0-360).
+ * @returns {number} The RGB color value.
+ */
+function OKLCHtoRGB(L, C, H) {
+	// Convert OKLCH to OKLAB (Polar to Cartesian)
+	const hRad = H * Math.PI / 180;
+	const a = C * Math.cos(hRad);
+	const b = C * Math.sin(hRad);
+
+	// Convert OKLAB to LMS
+	const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+	const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+	const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+
+	// Cube to get LMS cone response
+	const l = l_ * l_ * l_;
+	const m = m_ * m_ * m_;
+	const s = s_ * s_ * s_;
+
+	// Convert LMS to linear RGB
+	const lr = +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+	const lg = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+	const lb = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+
+	// Convert linear RGB to sRGB (gamma correction)
+	const toSRGB = (c) => {
+		c = Math.max(0, Math.min(1, c)); // Clamp to valid range
+		return c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055;
+	};
+
+	const r = toSRGB(lr);
+	const g = toSRGB(lg);
+	const b_rgb = toSRGB(lb);
+
+	return RGB(
+		Math.round(r * 255),
+		Math.round(g * 255),
+		Math.round(b_rgb * 255)
+	);
+}
+
+
+/**
+ * Adjusts a color's lightness in OKLCH space while preserving hue and chroma.
+ * Accepts either a packed RGB integer OR separate r, g, b values.
+ * This provides perceptually uniform brightness adjustments with perfect hue preservation.
+ * OKLCH is superior to HSL because it maintains true perceptual uniformity and doesn't
+ * require saturation compensation.
+ * @global
+ * @param {number} r - The red value (0-255) OR packed RGB color
+ * @param {number} [g] - The green value (0-255) OR newL if using packed color
+ * @param {number} [b] - The blue value (0-255) OR alpha if using packed color
+ * @param {number} [newL] - The target lightness (0-1). 0 = black, 1 = white
+ * @param {number} [alpha] - The alpha channel value (0-255)
+ * @returns {number} The adjusted RGB/RGBA color value
+ * @example
+ * // Packed color:
+ * const dark = AdjustOKLCH(color, 0.3);      // Darken to 30% lightness
+ * const dark = AdjustOKLCH(color, 0.3, 128); // With alpha
+ *
+ * // Separate values:
+ * const dark = AdjustOKLCH(255, 100, 50, 0.7); // Traditional
+ */
+function AdjustOKLCH(r, g, b, newL, alpha = 255) {
+	// Smart input handling
+	if (arguments.length <= 3) {
+		// Packed color format: (color, newL, alpha?)
+		alpha = b !== undefined ? b : 255;
+		newL = g;
+		[r, g, b] = ToRGB(r);
+	}
+
+	// Convert to OKLCH
+	const oklch = RGBtoOKLCH(r, g, b);
+
+	// Clamp new lightness to valid range
+	newL = Math.max(0, Math.min(1, newL));
+
+	// Adjust lightness while preserving C and H (chroma and hue stay constant!)
+	const adjustedRGB = OKLCHtoRGB(newL, oklch.C, oklch.H);
+
+	// Apply alpha if needed
+	return alpha === 255 ? adjustedRGB : ((alpha << 24) | (adjustedRGB & 0x00FFFFFF));
+}
+
+
+/**
+ * Adjusts a color's chroma (colorfulness) in OKLCH space.
+ * Useful for making colors more or less vibrant while preserving lightness and hue.
+ * @global
+ * @param {number} color - The RGB color value (packed integer).
+ * @param {number} factor - The multiplier for chroma (0.5 = half as colorful, 2.0 = twice as colorful).
+ * @returns {number} The adjusted RGB color value.
+ */
+function AdjustChromaOKLCH(color, factor) {
+	const alpha = GetAlpha(color);
+	const oklch = RGBtoOKLCH(color);
+	const newC = Math.max(0, oklch.C * factor);
+
+	return OKLCHtoRGB(oklch.L, newC, oklch.H) | (alpha << 24);
+}
+
+
+/**
+ * Adjusts both lightness and chroma in OKLCH space while preserving hue.
+ * Accepts either a packed RGB integer OR separate r, g, b values.
+ * Useful for creating color variations that need both brightness and saturation adjustments.
+ * @global
+ * @param {number} r - The red value (0-255) OR packed RGB color
+ * @param {number} [g] - The green value (0-255) OR newL if using packed color
+ * @param {number} [b] - The blue value (0-255) OR chromaFactor if using packed color
+ * @param {number} [newL] - The target lightness (0-1)
+ * @param {number} [chromaFactor] - The chroma multiplier (0-2). 1.0 = unchanged, <1 = less colorful, >1 = more colorful
+ * @param {number} [alpha] - Alpha channel value (0-255)
+ * @returns {number} The adjusted RGB/RGBA color value
+ * @example
+ * // Packed color:
+ * const adj = AdjustOKLCHWithChroma(color, 0.8, 1.3);      // 80% bright, 130% colorful
+ * const adj = AdjustOKLCHWithChroma(color, 0.8, 1.3, 128); // With alpha
+ *
+ * // Separate values:
+ * const adj = AdjustOKLCHWithChroma(255, 100, 50, 0.8, 1.3);
+ */
+function AdjustOKLCHWithChroma(r, g, b, newL, chromaFactor, alpha = 255) {
+	if (arguments.length <= 4) {
+		// Packed color format: (color, newL, chromaFactor, alpha?)
+		alpha = newL !== undefined ? newL : 255;
+		chromaFactor = b;
+		newL = g;
+		[r, g, b]  = ToRGB(r);
+	}
+
+	const oklch = RGBtoOKLCH(r, g, b);
+	newL = Math.max(0, Math.min(1, newL));
+	const newC = Math.max(0, oklch.C * chromaFactor);
+	const adjustedRGB = OKLCHtoRGB(newL, newC, oklch.H);
+
+	return alpha === 255 ? adjustedRGB : ((alpha << 24) | (adjustedRGB & 0x00FFFFFF));
+}
+
+
+/**
+ * Rotates the hue of a color in OKLCH space while preserving lightness and chroma.
+ * Accepts either a packed RGB integer OR separate r, g, b values.
+ * @global
+ * @param {number} r - The red value (0-255) OR packed RGB color
+ * @param {number} [g] - The green value (0-255) OR hueDelta if using packed color
+ * @param {number} [b] - The blue value (0-255) OR alpha if using packed color
+ * @param {number} [hueDelta] - The degrees to rotate hue (-360 to +360)
+ * @param {number} [alpha] - The alpha channel value (0-255)
+ * @returns {number} The hue-rotated RGB/RGBA color value
+ * @example
+ * // Packed color:
+ * const rotated = RotateOKLCHHue(color, 30);        // Rotate 30°
+ * const rotated = RotateOKLCHHue(color, 30, 128);   // With alpha
+ *
+ * // Separate values:
+ * const rotated = RotateOKLCHHue(50, 100, 200, 30); // Traditional
+ */
+function RotateOKLCHHue(r, g, b, hueDelta, alpha = 255) {
+	// Smart input handling
+	if (arguments.length <= 3) {
+		// Packed color format: (color, hueDelta, alpha?)
+		alpha = b !== undefined ? b : 255;
+		hueDelta = g;
+		[r, g, b] = ToRGB(r);
+	}
+
+	const oklch = RGBtoOKLCH(r, g, b);
+
+	let newH = (oklch.H + hueDelta) % 360;
+	if (newH < 0) newH += 360;
+
+	const adjustedRGB = OKLCHtoRGB(oklch.L, oklch.C, newH);
+
+	return alpha === 255 ? adjustedRGB : ((alpha << 24) | (adjustedRGB & 0x00FFFFFF));
+}
+
+
+/**
+ * Darkens a color by a percentage using OKLCH lightness for perceptually uniform results.
+ * Unlike ShadeColor (HSL), this maintains perfect hue and chroma while darkening.
+ * @global
+ * @param {number} color - The RGB color value (packed integer).
+ * @param {number} percent - The percentage to darken (0-100).
+ * @returns {number} The darkened RGB color value.
+ */
+function ShadeColorOKLCH(color, percent) {
+	const alpha = GetAlpha(color);
+	const oklch = RGBtoOKLCH(color);
+
+	const factor = Math.max(0, Math.min(100, percent)) / 100;
+	const newL = Math.max(0, oklch.L * (1 - factor));
+
+	return (OKLCHtoRGB(newL, oklch.C, oklch.H) & 0x00FFFFFF) | (alpha << 24);
+}
+
+
+/**
+ * Lightens a color by a percentage using OKLCH lightness for perceptually uniform results.
+ * Unlike TintColor (HSL), this maintains perfect hue and chroma while lightening.
+ * @global
+ * @param {number} color - The RGB color value (packed integer).
+ * @param {number} percent - The percentage to lighten (0-100).
+ * @returns {number} The lightened RGB color value.
+ */
+function TintColorOKLCH(color, percent) {
+	const alpha = GetAlpha(color);
+	const oklch = RGBtoOKLCH(color);
+
+	const factor = Math.max(0, Math.min(100, percent)) / 100;
+	const newL = Math.min(1, oklch.L + (1 - oklch.L) * factor);
+
+	return (OKLCHtoRGB(newL, oklch.C, oklch.H) & 0x00FFFFFF) | (alpha << 24);
+}
+
+
+/**
+ * Converts an APCA relative luminance (Y, 0.0-1.0) to the equivalent neutral gray sRGB value.
+ * @global
+ * @param {number} Y - The APCA relative luminance (0.0-1.0).
+ * @returns {number} The packed RGB color RGB(gray, gray, gray).
+ */
+function APCA_Luminance_to_GrayRGB(Y) {
+	Y = Math.max(0, Math.min(1, Y));
+
+	if (Y <= 0) return RGB(0, 0, 0);
+	if (Y >= 1) return RGB(255, 255, 255);
+
+	// Inverse of the 2.4 power curve used in APCA
+	const grayVal = Math.round(255 * Y ** (1 / 2.4));
+
+	return RGB(grayVal, grayVal, grayVal);
+}
+
+/**
+ * Converts an APCA relative luminance (Y, 0.0-1.0) to the OKLCH Lightness (L, 0-1)
+ * required for a pure neutral gray (chroma=0) that renders to exactly that luminance.
+ * @global
+ * @param {number} Y - The APCA relative luminance (0.0-1.0).
+ * @returns {number} The OKLCH Lightness value (0-1).
+ */
+function APCA_Luminance_to_OKLCH_Lightness(Y) {
+	const grayRGB = APCA_Luminance_to_GrayRGB(Y);
+	const oklch = RGBtoOKLCH(grayRGB);
+	return oklch.L;
+}
+
+/**
+ * Converts OKLCH Lightness (for pure gray, C=0) back to APCA luminance.
+ * @global
+ * @param {number} oklchL - The OKLCH Lightness (0-1).
+ * @returns {number} The resulting APCA relative luminance (0.0-1.0).
+ */
+function OKLCH_Lightness_to_APCA_Luminance(oklchL) {
+	oklchL = Math.max(0, Math.min(1, oklchL));
+
+	const grayRGB = OKLCHtoRGB(oklchL, 0, 0); // Pure gray, hue irrelevant
+	const r = GetRed(grayRGB) / 255;
+	const g = GetGreen(grayRGB) / 255;
+	const b = GetBlue(grayRGB) / 255;
+
+	// APCA uses simple 2.4 power curve (no piecewise)
+	const linearR = r ** 2.4;
+	const linearG = g ** 2.4;
+	const linearB = b ** 2.4;
+
+	return 0.2126729 * linearR + 0.7151522 * linearG + 0.0721750 * linearB;
 }
 // #endregion
 
@@ -2933,6 +3724,7 @@ function SetCursor(symbol) {
  */
 function ChooseFontForWidth(gr, availableWidth, text, fontList, maxLines = 1) {
 	let fontIndex;
+
 	for (let i = 0; i < fontList.length; i++) {
 		fontIndex = i;
 		const measurements = gr.MeasureString(text, fontList[fontIndex], 0, 0, availableWidth, 0);
@@ -2940,6 +3732,7 @@ function ChooseFontForWidth(gr, availableWidth, text, fontList, maxLines = 1) {
 			break;
 		}
 	}
+
 	return fontIndex !== undefined ? fontList[fontIndex] : null;
 }
 
@@ -2992,6 +3785,7 @@ function TestFont(fontName) {
  */
 function CalcGridMaxTextWidth(gr, gridArray, font) {
 	let maxWidth = 0;
+
 	if (gridArray) {
 		for (const el of gridArray) {
 			const width = Math.ceil(gr.MeasureString(el.label, font, 0, 0, grm.ui.ww, grm.ui.wh).Width) + 1;
@@ -3000,6 +3794,7 @@ function CalcGridMaxTextWidth(gr, gridArray, font) {
 			}
 		}
 	}
+
 	return maxWidth;
 }
 
@@ -3188,25 +3983,31 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
 	let textArray;
 	let lineHeight;
 	let continuation;
+
 	for (let fontIndex = 0; fontIndex < fontList1.length && (fontIndex < fontList2.length); fontIndex++) {
 		textArray = [];
 		lineHeight = Math.max(gr.CalcTextHeight(text1, fontList1[fontIndex]), (text2 ? gr.CalcTextHeight(text2, fontList2[fontIndex]) : 0));
 		continuation = false; // Does font change on same line
+
 		/** @type {any[]} */
 		const lineText = gr.EstimateLineWrap(text1, fontList1[fontIndex], availableWidth);
+
 		for (let i = 0; i < lineText.length; i += 2) {
 			textArray.push({ text: lineText[i].trim(), x_offset: 0, font: fontList1[fontIndex] });
 		}
+
 		if (textArray.length <= maxLines && text2) {
 			const lastLineWidth = lineText[lineText.length - 1];
 			/** @type {any[]} */
 			let secondaryText = gr.EstimateLineWrap(text2, fontList2[fontIndex], availableWidth - lastLineWidth - 5);
 			const firstSecondaryLine = secondaryText[0]; // Need to subtract the continuation of the previous line from text2
 			const textRemainder = text2.slice(firstSecondaryLine.length).trim();
+
 			if (firstSecondaryLine.trim().length) {
 				textArray.push({ text: firstSecondaryLine, x_offset: lastLineWidth + 5, font: fontList2[fontIndex] });
 				continuation = true; // Font changes on same line
 			}
+
 			secondaryText = gr.EstimateLineWrap(textRemainder, fontList2[fontIndex], availableWidth);
 			for (let i = 0; i < secondaryText.length; i += 2) {
 				textArray.push({ text: secondaryText[i], x_offset: 0, font: fontList2[fontIndex] });
@@ -3214,10 +4015,12 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
 		}
 		if (textArray.length - (continuation ? 1 : 0) <= maxLines) break;
 	}
+
 	let yOffset = 0;
 	let linesDrawn = 0;
 	const cutoff = textArray.length > maxLines + (continuation ? 1 : 0);
 	textArray.splice(maxLines + (continuation ? 1 : 0));
+
 	for (let i = 0; i < textArray.length; i++) {
 		const line = textArray[i];
 		if (line.x_offset) {
@@ -3233,6 +4036,7 @@ function DrawMultipleLines(gr, availableWidth, left, top, color, text1, fontList
 			availableWidth - line.x_offset, lineHeight, Stringformat.Trim_Ellipsis_Word);
 		yOffset += lineHeight;
 	}
+
 	return linesDrawn * lineHeight;
 }
 
@@ -3458,12 +4262,17 @@ function Difference(arr1, arr2) {
  * @returns {boolean} True if the arrays are equal, false otherwise.
  */
 function Equal(arr1, arr2) {
-	if (!IsArray(arr1) || !IsArray(arr2)) return false;
+	if (!IsArray(arr1) || !IsArray(arr2)) {
+		return false;
+	}
+
 	let i = arr1.length;
 	if (i !== arr2.length) return false;
+
 	while (i--) {
 		if (arr1[i] !== arr2[i]) return false;
 	}
+
 	return true;
 }
 
@@ -3625,17 +4434,20 @@ function ConvertRatingToPercentage(rating) {
  * - 'vuLevelToDecibel': Converts VU meter levels to decibel.
  * @global
  * @param {number} volume - The volume to be converted, expected to be between 0 and 1.
- * @param {string} type - Determines the format of the output.
+ * @param {string} type - The format of the output.
  * @returns {number|undefined} The converted volume as a number, or undefined if an invalid type is specified.
  */
 function ConvertVolume(volume, type) {
 	if (type === 'toPercent') {
 		return (10 ** (volume / 50) - 0.01) / 0.99 * 100;
-	} else if (type === 'toDecibel') {
+	}
+	else if (type === 'toDecibel') {
 		return (50 * Math.log(0.99 * volume + 0.01)) / Math.LN10;
-	} else if (type === 'vuLevelToDecibel') {
+	}
+	else if (type === 'vuLevelToDecibel') {
 		return 20 * Math.log10(volume);
-	} else {
+	}
+	else {
 		console.log('Invalid type. Please specify \'toPercent\', \'toDecibel\', or \'vuLevelToDecibel\'.');
 		return undefined;
 	}
@@ -3643,21 +4455,62 @@ function ConvertVolume(volume, type) {
 
 
 /**
- * Linear Interpolation - maps a value from one range to another.
+ * Applies a specified easing function to a value.
+ * @global
+ * @param {string} type - The name of the easing function (e.g., 'smoothStep').
+ * @param {number} t - The progress value (0 to 1).
+ * @param {number} [gammaValue] - The optional gamma parameter.
+ * @returns {number} The eased value.
+ */
+function Easing(type, t, gammaValue = 1.2) {
+	if (type === 'linear') {
+		return t;
+	}
+
+	if (type === 'smoothStep') {
+		return t * t * (3 - 2 * t);
+	}
+
+	if (type === 'gamma') {
+		return t ** gammaValue;
+	}
+
+	if (type === 'invGamma') {
+		return 1 - (1 - t) ** gammaValue;
+	}
+
+	return t;
+}
+
+
+/**
+ * Linear interpolation between two values.
+ * @global
+ * @param {number} start - The starting value.
+ * @param {number} end - The ending value.
+ * @param {number} t - The interpolation factor (typically 0–1; values outside extrapolate).
+ * @returns {number} The interpolated value.
+ */
+function Lerp(start, end, t) {
+	return start + (end - start) * t;
+}
+
+
+/**
+ * Maps a value from one range to another, with clamping to the output range.
+ * @global
  * @param {number} value - The input value to map.
  * @param {number} inMin - The minimum of the input range.
  * @param {number} inMax - The maximum of the input range.
  * @param {number} outMin - The minimum of the output range.
  * @param {number} outMax - The maximum of the output range.
- * @returns {number} The mapped value, clamped to the output range.
+ * @returns {number} The mapped value, clamped to [min(outMin,outMax), max(outMin,outMax)].
  */
-function Lerp(value, inMin, inMax, outMin, outMax) {
+function MapClamped(value, inMin, inMax, outMin, outMax) {
 	const normalized = (value - inMin) / (inMax - inMin);
 	const result = outMin + (outMax - outMin) * normalized;
-
 	const min = Math.min(outMin, outMax);
 	const max = Math.max(outMin, outMax);
-
 	return Math.max(min, Math.min(max, result));
 }
 
@@ -3684,12 +4537,31 @@ function RandomMinMax(min, max) {
  */
 function Round(floatnum, decimals, eps = 10 ** -14) {
 	let result;
+
 	if (decimals > 0) {
 		result = decimals === 15 ? floatnum : Math.round(floatnum * 10 ** decimals + eps) / 10 ** decimals;
 	} else {
 		result = Math.round(floatnum);
 	}
+
 	return result;
+}
+
+
+/**
+ * Smooth sigmoid curve for organic transitions.
+ * Replaces hard thresholds with smooth gradients.
+ * @global
+ * @param {number} x - The input value (any real number; no need to normalize to 0-1).
+ * @param {number} [steepness] - The curve steepness (higher = sharper transition).
+ * @param {number} [center] - The midpoint of transition.
+ * @param {number} [outputMin] - The optional minimum output value (default 0).
+ * @param {number} [outputMax] - The optional maximum output value (default 1).
+ * @returns {number} The smoothed value in [outputMin, outputMax].
+ */
+function Sigmoid(x, steepness = 10, center = 0.5, outputMin = 0, outputMax = 1) {
+	const raw = 1 / (1 + Math.exp(-steepness * (x - center)));
+	return outputMin + raw * (outputMax - outputMin);
 }
 
 
@@ -3787,6 +4659,7 @@ function ConvertFullCountryToIso(name) {
 			return code;
 		}
 	}
+
 	return null;
 }
 
@@ -3826,12 +4699,13 @@ function IsString(str) {
  */
 function LeftPad(val, size, ch) {
 	let result = String(val);
-	if (!ch) {
-		ch = ' ';
-	}
+
+	if (!ch) ch = ' ';
+
 	while (result.length < size) {
 		result = ch + result;
 	}
+
 	return result;
 }
 
@@ -3986,6 +4860,7 @@ function GetKeyByHighestAvg(sumObj, countObj) {
 			}
 		}
 	}
+
 	return highestKey;
 }
 
@@ -3998,7 +4873,11 @@ function GetKeyByHighestAvg(sumObj, countObj) {
  */
 function GetKeyByHighestVal(obj) {
 	const entries = obj instanceof Map ? obj.entries() : Object.entries(obj);
-	const highestEntry = [...entries].reduce(([keyA, valA], [keyB, valB]) => valA >= valB ? [keyA, valA] : [keyB, valB], [null, -Infinity]);
+
+	const highestEntry = [...entries].reduce(([keyA, valA], [keyB, valB]) =>
+		valA >= valB ? [keyA, valA] : [keyB, valB], [null, -Infinity]
+	);
+
 	return highestEntry[0];
 }
 
@@ -4075,6 +4954,7 @@ function CalcAgeRatio(num, divisor) {
 function CalcAgeDateString(date) {
 	let str = '';
 	const timezoneOffset = UpdateTimezoneOffset();
+
 	if (date.length) {
 		try {
 			str = DateDiff($Date(date), undefined, timezoneOffset);
@@ -4083,6 +4963,7 @@ function CalcAgeDateString(date) {
 			// Throw new ArgumentError('date', date, 'in CalcAgeDateString()');
 		}
 	}
+
 	return str.trim();
 }
 
@@ -4108,21 +4989,25 @@ function $Date(dateStr) {
  */
 function DateDiff(startingDate, endingDate, timezoneOffset) {
 	if (!startingDate) return '';
+
 	const hasStartDay = (startingDate.length > 7);
 	if (!hasStartDay) {
 		startingDate += '-02'; // Avoid timezone issues
 	}
+
 	let startDate = new Date(new Date(startingDate).toISOString().slice(0, 10));
 	if (!endingDate) {
 		const now = new Date().getTime() - timezoneOffset; // Subtract timezone offset because we're stripping timezone from ISOString
 		endingDate = new Date(now).toISOString().slice(0, 10); // Need date in YYYY-MM-DD format
 	}
+
 	let endDate = new Date(endingDate);
 	if (startDate > endDate) {
 		const swap = startDate;
 		startDate = endDate;
 		endDate = swap;
 	}
+
 	const startYear = startDate.getFullYear();
 	const februaryDays = (startYear % 4 === 0 && startYear % 100 !== 0) || startYear % 400 === 0 ? 29 : 28;
 	const daysInMonth = [31, februaryDays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -4130,6 +5015,7 @@ function DateDiff(startingDate, endingDate, timezoneOffset) {
 	let yearDiff = endDate.getFullYear() - startYear;
 	let monthDiff = endDate.getMonth() - startDate.getMonth();
 	let dayDiff = 0;
+
 	if (monthDiff < 0) {
 		yearDiff--;
 		monthDiff += 12;
@@ -4147,7 +5033,11 @@ function DateDiff(startingDate, endingDate, timezoneOffset) {
 		}
 	}
 
-	return (yearDiff ? `${yearDiff}y ` : '') + (monthDiff > 0 ? `${monthDiff}m ` : '') + (dayDiff ? `${dayDiff}d` : '');
+	return (
+		(yearDiff ? `${yearDiff}y ` : '') +
+		(monthDiff > 0 ? `${monthDiff}m ` : '') +
+		(dayDiff ? `${dayDiff}d` : '')
+	);
 }
 
 

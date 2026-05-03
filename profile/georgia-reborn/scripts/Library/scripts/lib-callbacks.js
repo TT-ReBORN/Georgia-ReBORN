@@ -76,10 +76,6 @@ class LibCallbacks {
 		lib.pop.on_focus(is_focused);
 	}
 
-	on_get_album_art_done(handle, art_id, image, image_path) {
-		lib.ui.on_get_album_art_done(handle, image, image_path);
-	}
-
 	on_item_focus_change(playlistIndex) {
 		lib.lib.checkFilter();
 		if (!lib.pop.setFocus) {
@@ -146,12 +142,11 @@ class LibCallbacks {
 		if (libSet.fixedPlaylist || !libSet.libSource) {
 			handleList.Convert().some(h => {
 				const i = lib.lib.full_list.Find(h);
-				if (i != -1) {
-					const isMainChanged = lib.lib.isMainChanged(handleList);
-					if (isMainChanged) lib.lib.treeState(false, 2);
-					lib.ui.focus_changed();
-					return true;
-				}
+				if (i == -1) return;
+				const isMainChanged = lib.lib.isMainChanged(handleList);
+				if (isMainChanged) lib.lib.treeState(false, 2);
+				lib.ui.focus_changed();
+				return true;
 			});
 		}
 	}
@@ -214,16 +209,20 @@ class LibCallbacks {
 	}
 
 	on_mouse_rbtn_up(x, y) {
-		if (y < lib.ui.y + lib.panel.search.h && x > lib.panel.search.x && x < lib.panel.search.x + lib.panel.search.w) {
-			if (libSet.searchShow) lib.search.rbtn_up(x, y);
-		} else lib.men.rbtn_up(x, y);
+		if (libSet.searchShow && (y < lib.ui.y + lib.panel.search.h && x > lib.panel.search.x && x < lib.panel.search.x + lib.panel.search.w)) {
+			lib.search.rbtn_up(x, y);
+		} else {
+			lib.men.rbtn_up(x, y);
+		}
+
 		return true;
 	}
 
 	on_mouse_wheel(step) {
 		lib.pop.deactivateTooltip();
-		if (!lib.vk.k('zoom')) lib.sbar.wheel(step);
-		else lib.ui.wheel(step);
+		if (!lib.vk.k('zoom')) {
+			lib.sbar.wheel(step);
+		} else lib.ui.wheel(step);
 	}
 
 	on_notify_data(name, info) {

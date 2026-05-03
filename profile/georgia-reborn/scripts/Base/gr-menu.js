@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -434,7 +434,7 @@ class TopMenuOptions {
 		customThemeMenu.createRadioSubMenu('Save current colors', customThemeName, '', ['custom01', 'custom02', 'custom03', 'custom04', 'custom05', 'custom06', 'custom07', 'custom08', 'custom09', 'custom10'], (theme) => {
 			const msg = grm.msg.getMessage('menu', 'saveCurrentColors');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (confirmed) grm.color.setCurrentColorsToCustomTheme(theme);
+				if (confirmed) grm.colorPalette.setCurrentColorsToCustomTheme(theme);
 			});
 		});
 		customThemeMenu.appendTo(themeMenu);
@@ -573,7 +573,7 @@ class TopMenuOptions {
 			styleAutoColorMenu.addRadioItems(['Off', '5 sec', '10 sec', '15 sec', '30 sec', '45 sec', '1 min', '2 min', '3 min', '4 min', '5 min', 'New track'], grSet.styleRandomAutoColor,
 				['off', 5000, 10000, 15000, 30000, 45000, 60000, 120000, 180000, 240000, 300000, 'track'], (timer) => {
 				grm.ui.setStyle('styleRandomAutoColor', timer);
-				grm.color.getRandomThemeAutoColor();
+				grm.colorManager.getRandomThemeAutoColor();
 			});
 			styleAutoColorMenu.appendTo(styleMenu);
 			styleMenu.addSeparator();
@@ -669,7 +669,7 @@ class TopMenuOptions {
 						}
 						grSet.presetAutoRandomMode = 'dblclick';
 						grm.ui.setThemePresetSelection(true); // * Reactivate all
-						grm.preset.getRandomThemePreset();
+						grm.preset.generateRandomThemePreset();
 					});
 				}
 				else if (mode === 'theme') {
@@ -682,7 +682,7 @@ class TopMenuOptions {
 						}
 						grSet.presetAutoRandomMode = 'dblclick';
 						grm.ui.setThemePresetSelection(false, true);
-						grm.preset.getRandomThemePreset();
+						grm.preset.generateRandomThemePreset();
 					});
 				}
 			});
@@ -890,7 +890,7 @@ class TopMenuOptions {
 			grSet.presetAutoRandomMode, ['off', 5000, 10000, 15000, 30000, 60000, 300000, 600000, 900000, 1800000, 3600000, 'track', 'album', 'dblclick'], (timer) => {
 			grSet.presetAutoRandomMode = timer;
 			if (!['off', 'track', 'album', 'dblclick'].includes(timer)) {
-				grm.preset.getRandomThemePreset();
+				grm.preset.generateRandomThemePreset();
 			} else {
 				grm.ui.clearTimer('presetAutoRandomMode');
 			}
@@ -1625,12 +1625,7 @@ class TopMenuOptions {
 		const playerControlsProgressBarRefreshMenu = new Menu('Refresh rate');
 		playerControlsProgressBarRefreshMenu.addRadioItems(['  1 fps ~ 1000 ms (very slow CPU)', '  2 fps ~ 500 ms', '  3 fps ~ 333 ms', '  4 fps ~ 250 ms', '  5 fps ~ 200 ms', '  6 fps ~ 166 ms', '  7 fps ~ 142 ms', '  8 fps ~ 125 ms', '  9 fps ~ 111 ms', '10 fps ~ 100 ms', '12 fps ~ 83 ms', '15 fps ~ 67 ms', '20 fps ~ 50 ms', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'], grSet.progressBarRefreshRate, [FPS._1, FPS._2, FPS._3, FPS._4, FPS._5, FPS._6, FPS._7, FPS._8, FPS._9, FPS._10, FPS._12, FPS._15, FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
 			grSet.progressBarRefreshRate = rate;
-			grm.ui.setSeekbarRefresh();
-			if (rate < FPS._20) {
-				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
-			} else if (rate < FPS._10) {
-				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
-			}
+			grm.ui.setSeekbarRefresh(rate);
 		}, !grSet.showProgressBar_default || !grSet.showProgressBar_artwork || !grSet.showProgressBar_compact);
 		playerControlsProgressBarRefreshMenu.addSeparator();
 		playerControlsProgressBarRefreshMenu.addRadioItems(['Variable refresh rate (default)'], grSet.progressBarRefreshRate, ['variable'], (rate) => {
@@ -1686,13 +1681,8 @@ class TopMenuOptions {
 		const playerControlsPeakmeterBarRefreshMenu = new Menu('Refresh rate');
 		playerControlsPeakmeterBarRefreshMenu.addRadioItems(['  1 fps ~ 1000 ms (very slow CPU)', '  2 fps ~ 500 ms', '  3 fps ~ 333 ms', '  4 fps ~ 250 ms', '  5 fps ~ 200 ms', '  6 fps ~ 166 ms', '  7 fps ~ 142 ms', '  8 fps ~ 125 ms', '  9 fps ~ 111 ms', '10 fps ~ 100 ms', '12 fps ~ 83 ms', '15 fps ~ 67 ms', '20 fps ~ 50 ms', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'], grSet.peakmeterBarRefreshRate, [FPS._1, FPS._2, FPS._3, FPS._4, FPS._5, FPS._6, FPS._7, FPS._8, FPS._9, FPS._10, FPS._12, FPS._15, FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
 			grSet.peakmeterBarRefreshRate = rate;
-			grm.ui.setSeekbarRefresh();
 			this.audioWizard.SetMonitoringRefreshRate(rate);
-			if (rate < FPS._20) {
-				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
-			} else if (rate < FPS._10) {
-				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
-			}
+			grm.ui.setSeekbarRefresh(rate);
 		}, !grSet.showPeakmeterBar_default || !grSet.showPeakmeterBar_artwork || !grSet.showPeakmeterBar_compact);
 		playerControlsPeakmeterBarRefreshMenu.addSeparator();
 		playerControlsPeakmeterBarRefreshMenu.addRadioItems(['Variable refresh rate (default)'], grSet.peakmeterBarRefreshRate, ['variable'], (rate) => {
@@ -1836,11 +1826,7 @@ class TopMenuOptions {
 		playerControlsWaveformBarRefreshMenu.addRadioItems(['  1 fps ~ 1000 ms (very slow CPU)', '  2 fps ~ 500 ms', '  3 fps ~ 333 ms', '  4 fps ~ 250 ms', '  5 fps ~ 200 ms', '  6 fps ~ 166 ms', '  7 fps ~ 142 ms', '  8 fps ~ 125 ms', '  9 fps ~ 111 ms', '10 fps ~ 100 ms', '12 fps ~ 83 ms', '15 fps ~ 67 ms', '20 fps ~ 50 ms', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'], grSet.waveformBarRefreshRate, [FPS._1, FPS._2, FPS._3, FPS._4, FPS._5, FPS._6, FPS._7, FPS._8, FPS._9, FPS._10, FPS._12, FPS._15, FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
 			grSet.waveformBarRefreshRate = rate;
 			grm.waveBar.updateConfig({ ui: { refreshRate: rate } });
-			if (rate < FPS._20) {
-				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateVeryFast', 'Confirm');
-			} else if (rate < FPS._10) {
-				grm.msg.showPopupNotice('menu', 'seekbarRefreshRateFast', 'Confirm');
-			}
+			grm.ui.setSeekbarRefresh(rate);
 		}, waveformBarRefreshMenuDisabled);
 		playerControlsWaveformBarRefreshMenu.addSeparator();
 		playerControlsWaveformBarRefreshMenu.addRadioItems(['Variable refresh rate (default)'], grSet.waveformBarRefreshRate, ['variable'], (rate) => {
@@ -2459,7 +2445,6 @@ class TopMenuOptions {
 			grm.ui.initTheme();
 			lib.call.on_colours_changed();
 			lib.panel.updateProp(1);
-			grm.theme.themeColorAdjustments();
 		});
 
 		// * ALBUM ART * //
@@ -2850,7 +2835,6 @@ class TopMenuOptions {
 			grm.ui.initTheme();
 			bio.call.on_colours_changed();
 			bio.ui.updateProp(1);
-			grm.theme.themeColorAdjustments();
 		});
 		biographyThemeMenu.appendTo(biographyMenu);
 
@@ -3072,15 +3056,12 @@ class TopMenuOptions {
 		const biographyNetworkMenu = new Menu('Network');
 		if (utils.HTTPRequestAsync) {
 			biographyNetworkMenu.addToggleItem(`AllMusic     ${bioSet.useUtilsAllmusic ? '(New download method)' : '(Old download method)'}`, bioSet, 'useUtilsAllmusic', () => {
-				bioSet.toggle('useUtilsAllmusic');
 				window.NotifyOthers('bio_property', [['useUtilsAllmusic', bioSet.useUtilsAllmusic]]);
 			});
 			biographyNetworkMenu.addToggleItem(`last.fm        ${bioSet.useUtilsLastfm ? '(New download method)' : '(Old download method)'}`, bioSet, 'useUtilsLastfm', () => {
-				bioSet.toggle('useUtilsLastfm');
 				window.NotifyOthers('bio_property', [['useUtilsLastfm', bioSet.useUtilsLastfm]]);
 			});
 			biographyNetworkMenu.addToggleItem(`Wikipedia   ${bioSet.useUtilsWiki ? '(New download method)' : '(Old download method)'}`, bioSet, 'useUtilsWiki', () => {
-				bioSet.toggle('useUtilsWiki');
 				window.NotifyOthers('bio_property', [['useUtilsWiki', bioSet.useUtilsWiki]]);
 			});
 		}
@@ -3755,25 +3736,40 @@ class TopMenuOptions {
 			grm.ui.albumArt = null;
 			on_playback_new_track(fb.GetNowPlaying());
 		});
+		debugMenu.addSeparator();
+		debugMenu.addItem('Enable debug APCA calibration overlay', grCfg.settings.showDebugAPCACalibrationOverlay, () => {
+			grCfg.settings.showDebugAPCACalibrationOverlay = !grCfg.settings.showDebugAPCACalibrationOverlay;
+			grm.ui.albumArt = null;
+			if (grCfg.settings.showDebugAPCACalibrationOverlay) {
+				grCfg.settings.showDebugColorOverlay = false
+				grCfg.settings.showDebugThemeOverlay = false
+				grCfg.settings.showDebugPerformanceOverlay = false;
+			}
+			if (grCfg.settings.showDebugAPCACalibrationOverlay || !fb.IsPlaying) {
+				grm.ui.initTheme();
+			}
+			on_playback_new_track(fb.GetNowPlaying());
+			grm.debug.repaintWindow();
+		});
 		debugMenu.addItem('Enable debug color overlay', grCfg.settings.showDebugColorOverlay, () => {
 			grCfg.settings.showDebugColorOverlay = !grCfg.settings.showDebugColorOverlay;
 			if (grCfg.settings.showDebugColorOverlay) {
+				grCfg.settings.showDebugAPCACalibrationOverlay = false;
 				grCfg.settings.showDebugThemeOverlay = false;
 				grCfg.settings.showDebugPerformanceOverlay = false;
 				grm.ui.albumArt = null;
 				on_playback_new_track(fb.GetNowPlaying());
-				return;
 			}
 			grm.debug.repaintWindow();
 		});
 		debugMenu.addItem('Enable debug theme overlay', grCfg.settings.showDebugThemeOverlay, () => {
 			grCfg.settings.showDebugThemeOverlay = !grCfg.settings.showDebugThemeOverlay;
 			if (grCfg.settings.showDebugThemeOverlay) {
+				grCfg.settings.showDebugAPCACalibrationOverlay = false;
 				grCfg.settings.showDebugColorOverlay = false;
 				grCfg.settings.showDebugPerformanceOverlay = false;
 				grm.ui.albumArt = null;
 				on_playback_new_track(fb.GetNowPlaying());
-				return;
 			}
 			grm.debug.repaintWindow();
 		});
@@ -3781,6 +3777,7 @@ class TopMenuOptions {
 			grCfg.settings.showDebugPerformanceOverlay = !grCfg.settings.showDebugPerformanceOverlay;
 			grm.ui.clearCache('debug');
 			if (grCfg.settings.showDebugPerformanceOverlay) {
+				grCfg.settings.showDebugAPCACalibrationOverlay = false;
 				grCfg.settings.showDebugColorOverlay = false;
 				grCfg.settings.showDebugThemeOverlay = false;
 				grm.cpuTrack.start();

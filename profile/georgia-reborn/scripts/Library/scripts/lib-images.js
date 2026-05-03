@@ -400,7 +400,7 @@ class LibImages {
 				// const grpCol = this.getGrpCol(item, nowp, lib.pop.highlight.text && i == lib.pop.m.i);
 				// const lotCol = this.getLotCol(item, nowp, lib.pop.highlight.text && i == lib.pop.m.i);
 				const coversRightBottom = ['coversLabelsRight', 'coversLabelsBottom'].includes(grSet.libraryDesign) || libSet.albumArtLabelType === 2;
-				const updatedNowpBg = pl.col.header_nowplaying_bg !== ''; // * Wait until nowplaying bg has a new color to prevent flashing
+				const updatedNowpBg = pl.col.header_nowplaying_bg !== null; // * Wait until nowplaying bg has a new color to prevent flashing
 				const colNowPlaying = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.nowPlayingBg, grSet.libraryBgRowOpacity) : lib.ui.col.nowPlayingBg;
 				const colRowStripes = grSet.libraryBgImg ? RGBtoRGBA(lib.ui.col.rowStripes, grSet.libraryBgRowOpacity) : lib.ui.col.rowStripes;
 

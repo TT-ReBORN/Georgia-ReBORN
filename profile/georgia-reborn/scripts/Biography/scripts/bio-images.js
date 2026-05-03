@@ -886,7 +886,34 @@ class BioImages {
 
 	getImg(handle, id, needStub) {
 		this.cur_handle = handle;
-		utils.GetAlbumArtAsync(0, handle, id, needStub);
+
+		utils.GetAlbumArtAsyncV2(0, handle, id, needStub).then(result => {
+			let { image: img, path: imgPath } = result;
+			const embedded  = handle.Path === imgPath;
+			const forceStnd = this.forceStnd();
+			const stale = !this.cur_handle || !this.cur_handle.Compare(handle);
+			const cacheHit = img && this.cache().cacheHit(imgPath + (embedded ? id : ''));
+
+			if (stale || cacheHit) return;
+			if (!forceStnd && this.loadCycCov(handle, id, img, imgPath)) return;
+
+			const canTryAlt = !forceStnd && !bioSet.artistView;
+			if (canTryAlt && bio.panel.alb.ix && bio.panel.alb.ix < bio.panel.alb.list.length && !img) {
+				return this.loadAltCov(handle, 1);
+			}
+
+			const tryFallback = !img && canTryAlt && (!id || bioSet.loadCovAllFb) && (!bio.panel.alb.ix || forceStnd);
+			if (tryFallback) {
+				if (this.loadAltCov(handle, 0)) return;
+				if (bioSet.loadCovAllFb) id = this.cov.selFiltered[0];
+				if (this.stub[id].user) {
+					img = this.stub[id].user;
+					imgPath = this.stub[id].path;
+				}
+			}
+
+			this.loadStndCov(handle, id, img, imgPath, embedded);
+		});
 	}
 
 	getImgFallback() {
@@ -1237,23 +1264,6 @@ class BioImages {
 
 	needTrim(n, ratio) {
 		return n || Math.abs(ratio - 1) >= 0.05;
-	}
-
-	on_get_album_art_done(handle, art_id, image, image_path) {
-		const embedded = handle.Path == image_path;
-		const forceStnd = this.forceStnd();
-		if (!this.cur_handle || !this.cur_handle.Compare(handle) || image && this.cache().cacheHit(image_path + (!embedded ? '' : art_id))) return;
-		if (!forceStnd && this.loadCycCov(handle, art_id, image, image_path)) return;
-		if (!forceStnd && bio.panel.alb.ix && bio.panel.alb.ix < bio.panel.alb.list.length && !image && !bioSet.artistView) return this.loadAltCov(handle, 1);
-		if (!image && !bioSet.artistView && (!art_id || bioSet.loadCovAllFb) && (!bio.panel.alb.ix || forceStnd)) {
-			if (this.loadAltCov(handle, 0)) return;
-			if (bioSet.loadCovAllFb) art_id = this.cov.selFiltered[0];
-			if (this.stub[art_id].user) {
-				image = this.stub[art_id].user;
-				image_path = this.stub[art_id].path;
-			}
-		}
-		this.loadStndCov(handle, art_id, image, image_path, embedded);
 	}
 
 	on_load_image_done(image, image_path) {

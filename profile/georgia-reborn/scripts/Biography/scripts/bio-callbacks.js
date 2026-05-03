@@ -55,10 +55,6 @@ class BioCallbacks {
 		bio.resize.focus = is_focused;
 	}
 
-	on_get_album_art_done(handle, art_id, image, image_path) {
-		bio.img.on_get_album_art_done(handle, art_id, image, image_path);
-	}
-
 	// TT & Regorxxx <- Http Requests when utils.HTTPRequestAsync is available
 	on_http_request_done(task_id, success, response_text, status, headers) {
 		bioXHR.on_http_request_done(task_id, success, response_text, status, headers);

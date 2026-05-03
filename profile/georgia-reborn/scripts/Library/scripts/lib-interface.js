@@ -450,19 +450,47 @@ class LibUserInterface {
 	}
 
 	getFbImg(handle) {
-		if (!handle) handle = (!libSet.recItemImage || libSet.libSource != 2) ? (fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem()) : this.expandHandle;
-		if (handle) {
-			this.cur_handle = handle;
-			utils.GetAlbumArtAsync(0, handle, 0);
+		if (!handle) {
+			handle = libSet.recItemImage && libSet.libSource == 2 ? this.expandHandle :
+				(fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem());
+		}
+
+		if (!handle) {
+			if (fb.IsPlaying) return;
+			const image = this.setStub(1);
+
+			if (!image) {
+				this.img.cur = null;
+				return;
+			}
+
+			this.formatImg(image);
 			return;
 		}
-		if (fb.IsPlaying) return;
-		const image = this.setStub(1);
-		if (!image) {
-			this.img.cur = null;
-			return;
-		}
-		this.formatImg(image);
+
+		this.cur_handle = handle;
+
+		utils.GetAlbumArtAsyncV2(0, handle, 0, true).then(result => {
+			const { image, path } = result;
+			const stale = this.cur_handle ? !this.cur_handle.Compare(handle) : true;
+
+			if (stale) return;
+
+			if (this.img.cur_pth === path && this.img.cur && image) {
+				window.Repaint();
+				return;
+			}
+
+			this.img.cur_pth = path;
+			const finalImg = image || this.setStub(0);
+
+			if (!finalImg) {
+				this.img.cur = null;
+				return;
+			}
+
+			this.formatImg(finalImg);
+		});
 	}
 
 	getFont(init) {
@@ -801,18 +829,6 @@ class LibUserInterface {
 
 	isLightCol(c, bypass) {
 		return this.getLuminance(c, bypass) > 0.35;
-	}
-
-	on_get_album_art_done(handle, image, image_path) {
-		if (!this.cur_handle || !this.cur_handle.Compare(handle)) return;
-		if (this.img.cur_pth == image_path && this.img.cur && image) return window.Repaint();
-		this.img.cur_pth = image_path;
-		if (!image) image = this.setStub(0);
-		if (!image) {
-			this.img.cur = null;
-			return;
-		}
-		this.formatImg(image);
 	}
 
 	on_playback_new_track(handle) {

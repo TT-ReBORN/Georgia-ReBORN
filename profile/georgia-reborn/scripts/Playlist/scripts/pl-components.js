@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -651,8 +651,6 @@ class PlaylistImage {
 				item.repaint();
 			}
 			else if (!pl.thumbnail_list.has(metadb)) {
-				// TODO: Once this has been better tested, remove on_get_album_art_done callback from this file, and probably gr-callbacks.js as well
-				// utils.GetAlbumArtAsync(window.ID, metadb, g_album_art_id.front);
 				pl.thumbnail_list.add(metadb);
 				utils.GetAlbumArtAsyncV2(window.ID, metadb, AlbumArtId.Front).then((artResult) => {
 					if (!item.is_art_loaded()) {
@@ -2062,17 +2060,16 @@ class PlaylistRating {
 	/**
 	 * Draws stars as rating in the playlist row.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 * @param {number} color - The color of the stars.
 	 */
-	draw(gr, color) {
+	draw(gr) {
 		const cur_rating = this.get_rating();
 		let cur_rating_x = this.x;
 		const y = this.y + HD_4K(1, 3);
 
 		for (let j = 0; j < 5; j++) {
 			if (j < cur_rating) {
-				gr.DrawString(RebornSymbols.StarFull, pl.font.rating_set, grm.ui.loadingThemeComplete ? RGBA(0, 0, 0, 100) : color, cur_rating_x, y, this.btn_w + 1, this.h + 2, Stringformat.Align_Center);
-				gr.DrawString(RebornSymbols.StarFull, pl.font.rating_set, color, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
+				gr.DrawString(RebornSymbols.StarFull, pl.font.rating_set, RGBA(0, 0, 0, 100), cur_rating_x, y, this.btn_w + 1, this.h + 2, Stringformat.Align_Center);
+				gr.DrawString(RebornSymbols.StarFull, pl.font.rating_set, pl.col.row_rating_color, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
 			} else if (grSet.showPlaylistRatingGrid) {
 				gr.DrawString(RebornSymbols.BulletOperator, pl.font.rating_not_set, pl.col.row_title_normal, cur_rating_x, y, this.btn_w, this.h, Stringformat.Align_Center);
 			}

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -15,30 +15,6 @@
 ////////////////////////
 // * MAIN CALLBACKS * //
 ////////////////////////
-/**
- * Called when thread created by utils.GetAlbumArtAsync is done.
- * @global
- * @param {FbMetadbHandle} metadb - The metadb of the track.
- * @param {number} art_id - See Flags.js > AlbumArtId.
- * @param {GdiBitmap} image - Null on failure.
- * @param {string} image_path - The path to image file (or music file if image is embedded).
- */
-function on_get_album_art_done(metadb, art_id, image, image_path) {
-	if (grm.ui.displayPlaylist || grm.ui.displayPlaylistArtwork) {
-		grm.debug.callLog('Playlist => on_get_album_art_done');
-		pl.call.on_get_album_art_done(metadb, art_id, image, image_path);
-	}
-	else if (grm.ui.displayLibrary) {
-		grm.debug.callLog('Library => on_get_album_art_done');
-		lib.call.on_get_album_art_done(metadb, art_id, image, image_path);
-	}
-	if (grm.ui.displayBiography) {
-		grm.debug.callLog('Biography => on_get_album_art_done');
-		bio.call.on_get_album_art_done(metadb, art_id, image, image_path);
-	}
-}
-
-
 /**
  * Called when thread created by gdi.LoadImageAsync is done.
  * @global
@@ -114,6 +90,10 @@ function on_playback_new_track(metadb) {
  * @param {GdiGraphics} gr - The GDI graphics object.
  */
 function on_paint(gr) {
+	if (!grm.ui.loadingThemeComplete) {
+		grPreloader.drawPreloader(gr);
+		return;
+	}
 	grm.ui.drawMain(gr);
 }
 
@@ -151,7 +131,7 @@ function on_size() {
 
 	grm.bgImg.initBgImage(false, true);
 	grm.ui.displayLyrics && grm.lyrics.initLyrics();
-	grm.style.setStyleBlend();
+	grm.colorStyles.setStyleBlend();
 	grm.button.initButtonState();
 }
 
@@ -213,6 +193,8 @@ function on_http_request_done(task_id, success, response_text, status, content_t
  * @param {number} code - The character code.
  */
 function on_char(code) {
+	if (grm.colorDebug.handleAPCACalibrationChar(code)) return;
+
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
 		grm.debug.callLog('Custom menu => on_char');
 		grm.cusMenu.on_char(code);
@@ -377,6 +359,11 @@ function on_item_focus_change(playlistIndex, from, to) {
  * @param {number} vkey - The virtual key code.
  */
 function on_key_down(vkey) {
+	if (grCfg.settings.showDebugAPCACalibrationOverlay) {
+		grm.colorDebug.handleAPCACalibrationKey(vkey);
+		return;
+	}
+
 	if (grm.ui.displayCustomThemeMenu || grm.ui.displayMetadataGridMenu) {
 		grm.debug.callLog('Custom menu => on_key_down');
 		grm.cusMenu.on_key_down(vkey);
@@ -499,7 +486,7 @@ function on_mouse_lbtn_dblclk(x, y, m) {
 			// * Pick a new random theme preset
 			else if (grSet.presetAutoRandomMode === 'dblclick') {
 				grm.ui.themePresetIndicator = true;
-				grm.preset.getRandomThemePreset();
+				grm.preset.generateRandomThemePreset();
 			}
 			// * Generate a new color in Random theme
 			else if (grSet.theme === 'random') {
@@ -567,7 +554,7 @@ function on_mouse_lbtn_down(x, y, m) {
 		}
 
 		// * Clicking on album art or noAlbumArtStub to pause playback
-		if (mouseInPause(x, y)) {
+		if (!grCfg.settings.showDebugAPCACalibrationOverlay && mouseInPause(x, y)) {
 			setTimeout(() => { // Differentiate between a lyrics drag scroll and a normal click
 				if (!grm.lyrics.scrollDrag) fb.PlayOrPause();
 			}, grm.ui.displayLyrics ? 200 : 0);
@@ -586,6 +573,10 @@ function on_mouse_lbtn_down(x, y, m) {
 function on_mouse_lbtn_up(x, y, m) {
 	if (grm.button) {
 		grm.button.on_mouse_lbtn_up(x, y, m);
+	}
+
+	if (grCfg.settings.showDebugAPCACalibrationOverlay) {
+		grm.colorDebug.handleAPCACalibrationClick(x, y);
 	}
 
 	if (grSet.seekbar === 'progressbar') {
@@ -794,6 +785,10 @@ function on_mouse_move(x, y, m) {
 
 	if (grSet.showTransportControls_layout && grSet.showVolumeBtn_layout) {
 		grm.volBtn.on_mouse_move(x, y, m);
+	}
+
+	if (grCfg.settings.showDebugAPCACalibrationOverlay) {
+		grm.colorDebug.updateAPCAControlsHover();
 	}
 }
 
@@ -1502,7 +1497,7 @@ function mouseInLowerBar(x, y, tooltip) {
 function mouseInTransport(x, y) {
 	const buttonSize = SCALE(grSet.transportButtonSize_layout);
 	const startX = (grm.ui.ww - grm.ui.lowerBarTotalBtnW) / 2;
-	const endX = startX + grm.ui.lowerBarTotalBtnW + (grm.volBtn.volumeBar ? grm.volBtn.volumeBar.w + buttonSize : 0);
+	const endX = startX + grm.ui.lowerBarTotalBtnW + (grm.volBtn ? grm.volBtn.w + buttonSize : 0);
 	const startY = grm.ui.lowerBarBtnY;
 	const endY = startY + buttonSize;
 

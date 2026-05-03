@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -139,6 +139,8 @@ class MainUI {
 
 		// * CACHE * //
 		// #region CACHE
+		/** @public @type {Array} The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls. */
+		this.cachedAlbumArtColors = [];
 		/** @public @type {boolean} The state when to update the ratings for the artist, album, and track of the currently playing track. */
 		this.cachedCurrentRatings = false;
 		/** @public @type {boolean} The calculated lower bar metrics saved so we don't have to recalculate every on every on_paint unless size or metadata changed. */
@@ -273,6 +275,10 @@ class MainUI {
 		this.mouseInLyricsFullLayoutEdge = false;
 		/** @public @type {boolean} The state when Library should not call window.Reload() from panel.set() -> panel.load(), i.e when saving theme settings or restoring theme backup. */
 		this.libraryCanReload = true;
+		/** @public @type {boolean} The state when Library UI components need to be initialized and updated. */
+		this.initComponentsLib = false;
+		/** @public @type {boolean} The state when Biography UI components need to be initialized and updated. */
+		this.initComponentsBio = false;
 		/** @public @type {boolean} The state if this.initTheme() needs to be fully executed to save performance. */
 		this.initThemeFull = false;
 		/** @private @type {boolean} The state if this.initTheme() is currently running to initialize colors and buttons. */
@@ -337,10 +343,10 @@ class MainUI {
 		this.drawLowerBar(gr);
 		this.drawCustomMenu(gr);
 		this.drawStyledTooltips(gr);
-		this.drawStartupBackground(gr);
 
-		grm.debug.drawDebugColorOverlay(gr);
-		grm.debug.drawDebugThemeOverlay(gr);
+		grm.colorDebug.drawDebugAPCACalibrationOverlay(gr);
+		grm.colorDebug.drawDebugColorOverlay(gr);
+		grm.colorDebug.drawDebugThemeOverlay(gr);
 		grm.debug.drawDebugPerformanceOverlay(gr);
 		grm.debug.drawDebugTiming(drawTimingStart);
 		grm.debug.drawDebugRectAreas(gr);
@@ -370,7 +376,7 @@ class MainUI {
 		// * LYRICS BACKGROUND IMAGE * //
 		if (this.displayLyrics && grSet.lyricsLayout !== 'normal' && grSet.lyricsBgImg && grm.bgImg.lyricsBgImg) {
 			grm.bgImg.drawBgImage(gr, grm.bgImg.lyricsBgImg, grSet.lyricsBgImgScale, 0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grSet.lyricsBgImgOpacity, false, 0, 0);
-			if (this.mouseInLyricsFullLayoutEdge || CalcBrightness('IMGCOLOR', grCol.bg, this.albumArt) > 240) {
+			if (this.mouseInLyricsFullLayoutEdge || grCol.imgLuminance > 0.70) {
 				gr.FillSolidRect(0, this.topMenuHeight,  this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, RGBA(0, 0, 0, 100));
 			}
 		}
@@ -579,7 +585,7 @@ class MainUI {
 			this.albumArtSize.w !== 0 && this.albumArtDisplayed();
 
 		if (buttonCanDisplay) {
-			grm.pseBtn.draw(gr);
+			grm.pauseBtn.draw(gr);
 		}
 	}
 
@@ -751,12 +757,11 @@ class MainUI {
 	 */
 	drawThemeNotification(gr) {
 		if (grSet.themeSetupDay || grSet.themeSetupNight) {
-			const msg = grm.msg.getMessage('main', 'themeDayNightSetup');
-			this.themeNotification = msg;
+			this.themeNotification = grm.msg.getMessage('main', 'themeDayNightSetup');
 		}
 
-		if (this.themeNotification === '' && this.themePresetName === '' ||
-			!this.themePresetIndicator || !grSet.presetIndicator || !['off', 'dblclick'].includes(grSet.presetAutoRandomMode)) {
+		if (this.themeNotification === '' && this.themePresetName === '' || !this.themePresetIndicator ||
+			!grSet.presetIndicator || !['off', 'dblclick'].includes(grSet.presetAutoRandomMode)) {
 			return;
 		}
 
@@ -771,27 +776,20 @@ class MainUI {
 		const boxW = maxWidth + padding * 3;
 		const boxH = lineH * lines.length + padding * 2;
 
-		const fullW =
-			grSet.layout === 'default'
-			&&
-			(this.displayPlaylist && grSet.playlistLayout === 'full'
-			||
-			this.displayLibrary && grSet.libraryLayout  === 'full'
-			||
-			this.displayBiography && grSet.biographyLayout === 'full'
-			||
-			this.displayLyrics && grSet.lyricsLayout !== 'normal');
+		const panelsFullWidth = this.panelLayoutState('allFull');
+		const cover = fb.IsPlaying && this.albumArt && grSet.layout !== 'compact' && !panelsFullWidth;
+		const noCoverDefault = grSet.layout === 'default' && !panelsFullWidth && !grSet.panelWidthAuto;
 
-		const cover = fb.IsPlaying && this.albumArt && grSet.layout !== 'compact' && !fullW;
-		const noCoverDefault = grSet.layout === 'default' && !fullW && !grSet.panelWidthAuto;
-
-		const x = Math.round((cover ? this.albumArtSize.x + this.albumArtSize.w * 0.5 : noCoverDefault ? this.ww * 0.25 : this.ww * 0.5) - boxW * 0.5);
-		const y = Math.round((cover ? this.topMenuHeight + this.albumArtSize.h * 0.5 : ((this.wh - this.topMenuHeight - this.lowerBarHeight) * 0.5) + this.topMenuHeight) - boxH * 0.5);
+		const verticalCenter  = this.topMenuHeight + ((this.wh - this.topMenuHeight - this.lowerBarHeight) * 0.5);
+		const cx = cover ? (this.albumArtSize.x + this.albumArtSize.w * 0.5) : (noCoverDefault ? this.ww * 0.25 : this.ww * 0.5);
+		const cy = cover ? (this.topMenuHeight + this.albumArtSize.h * 0.5) : verticalCenter;
+		const x = Math.round(cx - boxW * 0.5);
+		const y = Math.round(cy - boxH * 0.5);
 
 		gr.SetSmoothingMode(SmoothingMode.AntiAlias);
+		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 		gr.FillRoundRect(x, y, boxW, boxH, arc, arc, grCol.popupBg);
 		gr.DrawRoundRect(x, y, boxW, boxH, arc, arc, SCALE(2), 0x64000000);
-		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 		gr.DrawString(text, grFont.notification, grCol.popupText, x, y, boxW, boxH, StringFormat(1, 1, 4));
 	}
 
@@ -832,7 +830,7 @@ class MainUI {
 		// Top shadow
 		FillGradRect(gr, 0, this.albumArtSize.y - HD_4K(6, 10), this.albumArtSize.x + this.albumArtSize.w, HD_4K(6, 10), 90, 0, grCol.shadow);
 		// Middle shadow
-		FillGradRect(gr, middleX, this.albumArtSize.y, 4, this.albumArtSize.h, 0, grm.color.getMiddleShadowColor(), 0);
+		FillGradRect(gr, middleX, this.albumArtSize.y, 4, this.albumArtSize.h, 0, grm.colorManager.getMiddleShadowColor(), 0);
 		// Bottom shadow
 		FillGradRect(gr, 0, this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0), this.albumArtSize.x + this.albumArtSize.w, SCALE(5), 90, grCol.shadow, 0);
 	}
@@ -869,7 +867,7 @@ class MainUI {
 		// Top shadow
 		FillGradRect(gr, x, this.topMenuHeight - HD_4K(6, 10), w, HD_4K(6, 10), 90, 0, grCol.shadow);
 		// Middle shadow
-		FillGradRect(gr, middleX, this.topMenuHeight, 4, this.wh - this.topMenuHeight - this.lowerBarHeight, 0, 0, grm.color.getMiddleShadowColor());
+		FillGradRect(gr, middleX, this.topMenuHeight, 4, this.wh - this.topMenuHeight - this.lowerBarHeight, 0, 0, grm.colorManager.getMiddleShadowColor());
 		// Bottom shadow
 		FillGradRect(gr, x, this.wh - this.lowerBarHeight + HD_4K(-1, 0), w, SCALE(5), 90, grCol.shadow, 0);
 	}
@@ -1054,17 +1052,6 @@ class MainUI {
 		this.repaintStyledTooltips(this.styledToolTipX - offset * 2, this.styledToolTipY - offset, this.styledToolTipW + offset * 4, this.styledToolTipH + offset * 2);
 
 		grm.debug.setDebugProfile(false, 'print', 'on_paint -> styled tooltips');
-	}
-
-	/**
-	 * Draws the startup background until everything in the theme is loaded.
-	 * Pseudo delay background logo mask when loading the theme, otherwise it will show ugly repaints when initializing since smp v1.6.1.
-	 * @param {GdiGraphics} gr - The GDI graphics object.
-	 */
-	drawStartupBackground(gr) {
-		if (this.loadingThemeComplete) return;
-		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.loadingThemeBg);
-		if (grSet.showPreloaderLogo) grPreloader.drawLogo(gr);
 	}
 	// #endregion
 
@@ -1327,7 +1314,7 @@ class MainUI {
 		// * Assigned after one and two lines display has been calculated
 		this.lowerBarTextStartY = this.getLowerBarTextY();
 		this.lowerBarArtistX    = this.seekbarX + this.lowerBarFlagW;
-		this.lowerBarArtistY    = this.lowerBarTextStartY - (this.lowerBarTwoLines ? this.lowerBarArtistH + this.seekbarHeight * 0.25 : 0);
+		this.lowerBarArtistY    = this.lowerBarTextStartY - (this.lowerBarTwoLines ? Math.ceil(this.lowerBarArtistH * 1.1) : 0);
 		this.lowerBarTrackNumX  = this.getLowerBarTrackNumX();
 		this.lowerBarTrackNumY  = this.lowerBarTextStartY;
 		this.lowerBarTitleX     = this.getLowerBarTrackTitleX();
@@ -1383,13 +1370,13 @@ class MainUI {
 		const noAlbumArtPauseBtnY = this.wh * 0.5 - this.topMenuHeight;
 
 		if (this.albumArt) {
-			grm.pseBtn.setCoords(albumArtPauseBtnX, albumArtPauseBtnY);
+			grm.pauseBtn.setCoords(albumArtPauseBtnX, albumArtPauseBtnY);
 		}
 		else if (grm.details.discArt && !this.noAlbumArtStub) {
-			grm.pseBtn.setCoords(discArtPauseBtnX, discArtPauseBtnY);
+			grm.pauseBtn.setCoords(discArtPauseBtnX, discArtPauseBtnY);
 		}
 		else if (this.noAlbumArtStub) {
-			grm.pseBtn.setCoords(noAlbumArtPauseBtnX, noAlbumArtPauseBtnY);
+			grm.pauseBtn.setCoords(noAlbumArtPauseBtnX, noAlbumArtPauseBtnY);
 		}
 	}
 	// #endregion
@@ -1554,11 +1541,6 @@ class MainUI {
 		grm.details.playCountVerifiedByLastFm = lastfmPlayCount !== '0' && lastfmPlayCount !== '?';
 
 		this.currentAlbumFolder = !this.isStreaming ? metadb && metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
-		this.lastAlbumFolder = this.currentAlbumFolder;
-		this.lastAlbumFolderTag = $('%album%', metadb);
-		this.lastAlbumDiscNumber = $('$if2(%discnumber%,0)', metadb);
-		this.lastAlbumVinylSide = $(`$if2(${grTF.vinyl_side},ZZ)`, metadb);
-
 		this.currentLastPlayed = $(grTF.last_played, metadb);
 		this.playingPlaylist = grSet.showGridPlayingPlaylist ? $(grTF.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
 	}
@@ -1602,7 +1584,7 @@ class MainUI {
 		bio.ui.setSbar();
 		bio.but.createImages();
 		bio.but.resetZoom();
-		grm.theme.initBiographyColors();
+		grm.colorThemes.initThemeColors('biography');
 		this.initBiographyLayout();
 	}
 
@@ -1638,11 +1620,6 @@ class MainUI {
 	async initMain() {
 		grm.debug.debugLog('Init => initMain');
 
-		// * Init colors
-		this.initCustomTheme();
-		grm.color.setThemeColors();
-		grm.theme.initMainColors(); // Init preloader background color
-
 		// * Init main
 		this.initCacheDeletion();
 		this.clearPlaybackState(true);
@@ -1673,12 +1650,18 @@ class MainUI {
 			await this.initAlbumArtLoading();
 		}
 
+		// * Init disc art
+		grm.details.initDiscArtStub(); // Preload disc art stub into cache
+		if (fb.IsPlaying && grSet.showPanelOnStartup === 'details') {
+			grm.details.initDiscArt()
+			await WaitUntil(() => !this.discArt); // Wait until disc art loaded
+		}
+
 		// * Hide loading screen
 		grm.debug.debugLog('\n>>> initTheme => initMain <<<\n');
 		this.initThemeFull = true;
 		this.initTheme();
 		this.loadingThemeComplete = true;
-		window.Repaint();
 	}
 
 	/**
@@ -1688,55 +1671,26 @@ class MainUI {
 		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
 		this.initThemeRunning = true;
 
-		const fullInit =
-			this.initThemeFull || ['reborn', 'random'].includes(grSet.theme)
-			||
-			grSet.themeBrightness !== 'default' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn
-			||
-			libSet.theme !== 0 || bioSet.theme !== 0;
-
 		// * SETUP COLORS * //
-		this.initCustomTheme();
+		grAlias.update();
 		grm.day.initThemeDayNightMain();
-		grm.color.initThemeStyleProperties();
-		grm.color.setImageBrightness();
-		grm.color.setNoAlbumArtColors();
-		grm.color.getRandomThemeColor();
-		grm.style.setStyleBlend();
-		grm.style.initBlackAndWhiteReborn();
-		grm.color.setBackgroundBrightnessRules();
+		grm.colorManager.generateRandomThemeColor();
+		grm.colorManager.setImageBrightness();
+		grm.colorManager.setImageLuminance();
+		grm.colorManager.setBackgroundBrightnessRules();
 
 		// * INIT COLORS * //
-		grm.theme.initPlaylistColors();
-		grm.theme.initLibraryColors();
-		grm.theme.initBiographyColors();
-		grm.theme.initMainColors();
-		grm.theme.initChronflowColors();
-		grm.style.initStyleColors();
+		grm.colorThemes.initThemeColors();
+		grm.colorStyles.initStyleColors();
 
 		// * POST-INIT COLOR ADJUSTMENTS * //
-		grm.theme.themeColorAdjustments();
 		grm.details.updateGridLogos();
-		if (!fullInit) return;
-		grSet.themeBrightness !== 'default' && grm.color.adjustThemeBrightness(grSet.themeBrightness);
-		pl.playlist.update_playlist_headers();
-		grSet.playlistRowHover && pl.playlist.update_playlist_rows();
-		libImg.labels.overlayDark && lib.ui.getItemColours();
-		bio.txt.artCalc();
-		bio.txt.albCalc();
+		grm.peakBar.setColors();
 
-		// * UPDATE BUTTONS * //
-		pl.playlist.initScrollbar();
-		lib.sbar.setCol();
-		lib.pop.createImages();
-		lib.but.createImages();
-		lib.but.refresh(true);
-		bio.alb_scrollbar.setCol();
-		bio.art_scrollbar.setCol();
-		bio.but.createImages('all');
-		bio.img.createImages();
-		grm.button.createButtons(this.ww, this.wh, true, false);
-		grm.button.initButtonState();
+		if (!this.shouldInitThemeFully()) return;
+
+		grm.colorManager.adjustThemeBrightness();
+		this.initUIComponents('all');
 
 		// * REFRESH * //
 		UIWizard.WindowBgColor = grCol.bg;
@@ -1744,6 +1698,59 @@ class MainUI {
 
 		this.initThemeRunning = false;
 		grm.debug.setDebugProfile(false, 'print', 'initTheme');
+	}
+
+	/**
+	 * Initializes UI components for the specified panel or all panels.
+	 * Auto-handles lazy loading: skips invisible panels, processes pending inits when panels become visible.
+	 * @param {'all'|'playlist'|'library'|'biography'} type - The panel components to initialize.
+	 * @param {boolean} force - The optional force init even if panel not visible.
+	 */
+	initUIComponents(type = 'all', force = false) {
+		const all       = type === 'all';
+		const playlist  = all || type === 'playlist';
+		const library   = all || type === 'library';
+		const biography = all || type === 'biography';
+
+		if (playlist) {
+			pl.playlist.update_playlist_headers();
+			pl.playlist.initScrollbar();
+		}
+
+		if (library) {
+			if (grm.ui.displayLibrary || force) {
+				if (libImg.labels.overlayDark) {
+					lib.ui.getItemColours();
+					grm.colorThemes.initThemeColors('library');
+				}
+				lib.sbar.setCol();
+				lib.pop.createImages();
+				lib.but.createImages();
+				lib.but.refresh(true);
+				this.initComponentsLib = false;
+			} else {
+				this.initComponentsLib = true;
+			}
+		}
+
+		if (biography) {
+			if (grm.ui.displayBiography || force) {
+				bio.txt.artCalc();
+				bio.txt.albCalc();
+				bio.alb_scrollbar.setCol();
+				bio.art_scrollbar.setCol();
+				bio.but.createImages('all');
+				bio.img.createImages();
+				this.initComponentsBio = false;
+			} else {
+				this.initComponentsBio = true;
+			}
+		}
+
+		if (all) {
+			grm.button.createButtons(this.ww, this.wh, true, false);
+			grm.button.initButtonState();
+		}
 	}
 
 	/**
@@ -1760,7 +1767,7 @@ class MainUI {
 			this.initThemeTags();
 		} else {
 			this.restoreThemeState();
-			grm.color.getThemeColors(artwork);
+			grm.colorManager.setAlbumArtThemeColors(artwork, this.cachedAlbumArtColors);
 		}
 
 		if (grSet.presetAutoRandomMode !== 'album' && grSet.presetSelectMode !== 'harmonic' && !this.hasThemeTags()) {
@@ -1774,9 +1781,13 @@ class MainUI {
 	 */
 	initThemeTags() {
 		this.themePresetIndicator = false;
+		this.themeFromTags = true;
+
+		const customPreset = $('[%GR_PRESET%]');
 		const customTheme  = $('[%GR_THEME%]');
 		const customStyle  = $('[%GR_STYLE%]');
-		const customPreset = $('[%GR_PRESET%]');
+
+		this.themeRestoreState = customPreset.length || customTheme.length || customStyle.length;
 
 		const themeStyles = {
 			'nighttime' : () => { grSet.styleNighttime = true; },
@@ -1828,32 +1839,26 @@ class MainUI {
 			grm.debug.debugLog('\n>>> initThemeTags => %GR_PRESET% loaded <<<');
 			grSet.preset = customPreset;
 			grm.preset.setThemePreset(customPreset);
-			this.themeRestoreState = true;
+			return;
 		}
 		// * 2. Set theme
-		else if (customTheme.length) {
+		if (customTheme.length) {
 			grm.debug.debugLog('\n>>> initThemeTags => %GR_THEME% loaded <<<');
 			grSet.theme = customTheme;
 			this.resetTheme();
-			this.themeRestoreState = true;
 		}
 		// * 3. Set styles
-		if (customStyle.length && !customPreset.length) {
+		if (customStyle.length) {
 			grm.debug.debugLog('\n>>> initThemeTags => %GR_STYLE% loaded <<<');
 			this.resetStyle('all');
 			for (const style of customStyle.split(Regex.PunctCommaSemicolonSpace)) {
 				const setStyle = themeStyles[style];
 				if (setStyle) setStyle();
 			}
-			this.themeRestoreState = true;
 		}
 
 		// * 4. Update theme
-		if (!customPreset.length) { // Prevent double initialization for theme presets, this.updateStyle() already handled in setThemePreset()
-			this.updateStyle();
-		}
-
-		this.themeFromTags = true;
+		this.updateStyle();
 	}
 
 	/**
@@ -2026,12 +2031,10 @@ class MainUI {
 
 		this.clearCache('metrics');
 		this.clearCache('ratings');
-		this.initMetadata();
 		this.loadCountryFlags();
 
 		grm.details.clearCache('metrics');
-		grm.details.clearCache('codecLogo');
-		grm.details.clearCache('channelLogo');
+		grm.details.updateGridLogos();
 		grm.details.updateGridTimeline(true);
 		grm.details.updateGrid(this.currentLastPlayed, this.playingPlaylist);
 		grm.details.loadGridReleaseCountryFlag();
@@ -2046,11 +2049,13 @@ class MainUI {
 
 		this.initThemeFull = false;
 		this.newTrackFetchingArtwork = true;
+		this.themeFromTags = false;
 
 		this.clearCache('metrics');
 		this.clearCache('ratings');
 		this.clearCache('debug');
 		this.initStreamingOrCD(metadb);
+		this.initMetadata(metadb);
 		this.handleArtwork(metadb);
 		grm.details.clearCache('metrics');
 		grm.details.getBandLogo();
@@ -2062,14 +2067,14 @@ class MainUI {
 
 		// * Pick a new random theme preset on new track
 		if (grSet.presetAutoRandomMode === 'track' && !this.doubleClicked) {
-			grm.preset.getRandomThemePreset();
+			grm.preset.generateRandomThemePreset();
 		}
 		// * Generate a new color in Random theme on new track
 		if (grSet.styleRandomAutoColor === 'track' && !this.doubleClicked) {
-			grm.color.getRandomThemeAutoColor();
+			grm.colorManager.generateRandomThemeAutoColor();
 		}
 		// * Check for new themes in tracks that have GR_* tags in metadata
-		if (this.newTrackFetchingArtwork && (this.hasThemeTags() || this.themeFromTags)) {
+		if (this.newTrackFetchingArtwork && (this.hasThemeTags())) {
 			this.initThemeState(this.albumArt);
 			this.newTrackFetchingArtwork = false;
 		}
@@ -2175,7 +2180,7 @@ class MainUI {
 			}
 		}
 
-		grm.pseBtn.repaint();
+		grm.pauseBtn.repaint();
 	}
 
 	/**
@@ -2360,29 +2365,57 @@ class MainUI {
 
 	/**
 	 * Checks the panel layout state based on the provided condition.
-	 * @param {string} condition - The condition to check. Use 'all' to check all conditions.
-	 * @returns {boolean} - True if the condition(s) are met, otherwise false.
+	 * @param {string} state - The specific state panel to check: 'playlist', 'library', 'biography', 'lyrics' 'allFull', 'allNormal'.
+	 * @returns {boolean}
 	 */
-	panelLayoutState(condition) {
-		const layout = {
-			playlistLayoutNormal: grSet.playlistLayout === 'normal' && this.displayPlaylist && !this.displayBiography,
-			libraryLayoutNormal: grSet.libraryLayout === 'normal' && this.displayLibrary,
-			biographyLayoutNormal: grSet.biographyLayout === 'normal' && this.displayBiography,
-			lyricsLayoutNormal: grSet.lyricsLayout === 'normal' && this.displayLyrics,
-			lyricsLayoutFull: grSet.lyricsLayout === 'full' && this.displayLyrics,
-			displayLibrarySplit: this.displayLibrarySplit()
+	panelLayoutState(state) {
+		const panel = {
+			playlist:  grSet.playlistLayout  === 'full' && this.displayPlaylist,
+			library:   grSet.libraryLayout   === 'full' && this.displayLibrary,
+			biography: grSet.biographyLayout === 'full' && this.displayBiography,
+			lyrics:    grSet.lyricsLayout    === 'full' && this.displayLyrics
 		};
 
-		if (condition === 'allNormal') {
-			return grSet.layout === 'default'
-			&& (layout.playlistLayoutNormal
-			|| layout.libraryLayoutNormal
-			|| layout.biographyLayoutNormal
-			|| layout.lyricsLayoutNormal
-			|| layout.displayLibrarySplit);
+		if (state === 'allFull') {
+			return grSet.layout === 'default' && (panel.playlist || panel.library || panel.biography || panel.lyrics);
 		}
 
-		return layout[condition];
+		if (state === 'allNormal') {
+			return grSet.layout === 'default' && !this.panelLayoutState('allFull') && !this.displayLibrarySplit();
+		}
+
+		return panel[state] || false;
+	}
+
+	/**
+	 * Checks if a new artwork fetch is necessary based on track metadata, streaming status, or folder location changes.
+	 * @returns {boolean} True if the artwork needs to be re-fetched.
+	 */
+	shouldFetchNewArtwork() {
+		return (
+			grSet.albumArtCycle && this.albumArtIndex !== 0
+			|| this.albumArt == null
+			|| this.albumArtEmbedded
+			|| this.isStreaming
+			|| this.currentAlbumFolder !== this.lastAlbumFolder
+			|| $('%album%') !== this.lastAlbumFolderTag
+			|| $('$if2(%discnumber%,0)') !== this.lastAlbumDiscNumber
+			|| $(`$if2(${grTF.vinyl_side},ZZ)`) !== this.lastAlbumVinylSide
+		);
+	}
+
+	/**
+	 * Checks if a complete initialization of UI elements (buttons, scrollbars, etc.) is required.
+	 * @returns {boolean} True if the theme requires a deep initialization of all components.
+	 */
+	shouldInitThemeFully() {
+		return(
+			this.initThemeFull || ['reborn', 'random'].includes(grSet.theme)
+			||
+			grSet.themeBrightness !== 'default' || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn
+			||
+			libSet.theme !== 0 || bioSet.theme !== 0
+		);
 	}
 	// #endregion
 
@@ -2618,7 +2651,7 @@ class MainUI {
 	// #region MAIN - PUBLIC METHODS - COMMON
 	/**
 	 * Clears individual cache properties, the specified cache type, or all caches.
-	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'ratings', 'albumArt', 'flag', 'debug'. If not provided, all caches will be cleared.
+	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'ratings', 'albumArt', 'albumArtCache', 'albumArtColors', 'flag', 'debug'. If not provided, all caches will be cleared.
 	 * @param {string} [property] - The specific property to clear within the cache type. Applicable only if `type` is provided.
 	 * @param {boolean} [clearArtCache] - Whether to clear everything in the artCache object.
 	 * @param {boolean} [keepAlbumArt] - Whether to keep the album art. Applicable only if `type` is 'albumArt' or not provided (clearing all caches).
@@ -2650,6 +2683,9 @@ class MainUI {
 			albumArtCache: () => {
 				grm.artCache && grm.artCache.clear();
 				grm.debug.debugLog('Main cache => Art cache cleared');
+			},
+			albumArtColors: () => {
+				this.cachedAlbumArtColors = [];
 			},
 			flag: () => {
 				this.flagImgs = [];
@@ -2842,6 +2878,12 @@ class MainUI {
 
 		// * LIBRARY * //
 		grFont.library = Font(grFont.fontLibrary, grSet.libraryFontSize_layout, 0);
+		grFont.libExClose = Font(grFont.fontRebornSymbols, grSet.libraryFontSize_layout + 6, 0);
+		grFont.libExHeader = Font(grFont.fontLibExHeader, grSet.libraryFontSize_layout + 6, 0);
+		grFont.libExPlaying = Font(grFont.fontRebornSymbols, grSet.libraryFontSize_layout + 4, 0);
+		grFont.libExRebornSymbols = Font(grFont.fontRebornSymbols, grSet.libraryFontSize_layout + 4, 0);
+		grFont.libExRebornSymbolsLarge = Font(grFont.fontRebornSymbols, grSet.libraryFontSize_layout + 10, 0);
+		grFont.libExRebornSymbolsXL = Font(grFont.fontRebornSymbols, grSet.libraryFontSize_layout + 20, 0);
 
 		// * BIOGRAPHY * //
 		grFont.biography = Font(grFont.fontBiography, grSet.biographyFontSize_layout, 0);
@@ -2932,8 +2974,9 @@ class MainUI {
 
 	/**
 	 * Sets a given timer interval to update the seekbar (progress bar, peakmeter bar, waveform bar).
+	 * @param {number|string|null} rate - The chosen FPS value so a CPU-warning popup is shown for high rates. Omit (or pass null) for all other call sites.
 	 */
-	setSeekbarRefresh() {
+	setSeekbarRefresh(rate = null) {
 		const seekbarRefreshRate = {
 			progressbar:  () => grm.progBar.setRefreshRate(),
 			peakmeterbar: () => grm.peakBar.setRefreshRate(),
@@ -2942,8 +2985,22 @@ class MainUI {
 
 		(seekbarRefreshRate[grSet.seekbar] || seekbarRefreshRate.progressbar)();
 
+		const restartSeekbarTimer = () => {
+			this.clearTimer('seekbar', true);
+			this.seekbarTimer = !fb.IsPaused ? setInterval(() => this.refreshSeekbar(), this.seekbarTimerInterval) : null;
+		}
+
+		if (typeof rate !== 'number' || rate > FPS._30) {
+			restartSeekbarTimer();
+			return;
+		}
+
+		// * Show a CPU-warning popup for fast rates, timer must be cleared before the blocking popup and restarted after.
 		this.clearTimer('seekbar', true);
-		this.seekbarTimer = !fb.IsPaused ? setInterval(() => this.refreshSeekbar(), this.seekbarTimerInterval) : null;
+		const messageKey = rate <= FPS._45 ? 'seekbarRefreshRateVeryFast' : 'seekbarRefreshRateFast';
+		grm.msg.showPopupNotice('menu', messageKey, 'Confirm');
+
+		restartSeekbarTimer();
 	}
 
 	/**
@@ -3008,7 +3065,7 @@ class MainUI {
 
 		// * Need when changing from grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 or when changing from theme 'Random' to 'Reborn'
 		if (grCol.primary === RGB(255, 255, 255) || updatePrimaryColor) {
-			grm.color.getThemeColors(this.albumArt); // * Update grCol.primary for dynamic themes
+			grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors); // * Update grCol.primary for dynamic themes
 		}
 
 		// * Disable style nighttime for themes that do not support it
@@ -3600,7 +3657,7 @@ class MainUI {
 			this.setThemePresetSelection(false, true);
 		}
 		if (this.hasAutoRandomPresetMode()) {
-			grm.preset.getRandomThemePreset();
+			grm.preset.generateRandomThemePreset();
 		}
 	}
 
@@ -3647,11 +3704,12 @@ class MainUI {
 		this.initThemeFull = true;
 
 		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme) && fb.IsPlaying) {
-			grm.color.getThemeColors(this.albumArt); // * Update grCol.primary for dynamic themes
+			grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors); // * Update grCol.primary for dynamic themes
 		}
 
 		this.initTheme();
 		grm.debug.debugLog('\n>>> initTheme => updateStyle <<<\n');
+
 		this.initStyleState();
 		grm.preset.initThemePresetState();
 		grm.button.initButtonState();
@@ -3785,7 +3843,16 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	fetchNewArtwork(metadb) {
+		this.lastAlbumFolder = this.currentAlbumFolder;
+		this.lastAlbumFolderTag = $('%album%', metadb);
+		this.lastAlbumDiscNumber = $('$if2(%discnumber%,0)', metadb);
+		this.lastAlbumVinylSide = $(`$if2(${grTF.vinyl_side},ZZ)`, metadb);
+
+		grm.ui.clearCache('albumArtColors');
 		this.fetchAlbumArt(metadb);
+		grm.details.discArtShadowImg = {};
+		grm.details.discArtLastAlbumFolder = '';
+		grm.details.discArtLastPath = '';
 		grm.details.fetchDiscArt();
 	}
 
@@ -3798,27 +3865,14 @@ class MainUI {
 			this.clearTimer('albumArt');
 		}
 
-		const fetchNewArtwork =
-			grSet.albumArtCycle && this.albumArtIndex !== 0
-			|| this.albumArt == null
-			|| this.albumArtEmbedded
-			|| this.isStreaming
-			|| this.currentAlbumFolder !== this.lastAlbumFolder
-			|| $('%album%') !== this.lastAlbumFolderTag
-			|| $('$if2(%discnumber%,0)') !== this.lastAlbumDiscNumber
-			|| $(`$if2(${grTF.vinyl_side},ZZ)`) !== this.lastAlbumVinylSide;
-
-		if (fetchNewArtwork) {
+		if (this.shouldFetchNewArtwork()) {
 			this.clearPlaylistNowPlayingBg();
 			this.fetchNewArtwork(metadb);
 			grm.bgImg.initBgImage(false, true);
 			return;
 		}
 
-		const cycleNewArtwork =
-			grSet.albumArtCycle && this.albumArtList.length > 1;
-
-		if (cycleNewArtwork) {
+		if (grSet.albumArtCycle && this.albumArtList.length > 1) {
 			this.albumArtTimeout = setTimeout(() => {
 				this.displayAlbumArtImage('next', true);
 			}, grSet.albumArtCycleTime * 1000);
@@ -3955,7 +4009,7 @@ class MainUI {
 		// Update colors for dynamic themes
 		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
 			this.newTrackFetchingArtwork = true;
-			grm.color.getThemeColors(this.albumArt);
+			grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
 			this.initTheme();
 			grm.debug.debugLog('\n>>> initTheme => on_mouse_wheel <<<\n');
 		}
@@ -3991,7 +4045,7 @@ class MainUI {
 			this.checkAlbumArtFromListDiscArt();
 			if (['reborn', 'random'].includes(grSet.theme) || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
 				this.newTrackFetchingArtwork = true;
-				grm.color.getThemeColors(this.albumArt);
+				grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
 				this.initTheme();
 				grm.debug.debugLog('\n>>> initTheme => Album cover context menu => Display next/previous artwork <<<\n');
 			}
@@ -4046,7 +4100,7 @@ class MainUI {
 				this.initThemeTags();
 			} else {
 				this.restoreThemeState();
-				grm.color.getThemeColors(this.albumArt);
+				grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
 			}
 			if (this.loadingThemeComplete) {
 				this.initTheme();  // Prevent incorrect theme brightness at startup/reload when using embedded art
@@ -4108,7 +4162,7 @@ class MainUI {
 
 		if (this.albumArt) {
 			this.albumArtLoaded = true;
-			grm.color.getThemeColors(this.albumArt);
+			grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
 			this.resizeArtwork(true);
 		} else {
 			this.noArtwork = true;
@@ -4156,8 +4210,12 @@ class MainUI {
 			this.initPanelWidthAuto(true);
 
 			if (index === 0 && this.newTrackFetchingArtwork) {
-				this.newTrackFetchingArtwork = false;
-				this.initThemeState(this.albumArt);
+				Promise.resolve().then(() => {
+					this.newTrackFetchingArtwork = false;
+					this.initThemeState(this.albumArt);
+					grm.details.setDiscArtRotation();
+					grm.debug.repaintWindow();
+				});
 			}
 		}
 		else {
@@ -4192,7 +4250,6 @@ class MainUI {
 		}
 
 		if (!this.displayLibrarySplit()) this.resizeArtwork(false);
-		grm.details.setDiscArtRotation();
 	}
 
 	/**
@@ -4328,12 +4385,7 @@ class MainUI {
 			const albumArtScaled = albumArtSource.Resize(this.albumArtSize.w + 4, this.albumArtSize.h + 4, InterpolationMode.HighQualityBicubic);
 
 			// * 2. Create final image at exact target size
-			this.albumArtScaled = gdi.CreateImage(this.albumArtSize.w, this.albumArtSize.h);
-			const g = this.albumArtScaled.GetGraphics();
-
-			// * 3. Draw the scaled HQ image, cropping 2px from each side
-			g.DrawImage(albumArtScaled, 0, 0, this.albumArtSize.w, this.albumArtSize.h, 2, 2, this.albumArtSize.w, this.albumArtSize.h);
-			this.albumArtScaled.ReleaseGraphics(g);
+			this.albumArtScaled = albumArtScaled.Clone(2, 2, this.albumArtSize.w, this.albumArtSize.h);
 		}
 		catch (e) {
 			this.handleArtworkError('albumArt');
@@ -4422,8 +4474,8 @@ class MainUI {
 	 */
 	clearPlaylistNowPlayingBg() {
 		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
-			pl.col.header_nowplaying_bg = '';
-			pl.col.row_nowplaying_bg = '';
+			pl.col.header_nowplaying_bg = null;
+			pl.col.row_nowplaying_bg = null;
 		}
 	}
 

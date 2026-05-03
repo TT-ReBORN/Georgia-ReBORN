@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -53,6 +53,12 @@ class Color {
 		this._brightness = 0;
 		/** @private @type {number} 0 - 255. */
 		this._alpha = 255;
+		/** @private @type {number} 0.0 - 1.0 (OKLCH lightness - perceptually uniform). */
+		this._oklchL = 0;
+		/** @private @type {number} 0.0 - 0.4+ (OKLCH chroma - colorfulness). */
+		this._oklchC = 0;
+		/** @private @type {number} 0 - 360 (OKLCH hue angle in degrees). */
+		this._oklchH = 0;
 		/** @private @type {object} */
 		this._listeners = {};
 		// #endregion
@@ -91,6 +97,7 @@ class Color {
 		this.subscribe(Color.Events.HSL_UPDATED, this._HSLUpdated);
 		this.subscribe(Color.Events.HSV_UPDATED, this._HSVUpdated);
 		this.subscribe(Color.Events.INT_UPDATED, this._INTUpdated);
+		this.subscribe(Color.Events.OKLCH_UPDATED, this._OKLCHUpdated);
 		this.parse(value); // Parse the initial value
 		// #endregion
 	}
@@ -115,6 +122,7 @@ class Color {
 			HSV_UPDATED: 'HSVUpdated',
 			HEX_UPDATED: 'HexUpdated',
 			INT_UPDATED: 'IntUpdated',
+			OKLCH_UPDATED: 'OKLCHUpdated',
 			UPDATED: 'updated',
 			PARSED: 'parsed'
 		};
@@ -145,13 +153,73 @@ class Color {
 	}
 
 	/**
+	 * A static method that calculates the APCA luminance of a given color.
+	 * @param {number} color - The color value to calculate luminance for.
+	 * @returns {number} The APCA luminance value (0.0 to 1.0) of the given color.
+	 * @static
+	 */
+	static LUM(color) {
+		const col = this._instance;
+		col.parse(color);
+		return col.luminance;
+	}
+
+	/**
+	 * A static method that calculates the saturation of a given color.
+	 * @param {number} color - The color value to calculate saturation for.
+	 * @returns {number} The saturation value of the given color.
+	 * @static
+	 */
+	static SAT(color) {
+		const col = this._instance;
+		col.parse(color);
+		return col.saturation;
+	}
+
+	/**
+	 * A static method that calculates the OKLCH lightness of a given color.
+	 * @param {number} color - The color value to calculate OKLCH lightness for.
+	 * @returns {number} The OKLCH lightness value (0.0-1.0) of the given color.
+	 * @static
+	 */
+	static OKLCHL(color) {
+		const col = this._instance;
+		col.parse(color);
+		return col.oklchL;
+	}
+
+	/**
+	 * A static method that calculates the OKLCH chroma of a given color.
+	 * @param {number} color - The color value to calculate OKLCH chroma for.
+	 * @returns {number} The OKLCH chroma value (colorfulness).
+	 * @static
+	 */
+	static OKLCHC(color) {
+		const col = this._instance;
+		col.parse(color);
+		return col.oklchC;
+	}
+
+	/**
+	 * A static method that calculates the OKLCH hue of a given color.
+	 * @param {number} color - The color value to calculate OKLCH hue for.
+	 * @returns {number} The OKLCH hue angle (0-360 degrees).
+	 * @static
+	 */
+	static OKLCHH(color) {
+		const col = this._instance;
+		col.parse(color);
+		return col.oklchH;
+	}
+
+	/**
 	 * A static method that generates a random color instance.
 	 * @returns {Color} A new Color instance with a random color value.
 	 * @static
 	 * @example
 	 * const randomColor = Color.random(); // Creates a Color instance with a random RGB value.
 	 */
-	static random() {
+	static RANDOM() {
 		const col = this._instance;
 		col.parse(Math.floor(Math.random() * 16777215));
 		return col;
@@ -217,18 +285,73 @@ class Color {
 	}
 
 	/**
+	 * Calculates and gets the APCA relative luminance of the color.
+	 * @returns {number} The APCA luminance value (0.0 to 1.0).
+	 */
+	get luminance() {
+		const toLinear = (c) => (c / 255.0) ** 2.4;
+		const r = 0.2126729 * toLinear(this.r);
+		const g = 0.7151522 * toLinear(this.g);
+		const b = 0.0721750 * toLinear(this.b);
+		return r + g + b;
+	}
+
+	/**
 	 * Calculates and gets the brightness of the color.
 	 * @returns {number} The brightness value, based on the perceived luminance of the color, rounded to the nearest integer.
 	 */
 	get brightness() {
-		return Math.round(Math.sqrt(0.299 * this.r * this.r + 0.587 * this.g * this.g + 0.114 * this.b * this.b));
+		const r = 0.299 * this.r * this.r;
+		const g = 0.587 * this.g * this.g;
+		const b = 0.114 * this.b * this.b;
+		return Math.round(Math.sqrt(r + g + b));
+	}
+
+	/**
+	 * Gets the OKLCH lightness component (perceptually uniform).
+	 * @returns {number} The OKLCH lightness value (0.0-1.0).
+	 */
+	get oklchL() {
+		return this._oklchL;
+	}
+
+	/**
+	 * Gets the OKLCH chroma component (colorfulness).
+	 * @returns {number} The OKLCH chroma value (0.0-0.4 typical range).
+	 */
+	get oklchC() {
+		return this._oklchC;
+	}
+
+	/**
+	 * Gets the OKLCH hue component.
+	 * @returns {number} The OKLCH hue angle in degrees (0-360).
+	 */
+	get oklchH() {
+		return this._oklchH;
+	}
+
+	/**
+	 * Checks if the color is grayscale (no chroma).
+	 * @returns {boolean} True if the color is grayscale (chroma ≈ 0).
+	 */
+	get isGrayscale() {
+		return this._oklchC < 0.01;
+	}
+
+	/**
+	 * Checks if the color is very colorful (high chroma).
+	 * @returns {boolean} True if the color is highly saturated.
+	 */
+	get isVibrant() {
+		return this._oklchC > 0.15;
 	}
 
 	/**
 	 * Checks if the color is grayscale (all RGB values are identical).
 	 * @returns {boolean} `true` if the color is grayscale, otherwise `false`.
 	 */
-	get isGrayscale() {
+	get isGrayscaleRGB() {
 		return this._red === this._green && this._red === this._blue;
 	}
 
@@ -248,9 +371,9 @@ class Color {
 		const threshold = 6;
 		const avg = Math.round((this._red + this._green + this._blue) / 3);
 		return this.isGrayscale ||
-				(Math.abs(this._red - avg) < threshold &&
+				(Math.abs(this._red - avg)  < threshold &&
 				Math.abs(this._green - avg) < threshold &&
-				Math.abs(this._blue - avg) < threshold);
+				Math.abs(this._blue - avg)  < threshold);
 	}
 
 	/**
@@ -301,6 +424,45 @@ class Color {
 	 */
 	set lightness(value) {
 		this._handle('_lightness', value, Color.Events.HSL_UPDATED);
+	}
+
+	/**
+	 * Sets the OKLCH lightness component and updates all other color representations.
+	 * @param {number} lightness - The OKLCH lightness value to set (0.0-1.0).
+	 * @example
+	 * const color = new Color('#FF0000');
+	 * color.oklchL = 0.8; // Makes the color lighter while preserving hue and chroma
+	 */
+	set oklchL(lightness) {
+		this._oklchL = Math.max(0, Math.min(1, lightness));
+		this.broadcast(Color.Events.OKLCH_UPDATED);
+		this.broadcast(Color.Events.UPDATED);
+	}
+
+	/**
+	 * Sets the OKLCH chroma component and updates all other color representations.
+	 * @param {number} chroma - The OKLCH chroma value to set (0.0+, typically 0-0.4).
+	 * @example
+	 * const color = new Color('#FF0000');
+	 * color.oklchC = 0.2; // Adjusts colorfulness while preserving lightness and hue
+	 */
+	set oklchC(chroma) {
+		this._oklchC = Math.max(0, chroma);
+		this.broadcast(Color.Events.OKLCH_UPDATED);
+		this.broadcast(Color.Events.UPDATED);
+	}
+
+	/**
+	 * Sets the OKLCH hue component and updates all other color representations.
+	 * @param {number} hue - The OKLCH hue angle in degrees (0-360).
+	 * @example
+	 * const color = new Color('#FF0000');
+	 * color.oklchH = 180; // Rotates to the opposite hue while preserving lightness and chroma
+	 */
+	set oklchH(hue) {
+		this._oklchH = ((hue % 360) + 360) % 360;
+		this.broadcast(Color.Events.OKLCH_UPDATED);
+		this.broadcast(Color.Events.UPDATED);
 	}
 	// #endregion
 
@@ -505,6 +667,7 @@ class Color {
 		this._RGB2INT(); // populate INT values
 		this._RGB2HSL(); // populate HSL values
 		this._INT2HEX(); // populate HEX values
+		this._updateOKLCH();
 	}
 
 	/**
@@ -516,6 +679,7 @@ class Color {
 		this._HSL2RGB(); // populate RGB values
 		this._RGB2INT(); // populate INT values
 		this._INT2HEX(); // populate HEX values
+		this._updateOKLCH();
 	}
 
 	/**
@@ -527,6 +691,7 @@ class Color {
 		this._HSV2RGB(); // populate RGB values
 		this._RGB2INT(); // populate INT values
 		this._INT2HEX(); // populate HEX values
+		this._updateOKLCH();
 	}
 
 	/**
@@ -538,6 +703,7 @@ class Color {
 		this._HEX2INT(); // populate INT values
 		this._INT2RGB(); // populate RGB values
 		this._RGB2HSL(); // populate HSL values
+		this._updateOKLCH();
 	}
 
 	/**
@@ -549,6 +715,39 @@ class Color {
 		this._INT2RGB(); // populate RGB values
 		this._RGB2HSL(); // populate HSL values
 		this._INT2HEX(); // populate HEX values
+		this._updateOKLCH();
+	}
+
+	/**
+	 * Updates OKLCH values from current RGB.
+	 * @private
+	 */
+	_updateOKLCH() {
+		const oklch = RGBtoOKLCH(this._red, this._green, this._blue);
+		this._oklchL = oklch.L;
+		this._oklchC = oklch.C;
+		this._oklchH = oklch.H;
+	}
+
+	/**
+	 * Updates RGB values when OKLCH is changed.
+	 * @private
+	 */
+	_OKLCHUpdated() {
+		const rgb = OKLCHtoRGB(this._oklchL, this._oklchC, this._oklchH);
+		const r = GetRed(rgb);
+		const g = GetGreen(rgb);
+		const b = GetBlue(rgb);
+
+		this._red = r;
+		this._green = g;
+		this._blue = b;
+		this._decimal = (r << 16) | (g << 8) | b;
+		this._hex = `#${this._decimal.toString(16).padStart(6, '0')}`;
+
+		// Update HSL and HSV from new RGB
+		this._HSLUpdated();
+		this._HSVUpdated();
 	}
 
 	/**
@@ -593,8 +792,8 @@ class Color {
 	}
 	// #endregion
 
-	// * PUBLIC METHODS * //
-	// #region PUBLIC METHODS
+	// * PUBLIC METHODS - GETTERS * //
+	// #region PUBLIC METHODS - GETTERS
 	/**
 	 * Returns a CSS-formatted hex string (e.g., "#FF9900") from the Color's component values.
 	 * @returns {string} Hexadecimal color string representing the Color object's current state.
@@ -665,6 +864,25 @@ class Color {
 	}
 
 	/**
+	 * Returns the color as an OKLCH string.
+	 * @returns {string} The color in OKLCH format.
+	 */
+	getOKLCH() {
+		return `oklch(${(this._oklchL * 100).toFixed(1)}% ${this._oklchC.toFixed(3)} ${this._oklchH.toFixed(1)})`;
+	}
+
+	/**
+	 * Returns the color as an OKLCH string with alpha.
+	 * @returns {string} The color in OKLCH format with alpha.
+	 */
+	getOKLCHA() {
+		return `oklch(${(this._oklchL * 100).toFixed(1)}% ${this._oklchC.toFixed(3)} ${this._oklchH.toFixed(1)} / ${(this._alpha / 255).toFixed(3)})`;
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - SETTERS * //
+	// #region PUBLIC METHODS - SETTERS
+	/**
 	 * Sets the hex value of the color, updates all other components, and dispatches Event.HEX_UPDATED.
 	 * @param {string} value - The hex value to be set.
 	 * @returns {Color} This Color instance for method chaining.
@@ -718,19 +936,6 @@ class Color {
 	}
 
 	/**
-	 * Sets the brightness component value of the color, updates all other components, and dispatches Event.HSV_UPDATED.
-	 * @param {number} value - The brightness component value to set (0 - 100).
-	 * @returns {Color} This Color instance for method chaining.
-	 * @fires Color#event:HSV_UPDATED When the brightness component is updated.
-	 * @example
-	 * const color = new Color();
-	 * color.setBrightness(80); // Sets brightness to 80%.
-	 */
-	setBrightness(value) {
-		return this._handle('_brightness', value, Color.Events.HSV_UPDATED);
-	}
-
-	/**
 	 * Sets the opacity value of the color, updates all other components, and dispatches Event.UPDATED.
 	 * @param {number} [value] - The opacity component value to set (0 - 1). Defaults to 1 if not specified.
 	 * @returns {Color} This Color instance for method chaining.
@@ -743,6 +948,34 @@ class Color {
 		return this._handle('_alpha', value);
 	}
 
+	/**
+	 * Sets the decimal (integer) representation of the color, updates all other components, and dispatches the Event.UPDATED event.
+	 * @param {number} [value] - An integer from 0 (black) to 16777215 (white), representing the new color value to set.
+	 * @returns {number} The new decimal value of the color after it has been set.
+	 * @example
+	 * const color = new Color();
+	 * color.decimal(123456); // sets the color to the decimal equivalent of #01E240
+	 */
+	decimal(value = undefined) {
+		return this._handle('_decimal', value, Color.Events.INT_UPDATED);
+	}
+
+	/**
+	 * Sets the brightness component value of the color, updates all other components, and dispatches Event.HSV_UPDATED.
+	 * @param {number} value - The brightness component value to set (0 - 100).
+	 * @returns {Color} This Color instance for method chaining.
+	 * @fires Color#event:HSV_UPDATED When the brightness component is updated.
+	 * @example
+	 * const color = new Color();
+	 * color.setBrightness(80); // Sets brightness to 80%.
+	 */
+	setBrightness(value) {
+		return this._handle('_brightness', value, Color.Events.HSV_UPDATED);
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - CORE OPERATIONS * //
+	// #region PUBLIC METHODS - CORE OPERATIONS
 	/**
 	 * Parses a mixed variable and adopts its properties into the current Color instance. The value can be any CSS color value, a hash of properties, another Color instance, a numeric value, or a named CSS color.
 	 * @param {*} value - A CSS color string, object with color properties, another Color instance, or a numeric color value. If undefined, the method will return the current instance without parsing.
@@ -880,83 +1113,10 @@ class Color {
 		this.broadcast(Color.Events.UPDATED);
 		return this;
 	}
+	// #endregion
 
-	/**
-	 * Sets the decimal (integer) representation of the color, updates all other components, and dispatches the Event.UPDATED event.
-	 * @param {number} [value] - An integer from 0 (black) to 16777215 (white), representing the new color value to set.
-	 * @returns {number} The new decimal value of the color after it has been set.
-	 * @example
-	 * const color = new Color();
-	 * color.decimal(123456); // sets the color to the decimal equivalent of #01E240
-	 */
-	decimal(value = undefined) {
-		return this._handle('_decimal', value, Color.Events.INT_UPDATED);
-	}
-
-	/**
-	 * Formats a string by replacing tokens with corresponding color value properties.
-	 * Tokens should be formatted as `%token%` within the string, where `token` can be one of the following:
-	 * - `r` for red component
-	 * - `g` for green component
-	 * - `b` for blue component
-	 * - `h` for hue component (in HSL)
-	 * - `s` for saturation component (in HSL)
-	 * - `l` for lightness component (in HSL)
-	 * - `v` for brightness component (in HSV)
-	 * - `a` for alpha component (transparency)
-	 * - `x` for hexadecimal color representation
-	 * - `d` for decimal color representation.
-	 * @param {string} string - The string with tokens to be replaced by color values.
-	 * @returns {string} The formatted string with all tokens replaced by their corresponding values.
-	 */
-	format(string) {
-		const tokens = {
-			r: this._red,
-			g: this._green,
-			b: this._blue,
-			h: this._hue,
-			s: this._saturation,
-			l: this._lightness,
-			v: this._brightness,
-			a: this._alpha,
-			x: this._hex,
-			d: this._decimal
-		};
-		for (const token in tokens) {
-			string = string.split(`%${token}%`).join(tokens[token]);
-		}
-		return string;
-	}
-
-	/**
-	 * Converts the color value to a string based on the current output format.
-	 * @returns {string} The color as a string in the format specified by this.output.
-	 */
-	toString() {
-		switch (this.output) {
-			case Color.HEX:  return this.getHex();
-			case Color.RGB:  return this.getRGB();
-			case Color.HSL:  return this.getHSL();
-			case Color.HSLA: return this.getHSLA();
-			case Color.INT:  return this._decimal.toString();
-		}
-		return this.getHex();
-	}
-
-	/**
-	 * Determines the ideal foreground color (black or white) that provides the best contrast on the invoking Color object when used as a background.
-	 * The decision is based on the lightness of the background color; a light background gets a black foreground and vice versa.
-	 * @returns {Color} A new Color instance representing the ideal foreground color (black or white).
-	 * @example
-	 * const bgColor = new Color('#FF9900');
-	 * element.style.backgroundColor = bgColor.getRGB();
-	 * element.style.color = bgColor.foreground().getRGB(); // sets the text color to black or white based on background color
-	 */
-	foreground() {
-		if (this._lightness > 50) return new Color('black');
-		return new Color('white');
-	}
-
+	// * PUBLIC METHODS - EVENT SYSTEM * //
+	// #region PUBLIC METHODS - EVENT SYSTEM
 	/**
 	 * Broadcasts an event to all subscribed listeners with optional parameters.
 	 * @param {string} type - The event type to broadcast.
@@ -1014,6 +1174,73 @@ class Color {
 				return this.unsubscribe(type, callback);
 			}
 		}
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - UTILITIES * //
+	// #region PUBLIC METHODS - UTILITIES
+	/**
+	 * Determines the ideal foreground color (black or white) that provides the best contrast on the invoking Color object when used as a background.
+	 * The decision is based on the lightness of the background color; a light background gets a black foreground and vice versa.
+	 * @returns {Color} A new Color instance representing the ideal foreground color (black or white).
+	 * @example
+	 * const bgColor = new Color('#FF9900');
+	 * element.style.backgroundColor = bgColor.getRGB();
+	 * element.style.color = bgColor.foreground().getRGB(); // sets the text color to black or white based on background color
+	 */
+	foreground() {
+		if (this._lightness > 50) return new Color('black');
+		return new Color('white');
+	}
+
+	/**
+	 * Formats a string by replacing tokens with corresponding color value properties.
+	 * Tokens should be formatted as `%token%` within the string, where `token` can be one of the following:
+	 * - `r` for red component
+	 * - `g` for green component
+	 * - `b` for blue component
+	 * - `h` for hue component (in HSL)
+	 * - `s` for saturation component (in HSL)
+	 * - `l` for lightness component (in HSL)
+	 * - `v` for brightness component (in HSV)
+	 * - `a` for alpha component (transparency)
+	 * - `x` for hexadecimal color representation
+	 * - `d` for decimal color representation.
+	 * @param {string} string - The string with tokens to be replaced by color values.
+	 * @returns {string} The formatted string with all tokens replaced by their corresponding values.
+	 */
+	format(string) {
+		const tokens = {
+			r: this._red,
+			g: this._green,
+			b: this._blue,
+			h: this._hue,
+			s: this._saturation,
+			l: this._lightness,
+			v: this._brightness,
+			a: this._alpha,
+			x: this._hex,
+			d: this._decimal
+		};
+		for (const token in tokens) {
+			string = string.split(`%${token}%`).join(tokens[token]);
+		}
+		return string;
+	}
+
+	/**
+	 * Converts the color value to a string based on the current output format.
+	 * @returns {string} The color as a string in the format specified by this.output.
+	 */
+	toString() {
+		switch (this.output) {
+			case Color.HEX:  return this.getHex();
+			case Color.RGB:  return this.getRGB();
+			case Color.HSL:  return this.getHSL();
+			case Color.HSLA: return this.getHSLA();
+			case Color.INT:  return this._decimal.toString();
+		}
+		return this.getHex();
 	}
 	// #endregion
 }
