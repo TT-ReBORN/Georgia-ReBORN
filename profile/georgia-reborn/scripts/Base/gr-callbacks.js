@@ -150,7 +150,7 @@ function on_size() {
 function on_download_file_done(path, success, error_text) {
 	if (grm.ui.displayLibrary) {
 		grm.debug.callLog('Library => on_download_file_done');
-		// lib.call.on_download_file_done(path, success, error_text);
+		lib.call.on_download_file_done(path, success, error_text);
 	}
 	if (grm.ui.displayBiography) {
 		grm.debug.callLog('Biography => on_download_file_done');
@@ -172,7 +172,7 @@ function on_download_file_done(path, success, error_text) {
 function on_http_request_done(task_id, success, response_text, status, content_type) {
 	if (grm.ui.displayLibrary) {
 		grm.debug.callLog('Library => on_http_request_done');
-		// lib.call.on_http_request_done(task_id, success, response_text, status, content_type);
+		lib.call.on_http_request_done(task_id, success, response_text, status, content_type);
 	}
 	if (grm.ui.displayBiography) {
 		grm.debug.callLog('Biography => on_http_request_done');
@@ -1078,6 +1078,10 @@ function on_playback_pause(state) {
 		grm.debug.callLog('Playlist => on_playback_pause');
 		pl.call.on_playback_pause(state);
 	}
+	if (grm.ui.displayLibrary) {
+		grm.debug.callLog('Library => on_playback_pause');
+		lib.call.on_playback_pause(state);
+	}
 	if (grm.ui.displayBiography) {
 		grm.debug.callLog('Biography => on_playback_pause');
 		bio.call.on_playback_pause(state);
@@ -1101,6 +1105,7 @@ function on_playback_queue_changed(origin) {
 	grm.debug.callLog('Playlist => on_playback_queue_changed');
 	pl.call.on_playback_queue_changed(origin);
 	lib.call.on_playback_queue_changed();
+	lib.ex.calls.on_playback_queue_changed(origin);
 }
 
 

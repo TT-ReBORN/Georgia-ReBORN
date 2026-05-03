@@ -2323,6 +2323,52 @@ class ConfigDefaults {
 			lib_ui_col_sbarDrag: '3cfaa0',
 			// #endregion
 
+			// * LIBRARY EXPLORER COLORS * //
+			// #region LIBRARY EXPLORER COLORS
+
+			// * COLUMN * //
+			lib_ex_col_column_bg: '321946',
+			lib_ex_col_column_line: '503782',
+			lib_ex_col_column_text_normal: 'd2d2d2',
+			lib_ex_col_column_text_hovered: 'ffffff',
+			lib_ex_col_column_text_playing: 'ffffff',
+			lib_ex_col_column_text_selected: '3cfaa0',
+
+			// * GRID - ARTIST VIEW * //
+			lib_ex_col_grid_playing_bg: '372350',
+			lib_ex_col_grid_selection_bg: '372355',
+			lib_ex_col_grid_selection_frame: '503782',
+			lib_ex_col_grid_sideMarker: '3cfaa0',
+			lib_ex_col_grid_title_normal: 'd2d2d2',
+			lib_ex_col_grid_title_hovered: 'ffffff',
+			lib_ex_col_grid_title_playing: 'ffffff',
+			lib_ex_col_grid_title_selected: '3cfaa0',
+
+			// * TRACK ROWS - ALBUM VIEW * //
+			lib_ex_col_row_stripes_bg: '372355',
+			lib_ex_col_row_playing_bg: '372350',
+			lib_ex_col_row_selection_bg: '372355',
+			lib_ex_col_row_selection_frame: '503782',
+			lib_ex_col_row_sideMarker: '3cfaa0',
+			lib_ex_col_row_title_normal: 'd2d2d2',
+			lib_ex_col_row_title_hovered: 'ffffff',
+			lib_ex_col_row_title_playing: 'ffffff',
+			lib_ex_col_row_title_selected: '3cfaa0',
+
+			// * RATING * //
+			lib_ex_col_rating_star: 'ebc841',
+			lib_ex_col_rating_star_shadow: '000000',
+
+			// * SCROLLBAR * //
+			lib_ex_col_sbar_normal: '504673',
+			lib_ex_col_sbar_hovered: 'ebc841',
+			lib_ex_col_sbar_drag: '3cfaa0',
+
+			// * BUTTONS * //
+			lib_ex_col_closeBtn: 'ffffff',
+			lib_ex_col_closeBtn_bg: '503782',
+			// #endregion
+
 			// * BIOGRAPHY COLORS * //
 			// #region BIOGRAPHY COLORS
 
@@ -2556,6 +2602,52 @@ class ConfigDefaults {
 			lib_ui_col_sbarNormal: 'Library scrollbar normal color',
 			lib_ui_col_sbarHovered: 'Library scrollbar hovered color',
 			lib_ui_col_sbarDrag: 'Library scrollbar drag color',
+			// #endregion
+
+			// * LIBRARY EXPLORER COLORS * //
+			// #region LIBRARY EXPLORER COLORS
+
+			// * COLUMN * //
+			lib_ex_col_column_bg: 'Library Explorer column background color',
+			lib_ex_col_column_line: 'Library Explorer separator column line color',
+			lib_ex_col_column_text_normal: 'Library Explorer text color for column content',
+			lib_ex_col_column_text_hovered: 'Library Explorer text hover color for column content',
+			lib_ex_col_column_text_playing: 'Library Explorer now playing text color',
+			lib_ex_col_column_text_selected: 'Library Explorer text selection color for column content',
+
+			// * GRID - ARTIST VIEW * //
+			lib_ex_col_grid_playing_bg: 'Library Explorer highlight bg color for now-playing grid rows',
+			lib_ex_col_grid_selection_bg: 'Library Explorer background color for selected grid rows',
+			lib_ex_col_grid_selection_frame: 'Library Explorer frame color for selected grid rows',
+			lib_ex_col_grid_sideMarker: 'Library Explorer side marker color for selected grid rows',
+			lib_ex_col_grid_title_normal: 'Library Explorer normal grid title color',
+			lib_ex_col_grid_title_hovered: 'Library Explorer hovered grid title color',
+			lib_ex_col_grid_title_playing: 'Library Explorer now playing grid title color',
+			lib_ex_col_grid_title_selected: 'Library Explorer selected grid title color',
+
+			// * TRACK ROWS - ALBUM VIEW * //
+			lib_ex_col_row_stripes_bg: 'Library Explorer background color for striped rows',
+			lib_ex_col_row_playing_bg: 'Library Explorer highlight bg color for now-playing rows',
+			lib_ex_col_row_selection_bg: 'Library Explorer background color for selected rows',
+			lib_ex_col_row_selection_frame: 'Library Explorer frame color for selected rows',
+			lib_ex_col_row_sideMarker: 'Library Explorer side marker color for selected rows',
+			lib_ex_col_row_title_normal: 'Library Explorer normal row title color',
+			lib_ex_col_row_title_hovered: 'Library Explorer hovered row title color',
+			lib_ex_col_row_title_playing: 'Library Explorer now playing row title color',
+			lib_ex_col_row_title_selected: 'Library Explorer selected row title color',
+
+			// * RATING * //
+			lib_ex_col_rating_star: 'Library Explorer rating row stars color',
+			lib_ex_col_rating_star_shadow: 'Library Explorer shadow color for rating stars',
+
+			// * SCROLLBAR * //
+			lib_ex_col_sbar_normal: 'Library Explorer normal scrollbar color',
+			lib_ex_col_sbar_hovered: 'Library Explorer hovered scrollbar color',
+			lib_ex_col_sbar_drag: 'Library Explorer dragged scrollbar color',
+
+			// * BUTTONS * //
+			lib_ex_col_closeBtn: 'Library Explorer close button text color',
+			lib_ex_col_closeBtn_bg: 'Library Explorer close button background color',
 			// #endregion
 
 			// * BIOGRAPHY COLORS * //

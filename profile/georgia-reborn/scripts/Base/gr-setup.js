@@ -235,6 +235,7 @@ const grPath = {
  * @property {string} fontGridKey - The 'HelveticaNeueLT Pro 75 Bd' or 'HelveticaNeueLT Pro 65 Md' font name.
  * @property {string} fontGridValue - The 'HelveticaNeueLT Pro 45 Lt' font name.
  * @property {string} fontLibrary - The 'Segoe UI' font name.
+ * @property {string} fontLibExHeader - The 'Segoe UI Semibold' font name.
  * @property {string} fontBiography - The 'Segoe UI' font name.
  * @property {string} fontLyrics - The 'Segoe UI' font name.
  * @property {GdiFont} topMenu - The theme font 'Segoe UI Semibold' used for top menu buttons.
@@ -258,6 +259,12 @@ const grPath = {
  * @property {GdiFont} gridKey - The theme font 'HelveticaNeueLT Pro 75 Bd' or 'HelveticaNeueLT Pro 65 Md' used for metadata grid key.
  * @property {GdiFont} gridVal - The theme font 'HelveticaNeueLT Pro 45 Lt' used for metadata grid value.
  * @property {GdiFont} library - The panel font 'Segoe UI' used in the Library.
+ * @property {GdiFont} libExClose - The close button font 'Reborn-Symbols' used in the Library Explorer.
+ * @property {GdiFont} libExHeader - The header font 'Segoe UI Semibold' used in the Library Explorer.
+ * @property {GdiFont} libExPlaying - The playback font 'Reborn-Symbols' used in the Library Explorer.
+ * @property {GdiFont} libExRebornSymbols - The reborn symbols font 'Reborn-Symbols' used in the Library Explorer.
+ * @property {GdiFont} libExRebornSymbolsLarge - The reborn symbols font 'Reborn-Symbols' used in the Library Explorer.
+ * @property {GdiFont} libExRebornSymbolsXL - The reborn symbols font 'Reborn-Symbols' used in the Library Explorer.
  * @property {GdiFont} biography - The panel font 'Segoe UI' used in the Biography.
  * @property {GdiFont} lyrics - The panel font 'Segoe UI' used in the Lyrics.
  * @property {GdiFont} lyricsHighlight - The panel font 'Segoe UI' used in Lyrics for synced lines.
@@ -291,6 +298,7 @@ const grFont = {
 	fontGridValue:      grSet.customThemeFonts ? grCfg.customFont.fontGridValue      : 'HelveticaNeueLT Pro 45 Lt',
 
 	fontLibrary:        grSet.customThemeFonts ? grCfg.customFont.fontLibrary        : 'Segoe UI',
+	fontLibExHeader:    grSet.customThemeFonts ? grCfg.customFont.fontLibExHeader    : 'Segoe UI Semibold',
 	fontBiography:      grSet.customThemeFonts ? grCfg.customFont.fontBiography      : 'Segoe UI',
 	fontLyrics:         grSet.customThemeFonts ? grCfg.customFont.fontLyrics         : 'Segoe UI'
 };

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="x-ua-compatible" content="IE=8" />
+		<link rel="stylesheet" type="text/css" href="styles10.css">
+		<style type="text/css">
+			body, html {height:100%; margin:0; padding:0;}
+
+			.input_cnt1 {padding-top:0.31em; padding-bottom:0.31em;}
+			.input98 {display:block; width:98%;}
+
+			.btn_cnt {padding:0.7em 1em; position:absolute; bottom:0; right:0; left:0;}
+			#btn_cnt_right {background:#e5e5e5; border-top:1px solid #d0d0d0; text-align:right;}
+			#btn_cnt_left {text-align:left;}
+			#btn_cnt_center {text-align:center;}
+			#btn_cnt_center button + button {margin-left: 0.5em;}
+
+			#list {
+				padding-top: 0.7em;
+				padding-bottom: 0.7em;
+			}
+			#list::-ms-scrollbar {
+				width: 8px;
+			}
+			#list::-ms-scrollbar-track {
+				background-color: transparent;
+			}
+			#list::-ms-scrollbar-thumb {
+				background-color: #888;
+				border-radius: 4px;
+			}
+			#list::-ms-scrollbar-thumb:hover {
+				background-color: #555;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id='list' class="tabcontent"></div>
+		<div id="btn_cnt_right" class="btn_cnt">
+			<button id="btn_ok">OK</button>
+		</div>
+		<div id="btn_cnt_left" class="btn_cnt">
+			<button id="btn_reset">Reset</button>
+		</div>
+		<div id="btn_cnt_center" class="btn_cnt">
+			<button id="btn_add">Add</button>
+			<button id="btn_up">Up</button>
+			<button id="btn_down">Down</button>
+			<button id="btn_delete">Delete</button>
+		</div>
+
+		<div id="div" style="height:0; width:0;outline:none; border:none; padding:none; margin:none; box-sizing:content-box;"></div>
+		<script>
+			var em, i = 0, is_closed_manually = false, j = 0, height, left, top, window_h, window_w;
+			var callback, ix = {item: -1}, new_id = 100, parsed_args, cfg = [], orig_cfg = [], heightOffset, widthOffset;
+			var cur = { def_w: 100, def_h: 50 };
+			var min_fields, max_visible;
+
+			function getValue(id) {
+				var div = document.getElementById(id);
+				div.style.height = '1em';
+				return (em = Math.max(div.offsetHeight, 13.6));
+			}
+			getValue('div');
+
+			function getStyle(el, prop) {
+				if (el.currentStyle) {
+					var val = el.currentStyle[prop];
+					if (val && val.indexOf('em') > -1) {
+						return parseFloat(val) * em;
+					}
+					return parseFloat(val) || 0;
+				}
+				return 0;
+			}
+
+			function remove(n) {
+				n.parentNode && n.parentNode.removeChild(n);
+			}
+
+			function moveUp(element) {
+				if (element.previousSibling)
+					element.parentNode.insertBefore(element, element.previousSibling);
+			}
+			function moveDown(element) {
+				if (element.nextSibling)
+					element.parentNode.insertBefore(element.nextSibling, element);
+			}
+
+			function setList(clear) {
+				var listDiv = document.getElementById("list");
+				if (!listDiv) return;
+				if (clear) listDiv.innerHTML = '';
+				for (i = 0; i < cfg.length; i++) {
+					listDiv.insertAdjacentHTML('beforeend', '<div class="input_cnt1" id="item_cnt'+i+'"><input id="item_container'+i+'" name="item_name" class="input98" value="'+cfg[i]+'" /></div>');
+				}
+			}
+
+			function getValues() {
+				cfg = [];
+				var inputs = document.getElementsByName('item_name');
+				for (i = 0; i < inputs.length; i++) {
+					cfg[i] = inputs[i].value;
+				}
+				return cfg;
+			}
+
+			function set_btn_add_state() {
+				var listDiv = document.getElementById("list");
+				if (!listDiv) return;
+				var ln = listDiv.querySelectorAll("[id^='item_cnt']").length
+				var btn_add = document.getElementById("btn_add");
+				if (btn_add) btn_add.disabled = ln > 98 ? true : false;
+			}
+
+			function set_btn_del_state() {
+				var listDiv = document.getElementById("list");
+				if (!listDiv) return;
+				var ln = listDiv.querySelectorAll("[id^='item_cnt']").length
+				var btn_delete = document.getElementById("btn_delete");
+				if (btn_delete) btn_delete.disabled = ix.item != -1 && ln > 1 ? false : true;
+			}
+
+			function set_btn_dn_state() {
+				var element = document.getElementById("item_cnt" + ix.item);
+				var btn_down = document.getElementById("btn_down");
+				if (btn_down) btn_down.disabled = ix.item == -1 || !element || !element.nextSibling ? true : false;
+			}
+
+			function set_btn_up_state() {
+				var element = document.getElementById("item_cnt" + ix.item);
+				var btn_up = document.getElementById("btn_up");
+				if (btn_up) btn_up.disabled = ix.item == -1 || !element || !element.previousSibling ? true : false;
+			}
+
+			function initializeButtonStates() {
+				set_btn_add_state();
+				set_btn_del_state();
+				set_btn_dn_state();
+				set_btn_up_state();
+			}
+
+			function setWindowSize(cur) {
+				window_w = cur.def_w * em || screen.width * 0.67;
+				window_h = cur.def_h * em || screen.height * 0.95;
+				window_w = Math.min(window_w, screen.width * 0.67);
+				window_h = Math.min(window_h, screen.height * 0.95);
+				left = (screen.width - window_w) / 2;
+				top = (screen.height - window_h) / 2;
+				window.resizeTo(window_w, window_h);
+				window.moveTo(left, top);
+				height = document.documentElement.clientHeight || document.body.clientHeight;
+			}
+
+			function adjustLayouts(has_scroll, btn_pad_l, btn_pad_r, scroll_w, inputs, max_visible, input_cnt_h) {
+				// Now adjust layouts post-resize
+				var client_w = document.body.clientWidth;
+
+				// Set list padding left/right
+				var list = document.getElementById('list');
+				list.style.paddingLeft = btn_pad_l + 'px';
+				list.style.paddingRight = btn_pad_r + 'px';
+
+				// Calculate extra space (input padding + borders) to subtract for exact fit
+				var extra = 0;
+				if (inputs.length > 0) {
+					var inp = inputs[0];
+					var pad_l = getStyle(inp, 'paddingLeft');
+					var pad_r = getStyle(inp, 'paddingRight');
+					var bord_l = getStyle(inp, 'borderLeftWidth');
+					var bord_r = getStyle(inp, 'borderRightWidth');
+					extra = pad_l + pad_r + bord_l + bord_r;
+				}
+
+				// Set inputs width (subtract extra for content-box fit)
+				var input_w = client_w - btn_pad_l - btn_pad_r - (has_scroll ? scroll_w : 0) - extra;
+				for (var ii = 0; ii < inputs.length; ii++) {
+					var inp = inputs[ii];
+					inp.className = '';
+					inp.style.width = input_w + 'px';
+					inp.style.display = 'block';
+				}
+
+				// Setup scrollbar if needed
+				if (has_scroll) {
+					var item = document.querySelector("[id^='item_cnt']");
+					if (item) {
+						var rect = item.getBoundingClientRect();
+						var item_h = rect.bottom - rect.top;
+						list.style.height = (max_visible * item_h - em * 0.5) + 'px';
+					} else {
+						list.style.height = (max_visible * input_cnt_h - em * 0.5) + 'px';
+					}
+					list.style.overflowY = 'scroll';
+					list.style.overflowX = 'hidden';
+				} else {
+					list.style.height = 'auto';
+					list.style.overflowY = 'hidden';
+				}
+			}
+
+			function calculateAndResize(cur) {
+				var inputs = document.getElementsByName('item_name');
+				var max_inp_w = 0;
+				if (inputs.length > 0) {
+					for (var ii = 0; ii < inputs.length; ii++) {
+						var inp = inputs[ii];
+						var old_w = inp.style.width;
+						inp.style.width = 'auto';
+						max_inp_w = Math.max(max_inp_w, inp.offsetWidth + 20);
+						inp.style.width = old_w;
+					}
+					var input_cnt_h = inputs[0].parentNode.offsetHeight;
+				} else {
+					var input_cnt_h = Math.round(1.62 * em);
+				}
+
+				// Get scrollbar width
+				var scrollTest = document.createElement('div');
+				scrollTest.style.position = 'absolute';
+				scrollTest.style.top = '-999px';
+				scrollTest.style.height = '100px';
+				scrollTest.style.width = '100px';
+				scrollTest.style.overflow = 'scroll';
+				document.body.appendChild(scrollTest);
+				var scroll_w = scrollTest.offsetWidth - scrollTest.clientWidth + 4;
+				document.body.removeChild(scrollTest);
+
+				var has_scroll = inputs.length > max_visible;
+
+				// Buttons setup
+				var btn_cnt = document.getElementById('btn_cnt_right');
+				var btn_pad_l = em;
+				var btn_pad_r = em;
+				var btn_h = btn_cnt.offsetHeight;
+
+				// Calculate button min width
+				var gap = 0.5 * em;
+				var reset_w = document.getElementById('btn_reset').offsetWidth;
+				var add_w = document.getElementById('btn_add').offsetWidth;
+				var up_w = document.getElementById('btn_up').offsetWidth;
+				var down_w = document.getElementById('btn_down').offsetWidth;
+				var delete_w = document.getElementById('btn_delete').offsetWidth;
+				var ok_w = document.getElementById('btn_ok').offsetWidth;
+				var center_w = add_w + up_w + down_w + delete_w + 3 * gap;
+				var button_min_w_left = center_w + 2 * em + 2 * reset_w + 2 * gap;
+				var button_min_w_right = center_w + 2 * em + 2 * ok_w + 2 * gap;
+				var button_min_w = Math.max(button_min_w_left, button_min_w_right);
+
+				// Popup width in px
+				var popup_px_w = Math.max(max_inp_w + (has_scroll ? scroll_w : 0) + btn_pad_l + btn_pad_r, button_min_w, 400);
+
+				// Height calculation
+				var max_visible_calc = Math.min(max_visible, inputs.length || 0);
+				var list_h = max_visible_calc * input_cnt_h - em * 0.5;
+				var list_elem = document.getElementById('list');
+				var list_padding = getStyle(list_elem, 'paddingTop') + getStyle(list_elem, 'paddingBottom');
+				var popup_px_h = list_h + btn_h + list_padding;
+
+				// Convert to em
+				cur.def_w = Math.round(popup_px_w / em) + 4;
+				cur.def_h = Math.round(popup_px_h / em) + 4;
+
+				// Resize window
+				setWindowSize(cur);
+				adjustLayouts(has_scroll, btn_pad_l, btn_pad_r, scroll_w, inputs, max_visible_calc, input_cnt_h);
+			}
+
+			function close_window() {
+				is_closed_manually = true;
+				window.open('', '_self', '');
+				window.close();
+			}
+
+			function init() {
+				try {
+					parsed_args = window.external.dialogArguments.toArray();
+				}
+				catch(e) {}
+
+				if (parsed_args) {
+					cfg = JSON.parse(parsed_args[0]);
+					orig_cfg = JSON.parse(parsed_args[1]);
+					callback = parsed_args[2];
+					min_fields = parsed_args[3] || 0;
+					max_visible = parsed_args[4] || 10;
+					document.title = parsed_args[5] || 'Edit List';
+					for (var k = cfg.length; k < min_fields; k++) {
+						cfg.push('');
+					}
+					// Temporarily set large size for measurements
+					setWindowSize(cur);
+					height = document.documentElement.clientHeight || document.body.clientHeight;
+					heightOffset = window_h - height;
+					widthOffset = window_w - (document.documentElement.clientWidth || document.body.clientWidth);
+					setList();
+					initializeButtonStates();
+					calculateAndResize(cur);
+					var btn_ok = document.getElementById("btn_ok");
+					if (btn_ok) btn_ok.focus();
+				}
+			}
+
+			window.btn_ok.onclick = function () {
+				getValues();
+				var new_cfg = JSON.stringify(cfg);
+				if (new_cfg == parsed_args[0]) new_cfg = '';
+				callback && callback(new_cfg);
+				close_window();
+			}
+
+			window.btn_add.onclick = function () {
+				new_id++;
+				var listDiv = document.getElementById("list");
+				if (!listDiv) return;
+				var list = listDiv.querySelectorAll("[id^='item_cnt']");
+				if (list.length > 98) return;
+				listDiv.insertAdjacentHTML("beforeend", '<div class="input_cnt1" id="item_cnt'+new_id+'"><input id="item_container'+new_id+'" name="item_name" class="input98" value="" /></div>');
+				var newInput = document.getElementById("item_container" + new_id);
+				if (newInput) newInput.focus();
+				getValues();
+				set_btn_add_state();
+				calculateAndResize(cur);
+			}
+
+			window.btn_up.onclick = function () {
+				if (ix.item == -1) return;
+				var el = document.getElementById("item_cnt" + ix.item);
+				if (!el) return;
+				moveUp(el);
+				set_btn_up_state();
+				set_btn_dn_state();
+			}
+
+			window.btn_down.onclick = function () {
+				if (ix.item == -1) return;
+				var el = document.getElementById("item_cnt" + ix.item);
+				if (!el) return;
+				moveDown(el);
+				set_btn_up_state();
+				set_btn_dn_state();
+			}
+
+			window.btn_delete.onclick = function () {
+				if (ix.item == -1) return;
+				var el = document.getElementById("item_cnt" + ix.item);
+				if (!el) return;
+				var next = el.nextSibling;
+				remove(el);
+				if (next && next.id && next.id.indexOf('item_cnt') === 0) {
+					ix.item = next.id.replace('item_cnt', '');
+					next.style["background"] = "lightgreen";
+				} else {
+					ix.item = -1;
+				}
+				getValues();
+				set_btn_del_state();
+				set_btn_add_state();
+				calculateAndResize(cur);
+			}
+
+			window.btn_reset.onclick = function () {
+				cfg = orig_cfg.slice();
+				for (var k = cfg.length; k < min_fields; k++) {
+					cfg.push('');
+				}
+				setList(true);
+				getValues();
+				initializeButtonStates();
+				calculateAndResize(cur);
+				ix.item = -1;
+			}
+
+			document.onclick = function () {
+				var activeEl = document.activeElement;
+				if (!activeEl) return;
+				var idx = activeEl.id;
+				var clickedButton = /btn_reset|btn_add|btn_down|btn_up|btn_delete|btn_ok/.test(idx);
+				if (!clickedButton) {
+					var listDiv = document.getElementById("list");
+					if (!listDiv) return;
+					var list = listDiv.querySelectorAll("[id^='item_cnt']");
+					for (i = 0; i < list.length; i++) list[i].style["background"] = "none";
+					var par = activeEl.parentElement;
+					var activate = par && /item_cnt/.test(par.id);
+					if (!activate) {
+						ix.item = -1;
+					} else {
+						ix.item = par.id.replace('item_cnt', '');
+						par.style["background"] = "lightgreen";
+					}
+				}
+				set_btn_add_state();
+				set_btn_del_state();
+				set_btn_dn_state();
+				set_btn_up_state();
+			}
+
+			document.getElementsByTagName("BODY")[0].onresize = function() {
+				height = document.documentElement.clientHeight || document.body.clientHeight;
+				var client_w = document.documentElement.clientWidth || document.body.clientWidth;
+				window_w = client_w + widthOffset;
+				window_h = height + heightOffset;
+
+				// Enforce minimum size
+				var min_w = cur.def_w * em;
+				var min_h = cur.def_h * em;
+				if (window_w < min_w || window_h < min_h) {
+					try {
+						window.resizeTo(Math.max(window_w, min_w), Math.max(window_h, min_h));
+					} catch (e) {
+						// Ignore access denied error
+					}
+					return;
+				}
+
+				// Get current has_scroll
+				var has_scroll = cfg.length > max_visible;
+
+				// Buttons setup
+				var btn_pad_l = em;
+				var btn_pad_r = em;
+
+				// Get scrollbar width
+				var scrollTest = document.createElement('div');
+				scrollTest.style.position = 'absolute';
+				scrollTest.style.top = '-999px';
+				scrollTest.style.height = '100px';
+				scrollTest.style.width = '100px';
+				scrollTest.style.overflow = 'scroll';
+				document.body.appendChild(scrollTest);
+				var scroll_w = scrollTest.offsetWidth - scrollTest.clientWidth + 4;
+				document.body.removeChild(scrollTest);
+
+				// Get inputs
+				var inputs = document.getElementsByName('item_name');
+				var input_cnt_h = inputs.length > 0 ? inputs[0].parentNode.offsetHeight : Math.round(1.62 * em);
+				var max_visible_calc = Math.min(max_visible, cfg.length || 0);
+
+				adjustLayouts(has_scroll, btn_pad_l, btn_pad_r, scroll_w, inputs, max_visible_calc, input_cnt_h);
+			}
+
+			window.onunload = function () {
+				if (!is_closed_manually) {
+					callback && callback('');
+				}
+			}
+
+			window.document.body.focus();
+
+			init();
+
+		</script>
+	</body>
+</html>

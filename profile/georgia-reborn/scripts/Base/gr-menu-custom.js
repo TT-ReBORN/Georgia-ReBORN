@@ -423,7 +423,13 @@ class CustomMenuDropDown extends CustomMenu {
 				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_bg'); },
 				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_text'); },
 				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_node'); },
-				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_btns'); }
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_btns'); },
+				null, // Empty slot for spacing
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_ex_column');   this._openLibraryExplorer('album'); },
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_ex_art_view'); this._openLibraryExplorer('artist'); },
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_ex_alb_view'); this._openLibraryExplorer('album'); },
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_ex_misc');     this._openLibraryExplorer('album'); },
+				() => { grm.ui.displayPanel('library', true); grm.cthMenu.initCustomThemeMenu('library', 'lib_ex_btns');     this._openLibraryExplorer('album'); }
 			],
 			Biography: [
 				() => { grm.ui.displayPanel('biography', true); grm.cthMenu.initCustomThemeMenu('biography', 'bio_bg'); },
@@ -485,6 +491,29 @@ class CustomMenuDropDown extends CustomMenu {
 		}
 		if (CustomMenu.activeControl.closeBtn) {
 			closeHandler();
+		}
+	}
+
+	/**
+	 * Opens the Library Explorer.
+	 * @param {string} view - The main Library Explorer view to open - 'artist' or 'album';
+	 * @private
+	 */
+	_openLibraryExplorer(view) {
+		lib.ex.main.state.visible = true;
+
+		const nowPlayingHandle = fb.GetNowPlaying();
+		const nowArtist = $('%album artist%', nowPlayingHandle) || $('%artist%', nowPlayingHandle);
+		const nowAlbum = $('%album%', nowPlayingHandle);
+		const handles = view === 'artist' ? lib.ex.data.getHandlesArtist(nowArtist) : lib.ex.data.getHandlesAlbum(nowArtist, nowAlbum);
+
+		if (handles.Count === 0) return;
+
+		// Tree View
+		if (view === 'artist') {
+			lib.ex.artist.loadArtistView(handles, -1);
+		} else if (view === 'album') {
+			lib.ex.album.loadAlbumView(handles, -1);
 		}
 	}
 	// #endregion
@@ -2029,6 +2058,46 @@ class CustomThemeMenu {
 				{ id: 'lib_btns_08', label: 'lib.ui.col.sbarNormal', value: grCfg.cTheme.lib_ui_col_sbarNormal },
 				{ id: 'lib_btns_09', label: 'lib.ui.col.sbarHovered', value: grCfg.cTheme.lib_ui_col_sbarHovered },
 				{ id: 'lib_btns_10', label: 'lib.ui.col.sbarDrag', value: grCfg.cTheme.lib_ui_col_sbarDrag }
+			],
+			lib_ex_column: [
+				{ id: 'lib_ex_column_01', label: 'lib.ex.color.column_bg', value: grCfg.cTheme.lib_ex_col_column_bg },
+				{ id: 'lib_ex_column_02', label: 'lib.ex.color.column_line', value: grCfg.cTheme.lib_ex_col_column_line },
+				{ id: 'lib_ex_column_03', label: 'lib.ex.color.column_text_normal', value: grCfg.cTheme.lib_ex_col_column_text_normal },
+				{ id: 'lib_ex_column_04', label: 'lib.ex.color.column_text_hovered', value: grCfg.cTheme.lib_ex_col_column_text_hovered },
+				{ id: 'lib_ex_column_05', label: 'lib.ex.color.column_text_playing', value: grCfg.cTheme.lib_ex_col_column_text_playing },
+				{ id: 'lib_ex_column_06', label: 'lib.ex.color.column_text_selected', value: grCfg.cTheme.lib_ex_col_column_text_selected }
+			],
+			lib_ex_art_view: [
+				{ id: 'lib_ex_art_view_01', label: 'lib.ex.color.grid_playing_bg', value: grCfg.cTheme.lib_ex_col_grid_playing_bg },
+				{ id: 'lib_ex_art_view_02', label: 'lib.ex.color.grid_selection_bg', value: grCfg.cTheme.lib_ex_col_grid_selection_bg },
+				{ id: 'lib_ex_art_view_03', label: 'lib.ex.color.grid_selection_frame', value: grCfg.cTheme.lib_ex_col_grid_selection_frame },
+				{ id: 'lib_ex_art_view_04', label: 'lib.ex.color.grid_sideMarker', value: grCfg.cTheme.lib_ex_col_grid_sideMarker },
+				{ id: 'lib_ex_art_view_05', label: 'lib.ex.color.grid_title_normal', value: grCfg.cTheme.lib_ex_col_grid_title_normal },
+				{ id: 'lib_ex_art_view_06', label: 'lib.ex.color.grid_title_hovered', value: grCfg.cTheme.lib_ex_col_grid_title_hovered },
+				{ id: 'lib_ex_art_view_07', label: 'lib.ex.color.grid_title_playing', value: grCfg.cTheme.lib_ex_col_grid_title_playing },
+				{ id: 'lib_ex_art_view_08', label: 'lib.ex.color.grid_title_selected', value: grCfg.cTheme.lib_ex_col_grid_title_selected }
+			],
+			lib_ex_alb_view: [
+				{ id: 'lib_ex_alb_view_01', label: 'lib.ex.color.row_stripes_bg', value: grCfg.cTheme.lib_ex_col_row_stripes_bg },
+				{ id: 'lib_ex_alb_view_02', label: 'lib.ex.color.row_playing_bg', value: grCfg.cTheme.lib_ex_col_row_playing_bg },
+				{ id: 'lib_ex_alb_view_03', label: 'lib.ex.color.row_selection_bg', value: grCfg.cTheme.lib_ex_col_row_selection_bg },
+				{ id: 'lib_ex_alb_view_04', label: 'lib.ex.color.row_selection_frame', value: grCfg.cTheme.lib_ex_col_row_selection_frame },
+				{ id: 'lib_ex_alb_view_05', label: 'lib.ex.color.row_sideMarker', value: grCfg.cTheme.lib_ex_col_row_sideMarker },
+				{ id: 'lib_ex_alb_view_06', label: 'lib.ex.color.row_title_normal', value: grCfg.cTheme.lib_ex_col_row_title_normal },
+				{ id: 'lib_ex_alb_view_07', label: 'lib.ex.color.row_title_hovered', value: grCfg.cTheme.lib_ex_col_row_title_hovered },
+				{ id: 'lib_ex_alb_view_08', label: 'lib.ex.color.row_title_playing', value: grCfg.cTheme.lib_ex_col_row_title_playing },
+				{ id: 'lib_ex_alb_view_09', label: 'lib.ex.color.row_title_selected', value: grCfg.cTheme.lib_ex_col_row_title_selected }
+			],
+			lib_ex_misc: [
+				{ id: 'lib_ex_misc_01', label: 'lib.ex.color.rating_star', value: grCfg.cTheme.lib_ex_col_rating_star },
+				{ id: 'lib_ex_misc_02', label: 'lib.ex.color.rating_star_shadow', value: grCfg.cTheme.lib_ex_col_rating_star_shadow }
+			],
+			lib_ex_btns: [
+				{ id: 'lib_ex_btns_01', label: 'lib.ex.color.sbar_normal', value: grCfg.cTheme.lib_ex_col_sbar_normal },
+				{ id: 'lib_ex_btns_02', label: 'lib.ex.color.sbar_hovered', value: grCfg.cTheme.lib_ex_col_sbar_hovered },
+				{ id: 'lib_ex_btns_03', label: 'lib.ex.color.sbar_drag', value: grCfg.cTheme.lib_ex_col_sbar_drag },
+				{ id: 'lib_ex_btns_04', label: 'lib.ex.color.closeBtn', value: grCfg.cTheme.lib_ex_col_closeBtn },
+				{ id: 'lib_ex_btns_05', label: 'lib.ex.color.closeBtn_bg', value: grCfg.cTheme.lib_ex_col_closeBtn_bg }
 			]
 		};
 
@@ -2128,11 +2197,12 @@ class CustomThemeMenu {
 	 * @param {string} section - The specific section to be opened within the panel.
 	 * - For 'main': 'main_pre', 'main_bg', 'main_bar', 'main_bar2', 'main_bar3', 'main_text', 'main_btns', 'main_btns2', 'main_style'.
 	 * - For 'playlist': 'pl_bg', 'pl_text1', 'pl_text2', 'pl_misc', 'pl_btns'.
-	 * - For 'library': 'lib_bg', 'lib_text', 'lib_node', 'lib_btns'.
+	 * - For 'library': 'lib_bg', 'lib_text', 'lib_node', 'lib_btns', 'lib_ex_column', 'lib_ex_art_view', 'lib_ex_alb_view', 'lib_ex_misc', 'lib_ex_btns'.
 	 * - For 'biography': 'bio_bg', 'bio_text', 'bio_misc', 'bio_btns'.
 	 */
 	initCustomThemeMenu(panel, section) {
 		CustomMenu.controlList = [];
+		lib.ex.main.state.visible = false;
 
 		const margin = SCALE(40);
 		const menuOnRightSide = grm.ui.displayBiography || grm.ui.displayLyrics && !grm.ui.displayDetails && !grm.ui.displayLibrary;
@@ -2146,7 +2216,7 @@ class CustomThemeMenu {
 		const menu = new CustomMenuDropDown(x, y, 'Main', ['Pre', 'Bg', 'Bar', 'Bar 2', 'Bar 3', 'Text', 'Btns', 'Btns 2', 'Style'], 0);
 		CustomMenu.controlList.push(menu);
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Playlist',  ['Bg', 'Text', 'Text 2', 'Misc', 'Btns'], 0));
-		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Library',   ['Bg', 'Text', 'Node', 'Btns'], 0));
+		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Library',   ['Bg', 'Text', 'Node', 'Btns', '', 'Ex Column', 'Ex Artist', 'Ex Album', 'Ex Misc', 'Ex Btns'], 0));
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Biography', ['Bg', 'Text', 'Misc', 'Btns'], 0));
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, 'Options',   ['Info', '', 'Theme 01', 'Theme 02', 'Theme 03', 'Theme 04', 'Theme 05', 'Theme 06', 'Theme 07', 'Theme 08', 'Theme 09', 'Theme 10', '', 'Rename', 'Reset'], 0));
 		x += CustomMenu.controlList[CustomMenu.controlList.length - 1].w + 1; CustomMenu.controlList.push(new CustomMenuDropDown(x, y, RebornSymbols.Close2,    ['']));
@@ -2376,6 +2446,42 @@ class CustomThemeMenu {
 			lib_btns_08: 'lib_ui_col_sbarNormal',
 			lib_btns_09: 'lib_ui_col_sbarHovered',
 			lib_btns_10: 'lib_ui_col_sbarDrag',
+
+			// * LIBRARY EXPLORER - COLUMN * //
+			lib_ex_column_01: 'lib_ex_col_column_bg',
+			lib_ex_column_02: 'lib_ex_col_column_line',
+			lib_ex_column_03: 'lib_ex_col_column_text_normal',
+			lib_ex_column_04: 'lib_ex_col_column_text_hovered',
+			lib_ex_column_05: 'lib_ex_col_column_text_playing',
+			lib_ex_column_06: 'lib_ex_col_column_text_selected',
+			// * LIBRARY EXPLORER - ARTIST VIEW * //
+			lib_ex_art_view_01: 'lib_ex_col_grid_playing_bg',
+			lib_ex_art_view_02: 'lib_ex_col_grid_selection_bg',
+			lib_ex_art_view_03: 'lib_ex_col_grid_selection_frame',
+			lib_ex_art_view_04: 'lib_ex_col_grid_sideMarker',
+			lib_ex_art_view_05: 'lib_ex_col_grid_title_normal',
+			lib_ex_art_view_06: 'lib_ex_col_grid_title_hovered',
+			lib_ex_art_view_07: 'lib_ex_col_grid_title_playing',
+			lib_ex_art_view_08: 'lib_ex_col_grid_title_selected',
+			// * LIBRARY EXPLORER - ALBUM VIEW * //
+			lib_ex_alb_view_01: 'lib_ex_col_row_stripes_bg',
+			lib_ex_alb_view_02: 'lib_ex_col_row_playing_bg',
+			lib_ex_alb_view_03: 'lib_ex_col_row_selection_bg',
+			lib_ex_alb_view_04: 'lib_ex_col_row_selection_frame',
+			lib_ex_alb_view_05: 'lib_ex_col_row_sideMarker',
+			lib_ex_alb_view_06: 'lib_ex_col_row_title_normal',
+			lib_ex_alb_view_07: 'lib_ex_col_row_title_hovered',
+			lib_ex_alb_view_08: 'lib_ex_col_row_title_playing',
+			lib_ex_alb_view_09: 'lib_ex_col_row_title_selected',
+			// * LIBRARY EXPLORER - MISC * //
+			lib_ex_misc_01: 'lib_ex_col_rating_star',
+			lib_ex_misc_02: 'lib_ex_col_rating_star_shadow',
+			// * LIBRARY EXPLORER - BTNS * //
+			lib_ex_btns_01: 'lib_ex_col_sbar_normal',
+			lib_ex_btns_02: 'lib_ex_col_sbar_hovered',
+			lib_ex_btns_03: 'lib_ex_col_sbar_drag',
+			lib_ex_btns_04: 'lib_ex_col_closeBtn',
+			lib_ex_btns_05: 'lib_ex_col_closeBtn_bg',
 
 			// * BIOGRAPHY - BG * //
 			bio_bg_01: 'bio_ui_col_bg',

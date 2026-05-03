@@ -396,6 +396,11 @@ class Button {
 			metadb = nowPlaying;
 		}
 
+		if (lib.ex.main.state.visible && grm.ui.displayLibrary) {
+			selectedItems = lib.ex.data.getHandlesFromSelected();
+			metadb = selectedItems.Count > 0 ? selectedItems[0] : null;
+		}
+
 		if (!metadb) {
 			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
 			fb.ShowPopupMessage(msg, 'Empty playlist');
@@ -453,6 +458,7 @@ class Button {
 		menu.doCallback(idx);
 		grm.ui.activeMenu = false;
 		pl.playlist.update_playlist_headers();
+		lib.ex.data.updateRatings(selectedItems);
 	}
 
 	/**
@@ -613,8 +619,13 @@ class Button {
 	 */
 	lowerTitleBtnAction() {
 		if (!fb.IsPlaying) return;
+
 		if (grm.ui.displayLibrary) {
-			lib.pop.nowPlayingShow();
+			if (lib.ex.main.state.visible) {
+				lib.ex.album.showNowPlaying();
+			} else {
+				lib.pop.nowPlayingShow();
+			}
 		} else {
 			grm.ui.displayPanel('playlist', true);
 			pl.playlist.show_now_playing();

@@ -87,6 +87,10 @@ class LibCallbacks {
 	}
 
 	on_key_down(vkey) {
+		if (lib.ex.main.state.visible) {
+			lib.ex.calls.on_key_down(vkey);
+			return true;
+		}
 		lib.pop.on_key_down(vkey);
 		libImg.on_key_down(vkey);
 		if (!libSet.searchShow) return;
@@ -94,6 +98,9 @@ class LibCallbacks {
 	}
 
 	on_key_up(vkey) {
+		if (lib.ex.main.state.visible) {
+			return;
+		}
 		libImg.on_key_up(vkey);
 		if (!libSet.searchShow) return;
 		lib.search.on_key_up(vkey);
@@ -149,9 +156,13 @@ class LibCallbacks {
 				return true;
 			});
 		}
+		lib.ex.calls.on_metadb_changed(handleList);
 	}
 
 	on_mouse_lbtn_dblclk(x, y) {
+		lib.ex.calls.on_mouse_lbtn_dblclk(x, y);
+		if (lib.ex.utils.mouseInExplorer(x, y)) return;
+
 		lib.but.lbtn_dn(x, y);
 		if (libSet.searchShow) lib.search.lbtn_dblclk(x, y);
 		lib.pop.lbtn_dblclk(x, y);
@@ -159,6 +170,9 @@ class LibCallbacks {
 	}
 
 	on_mouse_lbtn_down(x, y) {
+		lib.ex.calls.on_mouse_lbtn_down(x, y);
+		if (lib.ex.utils.mouseInExplorer(x, y)) return;
+
 		if (libSet.touchControl) {
 			lib.panel.last_pressed_coord = { x, y };
 		}
@@ -170,6 +184,9 @@ class LibCallbacks {
 	}
 
 	on_mouse_lbtn_up(x, y) {
+		lib.ex.calls.on_mouse_lbtn_up(x, y);
+		if (lib.ex.utils.mouseInExplorer(x, y)) return;
+
 		lib.pop.lbtn_up(x, y);
 		if (libSet.searchShow) lib.search.lbtn_up();
 		lib.but.lbtn_up(x, y);
@@ -180,6 +197,7 @@ class LibCallbacks {
 		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.leave();
 		lib.sbar.leave();
 		lib.pop.leave();
+		lib.ex.calls.on_mouse_leave();
 	}
 
 	on_mouse_mbtn_dblclk(x, y, mask) {
@@ -198,6 +216,12 @@ class LibCallbacks {
 	on_mouse_move(x, y) {
 		if (lib.panel.m.x == x && lib.panel.m.y == y) return;
 		lib.pop.hand = false;
+
+		if (lib.ex.utils.mouseInExplorer(x, y)) {
+			lib.ex.calls.on_mouse_move(x, y);
+			return;
+		}
+
 		if (lib.ui.style.topBarShow || libSet.sbarShow) lib.but.move(x, y);
 		if (libSet.searchShow) lib.search.move(x, y);
 		if (grSet.libraryRowHover) lib.pop.move(x, y);
@@ -209,6 +233,10 @@ class LibCallbacks {
 	}
 
 	on_mouse_rbtn_up(x, y) {
+		if (lib.ex.main.state.visible) {
+			return lib.ex.calls.on_mouse_rbtn_up(x, y);
+		}
+
 		if (libSet.searchShow && (y < lib.ui.y + lib.panel.search.h && x > lib.panel.search.x && x < lib.panel.search.x + lib.panel.search.w)) {
 			lib.search.rbtn_up(x, y);
 		} else {
@@ -219,6 +247,11 @@ class LibCallbacks {
 	}
 
 	on_mouse_wheel(step) {
+		if (lib.ex.main.state.visible) {
+			lib.ex.calls.on_mouse_wheel(step)
+			return;
+		}
+
 		lib.pop.deactivateTooltip();
 		if (!lib.vk.k('zoom')) {
 			lib.sbar.wheel(step);
@@ -294,13 +327,14 @@ class LibCallbacks {
 			grm.bgImg.drawBgImage(gr, grm.bgImg.libraryBgImg, grSet.libraryBgImgScale, this.x, this.y, this.w, this.h, grSet.libraryBgImgOpacity, false, 0, 0);
 		}
 
-		libImg.draw(gr);
+		if (!lib.ex.main.state.visible) libImg.draw(gr);
 		lib.ui.drawLine(gr);
 		lib.search.draw(gr);
-		lib.pop.draw(gr);
+		if (!lib.ex.main.state.visible) lib.pop.draw(gr);
 		lib.sbar.draw(gr);
 		lib.but.draw(gr);
 		lib.find.draw(gr);
+		lib.ex.main.draw(gr);
 
 		if (libSet.albumArtFlowMode && lib.panel.imgView) {
 			gr.FillSolidRect(this.x, this.y, SCALE(20), this.h, lib.ui.col.bg); // Margin left and masking for horizontal flow mode
@@ -321,10 +355,15 @@ class LibCallbacks {
 	}
 
 	on_playback_new_track(handle) {
+		lib.ex.calls.on_playback_new_track(handle);
 		lib.lib.checkFilter();
 		lib.pop.getNowplaying(handle);
 		if (grSet.libraryAutoScrollNowPlaying) lib.pop.nowPlayingShow();
 		if (!libSet.recItemImage || libSet.libSource != 2) lib.ui.on_playback_new_track(handle);
+	}
+
+	on_playback_pause(state) {
+		lib.ex.calls.on_playback_pause(state);
 	}
 
 	on_playback_stop(reason) {
@@ -333,8 +372,9 @@ class LibCallbacks {
 		this.on_item_focus_change();
 	}
 
-	on_playback_queue_changed() {
+	on_playback_queue_changed(origin) {
 		this.on_queue_changed();
+		lib.ex.calls.on_playback_queue_changed(origin);
 	}
 
 	on_playlists_changed() {
@@ -443,6 +483,7 @@ class LibCallbacks {
 		lib.find.on_size();
 		lib.but.createImages();
 		lib.pop.createImages();
+		lib.ex.calls.on_size();
 
 		if (!libSet.themed) return;
 		const windowMetrics = $Lib.jsonParse(this.windowMetricsPath, {}, 'file');
@@ -464,6 +505,17 @@ class LibCallbacks {
 			if (!lib.panel.imgView) lib.pop.focusShow(idx);
 			else lib.pop.showItem(idx, 'focus');
 		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////////
+	// * ASYNC NETWORK CALLBACKS - SINCE SMP 1.7.25.12.8 AND JSplitter 3.7.4 * //
+	/////////////////////////////////////////////////////////////////////////////
+	on_download_file_done(path, success, error_text) {
+		lib.ex.calls.on_download_file_done(path, success, error_text);
+	}
+
+	on_http_request_done(task_id, success, response_text, status, content_type) {
+		lib.ex.calls.on_http_request_done(task_id, success, response_text, status, content_type);
 	}
 }
 

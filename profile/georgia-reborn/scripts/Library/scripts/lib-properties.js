@@ -151,6 +151,51 @@ let libProperties = [
 	['Panel Library - Custom Font Node Icon', 'Segoe UI Symbol', 'custIconFont'],
 	['Panel Library - Custom Font Scroll Icon', 'Segoe UI Symbol', 'butCustIconFont'],
 
+	['Panel Library - Explorer - Artwork - Album image scaling', 'cropped', 'explorerAlbumImgScaling'],
+	['Panel Library - Explorer - Artwork - Album thumb scaling', 'cropped', 'explorerAlbumThumbImgScaling'],
+	['Panel Library - Explorer - Artwork - Artist image scaling', 'cropped', 'explorerArtistImgScaling'],
+	['Panel Library - Explorer - Artwork - Artist thumb scaling', 'cropped', 'explorerArtistThumbImgScaling'],
+	['Panel Library - Explorer - Artwork - Full theme color change on new artwork', true, 'fullThemeColorChange'],
+
+	['Panel Library - Explorer - Controls - Keep playlist when playing', true, 'explorerPlaybackKeepPlaylist'],
+	['Panel Library - Explorer - Controls - Close on outside mouse wheel', true, 'explorerWheelOutsideClose'],
+
+	['Panel Library - Explorer - Display - Display explorer in tree view', true, 'explorerTreeView'],
+	['Panel Library - Explorer - Display - Display tab icons only', false, 'explorerTabIconsOnly'],
+	['Panel Library - Explorer - Display - Display tab icon NowPlaying', false, 'explorerTabIconNowPlaying'],
+	['Panel Library - Explorer - Display - Display link icon in grid', true, 'explorerExternalLinkIcon'],
+	['Panel Library - Explorer - Display - Album year in grid', 'overlay', 'explorerAlbumYearType'],
+	['Panel Library - Explorer - Display - Show track rating grid', true, 'explorerShowTrackRatingGrid'],
+
+	['Panel Library - Explorer - Downloads - Album image auto-downloads', true, 'explorerAlbumImageDLAuto'],
+	['Panel Library - Explorer - Downloads - Album image download quality', 'original', 'explorerAlbumImageDLQuality'],
+	['Panel Library - Explorer - Downloads - Album image name saved in album folder', 'folder', 'explorerAlbumImageNameMoveToDir'],
+	['Panel Library - Explorer - Downloads - Album image post-download action', 'move', 'explorerAlbumImageAutoAction'],
+	['Panel Library - Explorer - Downloads - Artist image auto-downloads', true, 'explorerArtistImageDLAuto'],
+	['Panel Library - Explorer - Downloads - Artist image download count', 10, 'explorerArtistImageDLCount'],
+	['Panel Library - Explorer - Downloads - Artist image download quality', 'original', 'explorerArtistImageDLQuality'],
+	['Panel Library - Explorer - Downloads - Missing releases image auto-downloads', true, 'explorerMissingReleasesImageDLAuto'],
+	['Panel Library - Explorer - Downloads - Similar artist image auto-downloads', true, 'explorerSimilarArtistImageDLAuto'],
+
+	['Panel Library - Explorer - Missing Releases - Fetch source', 'discogs', 'explorerMissingReleasesFetchSource'],
+
+	['Panel Library - Explorer - Popularity - Fetch source', 'lastfm', 'explorerPopularityFetchSource'],
+
+	['Panel Library - Explorer - Similar Artists - View', 'local', 'explorerSimilarArtistView'],
+	['Panel Library - Explorer - Similar Artists - Fetch source', 'lastfm', 'explorerSimilarArtistFetchSource'],
+	['Panel Library - Explorer - Similar Artists - Fetch limit (external)', 50, 'explorerSimilarArtistFetchLimitExternal'],
+
+	['Panel Library - Explorer - Sort - Direction album', 'ASC', 'explorerSortDirAlbum'],
+	['Panel Library - Explorer - Sort - Direction artist', 'ASC', 'explorerSortDirArtist'],
+	['Panel Library - Explorer - Sort - Direction similar artists', 'DSC', 'explorerSortDirSimilar'],
+	['Panel Library - Explorer - Sort - Type album', 'Track number', 'explorerSortAlbum'],
+	['Panel Library - Explorer - Sort - Type artist', 'Year', 'explorerSortArtist'],
+	['Panel Library - Explorer - Sort - Type similar artists', 'Similarity', 'explorerSortSimilar'],
+
+	['Panel Library - Explorer - Stats - Type album', 'playcount', 'explorerStatsAlbum'],
+	['Panel Library - Explorer - Stats - Type artist', 'rating', 'explorerStatsArtist'],
+	['Panel Library - Explorer - Stats - Type similar artists', 'rating', 'explorerStatsSimilar'],
+
 	['Panel Library - Double-Click Action', 1, 'dblClickAction'],
 	['Panel Library - Facet View', false, 'facetView'],
 	['Panel Library - Filter By', 0, 'filterBy'],

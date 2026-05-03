@@ -2108,6 +2108,9 @@ class PlaylistRating {
 		}
 
 		this.rating = ratingUpdated;
+		const handle = new FbMetadbHandleList([this.metadb]);
+		lib.ex.data.updateRatings(handle);
+
 		const trackId = $('%artist% - %album% - %title%', this.metadb) || this.metadb.RawPath;
 		pl.track_ratings.set(trackId, ratingUpdated);
 		const albumKey = PlaylistHeader.get_album_key(this.metadb);

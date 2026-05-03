@@ -564,6 +564,9 @@ class LibUserInterface {
 			this.font.statistics = gdi.Font(custFont[0], this.font.main.Size, Math.round($Lib.value(custFont[1], 2, 0)));
 		} else this.font.statistics = gdi.Font('Segoe UI Semibold', this.font.main.Size, 0);
 
+		// * Library Explorer
+		if (lib.ex) lib.ex.main.setFonts();
+
 		if (init) return;
 		this.calcText(true);
 	}

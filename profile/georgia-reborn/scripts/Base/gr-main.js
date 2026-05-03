@@ -1682,6 +1682,9 @@ class MainUI {
 		// * INIT COLORS * //
 		grm.colorThemes.initThemeColors();
 		grm.colorStyles.initStyleColors();
+		if (lib.ex.main.state.visible) {
+			lib.ex.color.setArtworkColor();
+		}
 
 		// * POST-INIT COLOR ADJUSTMENTS * //
 		grm.details.updateGridLogos();
@@ -4610,6 +4613,9 @@ class MainUI {
 			lib.lib.logTree();
 			lib.pop.clearTree();
 			lib.ui.getFont(); // * Reset font size when grSet.libraryLayoutSplitPreset4 was used
+			if (lib.ex.main.state.visible) {
+				lib.ex.control.explorerHide();
+			}
 			RepaintWindowRectAreas();
 
 			if (grSet.libraryLayout !== 'split' && (!grSet.libraryLayoutFullPreset || !libraryLayoutSplitPresets)) {

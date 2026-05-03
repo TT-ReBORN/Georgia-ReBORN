@@ -132,6 +132,48 @@ class ColorThemes {
 		lib.ui.col.sbarNormal = theme.lib_ui_col_sbarNormal;
 		lib.ui.col.sbarHovered = theme.lib_ui_col_sbarHovered;
 		lib.ui.col.sbarDrag = theme.lib_ui_col_sbarDrag;
+
+		// * LIBRARY EXPLORER - COLUMN * //
+		lib.ex.color.column_bg = theme.lib_ex_col_column_bg;
+		lib.ex.color.column_line = theme.lib_ex_col_column_line;
+		lib.ex.color.column_text_normal = theme.lib_ex_col_column_text_normal;
+		lib.ex.color.column_text_hovered = theme.lib_ex_col_column_text_hovered;
+		lib.ex.color.column_text_playing = theme.lib_ex_col_column_text_playing;
+		lib.ex.color.column_text_selected = theme.lib_ex_col_column_text_selected;
+
+		// * LIBRARY EXPLORER - GRID - ARTIST VIEW * //
+		lib.ex.color.grid_playing_bg = theme.lib_ex_col_grid_playing_bg;
+		lib.ex.color.grid_selection_bg = theme.lib_ex_col_grid_selection_bg;
+		lib.ex.color.grid_selection_frame = theme.lib_ex_col_grid_selection_frame;
+		lib.ex.color.grid_sideMarker = theme.lib_ex_col_grid_sideMarker;
+		lib.ex.color.grid_title_normal = theme.lib_ex_col_grid_title_normal;
+		lib.ex.color.grid_title_hovered = theme.lib_ex_col_grid_title_hovered;
+		lib.ex.color.grid_title_playing = theme.lib_ex_col_grid_title_playing;
+		lib.ex.color.grid_title_selected = theme.lib_ex_col_grid_title_selected;
+
+		// * LIBRARY EXPLORER - TRACK ROWS - ALBUM VIEW * //
+		lib.ex.color.row_stripes_bg = theme.lib_ex_col_row_stripes_bg;
+		lib.ex.color.row_playing_bg = theme.lib_ex_col_row_playing_bg;
+		lib.ex.color.row_selection_bg = theme.lib_ex_col_row_selection_bg;
+		lib.ex.color.row_selection_frame = theme.lib_ex_col_row_selection_frame;
+		lib.ex.color.row_sideMarker = theme.lib_ex_col_row_sideMarker;
+		lib.ex.color.row_title_normal = theme.lib_ex_col_row_title_normal;
+		lib.ex.color.row_title_hovered = theme.lib_ex_col_row_title_hovered;
+		lib.ex.color.row_title_playing = theme.lib_ex_col_row_title_playing;
+		lib.ex.color.row_title_selected = theme.lib_ex_col_row_title_selected;
+
+		// * LIBRARY EXPLORER - RATING * //
+		lib.ex.color.rating_star = theme.lib_ex_col_rating_star;
+		lib.ex.color.rating_star_shadow = theme.lib_ex_col_rating_star_shadow;
+
+		// * LIBRARY EXPLORER - SCROLLBAR * //
+		lib.ex.color.sbar_normal = theme.lib_ex_col_sbar_normal;
+		lib.ex.color.sbar_hovered = theme.lib_ex_col_sbar_hovered;
+		lib.ex.color.sbar_drag = theme.lib_ex_col_sbar_drag;
+
+		// * LIBRARY EXPLORER - BUTTONS * //
+		lib.ex.color.closeBtn = theme.lib_ex_col_closeBtn;
+		lib.ex.color.closeBtn_bg = theme.lib_ex_col_closeBtn_bg;
 	}
 
 	/**

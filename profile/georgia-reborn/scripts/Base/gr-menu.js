@@ -2789,6 +2789,287 @@ class TopMenuOptions {
 		libraryPlaylistSourceMenu.appendTo(librarySourceMenu);
 		librarySourceMenu.appendTo(libraryMenu);
 
+		// * LIBRARY EXPLORER * //
+		const libraryExplorerMenu = new Menu('Explorer');
+		const updateLibraryExplorerSettings = () => {
+			lib.panel.updateProp(1);
+			lib.ex.main.setSettings();
+			lib.ex.main.setMetrics();
+			lib.ex.utils.repaintExplorer();
+		};
+
+		// * ARTWORK * //
+		const libraryExplorerArtworkMenu = new Menu('Artwork');
+		libraryExplorerArtworkMenu.createRadioSubMenu('Album image scaling', ['Cropped', 'Stretched', 'Proportional'], libSet.explorerAlbumImgScaling, ['cropped', 'stretched', 'proportional'], (mode) => {
+			libSet.explorerAlbumImgScaling = mode;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerArtworkMenu.createRadioSubMenu('Album thumb scaling' , ['Cropped', 'Stretched', 'Proportional'], libSet.explorerAlbumThumbImgScaling, ['cropped', 'stretched', 'proportional'], (mode) => {
+			libSet.explorerAlbumThumbImgScaling = mode;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerArtworkMenu.createRadioSubMenu('Artist image scaling', ['Cropped', 'Stretched', 'Proportional'], libSet.explorerArtistImgScaling, ['cropped', 'stretched', 'proportional'], (mode) => {
+			libSet.explorerArtistImgScaling = mode;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerArtworkMenu.createRadioSubMenu('Artist thumb scaling', ['Cropped', 'Stretched', 'Proportional'], libSet.explorerArtistThumbImgScaling, ['cropped', 'stretched', 'proportional'], (mode) => {
+			libSet.explorerArtistThumbImgScaling = mode;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerArtworkMenu.addSeparator();
+		libraryExplorerArtworkMenu.addToggleItem('Full theme color change on new artwork', libSet, 'fullThemeColorChange', () => {
+			if (!libSet.fullThemeColorChange) {
+				updateLibraryExplorerSettings();
+				return;
+			}
+
+			const msg = grm.msg.getMessage('menu', 'explorerFullThemeColorChange');
+			const msgFb = grm.msg.getMessage('menu', 'explorerFullThemeColorChange', true);
+
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				libSet.fullThemeColorChange = confirmed;
+				updateLibraryExplorerSettings();
+			});
+		});
+		libraryExplorerArtworkMenu.appendTo(libraryExplorerMenu);
+
+		// * CONTROLS * //
+		const libraryExplorerControlsMenu = new Menu('Controls');
+		libraryExplorerControlsMenu.addToggleItem('Keep playlist when playing', libSet, 'explorerPlaybackKeepPlaylist', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerControlsMenu.addToggleItem('Close on outside mouse wheel', libSet, 'explorerWheelOutsideClose', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerControlsMenu.appendTo(libraryExplorerMenu);
+
+		// * DISPLAY * //
+		const libraryExplorerDisplayMenu = new Menu('Display');
+		libraryExplorerDisplayMenu.addToggleItem('Display explorer in tree view', libSet, 'explorerTreeView', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.addToggleItem('Display tab icons only', libSet, 'explorerTabIconsOnly', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.addToggleItem('Display tab icon NowPlaying', libSet, 'explorerTabIconNowPlaying', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.addToggleItem('Display link icon in grid', libSet, 'explorerExternalLinkIcon', () => {
+			updateLibraryExplorerSettings();
+			lib.ex.cache.clearCache('thumbnail');
+		});
+		libraryExplorerDisplayMenu.createRadioSubMenu('Album year in grid', ['Overlay', 'Text', 'Disable'], libSet.explorerAlbumYearType, ['overlay', 'text', 'disable'], (type) => {
+			libSet.explorerAlbumYearType = type;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.addToggleItem('Show track rating grid', libSet, 'explorerShowTrackRatingGrid', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.appendTo(libraryExplorerMenu);
+
+		// * DOWNLOADS * //
+		const libraryExplorerDownloadsMenu = new Menu('Downloads');
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Album image auto-downloads', ['Enabled', 'Disabled'], libSet.explorerAlbumImageDLAuto, [true, false], (state) => {
+			libSet.explorerAlbumImageDLAuto = state;
+
+			if (!libSet.explorerAlbumImageDLAuto) {
+				updateLibraryExplorerSettings();
+				return;
+			}
+
+			const msg = grm.msg.getMessage('menu', 'explorerAlbumImageDLAutoEnable');
+			const msgFb = grm.msg.getMessage('menu', 'explorerAlbumImageDLAutoEnable', true);
+
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				libSet.explorerAlbumImageDLAuto = confirmed;
+				updateLibraryExplorerSettings();
+			});
+		});
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Album image download quality', ['Medium quality (smaller cache)', 'Original quality (larger cache)'], libSet.explorerAlbumImageDLQuality, ['medium', 'original'], (quality) => {
+			libSet.explorerAlbumImageDLQuality = quality;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Album image name saved in album folder', ['Cover', 'Folder', 'Front'], libSet.explorerAlbumImageNameMoveToDir, ['cover', 'folder', 'front'], (name) => {
+			libSet.explorerAlbumImageNameMoveToDir = name;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Album image post-download action', ['Disabled (from cache)', 'Embed into tracks', 'Move to album folder'], libSet.explorerAlbumImageAutoAction, ['disabled', 'embed', 'move'], (action) => {
+			libSet.explorerAlbumImageAutoAction = action;
+
+			if (libSet.explorerAlbumImageAutoAction === 'disabled') {
+				updateLibraryExplorerSettings();
+				return;
+			}
+
+			const key = action === 'embed' ? 'explorerAlbumImageAutoEmbed' : 'explorerAlbumImageAutoMove';
+			const msg = grm.msg.getMessage('menu', key);
+			const msgFb = grm.msg.getMessage('menu', key, true);
+
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				libSet.explorerAlbumImageAutoAction = confirmed ? action : 'disabled';
+				updateLibraryExplorerSettings();
+			});
+		});
+		libraryExplorerDownloadsMenu.addSeparator();
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Artist image auto-downloads', ['Enabled', 'Disabled'], libSet.explorerArtistImageDLAuto, [true, false], (state) => {
+			libSet.explorerArtistImageDLAuto = state;
+
+			if (!libSet.explorerArtistImageDLAuto) {
+				updateLibraryExplorerSettings();
+				return;
+			}
+
+			const msg = grm.msg.getMessage('menu', 'explorerArtistImageDLAutoEnable');
+			const msgFb = grm.msg.getMessage('menu', 'explorerArtistImageDLAutoEnable', true);
+
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				libSet.explorerArtistImageDLAuto = confirmed;
+				updateLibraryExplorerSettings();
+			});
+		});
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Artist image download count', [' 1 image (smaller cache)', ' 5 images', '10 images', '15 images', '20 images (larger cache)'], libSet.explorerArtistImageDLCount, [1, 5, 10, 15, 20], (count) => {
+			libSet.explorerArtistImageDLCount = count;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Artist image download quality', ['Medium quality (smaller cache)', 'Original quality (larger cache)'], libSet.explorerArtistImageDLQuality, ['medium', 'original'], (quality) => {
+			libSet.explorerArtistImageDLQuality = quality;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDownloadsMenu.addSeparator();
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Missing releases image auto-downloads', ['Enabled', 'Disabled'], libSet.explorerMissingReleasesImageDLAuto, [true, false], (state) => {
+			libSet.explorerMissingReleasesImageDLAuto = state;
+
+			if (!libSet.explorerMissingReleasesImageDLAuto) {
+				updateLibraryExplorerSettings();
+				return;
+			}
+
+			const msg = grm.msg.getMessage('menu', 'explorerMissingSimilarImageDLAutoEnable');
+			const msgFb = grm.msg.getMessage('menu', 'explorerMissingSimilarImageDLAutoEnable', true);
+
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				libSet.explorerMissingReleasesImageDLAuto = confirmed;
+				updateLibraryExplorerSettings();
+			});
+		});
+		libraryExplorerDownloadsMenu.createRadioSubMenu('Similar artist image auto-downloads', ['Enabled', 'Disabled'], libSet.explorerSimilarArtistImageDLAuto, [true, false], (state) => {
+			libSet.explorerSimilarArtistImageDLAuto = state;
+
+			if (!libSet.explorerSimilarArtistImageDLAuto) {
+				updateLibraryExplorerSettings();
+				return;
+			}
+
+			const msg = grm.msg.getMessage('menu', 'explorerMissingSimilarImageDLAutoEnable');
+			const msgFb = grm.msg.getMessage('menu', 'explorerMissingSimilarImageDLAutoEnable', true);
+
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				libSet.explorerSimilarArtistImageDLAuto = confirmed;
+				updateLibraryExplorerSettings();
+			});
+		});
+		libraryExplorerDownloadsMenu.appendTo(libraryExplorerMenu);
+
+		// * MISSING RELEASES * //
+		const libraryExplorerMissingReleasesMenu = new Menu('Missing Releases');
+		libraryExplorerMissingReleasesMenu.createRadioSubMenu('Source', ['Discogs', 'Last.fm', 'MusicBrainz'], libSet.explorerMissingReleasesFetchSource, ['discogs', 'lastfm', 'musicbrainz'], (source) => {
+			libSet.explorerMissingReleasesFetchSource = source;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerMissingReleasesMenu.appendTo(libraryExplorerMenu);
+
+		// * POPULARITY * //
+		const libraryExplorerPopularityMenu = new Menu('Popularity');
+		libraryExplorerPopularityMenu.createRadioSubMenu('Source', ['Last.fm', 'ListenBrainz'], libSet.explorerPopularityFetchSource, ['lastfm', 'listenbrainz'], (source) => {
+			libSet.explorerPopularityFetchSource = source;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerPopularityMenu.appendTo(libraryExplorerMenu);
+
+		// * SIMILAR ARTISTS * //
+		const libraryExplorerSimilarArtistMenu = new Menu('Similar Artists');
+		libraryExplorerSimilarArtistMenu.createRadioSubMenu('View', ['Local', 'External'], libSet.explorerSimilarArtistView, ['local', 'external'], (view) => {
+			libSet.explorerSimilarArtistView = view;
+			updateLibraryExplorerSettings();
+			lib.ex.similar.loadSimilarArtistView(lib.ex.data.artistOrigName, lib.ex.main.state.artistIndex);
+		});
+		libraryExplorerSimilarArtistMenu.createRadioSubMenu('Source', ['Last.fm', 'ListenBrainz'], libSet.explorerSimilarArtistFetchSource, ['lastfm', 'listenbrainz'], (source) => {
+			libSet.explorerSimilarArtistFetchSource = source;
+			updateLibraryExplorerSettings();
+			lib.ex.similar.loadSimilarArtistView(lib.ex.data.artistOrigName, lib.ex.main.state.artistIndex);
+		});
+		libraryExplorerSimilarArtistMenu.createRadioSubMenu('Fetch limit (external)', ['10', '25', '50', '100', '250'], libSet.explorerSimilarArtistFetchLimitExternal, [10, 25, 50, 100, 250], (limit) => {
+			libSet.explorerSimilarArtistFetchLimitExternal = limit;
+			updateLibraryExplorerSettings();
+			lib.ex.similar.loadSimilarArtistView(lib.ex.data.artistOrigName, lib.ex.main.state.artistIndex);
+		});
+		libraryExplorerSimilarArtistMenu.appendTo(libraryExplorerMenu);
+
+		// * SORT * //
+		const libraryExplorerSortMenu = new Menu('Sort');
+		const libraryExplorerSortAlbumViewMenu = new Menu('Album view');
+		libraryExplorerSortAlbumViewMenu.addRadioItems(['Ascending', 'Descending'], libSet.explorerSortDirAlbum, ['ASC', 'DSC'], (sort) => {
+			libSet.explorerSortDirAlbum = sort;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerSortAlbumViewMenu.addSeparator();
+		libraryExplorerSortAlbumViewMenu.addRadioItems(['Track number', 'Track title', 'Track rating', 'Playcount', 'Queue', 'Added', 'First played', 'Last played'], libSet.explorerSortArtist, ['Track number', 'Track title', 'Track rating', 'Playcount', 'Queue', 'Added', 'First played', 'Last played'], (sort) => {
+			libSet.explorerSortArtist = sort;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerSortAlbumViewMenu.appendTo(libraryExplorerSortMenu);
+
+		const libraryExplorerSortArtistViewMenu = new Menu('Artist view');
+		libraryExplorerSortArtistViewMenu.addRadioItems(['Ascending', 'Descending'], libSet.explorerSortDirArtist, ['ASC', 'DSC'], (sort) => {
+			libSet.explorerSortDirArtist = sort;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerSortArtistViewMenu.addSeparator();
+		libraryExplorerSortArtistViewMenu.addRadioItems(['Album title', 'Album rating', 'Playcount', 'Track count', 'Year', 'Added', 'First played', 'Last played'], libSet.explorerSortArtist, ['Album title', 'Album rating', 'Playcount', 'Track count', 'Year', 'Added', 'First played', 'Last played'], (sort) => {
+			libSet.explorerSortArtist = sort;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerSortArtistViewMenu.appendTo(libraryExplorerSortMenu);
+
+		const libraryExplorerSortSimilarArtistViewMenu = new Menu('Similar artist view');
+		libraryExplorerSortSimilarArtistViewMenu.addRadioItems(['Ascending', 'Descending'], libSet.explorerSortDirSimilar, ['ASC', 'DSC'], (sort) => {
+			libSet.explorerSortDirSimilar = sort;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerSortSimilarArtistViewMenu.addSeparator();
+		libraryExplorerSortSimilarArtistViewMenu.addRadioItems(['Similarity', 'Artist name', 'Playcount', 'Track count', 'Added', 'First played', 'Last played'], libSet.explorerSortArtist, ['Similarity', 'Artist name', 'Playcount', 'Track count', 'Added', 'First played', 'Last played'], (sort) => {
+			libSet.explorerSortArtist = sort;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerSortSimilarArtistViewMenu.appendTo(libraryExplorerSortMenu);
+		libraryExplorerSortMenu.appendTo(libraryExplorerMenu);
+
+		// * STATS* //
+		const libraryExplorerStatsMenu = new Menu('Stats');
+		const libraryExplorerStatsAlbumViewMenu = new Menu('Album view');
+		libraryExplorerStatsAlbumViewMenu.addRadioItems(['Bitrate', 'Duration', 'Total Size', 'Rating', 'Date', 'Queue', 'Playcount', 'Track Count', 'First Played', 'Last Played', 'Added'], libSet.explorerStatsAlbum, ['bitrate', 'duration', 'size', 'rating', 'popularity', 'date', 'queue', 'playcount', 'trackcount', 'firstPlayed', 'lastPlayed', 'added'], (stats) => {
+			libSet.explorerStatsAlbum = stats;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerStatsAlbumViewMenu.appendTo(libraryExplorerStatsMenu);
+
+		const libraryExplorerStatsArtistViewMenu = new Menu('Artist view');
+		libraryExplorerStatsArtistViewMenu.addRadioItems(['Bitrate', 'Duration', 'Total Size', 'Rating', 'Date', 'Queue', 'Playcount', 'Track Count', 'First Played', 'Last Played', 'Added'], libSet.explorerStatsArtist, ['bitrate', 'duration', 'size', 'rating', 'popularity', 'date', 'queue', 'playcount', 'trackcount', 'firstPlayed', 'lastPlayed', 'added'], (stats) => {
+			libSet.explorerStatsArtist = stats;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerStatsArtistViewMenu.appendTo(libraryExplorerStatsMenu);
+
+		const libraryExplorerStatsSimilarArtistViewMenu = new Menu('Similar artist view');
+		libraryExplorerStatsSimilarArtistViewMenu.addRadioItems(['Bitrate', 'Duration', 'Total Size', 'Rating', 'Date', 'Queue', 'Playcount', 'Track Count', 'First Played', 'Last Played', 'Added'], libSet.explorerStatsSimilar, ['bitrate', 'duration', 'size', 'rating', 'popularity', 'date', 'queue', 'playcount', 'trackcount', 'firstPlayed', 'lastPlayed', 'added'], (stats) => {
+			libSet.explorerStatsSimilar = stats;
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerStatsSimilarArtistViewMenu.appendTo(libraryExplorerStatsMenu);
+		libraryExplorerStatsMenu.appendTo(libraryExplorerMenu);
+
+		libraryExplorerMenu.appendTo(libraryMenu);
+
 		if (!context_menu) libraryMenu.appendTo(menu);
 	}
 

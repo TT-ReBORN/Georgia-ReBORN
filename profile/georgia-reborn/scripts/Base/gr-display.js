@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    02-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -578,6 +578,8 @@ class Display {
 		grm.ui.setLibrarySize();
 		lib.panel.zoomReset();
 		lib.pop.createImages();
+		lib.ex.main.setFonts(true);
+		lib.ex.main.setMetrics();
 		grm.debug.repaintWindow();
 	}
 

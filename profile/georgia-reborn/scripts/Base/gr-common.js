@@ -601,6 +601,24 @@ const FontStyle = {
  * @property {string} Medical - The medical cross symbol.
  * @property {string} Microphone - The microphone symbol.
  * @property {string} MusicNote - The music note symbol.
+ *
+ * @property {string} Add - The add symbol.
+ * @property {string} Artist - The artist symbol.
+ * @property {string} Details - The details symbol.
+ * @property {string} Edit - The edit symbol.
+ * @property {string} Links - The external links symbol.
+ * @property {string} Missing - The missing items symbol.
+ * @property {string} Now - The now playing symbol.
+ * @property {string} Similar - The similar items symbol.
+ * @property {string} Sort - The sort symbol.
+ * @property {string} Stats - The statistics symbol.
+ * @property {string} ChevronLeft - The chevron left symbol.
+ * @property {string} ChevronRight - The chevron right symbol.
+ * @property {string} ChevronUp - The chevron up symbol.
+ * @property {string} ChevronDown - The chevron down symbol.
+ * @property {string} Download - The download symbol.
+ * @property {string} Download2 - The alternative download symbol.
+ * @property {string} External - The external link symbol.
  */
 /** @global @enum @type {RebornSymbols} */
 const RebornSymbols = {
@@ -699,7 +717,26 @@ const RebornSymbols = {
 	Lock: '\uF023',
 	Medical: '\u271A',
 	Microphone: '\uF130',
-	MusicNote: '\uF001'
+	MusicNote: '\uF001',
+
+	// Library Explorer
+	Add: '\uF0CA',
+	Artist: '\uF007',
+	Details: '\uF044',
+	Edit: '\uF4FF',
+	Links: '\uF08E',
+	Missing: '\uF51F',
+	Now: '\uF001',
+	Similar: '\uF500',
+	Sort: '\uF0DC',
+	Stats: '\uF201',
+	ChevronLeft: '\uF053',
+	ChevronRight: '\uF054',
+	ChevronUp: '\uF057',
+	ChevronDown: '\uF058',
+	Download: '\uF019',
+	Download2: '\uF361',
+	External: '\uF360'
 };
 
 /**

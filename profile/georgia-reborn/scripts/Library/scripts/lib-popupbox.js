@@ -27,6 +27,7 @@ class LibPopUpBox {
 		cssPath += this.getWindowsVersion() === '6.1' ? 'styles7.css' : 'styles10.css';
 		this.configHtmlCode = lib_my_utils.getAsset('\\html\\config.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
 		this.inputHtmlCode = lib_my_utils.getAsset('\\html\\input.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
+		this.inputListHtmlCode = lib_my_utils.getAsset('\\html\\input-list.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
 		this.messageHtmlCode = lib_my_utils.getAsset('\\html\\messageBox.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
 		this.confirmHtmlCode = lib_my_utils.getAsset('\\html\\confirm.html').replace(/href="styles10.css"/i, `href="${cssPath}"`);
 	}
@@ -49,6 +50,13 @@ class LibPopUpBox {
 	input(title, msg, ok_callback, input, def) {
 		utils.ShowHtmlDialog(0, this.inputHtmlCode, {
 			data: [title, msg, 'Cancel', ok_callback, input, def]
+		});
+	}
+
+	inputList(currentList, origList, ok_callback, minFields = 0, maxVisible = 10, title = 'Edit List') {
+		utils.ShowHtmlDialog(0, this.inputListHtmlCode, {
+			data: [JSON.stringify(currentList), JSON.stringify(origList), ok_callback, minFields, maxVisible, title],
+			resizable: true
 		});
 	}
 

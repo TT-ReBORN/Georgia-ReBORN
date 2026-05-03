@@ -75,6 +75,7 @@ class FileLoader {
 			'library\\scripts\\lib-popupbox.js',
 			'library\\scripts\\lib-timers.js',
 			'library\\scripts\\lib-menu.js',
+			'library\\scripts\\lib-explorer.js',
 			'library\\scripts\\lib-initialise.js',
 			'library\\scripts\\lib-images.js',
 			'library\\scripts\\lib-callbacks.js',
