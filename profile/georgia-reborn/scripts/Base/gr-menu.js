@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    04-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1341,11 +1341,6 @@ class TopMenuOptions {
 			window.Repaint();
 		});
 		playerControlsPanelModeMenu.addToggleItem('Browse mode', grSet, 'panelBrowseMode', () => {
-			const msg = grm.msg.getMessage('menu', 'panelBrowseMode');
-			const msgFb = grm.msg.getMessage('menu', 'panelBrowseMode', true);
-			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-				if (!confirmed) grSet.panelBrowseMode = false;
-			});
 			grm.ui.initBrowserModeState();
 		});
 		playerControlsPanelModeMenu.appendTo(playerControlsPanelMenu);

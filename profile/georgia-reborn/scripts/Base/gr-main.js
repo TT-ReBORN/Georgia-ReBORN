@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    04-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -315,6 +315,18 @@ class MainUI {
 		// #region REPAINT RECTS
 		/** @public @type {Function} Throttles and limits the repaint requests for styled tooltips to 17 ms. */
 		this.repaintStyledTooltips = Throttle((x, y, w, h, force = false) => window.RepaintRect(x, y, w, h, force), FPS._60);
+		// #endregion
+
+		// * DEBOUNCED METHODS * //
+		// #region DEBOUNCED METHODS
+		/**
+		 * Debounced version of {@link initBrowseMode}, created in the constructor to shadow the prototype method.
+		 * Collapses rapid successive calls (from on_playlist_items_selection_change and on_selection_changed firing in the same tick)
+		 * into a single deferred execution.
+		 * @public
+		 * @type {Function}
+		 */
+		this.initBrowseMode = Debounce(this.initBrowseMode.bind(this), 0);
 		// #endregion
 	}
 
@@ -1434,10 +1446,19 @@ class MainUI {
 	 * Initializes the browse mode state and resumes now playing track when disabled.
 	 */
 	initBrowserModeState() {
+		if (grSet.panelBrowseMode) {
+			const msg = grm.msg.getMessage('menu', 'panelBrowseMode');
+			const msgFb = grm.msg.getMessage('menu', 'panelBrowseMode', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				if (!confirmed) grSet.panelBrowseMode = false;
+			});
+		}
+
 		const initialActionMode = libSet.actionMode;
 
 		if (!grSet.panelBrowseMode) {
 			if (fb.IsPlaying) {
+				this.createCachedArtworkPaths(fb.GetNowPlaying());
 				this.handlePlaybackNewTrack(fb.GetNowPlaying());
 				if (this.displayLibrary) {
 					lib.pop.nowPlayingShow();
@@ -1721,7 +1742,7 @@ class MainUI {
 		}
 
 		if (library) {
-			if (grm.ui.displayLibrary || force) {
+			if (this.displayLibrary || force) {
 				if (libImg.labels.overlayDark) {
 					lib.ui.getItemColours();
 					grm.colorThemes.initThemeColors('library');
@@ -1737,7 +1758,7 @@ class MainUI {
 		}
 
 		if (biography) {
-			if (grm.ui.displayBiography || force) {
+			if (this.displayBiography || force) {
 				bio.txt.artCalc();
 				bio.txt.albCalc();
 				bio.alb_scrollbar.setCol();
@@ -2830,6 +2851,16 @@ class MainUI {
 	}
 
 	/**
+	 * Creates cached artwork paths for state comparsion to skip artwork fetching.
+	 */
+	createCachedArtworkPaths(metadb) {
+		this.lastAlbumFolder = this.currentAlbumFolder;
+		this.lastAlbumFolderTag = $('%album%', metadb);
+		this.lastAlbumDiscNumber = $('$if2(%discnumber%,0)', metadb);
+		this.lastAlbumVinylSide = $(`$if2(${grTF.vinyl_side},ZZ)`, metadb);
+	}
+
+	/**
 	 * Creates and sets all theme fonts.
 	 */
 	createFonts() {
@@ -3846,12 +3877,7 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	fetchNewArtwork(metadb) {
-		this.lastAlbumFolder = this.currentAlbumFolder;
-		this.lastAlbumFolderTag = $('%album%', metadb);
-		this.lastAlbumDiscNumber = $('$if2(%discnumber%,0)', metadb);
-		this.lastAlbumVinylSide = $(`$if2(${grTF.vinyl_side},ZZ)`, metadb);
-
-		grm.ui.clearCache('albumArtColors');
+		this.clearCache('albumArtColors');
 		this.fetchAlbumArt(metadb);
 		grm.details.discArtShadowImg = {};
 		grm.details.discArtLastAlbumFolder = '';
@@ -3870,6 +3896,7 @@ class MainUI {
 
 		if (this.shouldFetchNewArtwork()) {
 			this.clearPlaylistNowPlayingBg();
+			this.createCachedArtworkPaths(metadb);
 			this.fetchNewArtwork(metadb);
 			grm.bgImg.initBgImage(false, true);
 			return;
