@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    03-05-2026                                              * //
+// * Last change:    05-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4125,7 +4125,7 @@ class LibExplorerColors {
 		this.column_text_selected = dynamicThemes ? this.column_bg_light ? RGB(0, 0, 0) : RGB(255, 255, 255) : pl.col.row_title_selected;
 
 		// * GRID - ARTIST VIEW * //
-		this.grid_playing_bg = grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10);
+		this.grid_playing_bg = stub ? TintColor(this.column_bg, 10) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10);
 		this.grid_selection_bg = dynamicThemes ? TintColor(this.primary, 20) : this.grid_playing_bg;
 		this.grid_selection_frame = this.column_line;
 		this.grid_sideMarker = stub ? RGB(120, 120, 120) : dynamicThemes ? this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25) : lib.ui.col.sideMarker;
@@ -4136,7 +4136,7 @@ class LibExplorerColors {
 
 		// * TRACK ROWS - ALBUM VIEW * //
 		this.row_stripes_bg = pl.col.row_stripes_bg;
-		this.row_playing_bg = grSet.styleBlackAndWhite ? RGB(230, 230, 230) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10) ;
+		this.row_playing_bg = grSet.styleBlackAndWhite ? RGB(230, 230, 230) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10);
 		this.row_selection_bg = dynamicThemes ? TintColor(this.primary, 20) : this.row_playing_bg;
 		this.row_selection_frame = this.column_line;
 		this.row_sideMarker = stub ? RGB(120, 120, 120) : dynamicThemes ? this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25) : lib.ui.col.sideMarker;
@@ -4156,7 +4156,7 @@ class LibExplorerColors {
 
 		// * BUTTONS * //
 		this.closeBtn = this.column_bg_light || grSet.styleBlackAndWhite ? RGB(0, 0, 0) : RGB(255, 255, 255);
-		this.closeBtn_bg = this.column_bg_light ? ShadeColor(this.primary, 15) : TintColor(this.primary, 15);
+		this.closeBtn_bg = stub ? TintColor(this.column_bg, 10) : this.column_bg_light ? ShadeColor(this.primary, 15) : TintColor(this.primary, 15);
 
 		// * THEME & STYLES ADJUSTMENTS * //
 		if (grSet.styleAlternative || grSet.styleAlternative2) {
