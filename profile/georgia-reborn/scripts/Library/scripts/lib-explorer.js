@@ -2219,6 +2219,15 @@ class LibExplorerAlbumView {
 		lib.ex.main.state.albumIndex = albumIndex;
 		lib.ex.data.tracksList = lib.ex.data.getTracksFromHandles(handles);
 
+		// * Filter out raw CD image file when both the image (no tracknumber) and CUE virtual tracks are present in the library.
+		const trackNumMeta = lib.ex.data.tracksList.filter(track => lib.ex.data.$('[%tracknumber%]', track.handle) !== '');
+		const hasTrackNum = trackNumMeta.length > 0;
+
+		// * Only filter if we actually found some tracks with numbers, otherwise it's a pure CD image, keep to avoid null metadb issues
+		if (hasTrackNum) {
+			lib.ex.data.tracksList = trackNumMeta;
+		}
+
 		if (lib.ex.data.tracksList.length > 0) {
 			lib.ex.data.metadb = lib.ex.data.tracksList[0].handle;
 			lib.ex.data.artist = lib.ex.data.$('%artist%', lib.ex.data.metadb);
@@ -2227,7 +2236,7 @@ class LibExplorerAlbumView {
 
 			for (const track of lib.ex.data.tracksList) {
 				const disc = lib.ex.data.$('%discnumber%', track.handle);
-				const trackNum = lib.ex.data.$('$pad(%tracknumber%,2,0)', track.handle) || (track.index + 1).toString().padStart(2, '0'); // Fallback if no tag
+				const trackNum = hasTrackNum ? lib.ex.data.$('$pad(%tracknumber%,2,0)', track.handle) : (track.index + 1).toString().padStart(2, '0'); // Fallback if no tag
 				track.displayNum = (lib.ex.data.albumTotalDiscs > 1 && disc) ? `${disc}-${trackNum}` : trackNum;
 			}
 		}
