@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    09-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -504,7 +504,7 @@ class ColorThemes {
 		lib.ui.col.search = lib.ui.col.txt_box;
 
 		// * BUTTON COLORS * //
-		lib.ui.col.searchBtn = getColor(theme.lib_ui_col_searchBtn, 'button.icon');
+		lib.ui.col.searchBtn = lib.ui.col.search;
 		lib.ui.col.crossBtn = lib.ui.col.searchBtn;
 		lib.ui.col.filterBtn = lib.ui.col.searchBtn;
 		lib.ui.col.settingsBtn = lib.ui.col.searchBtn;
@@ -676,8 +676,8 @@ class ColorThemes {
 		grCol.styleVolumeBarFill = grm.colorSystem.applyColor(RGB(0, 0, 0), colLuminance, 'oklch', 'shadow.fill', ctx);
 
 		grCol.styleBevel       = BR ? grm.colorSystem.applyColor(primary, mainBgLum, 'oklch', 'style.bevel', ctx) : getColor(staticColor ? mainTheme.grCol_styleBevel : primary, 'style.bevel', 'oklch');
-		grCol.styleGradient    = staticColorOrBR ? mainTheme.grCol_styleGradient  : getColor(primary, RB ? 'style.gradientRebornBlack' : 'style.gradient', 'oklch', true);
-		grCol.styleGradient2   = staticColorOrBR ? mainTheme.grCol_styleGradient2 : getColor(primary, RB ? 'style.gradientRebornBlack' : 'style.gradient', 'oklch', true);
+		grCol.styleGradient    = staticColorOrBR && !RB ? mainTheme.grCol_styleGradient  : getColor(primary, RB ? 'style.gradientRebornBlack' : 'style.gradient', 'oklch', true);
+		grCol.styleGradient2   = staticColorOrBR && !RB ? mainTheme.grCol_styleGradient2 : getColor(primary, RB ? 'style.gradientRebornBlack' : 'style.gradient', 'oklch', true);
 		grCol.styleAlternative = getColor(mainTheme.grCol_styleAlternative, 'style.alternative', 'oklch', false, ctxBR);
 	}
 	// #endregion
