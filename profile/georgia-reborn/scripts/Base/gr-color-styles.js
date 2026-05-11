@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    11-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -354,16 +354,18 @@ class ColorStyles {
 	 * Sets the style blend images for the album art based on current theme settings.
 	 * Calculates optimal alpha and blur values, then creates the processed blend image.
 	 * Only runs when grSet.styleBlend, grSet.styleBlend2, or blend progress bar is enabled.
+	 * @param {GdiBitmap} image - The album art image to analyze.
+	 * @param {Array} cache - The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls.
 	 */
-	setStyleBlend() {
-		if (!grm.ui.albumArt || (!grSet.styleBlend && !grSet.styleBlend2 && grSet.styleProgressBarFill !== 'blend')) {
+	setStyleBlend(image = grm.ui.albumArt, cache = grm.ui.cachedAlbumArtColors) {
+		if (!image || (!grSet.styleBlend && !grSet.styleBlend2 && grSet.styleProgressBarFill !== 'blend')) {
 			return;
 		}
 
 		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'setStyleBlend');
 
-		grCol.imgSaturation = CalcImgSaturation(grm.ui.albumArt, grm.ui.cachedAlbumArtColors);
-		grCol.imgBlended = this._formatStyleBlendImage(grm.ui.albumArt, grm.ui.ww, grm.ui.wh, grCol.imgLuminance, grCol.imgSaturation);
+		grCol.imgSaturation = CalcImgSaturation(image, cache);
+		grCol.imgBlended = this._formatStyleBlendImage(image, grm.ui.ww, grm.ui.wh, grCol.imgLuminance, grCol.imgSaturation);
 
 		grm.debug.setDebugProfile(false, 'print', 'setStyleBlend');
 	}

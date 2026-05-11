@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    11-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -920,21 +920,25 @@ class ColorManager {
 
 	/**
 	 * Sets calculated image brightness from album art, mainly used when using style Blend 1 and 2 or style Black and white reborn.
+	 * @param {GdiBitmap} [image] - The album art image to analyze.
+	 * @param {Array} [cache] - The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls.
 	 */
-	setImageBrightness() {
-		if (grCfg.settings.showDebugThemeOverlay && grm.ui.albumArt && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 ||
+	setImageBrightness(image = grm.ui.albumArt, cache = grm.ui.cachedAlbumArtColors) {
+		if (grCfg.settings.showDebugThemeOverlay && image && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 ||
 			grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn)) {
-			grCol.imgBrightness = CalcImgBrightness(grm.ui.albumArt, grm.ui.cachedAlbumArtColors);
+			grCol.imgBrightness = CalcImgBrightness(image, cache);
 		}
 	}
 
 	/**
 	 * Sets calculated image luminance from album art, mainly used when using style Blend 1 and 2 or style Black and white reborn.
+	 * @param {GdiBitmap} [image] - The album art image to analyze.
+	 * @param {Array} [cache] - The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls.
 	 */
-	setImageLuminance() {
-		if (grm.ui.albumArt && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 ||
+	setImageLuminance(image = grm.ui.albumArt, cache = grm.ui.cachedAlbumArtColors) {
+		if (image && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 ||
 			grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn)) {
-			grCol.imgLuminance = grm.colorSystem.calcImgLuminance(grm.ui.albumArt, grm.ui.cachedAlbumArtColors);
+			grCol.imgLuminance = grm.colorSystem.calcImgLuminance(image, cache);
 			grm.colorStyles.initBlackAndWhiteReborn();
 		}
 	}
