@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    13-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -801,15 +801,15 @@ class ContextMenus {
 		const showSoftwareVersionMenu = new ContextMenu('Show software version');
 		showSoftwareVersionMenu.appendItem('Default', () => {
 			grSet.showLowerBarVersion_default = !grSet.showLowerBarVersion_default;
-			grm.ui.initMain();
+			grm.ui.clearLowerBarVersion();
 		}, { is_checked: grSet.showLowerBarVersion_default });
 		showSoftwareVersionMenu.appendItem('Artwork', () => {
 			grSet.showLowerBarVersion_artwork = !grSet.showLowerBarVersion_artwork;
-			grm.ui.initMain();
+			grm.ui.clearLowerBarVersion();
 		}, { is_checked: grSet.showLowerBarVersion_artwork });
 		showSoftwareVersionMenu.appendItem('Compact', () => {
 			grSet.showLowerBarVersion_compact = !grSet.showLowerBarVersion_compact;
-			grm.ui.initMain();
+			grm.ui.clearLowerBarVersion();
 		}, { is_checked: grSet.showLowerBarVersion_compact });
 		transportButtonDisplayMenu.append(showSoftwareVersionMenu);
 		transportButtonDisplayMenu.separator();

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-05-2026                                              * //
+// * Last change:    13-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2743,6 +2743,16 @@ class MainUI {
 			cacheActions[action]();
 		}
 		grm.debug.debugLog('Main cache => Cleared all caches');
+	}
+
+	/**
+	 * Clears the lower bar verion (foobar2000 & Georgia-ReBORN) strings.
+	 */
+	clearLowerBarVersion() {
+		if (fb.IsPlaying) return;
+		this.clearPlaybackState(true);
+		this.clearCache('metrics');
+		window.Repaint();
 	}
 
 	/**
