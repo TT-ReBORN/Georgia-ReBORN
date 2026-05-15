@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    15-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2064,7 +2064,7 @@ class PlaylistRating {
 	draw(gr) {
 		const cur_rating = this.get_rating();
 		let cur_rating_x = this.x;
-		const y = this.y + HD_4K(1, 3);
+		const { y } = this;
 
 		for (let j = 0; j < 5; j++) {
 			if (j < cur_rating) {
