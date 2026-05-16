@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    16-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1697,7 +1697,10 @@ class Details {
 	 * Fetches new disc art when a new album is being played.
 	 */
 	fetchDiscArt() {
-		if (!grm.ui.displayDetails) return;
+		if (!grm.ui.displayDetails) {
+			this.clearCache('discArt');
+			return;
+		}
 
 		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchDiscArt');
 
