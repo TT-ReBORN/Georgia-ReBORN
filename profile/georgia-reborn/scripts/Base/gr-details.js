@@ -1303,7 +1303,10 @@ class Details {
 	updateGrid(currentLastPlayed, currentPlayingPlaylist, metadb = undefined) {
 		if (!grCfg.metadataGrid) return null;
 
-		currentLastPlayed = (grStr && grStr.grid ? grStr.grid.find(value => value.label === 'Last Played') || {} : {}).val;
+		if (typeof currentLastPlayed === 'undefined') {
+			currentLastPlayed = (grStr && grStr.grid ? grStr.grid.find(value => value.label === 'Last Played') || {} : {}).val;
+		}
+
 		grStr.grid = [];
 
 		for (const key of grCfg.metadataGrid) {
