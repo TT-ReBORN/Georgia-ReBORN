@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2098,10 +2098,7 @@ class MainUI {
 			grm.colorManager.generateRandomThemeAutoColor();
 		}
 		// * Check for new themes in tracks that have GR_* tags in metadata
-		if (this.newTrackFetchingArtwork && (this.hasThemeTags())) {
-			this.initThemeState(this.albumArt);
-			this.newTrackFetchingArtwork = false;
-		}
+		this.handleThemeTags('newTrack');
 
 		if (fb.GetNowPlaying()) on_metadb_changed(); // Refresh metadata
 		on_playback_time();
@@ -2312,6 +2309,40 @@ class MainUI {
 		}
 
 		window.RepaintRect(0, this.wh - this.lowerBarHeight, this.ww, this.lowerBarHeight);
+	}
+
+	/**
+	 * Handles GR_* theme tag evaluation for the current track.
+	 * Three cases covered:
+	 * - 'newTrack' + art cached (same album) + tags present  → apply tags via initThemeState
+	 * - 'newTrack' + art cached (same album) + no tags + restore pending → restore previous state
+	 * - 'asyncArt' + themeFromTags active → re-color dynamic themes after async art load
+	 * @param {'newTrack'|'asyncArt'} context - The calling context.
+	 */
+	handleThemeTags(context) {
+		if (context === 'newTrack') {
+			const hasTags = this.hasThemeTags();
+
+			// * Art already in cache (same album), tags present, apply them now
+			if (this.newTrackFetchingArtwork && hasTags) {
+				this.initThemeState(this.albumArt);
+				this.newTrackFetchingArtwork = false;
+				grm.debug.debugLog('\n>>> handleThemeTags => initThemeState <<<\n');
+			}
+			// * Same album skip, previous track had GR_* tags, this one doesn't, restore saved state
+			else if (this.themeRestoreState && !hasTags) {
+				this.restoreThemeState();
+				grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
+				this.initTheme();
+				grm.debug.debugLog('\n>>> initTheme => handleThemeTags => restoreThemeState (same album, no GR_* tags) <<<\n');
+			}
+		}
+		// * Art loaded async while GR_* tags were active, dynamic themes need re-coloring from the newly arrived artwork
+		else if (context === 'asyncArt' && (this.themeFromTags && ['reborn', 'random'].includes(grSet.theme))) {
+			grm.colorManager.setAlbumArtThemeColors(this.albumArt);
+			this.initTheme();
+			grm.debug.debugLog('\n>>> initTheme => handleThemeTags => GR_THEME async art <<<\n');
+		}
 	}
 	// #endregion
 
@@ -2832,7 +2863,7 @@ class MainUI {
 			},
 			presetIndicator: {
 				timer: this.presetIndicatorTimer,
-				clear: clearInterval,
+				clear: clearTimeout,
 				log: 'Timer => Theme preset indicator timer cleared'
 			},
 			randomThemeAutoColor: {
@@ -4277,6 +4308,9 @@ class MainUI {
 					}
 					this.initThemeState(this.albumArt);
 					this.newTrackFetchingArtwork = false;
+				}
+				else {
+					this.handleThemeTags('asyncArt');
 				}
 
 				this.albumArtCopy = this.albumArt;
