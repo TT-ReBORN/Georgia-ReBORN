@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3011,7 +3011,7 @@ class WaveformBar {
 		 */
 		/** @private @type {waveformBarCompatibility} */
 		this.compatibleFiles = {
-			audioWizardList: ['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'cue', 'dff', 'dts', 'eac3', 'flac', 'hmi', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv'],
+			audioWizardList: ['2sf', 'aa', 'aac', 'ac3', 'ac4', 'aiff', 'ape', 'cue', 'dff', 'dsf', 'dts', 'eac3', 'flac', 'hmi', 'iso', 'la', 'lpcm', 'm4a', 'minincsf', 'mp2', 'mp3', 'mp4', 'mpc', 'ogg', 'ogx', 'opus', 'ra', 'snd', 'shn', 'spc', 'tak', 'tta', 'vgm', 'wav', 'wma', 'wv'],
 			audioWizard: null
 		};
 		for (const key of ['audioWizard']) {
@@ -4062,7 +4062,9 @@ class WaveformBar {
 		if (!this.current.length) return;
 
 		// Safety filter for any unexpected invalid frames
-		this.current = this.current.filter(frame => frame != null && Array.isArray(frame) && frame.length >= this.metrics.count);
+		if (this.analysis.binaryMode === 'audioWizard' && !this.isFallback && !this.fallbackMode.paint) {
+			this.current = this.current.filter(frame => frame != null && Array.isArray(frame) && frame.length >= this.metrics.count);
+		}
 
 		if (this.analysis.binaryMode === 'audioWizard' && !this.isFallback && !this.fallbackMode.paint && this.preset.analysisMode === 'waveform') {
 			const channels = this.currentChannels || 1;
@@ -4100,7 +4102,7 @@ class WaveformBar {
 			this.current = this.getNormalizedFrameValues(this.current, Math.min(...this.current.map(frame => frame[this.metrics.count])));
 			this.current = this.current.map((x, i) => Math.sign((0.5 - i % 2)) * (1 - x[this.metrics.count]));
 		}
-		else if (this.visualizer) {
+		else if (this.analysis.binaryMode === 'visualizer' || this.isFallback || this.fallbackMode.paint) {
 			const maxVal = Math.max(Math.abs(upper), Math.abs(lower));
 			this.current = this.current.map(frame => frame / maxVal);
 		}
