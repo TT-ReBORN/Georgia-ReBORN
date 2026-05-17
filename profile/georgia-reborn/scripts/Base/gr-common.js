@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -775,6 +775,7 @@ const RebornSymbols = {
  * @property {string} TriangularBullet - '\u2023' `‣` The Triangular Bullet.
  * @property {string} WarningSign - '\u26A0' `⚠️` The Warning Sign.
  * @property {string} WhiteHeavyCheckMark - '\u{2705}' `✅` The White Heavy Check Mark emoji.
+ * @property {string} FigureSpace - '\u2007' ` ` The Figure Space (digit-width space for alignment).
  * @property {string} ZeroWidthSpace - '\u200B' `﹘` The Zero Width Space.
  */
 /** @global @enum @type {Unicode} */
@@ -811,6 +812,7 @@ const Unicode = {
 	TriangularBullet: '\u2023',
 	WarningSign: '\u26A0',
 	WhiteHeavyCheckMark: '\u{2705}',
+	FigureSpace: '\u2007',
 	ZeroWidthSpace: '\u200B'
 };
 
@@ -1021,6 +1023,7 @@ const Unicode = {
  * @property {RegExp} TextJunior - Matches ", Jr." suffix `/, Jr\./g`.
  * @property {RegExp} TextNonAscii - Matches non-ASCII characters `/[^\u0000-\u007E]/g`.
  * @property {RegExp} TextPhD - Matches 'Ph.D.' `/Ph\.D\./g`.
+ * @property {RegExp} TextPrefixAAnThe - Matches leading `The ` (case-insens.) `/^(.+),\s+(A|An|The)$/i`.
  * @property {RegExp} TextPrefixThe - Matches leading `The ` (case-insens.) `/^[Tt]he\s+/i`.
  * @property {RegExp} TextPrefixTheThe - Matches exact string "The The" case-insensitively `/^The The$/i`.
  * @property {RegExp} TextTatu - Matches "t.A.T.u." typo `/t\.\r\n\r\nA.T.u./g`.
@@ -1461,6 +1464,7 @@ const Regex = {
 	TextJunior: /, Jr\./g,
 	TextNonAscii: /[^\u0000-\u007E]/g,
 	TextPhD: /Ph\.D\./g,
+	TextPrefixAAnThe: /^(.+),\s+(A|An|The)$/i,
 	TextPrefixThe: /^[Tt]he\s+/i,
 	TextPrefixTheThe: /^The The$/i,
 	TextTatu: /t\.\r\n\r\nA.T.u./g,

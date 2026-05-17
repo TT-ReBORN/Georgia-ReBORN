@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -330,7 +330,7 @@ class ContextMenus {
 
 		cm.separator();
 
-		const query = $('$if3(%album artist%, %artist, %composer%)', fb.GetNowPlaying()).replace(Regex.SpaceSingle, '%20');
+		const query = $('$if3(%album artist%, %artist%, %composer%)', fb.GetNowPlaying()).replace(Regex.SpaceSingle, '%20');
 		cm.appendItem('Get disc art', () => {
 			RunCmd(`https://fanart.tv/?s=${query}&sect=2`);
 		});

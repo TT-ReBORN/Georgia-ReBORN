@@ -281,8 +281,6 @@ class MainUI {
 		this.initComponentsBio = false;
 		/** @public @type {boolean} The state if this.initTheme() needs to be fully executed to save performance. */
 		this.initThemeFull = false;
-		/** @private @type {boolean} The state if this.initTheme() is currently running to initialize colors and buttons. */
-		this.initThemeRunning = false;
 		/** @public @type {boolean} The state when the theme has completely loaded, used for pseudo delay background logo mask on startup or reload. */
 		this.loadingThemeComplete = false;
 		// #endregion
@@ -1690,7 +1688,6 @@ class MainUI {
 	 */
 	initTheme() {
 		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'initTheme');
-		this.initThemeRunning = true;
 
 		// * SETUP COLORS * //
 		grAlias.update();
@@ -1703,9 +1700,6 @@ class MainUI {
 		// * INIT COLORS * //
 		grm.colorThemes.initThemeColors();
 		grm.colorStyles.initStyleColors();
-		if (lib.ex.main.state.visible) {
-			lib.ex.color.setArtworkColor();
-		}
 
 		// * POST-INIT COLOR ADJUSTMENTS * //
 		grm.details.updateGridLogos();
@@ -1720,7 +1714,6 @@ class MainUI {
 		UIWizard.WindowBgColor = grCol.bg;
 		window.Repaint();
 
-		this.initThemeRunning = false;
 		grm.debug.setDebugProfile(false, 'print', 'initTheme');
 	}
 
@@ -1787,16 +1780,26 @@ class MainUI {
 			return;
 		}
 
-		if (this.hasThemeTags()) {
+		const themeTags = this.hasThemeTags();
+		const noSpecialAlbumMode = !themeTags
+			&& grSet.presetAutoRandomMode !== 'album'
+			&& grSet.presetSelectMode !== 'harmonic';
+
+		if (themeTags) {
 			this.initThemeTags();
 		} else {
 			this.restoreThemeState();
 			grm.colorManager.setAlbumArtThemeColors(artwork, this.cachedAlbumArtColors);
 		}
 
-		if (grSet.presetAutoRandomMode !== 'album' && grSet.presetSelectMode !== 'harmonic' && !this.hasThemeTags()) {
+		if (noSpecialAlbumMode) {
 			this.initTheme();
 			grm.debug.debugLog('\n>>> initTheme => loadImageFromAlbumArtList >>>\n');
+
+			// * Restore Library Explorer primary color when Explorer is open and Library panel is active
+			if (lib.ex.main.state.visible && this.displayLibrary) {
+				lib.ex.color.setArtworkColor();
+			}
 		}
 	}
 
@@ -3778,16 +3781,25 @@ class MainUI {
 	updateStyle() {
 		this.initThemeFull = true;
 
+		// * Update grCol.primary for dynamic themes
 		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme) && fb.IsPlaying) {
-			grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors); // * Update grCol.primary for dynamic themes
+			grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
+		}
+		// * Update Library Explorer colors
+		if (lib.ex.main.state.visible) {
+			lib.ex.color.setArtworkColor();
+		}
+		// * Restore GR main primary when Library Explorer is open but other panel displayed
+		if (!grm.ui.displayLibrary && lib.ex.main.state.visible) {
+			grm.colorManager.setPrimaryColor(undefined, undefined, true);
 		}
 
 		this.initTheme();
-		grm.debug.debugLog('\n>>> initTheme => updateStyle <<<\n');
-
 		this.initStyleState();
 		grm.preset.initThemePresetState();
 		grm.button.initButtonState();
+
+		grm.debug.debugLog('\n>>> initTheme => updateStyle <<<\n');
 	}
 
 	/**

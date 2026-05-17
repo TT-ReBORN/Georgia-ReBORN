@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -952,9 +952,6 @@ class ColorManager {
 	 * @param {boolean} [restore] - If true, restores the saved primary color (`grCol.primary_saved`) instead of using `primaryColor`.
 	 */
 	setPrimaryColor(primaryColor, secondaryColor = undefined, restore = false) {
-		// Re-entrancy guard: Prevents recursive loop from initTheme > initThemeColors('library') > setArtworkColor > back here.
-		if (grm.ui.initThemeRunning) return;
-
 		const primary = restore ? grCol.primary_saved : primaryColor;
 		const secondary = restore ? grCol.secondary_saved : secondaryColor;
 

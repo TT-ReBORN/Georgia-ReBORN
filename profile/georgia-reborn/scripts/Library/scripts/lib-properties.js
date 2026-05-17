@@ -155,7 +155,9 @@ let libProperties = [
 	['Panel Library - Explorer - Artwork - Album thumb scaling', 'cropped', 'explorerAlbumThumbImgScaling'],
 	['Panel Library - Explorer - Artwork - Artist image scaling', 'cropped', 'explorerArtistImgScaling'],
 	['Panel Library - Explorer - Artwork - Artist thumb scaling', 'cropped', 'explorerArtistThumbImgScaling'],
-	['Panel Library - Explorer - Artwork - Full theme color change on new artwork', true, 'fullThemeColorChange'],
+	['Panel Library - Explorer - Artwork - Full theme color change on new artwork', true, 'explorerFullThemeColorChange'],
+	['Panel Library - Explorer - Artwork - Artwork cycle', true, 'explorerArtworkCycle'],
+	['Panel Library - Explorer - Artwork - Artwork cycle time', 15000, 'explorerArtworkCycleTime'],
 
 	['Panel Library - Explorer - Controls - Keep playlist when playing', true, 'explorerPlaybackKeepPlaylist'],
 	['Panel Library - Explorer - Controls - Close on outside mouse wheel', true, 'explorerWheelOutsideClose'],
@@ -166,6 +168,8 @@ let libProperties = [
 	['Panel Library - Explorer - Display - Display link icon in grid', true, 'explorerExternalLinkIcon'],
 	['Panel Library - Explorer - Display - Album year in grid', 'overlay', 'explorerAlbumYearType'],
 	['Panel Library - Explorer - Display - Show track rating grid', true, 'explorerShowTrackRatingGrid'],
+	['Panel Library - Explorer - Display - Show artist name on difference', false, 'explorerShowDifferentArtist'],
+	['Panel Library - Explorer - Display - Show disc sub-header', true, 'explorerShowDiscHeader'],
 
 	['Panel Library - Explorer - Downloads - Album image auto-downloads', true, 'explorerAlbumImageDLAuto'],
 	['Panel Library - Explorer - Downloads - Album image download quality', 'original', 'explorerAlbumImageDLQuality'],

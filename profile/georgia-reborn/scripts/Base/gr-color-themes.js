@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -516,6 +516,9 @@ class ColorThemes {
 		lib.ui.col.sbarNormal = pl.col.sbar_thumb_normal;
 		lib.ui.col.sbarHovered = pl.col.sbar_thumb_hovered;
 		lib.ui.col.sbarDrag = lib.ui.col.sbarHovered;
+
+		// * LIBRARY EXPLORER COLORS * //
+		lib.ex.color.setColors();
 	}
 
 	/**

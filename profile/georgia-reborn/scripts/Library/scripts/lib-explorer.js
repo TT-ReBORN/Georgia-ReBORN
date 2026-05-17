@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    11-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -43,8 +43,9 @@ class LibExplorerMain {
 		 * @property {Array<GdiBitmap>} albumImages - The array of album images for cycling.
 		 * @property {Array<GdiBitmap>} currentImages - The array of currently active images.
 		 * @property {number} currentIndex - The index of the currently displayed image.
-		 * @property {number|null} cycleTimer - The timer ID for image cycling.
-		 * @property {number} cycleInterval - The time interval for image cycling in milliseconds.
+		 * @property {boolean} cycleArtwork - The flag indicating if artworks should be cycled.
+		 * @property {number} cycleArtworkTime - The time interval for artwork cycling in milliseconds.
+		 * @property {number|null} cycleArtworkTimer - The timer ID for artwork cycling.
 		 * @property {number} downloadIconSize - The size of the download icon.
 		 * @property {number} downloadIconDrawSize - The draw size of the download icon.
 		 * @property {number} downloadIconX - The x-position of the download icon.
@@ -76,8 +77,9 @@ class LibExplorerMain {
 			albumImages: [],
 			currentImages: [],
 			currentIndex: 0,
-			cycleTimer: null,
-			cycleInterval: grSet.libraryBgImgCycleTime * 1000 || 15000,
+			cycleArtwork: libSet.explorerArtworkCycle || true,
+			cycleArtworkTime: libSet.explorerArtworkCycleTime || 15000,
+			cycleArtworkTimer: null,
 
 			// Download icon
 			downloadIconSize: 0,
@@ -633,7 +635,9 @@ class LibExplorerMain {
 				const sepRemaining = this.ui.subheaderMaxX - cumulX;
 				if (sepRemaining < this.ui.subheaderSepW) break;
 				const sepBoxW = Math.min(this.ui.subheaderSepW + pad, sepRemaining);
-				gr.DrawString(` ${Unicode.MiddleDot} `, lib.ui.font.main, lib.ex.color.column_text_normal, cumulX, this.ui.infoY, sepBoxW, this.ui.infoH, Stringformat.H_Align_Near | Stringformat.V_Align_Center | Stringformat.No_Wrap);
+				const nextPart = this.ui.subheaderGroupInfo[i + 1];
+				const sepStr = part.type !== nextPart.type ? ' | ' : ` ${Unicode.MiddleDot} `;
+				gr.DrawString(sepStr, lib.ui.font.main, lib.ex.color.column_text_normal, cumulX, this.ui.infoY, sepBoxW, this.ui.infoH, Stringformat.H_Align_Near | Stringformat.V_Align_Center | Stringformat.No_Wrap);
 				cumulX += this.ui.subheaderSepW;
 			}
 		}
@@ -1036,9 +1040,10 @@ class LibExplorerMain {
 			const sourceTexts = this.isSimilarArtistView ? ['Last.fm', 'ListenBrainz', 'Custom'] : ['Last.fm', 'Discogs', 'MusicBrainz'];
 			maxRightWidth = Math.max(...sourceTexts.map(s => lib.ex.utils.measureTextWidth(s, this.font.header)));
 		} else {
-			const maxTrackDur = Math.max(...lib.ex.data.tracksList.map(t => lib.ex.utils.measureTextWidth(t.duration, lib.ui.font.main)));
-			const yearWidth = lib.ex.utils.measureTextWidth(lib.ex.data.year || '', this.font.header) + 1;
-			maxRightWidth = Math.max(maxTrackDur, yearWidth);
+			const maxTrackDur = Math.max(...lib.ex.data.tracksList.map(t => lib.ex.utils.measureTextWidth(t.duration, lib.ui.font.main)), 0);
+			const albumLenWidth = lib.ex.utils.measureTextWidth(utils.FormatDuration(lib.ex.data.albumLength), lib.ui.font.main) + SCALE(4);
+			const yearWidth = lib.ex.utils.measureTextWidth(lib.ex.data.year || '', this.font.header) + SCALE(6);
+			maxRightWidth = Math.max(maxTrackDur, albumLenWidth, yearWidth);
 		}
 
 		const usesRightColumn = ['albumView', 'similarArtistView', 'missingReleasesView'].includes(this.state.view);
@@ -1063,10 +1068,12 @@ class LibExplorerMain {
 				...lib.ex.data.labels.map(label => ({ type: 'label', value: label }))
 			];
 
+			const dotSepW = lib.ex.utils.measureTextWidth(` ${Unicode.MiddleDot} `, lib.ui.font.main);
+			const pipeSepW = lib.ex.utils.measureTextWidth(' | ', lib.ui.font.main);
 			this.ui.subheaderGroupInfoW = [];
 			this.ui.subheaderGroupInfoCumulW = [];
 			this.ui.subheaderGroupInfoUnderline = [];
-			this.ui.subheaderSepW = lib.ex.utils.measureTextWidth(` ${Unicode.MiddleDot} `, lib.ui.font.main);
+			this.ui.subheaderSepW = Math.max(dotSepW, pipeSepW);
 			this.ui.subheaderMaxX = this.ui.column.x + this.ui.subheaderMaxInfoW;
 			let cum = 0;
 
@@ -1163,22 +1170,22 @@ class LibExplorerMain {
 	 * Starts cycling through multiple artwork images.
 	 */
 	artworkCycleStart() {
-		if (this.artwork.cycleTimer) {
-			clearInterval(this.artwork.cycleTimer);
+		if (this.artwork.cycleArtworkTimer) {
+			clearInterval(this.artwork.cycleArtworkTimer);
 		}
-		if (this.artwork.currentImages.length <= 1 || !grSet.libraryBgImgCycleTime) {
+		if (!this.artwork.cycleArtwork || this.artwork.currentImages.length <= 1) {
 			return;
 		}
-		this.artwork.cycleTimer = setInterval(() => this.artworkCycleImage(1), this.artwork.cycleInterval * 1000);
+		this.artwork.cycleArtworkTimer = setInterval(() => this.artworkCycleImage(1), this.artwork.cycleArtworkTime);
 	}
 
 	/**
 	 * Stops the artwork cycling timer.
 	 */
 	artworkCycleStop() {
-		if (!this.artwork.cycleTimer) return;
-		clearInterval(this.artwork.cycleTimer);
-		this.artwork.cycleTimer = null;
+		if (!this.artwork.cycleArtworkTimer) return;
+		clearInterval(this.artwork.cycleArtworkTimer);
+		this.artwork.cycleArtworkTimer = null;
 	}
 
 	/**
@@ -1187,11 +1194,14 @@ class LibExplorerMain {
 	 */
 	artworkCycleImage(direction) {
 		const len = this.artwork.currentImages.length;
-		if (len <= 1) return;
+
+		if (!grm.ui.displayLibrary || !lib.ex.main.state.visible || len <= 1) {
+			return;
+		}
 
 		this.artwork.currentIndex = (this.artwork.currentIndex + direction + len) % len;
-
 		const nextImg = this.artwork.currentImages[this.artwork.currentIndex];
+
 		this.updateArtworkImage(nextImg);
 	}
 
@@ -1205,7 +1215,7 @@ class LibExplorerMain {
 			return;
 		}
 
-		this.artwork.cycleInterval = time;
+		this.artwork.cycleArtworkTime = time;
 
 		if (this.artwork.currentImages.length > 1) {
 			this.artworkCycleStop();
@@ -1336,10 +1346,12 @@ class LibExplorerMain {
 
 		if (!this.artwork.needsFetch) return;
 
+		lib.ex.cache.clearCache('color');
 		this.artworkLoadImageLists();
 		this.artworkLoadImage();
 
-		if (this.artwork.currentImages.length > 1 && grSet.libraryBgImgCycleTime > 0) {
+		if (grm.ui.displayLibrary && lib.ex.main.state.visible &&
+			this.artwork.cycleArtwork && this.artwork.currentImages.length > 1) {
 			this.artworkCycleStop(); // Clear previous timer if existing
 			this.artworkCycleStart();
 		}
@@ -1606,6 +1618,8 @@ class LibExplorerMain {
 		if (!img) return;
 
 		this.artwork.image = img;
+		lib.ex.cache.clearCache('color');
+
 		if (rebuildLists) this.artworkLoadImageLists(); // Only when new images were added
 
 		this.setArtworkMetrics();
@@ -1680,7 +1694,9 @@ class LibExplorerMain {
 		this.state.artistImgScaling = libSet.explorerArtistImgScaling;
 		this.state.albumThumbImgScaling = libSet.explorerAlbumThumbImgScaling;
 		this.state.artistThumbImgScaling = libSet.explorerArtistThumbImgScaling;
-		lib.ex.color.fullThemeColorChange = libSet.fullThemeColorChange;
+		lib.ex.color.fullThemeColorChange = libSet.explorerFullThemeColorChange;
+		this.artwork.cycleArtwork = libSet.explorerArtworkCycle;
+		this.artwork.cycleArtworkTime = libSet.explorerArtworkCycleTime;
 
 		// * CONTROLS * //
 		lib.ex.control.mouse.wheelOutsideClose = libSet.explorerWheelOutsideClose;
@@ -1691,6 +1707,8 @@ class LibExplorerMain {
 		this.grid.externalLinkIcon = libSet.explorerExternalLinkIcon;
 		this.grid.yearType = libSet.explorerAlbumYearType;
 		lib.ex.album.showTrackRatingGrid = libSet.explorerShowTrackRatingGrid;
+		lib.ex.album.showDifferentArtist = libSet.explorerShowDifferentArtist;
+		lib.ex.album.showDiscHeader = libSet.explorerShowDiscHeader;
 
 		// * DOWNLOADS * //
 		lib.ex.web.albumImageDLAuto = libSet.explorerAlbumImageDLAuto;
@@ -1974,7 +1992,7 @@ class LibExplorerArtistView {
 
 		lib.ex.main.state.view = 'artistView';
 		lib.ex.main.state.artistIndex = artistIndex;
-		lib.ex.data.artist = lib.ex.data.$('%artist%', handles[0]);
+		lib.ex.data.artist = lib.ex.data.$(lib.ex.data.TF.album_artist, handles[0]);
 		lib.ex.data.albumsList = lib.ex.data.getAlbumsListFromHandles(handles);
 
 		for (const album of lib.ex.data.albumsList) {
@@ -2022,6 +2040,16 @@ class LibExplorerAlbumView {
 		/** @type {number} The width for album rating. */
 		this.albumRatingW = 0;
 
+		// Disc header layout
+		/** @type {boolean} The flag to show disc headers for multi-disc albums. */
+		this.showDiscHeader = libSet.explorerShowDiscHeader || true;
+		/** @type {number} The height of a disc subheader row. */
+		this.discHeaderHeight = 0;
+		/** @type {Array} The disc group objects: [{discIndex, discTitle, trackIndices[], collapsed}] */
+		this.discGroups = [];
+		/** @type {Array} The flat interleaved disc layout: [{type:'disc'|'track', discIndex|trackIndex, height}] */
+		this.discLayoutItems = [];
+
 		// Sizing constraints
 		/** @type {number} The max width for play stats. */
 		this.maxPlayW = 0;
@@ -2031,6 +2059,8 @@ class LibExplorerAlbumView {
 		// Rating stars
 		/** @type {boolean} The flag that shows the track rating grid in the track rows. */
 		this.showTrackRatingGrid = libSet.explorerShowTrackRatingGrid || true;
+		/** @type {boolean} The flag that shows the artist name on difference between album artist in the track rows. */
+		this.showDifferentArtist = libSet.explorerShowDifferentArtist || false;
 		/** @type {number} The star icon size. */
 		this.starSize = 0;
 		/** @type {number} The padding between stars. */
@@ -2054,64 +2084,115 @@ class LibExplorerAlbumView {
 
 		lib.ex.main.applyTextRendering(g, 0, 0, this.tempImgW, lib.ex.main.ui.viewportH, lib.ex.color.column_bg);
 
-		const indexMin = Math.max(0, Math.floor(lib.ex.sbar.scrollCurrent / this.trackHeight));
-		const indexMax = Math.min(lib.ex.data.tracksList.length - 1, Math.floor((lib.ex.sbar.scrollCurrent + lib.ex.main.ui.viewportH) / this.trackHeight));
+		const leftOffset = SCALE(15);
+		let cumY = 0;
 
-		for (let i = indexMin; i <= indexMax; i++) {
-			const track = lib.ex.data.tracksList[i];
-			const relY = i * this.trackHeight - lib.ex.sbar.scrollCurrent;
+		for (const item of this.discLayoutItems) {
+			const relY = cumY - lib.ex.sbar.scrollCurrent;
 
-			const isHovered = i === lib.ex.control.mouse.hoveredTrack;
-			const isPlaying = fb.IsPlaying && i === lib.ex.main.state.nowPlayingIndex;
-			const isSelected = lib.ex.main.state.selectedIndices.has(i);
-			const rowStripesBg = lib.ui.rowStripes && (i % 2 === 0) ? lib.ex.color.row_stripes_bg : 0;
-
-			const textColor =
-				isHovered && !isPlaying && !isSelected ? lib.ex.color.row_title_hovered :
-				isPlaying ? lib.ex.color.row_title_playing :
-				isSelected ? lib.ex.color.row_title_selected :
-				lib.ex.color.row_title_normal;
-
-			const leftOffset = SCALE(15);
-
-			if (rowStripesBg) {
-				g.FillSolidRect(leftOffset, relY, lib.ex.main.ui.contentW, this.trackHeight, rowStripesBg);
+			// Cull items outside viewport
+			if (relY + item.height < 0) {
+				cumY += item.height;
+				continue;
+			}
+			if (relY > lib.ex.main.ui.viewportH) {
+				break;
 			}
 
-			// Selection
-			if (isSelected && !isPlaying) {
-				g.DrawRect(0, relY, this.tempImgW - SCALE(1), this.trackHeight, 1, lib.ex.color.row_selection_frame);
-				g.DrawRect(0, relY, SCALE(7), this.trackHeight, 1, lib.ex.color.row_sideMarker); // Hide DrawRect 1px gaps when all songs are completely selected
-				g.FillSolidRect(0, relY, SCALE(8), this.trackHeight, lib.ex.color.row_sideMarker);
+			if (item.type === 'disc') {
+				this.drawDiscHeader(g, item.discIndex, relY);
+			}
+			else {
+				const i = item.trackIndex;
+				const track = lib.ex.data.tracksList[i];
+
+				const isHovered = i === lib.ex.control.mouse.hoveredTrack;
+				const isPlaying = fb.IsPlaying && i === lib.ex.main.state.nowPlayingIndex;
+				const isSelected = lib.ex.main.state.selectedIndices.has(i);
+				const rowStripesBg = lib.ui.rowStripes && (i % 2 === 0) ? lib.ex.color.row_stripes_bg : 0;
+
+				const textColor =
+					isHovered && !isPlaying && !isSelected ? lib.ex.color.row_title_hovered :
+					isPlaying ? lib.ex.color.row_title_playing :
+					isSelected ? lib.ex.color.row_title_selected :
+					lib.ex.color.row_title_normal;
+
+				if (rowStripesBg) {
+					g.FillSolidRect(leftOffset, relY, lib.ex.main.ui.contentW, this.trackHeight, rowStripesBg);
+				}
+
+				// Selection
+				if (isSelected && !isPlaying) {
+					g.DrawRect(0, relY, this.tempImgW - SCALE(1), this.trackHeight, 1, lib.ex.color.row_selection_frame);
+					g.DrawRect(0, relY, SCALE(7), this.trackHeight, 1, lib.ex.color.row_sideMarker);
+					g.FillSolidRect(0, relY, SCALE(8), this.trackHeight, lib.ex.color.row_sideMarker);
+				}
+
+				// Playing
+				if (isPlaying) {
+					const playbackIcon = fb.IsPaused ? RebornSymbols.Pause : RebornSymbols.Play;
+					g.FillSolidRect(0, relY, this.tempImgW, this.trackHeight + 1, lib.ex.color.row_playing_bg);
+					g.DrawRect(0, relY, SCALE(7), this.trackHeight, 1, lib.ex.color.row_sideMarker);
+					g.FillSolidRect(0, relY, SCALE(8), this.trackHeight, lib.ex.color.row_sideMarker);
+					g.DrawString(playbackIcon, lib.ex.main.font.playing, textColor, leftOffset, relY, SCALE(20), this.trackHeight, lib.ex.main.stringFormat.centerEllipsis);
+				}
+
+				// Statistic
+				if (track.statDisplay) {
+					g.DrawString(track.statDisplay, lib.ui.font.main, textColor, leftOffset + this.statisticX, relY, this.maxPlayW, this.trackHeight, lib.ex.main.stringFormat.rightEllipsis);
+				}
+
+				// Rating
+				if (track.rating > 0) {
+					lib.ex.main.drawRatingStars(g, track.rating, lib.ex.main.font.rebornSymbols, leftOffset + this.trackRatingX, relY + HD_4K(1, 3), this.trackHeight, SCALE(-2), false);
+				}
+
+				// Track title and duration
+				const fullTitle = isPlaying ? track.playingFullTitle : track.normalFullTitle;
+				g.DrawString(fullTitle, lib.ui.font.main, textColor, leftOffset, relY, this.titleW, this.trackHeight, lib.ex.main.stringFormat.centerEllipsis);
+				g.DrawString(track.duration, lib.ui.font.main, textColor, leftOffset + lib.ex.main.ui.durationX, relY, lib.ex.main.ui.durationW, this.trackHeight, lib.ex.main.stringFormat.rightEllipsis);
 			}
 
-			// Playing
-			if (isPlaying) {
-				const playbackIcon = fb.IsPaused ? RebornSymbols.Pause : RebornSymbols.Play;
-				g.FillSolidRect(0, relY, this.tempImgW, this.trackHeight + 1, lib.ex.color.row_playing_bg);
-				g.DrawRect(0, relY, SCALE(7), this.trackHeight, 1, lib.ex.color.row_sideMarker);
-				g.FillSolidRect(0, relY, SCALE(8), this.trackHeight, lib.ex.color.row_sideMarker);
-				g.DrawString(playbackIcon, lib.ex.main.font.playing, textColor, leftOffset, relY, SCALE(20), this.trackHeight, lib.ex.main.stringFormat.centerEllipsis);
-			}
-
-			// Statistic
-			if (track.statDisplay) {
-				g.DrawString(track.statDisplay, lib.ui.font.main, textColor, leftOffset + this.statisticX, relY, this.maxPlayW, this.trackHeight, lib.ex.main.stringFormat.rightEllipsis);
-			}
-
-			// Rating
-			if (track.rating > 0) {
-				lib.ex.main.drawRatingStars(g, track.rating, lib.ex.main.font.rebornSymbols, leftOffset + this.trackRatingX, relY + HD_4K(1, 3), this.trackHeight, SCALE(-2), false);
-			}
-
-			// Track title and duration
-			const fullTitle = isPlaying ? track.playingFullTitle : track.normalFullTitle;
-			g.DrawString(fullTitle, lib.ui.font.main, textColor, leftOffset, relY, this.titleW, this.trackHeight, lib.ex.main.stringFormat.centerEllipsis);
-			g.DrawString(track.duration, lib.ui.font.main, textColor, leftOffset + lib.ex.main.ui.durationX, relY, lib.ex.main.ui.durationW, this.trackHeight, lib.ex.main.stringFormat.rightEllipsis);
+			cumY += item.height;
 		}
 
 		tempImg.ReleaseGraphics(g);
 		gr.DrawImage(tempImg, this.tempImgOffsetX, lib.ex.main.ui.viewportY, this.tempImgW, lib.ex.main.ui.viewportH, 0, 0, this.tempImgW, lib.ex.main.ui.viewportH);
+	}
+
+	/**
+	 * Draws a disc subheader row.
+	 * @param {GdiGraphics} g - The temp bitmap graphics context.
+	 * @param {number} discIndex - The disc group index.
+	 * @param {number} relY - The Y position relative to viewport top (in temp bitmap coords).
+	 */
+	drawDiscHeader(g, discIndex, relY) {
+		const group = this.discGroups[discIndex];
+		if (!group) return;
+
+		const leftOffset = SCALE(15);
+		const isHovered = lib.ex.control.mouse.hoveredDiscHeader === discIndex;
+		const textColor = isHovered ? lib.ex.color.row_title_hovered : lib.ex.color.row_title_normal;
+		const font = lib.ui.font.main;
+
+		g.DrawString(group.discTitle, font, textColor, leftOffset, relY, this.titleW, this.discHeaderHeight, Stringformat.V_Align_Center | Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap);
+
+		const duration = group.trackIndices.reduce((acc, ti) => acc + lib.ex.data.tracksList[ti].handle.Length, 0);
+		const trackCount = group.trackIndices.length;
+
+		const maxTrackCount = Math.max(...this.discGroups.map(dg => dg.trackIndices.length));
+		const maxDurStr = this.discGroups
+			.map(dg => utils.FormatDuration(dg.trackIndices.reduce((acc, ti) => acc + lib.ex.data.tracksList[ti].handle.Length, 0)))
+			.reduce((a, b) => a.length >= b.length ? a : b, '');
+
+		const paddedCount = String(trackCount).padStart(maxTrackCount.toString().length, Unicode.FigureSpace);
+		const formattedDuration = utils.FormatDuration(duration);
+		const paddedDuration = formattedDuration.padStart(maxDurStr.length, Unicode.FigureSpace);
+		const rightText = `${paddedCount} Track${trackCount === 1 ? '' : 's'} - ${paddedDuration}`;
+
+		g.DrawString(rightText, font, textColor, leftOffset, relY, lib.ex.main.ui.contentW, this.discHeaderHeight, Stringformat.H_Align_Far | Stringformat.V_Align_Center | Stringformat.No_Wrap);
+
+		g.DrawLine(leftOffset, relY + this.discHeaderHeight, leftOffset + lib.ex.main.ui.contentW, relY + this.discHeaderHeight, 1, lib.ex.color.row_selection_frame);
 	}
 
 	/**
@@ -2130,6 +2211,7 @@ class LibExplorerAlbumView {
 		lib.ex.main.ui.colPad = SCALE(10);
 
 		lib.ex.album.trackHeight = lib.ex.utils.measureTextHeight('Ag', lib.ui.font.main) + SCALE(2);
+		this.discHeaderHeight = lib.ex.album.trackHeight + SCALE(4);
 		this.trackRatingX = lib.ex.main.ui.durationX - lib.ex.main.ui.colPad - this.ratingW;
 		this.statisticX = this.trackRatingX - lib.ex.main.ui.colPad - this.maxPlayW;
 		this.titleW = this.statisticX - lib.ex.main.ui.colPad - SCALE(15) - SCALE(8);
@@ -2141,9 +2223,12 @@ class LibExplorerAlbumView {
 		this.tempImgOffsetX = lib.ex.main.ui.column.x - leftOffset;
 
 		for (const track of lib.ex.data.tracksList) {
-			const trackNum = `${track.displayNum}. `;
-			track.normalFullTitle = trackNum + track.title;
-			track.playingFullTitle = `      ${track.title}`;
+			const artistSuffix = (
+				this.showDifferentArtist && track.trackArtist && track.albumArtist &&
+				track.trackArtist.toLowerCase() !== track.albumArtist.toLowerCase() ? ` ${Unicode.MiddleDot} ${track.trackArtist}` : ''
+			);
+			track.normalFullTitle = `${track.displayNum}. ${track.title}${artistSuffix}`;
+			track.playingFullTitle = `      ${track.title}${artistSuffix}`;
 			track.statDisplay = track.statistic !== undefined && track.statistic !== '' ? `${track.statistic} |` : '';
 
 			const normalTitleWidth = lib.ex.utils.measureTextWidth(track.normalFullTitle, lib.ui.font.main);
@@ -2185,6 +2270,84 @@ class LibExplorerAlbumView {
 		// Header draw widths
 		lib.ex.main.ui.headerArtistW = lib.ex.main.ui.durationX - lib.ex.main.ui.headerLineHeight;
 		lib.ex.main.ui.headerAlbumW = lib.ex.main.ui.durationX - lib.ex.main.ui.headerLineHeight;
+
+		// Disc header
+		this.createDiscGroups();
+	}
+
+	/**
+	 * Creates and groups tracksList into disc groups.
+	 */
+	createDiscGroups() {
+		this.discGroups = [];
+		const multiDisc = this.showDiscHeader && lib.ex.data.albumTotalDiscs > 1;
+
+		if (!multiDisc || lib.ex.data.tracksList.length === 0) {
+			this.createDiscLayoutItems();
+			return;
+		}
+
+		const handles = new FbMetadbHandleList(lib.ex.data.tracksList.map(t => t.handle));
+		const discTitles = fb.TitleFormat(lib.ex.data.TF.disc_header).EvalWithMetadbs(handles);
+
+		let currentTitle = null;
+		let currentGroup = null;
+		let discIdx = 0;
+
+		for (let i = 0; i < lib.ex.data.tracksList.length; i++) {
+			const title = discTitles[i];
+
+			if (title !== currentTitle) {
+				currentTitle = title;
+				currentGroup = { discIndex: discIdx++, discTitle: title, trackIndices: [], collapsed: false };
+				this.discGroups.push(currentGroup);
+			}
+
+			currentGroup.trackIndices.push(i);
+		}
+
+		this.createDiscLayoutItems();
+	}
+
+	/**
+	 * Creates the flat disc layout item list from discGroups.
+	 */
+	createDiscLayoutItems() {
+		this.discLayoutItems = [];
+
+		const multiDisc = this.showDiscHeader && lib.ex.data.albumTotalDiscs > 1 && this.discGroups.length > 0;
+
+		if (!multiDisc) {
+			for (let i = 0; i < lib.ex.data.tracksList.length; i++) {
+				this.discLayoutItems.push({ type: 'track', trackIndex: i, height: this.trackHeight });
+			}
+			return;
+		}
+
+		for (const group of this.discGroups) {
+			this.discLayoutItems.push({ type: 'disc', discIndex: group.discIndex, height: this.discHeaderHeight });
+
+			if (!group.collapsed) {
+				for (const trackIndex of group.trackIndices) {
+					this.discLayoutItems.push({ type: 'track', trackIndex, height: this.trackHeight });
+				}
+			}
+		}
+	}
+
+	/**
+	 * Handles the toggled collapsed state of a disc group header and recreates layout.
+	 * @param {number} discIndex - The disc group index.
+	 */
+	handleDiscHeaderCollapse(discIndex) {
+		const group = this.discGroups[discIndex];
+		if (!group) return;
+
+		group.collapsed = !group.collapsed;
+		this.createDiscLayoutItems();
+
+		lib.ex.sbar.clearScrollbarPosition();
+		lib.ex.utils.repaintViewport();
 	}
 
 	/**
@@ -2199,8 +2362,13 @@ class LibExplorerAlbumView {
 
 		if (queryHandles.Count === 0) return false;
 
-		grm.colorManager.setPrimaryColor(undefined, undefined, true);
-		queryHandles.OrderByFormat(fb.TitleFormat("%discnumber%|%tracknumber%"), 1);
+		// * Update primary color for fullThemeColorChange
+		if (lib.ex.color.fullThemeColorChange && !lib.ex.color.isArtworkPrimaryColorSame()) {
+			lib.ex.cache.clearCache('artwork');
+			grm.colorManager.setPrimaryColor(undefined, undefined, true);
+		}
+
+		queryHandles.OrderByFormat(fb.TitleFormat(lib.ex.data.TF.discnumber_tracknumber), 1);
 		return this.loadAlbumView(queryHandles, -1);
 	}
 
@@ -2213,34 +2381,9 @@ class LibExplorerAlbumView {
 	loadAlbumView(handles, albumIndex = -1) {
 		if (handles.Count === 0) return false;
 
-		handles.OrderByFormat(fb.TitleFormat("%discnumber%|%tracknumber%"), 1);
-
 		lib.ex.main.state.view = 'albumView';
 		lib.ex.main.state.albumIndex = albumIndex;
-		lib.ex.data.tracksList = lib.ex.data.getTracksFromHandles(handles);
-
-		// * Filter out raw CD image file when both the image (no tracknumber) and CUE virtual tracks are present in the library.
-		const trackNumMeta = lib.ex.data.tracksList.filter(track => lib.ex.data.$('[%tracknumber%]', track.handle) !== '');
-		const hasTrackNum = trackNumMeta.length > 0;
-
-		// * Only filter if we actually found some tracks with numbers, otherwise it's a pure CD image, keep to avoid null metadb issues
-		if (hasTrackNum) {
-			lib.ex.data.tracksList = trackNumMeta;
-		}
-
-		if (lib.ex.data.tracksList.length > 0) {
-			lib.ex.data.metadb = lib.ex.data.tracksList[0].handle;
-			lib.ex.data.artist = lib.ex.data.$('%artist%', lib.ex.data.metadb);
-			lib.ex.data.album = lib.ex.data.$('%album%', lib.ex.data.metadb);
-			lib.ex.data.albumRating = lib.ex.data.getAlbumRating();
-
-			for (const track of lib.ex.data.tracksList) {
-				const disc = lib.ex.data.$('%discnumber%', track.handle);
-				const trackNum = hasTrackNum ? lib.ex.data.$('$pad(%tracknumber%,2,0)', track.handle) : (track.index + 1).toString().padStart(2, '0'); // Fallback if no tag
-				track.displayNum = (lib.ex.data.albumTotalDiscs > 1 && disc) ? `${disc}-${trackNum}` : trackNum;
-			}
-		}
-
+		lib.ex.data.setAlbumMeta(handles);
 		lib.ex.main.initView('albumView', lib.ex.data.metadb);
 
 		if (lib.ex.data.getStatsSelected() === 'popularity') {
@@ -2444,7 +2587,7 @@ class LibExplorerDetailsView {
 		};
 
 		const sectionTitle = // Determine section title based on number of tracks
-			handles.Count === 1 ? lib.ex.data.$('%title%', handles)[0] || 'Unknown Track' : `${handles.Count} Selected Tracks`;
+			handles.Count === 1 ? lib.ex.data.$(lib.ex.data.TF.title, handles)[0] || 'Unknown Track' : `${handles.Count} Selected Tracks`;
 
 		// Title
 		addTitle(sectionTitle);
@@ -2453,10 +2596,10 @@ class LibExplorerDetailsView {
 		// Audio details
 		addLabel('Duration', lib.ex.data.getStatsDuration(handles, true));
 		addLabel('Size', lib.ex.data.getStatsSize(handles, true));
-		addLabel('Codec', joinUnique(unique(lib.ex.data.$('%codec%', handles))));
-		addLabel('Bit Depth', formatUnit(lib.ex.data.$('$info(bitspersample)', handles).filter(b => b), '-bit'));
-		addLabel('Sample Rate', formatUnit(lib.ex.data.$('$info(samplerate)', handles).filter(s => s), ' Hz'));
-		addLabel('Channels', joinUnique(unique(lib.ex.data.$('$info(channel_mode)', handles).filter(c => c))));
+		addLabel('Codec', joinUnique(unique(lib.ex.data.$(lib.ex.data.TF.codec, handles))));
+		addLabel('Bit Depth', formatUnit(lib.ex.data.$(lib.ex.data.TF.bitspersample, handles).filter(b => b), '-bit'));
+		addLabel('Sample Rate', formatUnit(lib.ex.data.$(lib.ex.data.TF.samplerate, handles).filter(s => s), ' Hz'));
+		addLabel('Channels', joinUnique(unique(lib.ex.data.$(lib.ex.data.TF.channel_mode, handles).filter(c => c))));
 		addLabel('Bitrate', lib.ex.data.getStatsBitrate(handles, true));
 		addSpacer();
 
@@ -3098,7 +3241,7 @@ class LibExplorerSimilarArtistView {
 			const batchHandles = lib.ex.data.getHandlesArtists(batchNames);
 
 			if (batchHandles.Count > 0) {
-				const batchArtists = fb.TitleFormat('%artist%').EvalWithMetadbs(batchHandles);
+				const batchArtists = fb.TitleFormat(lib.ex.data.TF.album_artist).EvalWithMetadbs(batchHandles);
 
 				for (let j = 0; j < batchHandles.Count; j++) {
 					const artistNameLower = batchArtists[j].toLowerCase();
@@ -3243,7 +3386,7 @@ class LibExplorerSimilarArtistView {
 		if (similarData.length > 0) {
 			const potentialNames = similarData.map(a => a.name);
 			const handles = lib.ex.data.getHandlesArtists(potentialNames);
-			const localNames = handles.Count > 0 ? fb.TitleFormat('%artist%').EvalWithMetadbs(handles) : [];
+			const localNames = handles.Count > 0 ? fb.TitleFormat(lib.ex.data.TF.album_artist).EvalWithMetadbs(handles) : [];
 			seenLocal = new Set([...new Set(localNames)].map(name => name.toLowerCase()));
 		}
 
@@ -3614,14 +3757,23 @@ class LibExplorerCache {
 
 	/**
 	 * Clears specified cache type.
-	 * @param {string} type - The cache type to clear ('placeholder' or 'thumbnail').
+	 * @param {string} type - The cache type to clear ('artwork', 'color', 'placeholder', 'thumbnail').
 	 */
 	clearCache(type) {
-		if (type === 'placeholder') {
+		if (type === 'artwork') {
+			lib.ex.main.artwork.image = null;
+			lib.ex.main.artwork.resized = null;
+			lib.ex.main.artwork.cachedAlbumArtColors = [];
+		}
+		else if (type ==='color') {
+			lib.ex.main.artwork.cachedAlbumArtColors = [];
+			this.lastArtworkColor = null;
+		}
+		else if (type === 'placeholder') {
 			this.placeholderCache.artistThumb.clear();
 			this.placeholderCache.albumThumb.clear();
 		}
-		if (type === 'thumbnail') {
+		else if (type === 'thumbnail') {
 			const items = lib.ex.utils.getGridItems();
 			for (const item of items) {
 				item.thumbResized = null;
@@ -3876,86 +4028,86 @@ class LibExplorerColors {
 		/** @type {boolean} The state if the column background color is light. */
 		this.column_bg_light = false;
 		/** @type {boolean} The full theme color change in Georgia-ReBORN main on new artwork fetches. */
-		this.fullThemeColorChange = libSet.fullThemeColorChange || true;
+		this.fullThemeColorChange = libSet.explorerFullThemeColorChange || true;
 
 		/** @type {number} The primary theme color (from art or fallback). */
-		this.primary = '';
+		this.primary = null;
 		/** @type {number} The accent color derived from primary. */
-		this.accent = '';
+		this.accent = null;
 		/** @type {number} The darkened accent color. */
-		this.darkAccent = '';
+		this.darkAccent = null;
 		/** @type {number} The dark accent at 50% shade. */
-		this.darkAccent_50 = '';
+		this.darkAccent_50 = null;
 		/** @type {number} The lightened accent color. */
-		this.lightAccent = '';
+		this.lightAccent = null;
 		/** @type {number} The light accent at 50% tint. */
-		this.lightAccent_50 = '';
+		this.lightAccent_50 = null;
 
 		/** @type {number} The background color for the explorer column. */
-		this.column_bg = '';
+		this.column_bg = null;
 		/** @type {number} The separator column line color. */
-		this.column_line = '';
+		this.column_line = null;
 		/** @type {number} The text color for column content. */
-		this.column_text_normal = '';
+		this.column_text_normal = null;
 		/** @type {number} The text hover color for column content. */
-		this.column_text_hovered = '';
+		this.column_text_hovered = null;
 		/** @type {number} The now playing text color. */
-		this.column_text_playing = '';
+		this.column_text_playing = null;
 		/** @type {number} The text selection color for column content. */
-		this.column_text_selected = '';
+		this.column_text_selected = null;
 
 		/** @type {number} The highlight bg color for now-playing grid rows. */
-		this.grid_playing_bg = '';
+		this.grid_playing_bg = null;
 		/** @type {number} The background color for selected grid rows. */
-		this.grid_selection_bg = '';
+		this.grid_selection_bg = null;
 		/** @type {number} The frame color for selected grid rows. */
-		this.grid_selection_frame = '';
+		this.grid_selection_frame = null;
 		/** @type {number} The side marker color for selected grid rows. */
-		this.grid_sideMarker = '';
+		this.grid_sideMarker = null;
 		/** @type {number} The normal grid title color. */
-		this.grid_title_normal = '';
+		this.grid_title_normal = null;
 		/** @type {number} The hovered grid title color. */
-		this.grid_title_hovered = '';
+		this.grid_title_hovered = null;
 		/** @type {number} The now playing grid title color. */
-		this.grid_title_playing = '';
+		this.grid_title_playing = null;
 		/** @type {number} The selected grid title color. */
-		this.grid_title_selected = '';
+		this.grid_title_selected = null;
 
 		/** @type {number} The background color for striped rows. */
-		this.row_stripes_bg = '';
+		this.row_stripes_bg = null;
 		/** @type {number} The highlight bg color for now-playing rows. */
-		this.row_playing_bg = '';
+		this.row_playing_bg = null;
 		/** @type {number} The background color for selected rows. */
-		this.row_selection_bg = '';
+		this.row_selection_bg = null;
 		/** @type {number} The frame color for selected rows. */
-		this.row_selection_frame = '';
+		this.row_selection_frame = null;
 		/** @type {number} The side marker color for selected rows. */
-		this.row_sideMarker = '';
+		this.row_sideMarker = null;
 		/** @type {number} The normal row title color. */
-		this.row_title_normal = '';
+		this.row_title_normal = null;
 		/** @type {number} The hovered row title color. */
-		this.row_title_hovered = '';
+		this.row_title_hovered = null;
 		/** @type {number} The now playing row title color. */
-		this.row_title_playing = '';
+		this.row_title_playing = null;
 		/** @type {number} The selected row title color. */
-		this.row_title_selected = '';
+		this.row_title_selected = null;
 
 		/** @type {number} The rating row stars color. */
-		this.rating_star = '';
+		this.rating_star = null;
 		/** @type {number} The shadow color for rating stars. */
-		this.rating_star_shadow = '';
+		this.rating_star_shadow = null;
 
 		/** @type {number} The normal scrollbar color. */
-		this.sbar_normal = '';
+		this.sbar_normal = null;
 		/** @type {number} The hovered scrollbar color. */
-		this.sbar_hovered = '';
+		this.sbar_hovered = null;
 		/** @type {number} The dragged scrollbar color. */
-		this.sbar_drag = '';
+		this.sbar_drag = null;
 
 		/** @type {number} The close button text color. */
-		this.closeBtn = '';
+		this.closeBtn = null;
 		/** @type {number} The close button background color. */
-		this.closeBtn_bg = '';
+		this.closeBtn_bg = null;
 	}
 
 	/**
@@ -3995,16 +4147,15 @@ class LibExplorerColors {
 
 	/**
 	 * Checks if current theme is a dynamic theme.
-	 * @param {boolean} rebornRandomNoPlaying - The flag to consider reborn/random themes when not playing.
 	 * @returns {boolean} True if dynamic theme.
 	 */
-	isDynamicTheme(rebornRandomNoPlaying) {
+	isDynamicTheme() {
 		return (
 			((grSet.theme === 'white' || $('[%GR_THEME%]').startsWith('white')) && (!grSet.styleBlackAndWhite && !grSet.styleBlackAndWhite2))
 			||
 			(grSet.theme === 'black' || $('[%GR_THEME%]').startsWith('black'))
 			||
-			(rebornRandomNoPlaying ? !fb.IsPlaying && ['reborn', 'random'].includes(grSet.theme) : ['reborn', 'random'].includes(grSet.theme))
+			['reborn', 'random'].includes(grSet.theme)
 		);
 	}
 
@@ -4026,6 +4177,22 @@ class LibExplorerColors {
 	}
 
 	/**
+	 * Checks if playing album color is same as current.
+	 * @returns {boolean} True if colors match.
+	 */
+	isPlayingAlbumColorSame() {
+		if (!lib.ex.main.isAlbumOrDetailsView) return false;
+
+		return (
+			fb.IsPlaying && grm.ui.albumArt && lib.ex.cache.nowPlayingMeta
+			&&
+			lib.ex.data.artist === lib.ex.cache.nowPlayingMeta.artist
+			&&
+			lib.ex.data.album  === lib.ex.cache.nowPlayingMeta.album
+		);
+	}
+
+	/**
 	 * Sets colors based on current artwork.
 	 */
 	setArtworkColor() {
@@ -4043,9 +4210,9 @@ class LibExplorerColors {
 				return;
 			}
 			this.primary = pl.col.row_nowplaying_bg;
+			this.setColors();
 			lib.ex.cache.lastArtworkColor = this.primary;
 			lib.ex.cache.lastWasFromArt = false;
-			this.setColors();
 			return;
 		}
 
@@ -4054,11 +4221,10 @@ class LibExplorerColors {
 
 		// * Compute new primary color
 		this.setArtworkPrimaryColor();
-		lib.ex.cache.lastArtworkColor = this.primary;
-		lib.ex.cache.lastWasFromArt = !lib.ex.main.isArtworkStub();
-
 		this.setStyleBlend();
 		this.setColors();
+		lib.ex.cache.lastArtworkColor = this.primary;
+		lib.ex.cache.lastWasFromArt = !lib.ex.main.isArtworkStub();
 	}
 
 	/**
@@ -4077,10 +4243,11 @@ class LibExplorerColors {
 		}
 		// * If using dynamic themes while not playing, generate a new primary color from the artwork image
 		else {
-			const rebornFusion = grm.colorManager.isRebornFusion();
-			const color = grm.colorManager.getAlbumArtThemeColors(
-				lib.ex.main.artwork.image, lib.ex.main.artwork.cachedAlbumArtColors, rebornFusion
-			);
+			const isPlayingAlbumColorSame = this.isPlayingAlbumColorSame();
+			const artworkSource = isPlayingAlbumColorSame ? grm.ui.albumArt : lib.ex.main.artwork.image;
+			const artworkCache = isPlayingAlbumColorSame ? grm.ui.cachedAlbumArtColors : lib.ex.main.artwork.cachedAlbumArtColors;
+			const color = grm.colorManager.getAlbumArtThemeColors(artworkSource, artworkCache, grm.colorManager.isRebornFusion());
+
 			this.primary = color.primary;
 			this.secondary = color.secondary;
 		}
@@ -4091,7 +4258,7 @@ class LibExplorerColors {
 		}
 
 		// * Create new primary color of current viewed artwork image and pass to Georgia-ReBORN main
-		lib.ex.main.artwork.cachedAlbumArtColors = [];
+		lib.ex.cache.clearCache('color');
 		grm.colorManager.setPrimaryColor(this.primary, this.secondary);
 	}
 
@@ -4099,18 +4266,18 @@ class LibExplorerColors {
 	 * Sets all UI colors based on primary color.
 	 */
 	setColors() {
-		// For dynamic themes (no playing for reborn & random), adjust colors for some UI elements to display like it is currently playing
-		const dynamicThemes = this.isDynamicTheme(true);
+		if (this.isCustomTheme()) return;
+
 		const stub = lib.ex.main.isArtworkStub();
 
 		// * BACKGROUND * //
 		this.column_bg =
-			dynamicThemes ? this.primary :
 			grSet.styleBlackAndWhite ? RGB(30, 30, 30) :
 			grSet.styleBlackAndWhite2 ? RGB(255, 255, 255) :
 			grSet.styleRebornFusionAccent ? TintColor(this.primary, 10) :
 			grSet.theme === 'cream' ? RGB(247, 237, 228) :
-			pl.col.row_nowplaying_bg;
+			grSet.styleBlend && fb.IsPlaying ? RGBtoRGBA(this.primary, 128) :
+			this.primary;
 
 		this.column_bg_light = Color.LUM(this.column_bg) > LUM.Y32;
 
@@ -4129,17 +4296,17 @@ class LibExplorerColors {
 		this.lightAccent_50 = TintColor(this.primary, 50);
 
 		// * COLUMN * //
-		this.column_line = dynamicThemes ? this.column_bg_light ? ShadeColor(this.primary, 20) : TintColor(this.primary, 20) : lib.ui.col.line;
-		this.column_text_normal = dynamicThemes ? this.column_bg_light ? RGB(60, 60, 60) : RGB(230, 230, 230) : pl.col.row_title_normal;
-		this.column_text_hovered = dynamicThemes ? this.column_bg_light ? RGB(0, 0, 0) : RGB(255, 255, 255) : pl.col.row_title_hovered;
-		this.column_text_playing = dynamicThemes ? this.column_text_hovered : pl.col.row_title_playing;
-		this.column_text_selected = dynamicThemes ? this.column_bg_light ? RGB(0, 0, 0) : RGB(255, 255, 255) : pl.col.row_title_selected;
+		this.column_line = this.column_bg_light ? ShadeColor(this.primary, 20) : TintColor(this.primary, 20);
+		this.column_text_normal = this.column_bg_light ? RGB(60, 60, 60) : RGB(230, 230, 230);
+		this.column_text_hovered = this.column_bg_light ? RGB(0, 0, 0) : RGB(255, 255, 255);
+		this.column_text_playing = this.column_text_hovered;
+		this.column_text_selected = this.column_bg_light ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 		// * GRID - ARTIST VIEW * //
 		this.grid_playing_bg = stub ? TintColor(this.column_bg, 10) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10);
-		this.grid_selection_bg = dynamicThemes ? TintColor(this.primary, 20) : this.grid_playing_bg;
+		this.grid_selection_bg = this.grid_playing_bg;
 		this.grid_selection_frame = this.column_line;
-		this.grid_sideMarker = stub ? RGB(120, 120, 120) : dynamicThemes ? this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25) : lib.ui.col.sideMarker;
+		this.grid_sideMarker = stub ? RGB(120, 120, 120) : this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25);
 		this.grid_title_normal = this.column_text_normal;
 		this.grid_title_hovered = this.column_text_hovered;
 		this.grid_title_playing = grSet.styleBlackAndWhite ? RGB(0, 0, 0) : this.column_text_playing;
@@ -4148,9 +4315,9 @@ class LibExplorerColors {
 		// * TRACK ROWS - ALBUM VIEW * //
 		this.row_stripes_bg = pl.col.row_stripes_bg;
 		this.row_playing_bg = grSet.styleBlackAndWhite ? RGB(230, 230, 230) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10);
-		this.row_selection_bg = dynamicThemes ? TintColor(this.primary, 20) : this.row_playing_bg;
+		this.row_selection_bg = this.row_playing_bg;
 		this.row_selection_frame = this.column_line;
-		this.row_sideMarker = stub ? RGB(120, 120, 120) : dynamicThemes ? this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25) : lib.ui.col.sideMarker;
+		this.row_sideMarker = stub ? RGB(120, 120, 120) : this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25);
 		this.row_title_normal = this.column_text_normal;
 		this.row_title_hovered = this.column_text_hovered;
 		this.row_title_playing = this.column_text_playing;
@@ -4196,6 +4363,23 @@ class LibExplorerColors {
 		grm.colorManager.setBackgroundBrightnessRules();
 		grm.colorThemes.initThemeColors();
 		grm.ui.initUIComponents('all');
+	}
+
+	/**
+	 * Updates Georgia-ReBORN's Main and Library Explorer's primary color
+	 * when full theme color change features is enabled and switching top menu panels.
+	 */
+	updateFullThemeColorChange() {
+		if (!this.fullThemeColorChange || !lib.ex.main.state.visible) {
+			return;
+		}
+
+		if (grm.ui.displayLibrary && !this.isPlayingAlbumColorSame()) {
+			this.setArtworkColor();
+		}
+		else if (grCol.primary !== grCol.primary_saved) {
+			grm.colorManager.setPrimaryColor(undefined, undefined, true);
+		}
 	}
 }
 
@@ -4264,6 +4448,7 @@ class LibExplorerControls {
 			hoveredSnapshot: {},
 			hoveredTrack: -1,
 			hoveredAlbum: -1,
+			hoveredDiscHeader: -1,
 			hoveredSubheaderGroupInfo: -1,
 			hoveredTab: -1,
 			hoveredArtist: false,
@@ -4289,7 +4474,7 @@ class LibExplorerControls {
 				],
 				subheader:['hoveredSubheaderGroupInfo'],
 				viewport: [
-					'hoveredTrack', 'hoveredAlbum',
+					'hoveredTrack', 'hoveredAlbum', 'hoveredDiscHeader',
 					'hoveredDetailsButtonPrev', 'hoveredDetailsButtonNext', 'hoveredDownloadIconGrid'
 				],
 				tabs: ['hoveredTab']
@@ -4355,7 +4540,7 @@ class LibExplorerControls {
 		lib.ex.main.state.focusedIndex = -1;
 
 		if (lib.ex.color.fullThemeColorChange && !lib.ex.color.isArtworkPrimaryColorSame()) {
-			lib.ex.main.artwork.cachedAlbumArtColors = [];
+			lib.ex.cache.clearCache('color');
 			grm.colorManager.setPrimaryColor(undefined, undefined, true);
 		}
 
@@ -4555,7 +4740,7 @@ class LibExplorerControls {
 
 		const rating = Math.round(lib.ex.data.albumRating); // Snap to nearest whole for query
 		const escapedRating = lib.ex.utils.escapeForQuery(rating.toString());
-		const query = `%rating% IS ${escapedRating}`;
+		const query = `${lib.ex.data.TF.rating} IS ${escapedRating}`;
 
 		lib.panel.search.txt = query;
 		lib.but.setSearchBtnsHide();
@@ -4603,7 +4788,7 @@ class LibExplorerControls {
 	 * @returns {boolean} True if handled.
 	 */
 	handleClickAlbumTitle(x, y) {
-		if (!lib.ex.main.isAlbumOrArtistView) return false;
+		if (lib.ex.main.isArtistView) return false;
 
 		const albumTextMaxW = lib.ex.data.albumRating > 0 ? lib.ex.album.albumRatingX - lib.ex.main.ui.column.x : lib.ex.main.ui.durationX;
 		const boundsX = x >= lib.ex.main.ui.column.x && x < lib.ex.main.ui.column.x + albumTextMaxW;
@@ -4624,7 +4809,7 @@ class LibExplorerControls {
 				const fullHandles = lib.ex.data.getHandlesAlbum(artist, album);
 
 				if (fullHandles.Count > 0) {
-					fullHandles.OrderByFormat(fb.TitleFormat("%discnumber%|%tracknumber%"), 1);
+					fullHandles.OrderByFormat(fb.TitleFormat(lib.ex.data.TF.discnumber_tracknumber), 1);
 					lib.ex.details.handles = fullHandles.Convert();  // Set to full album
 					lib.ex.details.indexCurrent = -1;  // Indicate aggregated (no single focus)
 					lib.ex.details.loadDetailsView(fullHandles);  // Loads aggregated view ("X Selected Tracks" with totals/avgs)
@@ -4812,7 +4997,7 @@ class LibExplorerControls {
 			fb.RunContextCommandWithMetadb(`Playback Statistics/Rating/${command}`, track.handle);
 		}
 
-		const trackId = lib.ex.data.$('%artist% - %album% - %title%', track.handle) || track.handle.RawPath;
+		const trackId = lib.ex.data.$(lib.ex.data.TF.artist_album_title, track.handle) || track.handle.RawPath;
 		pl.track_ratings.set(trackId, track.rating);
 		pl.playlist.update_playlist_headers();
 
@@ -4968,7 +5153,10 @@ class LibExplorerControls {
 	 * @param {number} y - The y-coordinate.
 	 */
 	handleDoubleClickInExplorer(x, y) {
-		if (lib.ex.main.isAlbumView) {
+		if (lib.ex.main.isAlbumView && lib.ex.control.mouse.hoveredDiscHeader !== -1) {
+			lib.ex.album.handleDiscHeaderCollapse(lib.ex.control.mouse.hoveredDiscHeader);
+		}
+		else if (lib.ex.main.isAlbumView) {
 			const trackIndex = lib.ex.utils.getHoveredAlbumTrackIndex(x, y);
 
 			if (trackIndex !== -1) {
@@ -5052,6 +5240,39 @@ class LibExplorerControls {
 		}
 
 		this.mouse.ignoreNextSingleClick = true; // Ignore the trailing lbtn_up
+	}
+
+	/**
+	 * Handles item auto-selection on right-click before showing the context menu.
+	 * Selects the clicked track or album in the column, or selects all items when right-clicking on the artwork area.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 */
+	handleRightClickSelection(x, y) {
+		// Artwork area: select all items for current view
+		if (lib.ex.utils.mouseInAlbumArt(x, y) && lib.ex.main.state.selectedIndices.size === 0) {
+			if (lib.ex.main.isAlbumView) {
+				for (let i = 0; i < lib.ex.data.tracksList.length; i++) {
+					lib.ex.main.state.selectedIndices.add(i);
+				}
+				lib.ex.main.state.selectionAnchor = 0;
+			}
+			else if (lib.ex.main.isArtistView) {
+				for (let i = 0; i < lib.ex.data.albumsList.length; i++) {
+					lib.ex.main.state.selectedIndices.add(i);
+				}
+				lib.ex.main.state.selectionAnchor = 0;
+			}
+			return;
+		}
+
+		// Column area: select the clicked track or album
+		if (lib.ex.main.isAlbumView) {
+			this.handleSingleClickAlbumView(x, y);
+		}
+		else if (lib.ex.main.isGridView) {
+			this.handleSingleClickArtistView(x, y);
+		}
 	}
 
 	/**
@@ -5502,6 +5723,7 @@ class LibExplorerControls {
 	updateMouseHoverViewport(x, y) {
 		this.mouse.hoveredTrack = lib.ex.main.isAlbumOrDetailsView ? lib.ex.utils.getHoveredAlbumTrackIndex(x, y) : -1;
 		this.mouse.hoveredAlbum = lib.ex.main.isGridView ? lib.ex.utils.getHoveredGridAlbumIndex(x, y) : -1;
+		this.mouse.hoveredDiscHeader = lib.ex.main.isAlbumView ? lib.ex.utils.getHoveredDiscHeaderIndex(x, y) : -1;
 		this.mouse.hoveredTab = lib.ex.button.getTabIndex(x, y);
 		this.mouse.hoveredDownloadIconGrid = lib.ex.utils.getHoveredGridDownloadIconIndex(x, y);
 
@@ -5651,7 +5873,7 @@ class LibExplorerData {
 		/** @type {Array} The array of available stats types (e.g., 'bitrate', 'playcount'). */
 		this.stats = [
 			'bitrate', 'duration', 'size', 'rating', 'playcount', 'popularity', 'trackcount',
-			'queue', 'date', 'firstPlayed', 'lastPlayed', 'added'
+			'queue', 'date', 'firstPlayed', 'lastPlayed', 'added', 'none'
 		];
 		/** @type {string} The selected stat for album view (e.g., 'playcount'). */
 		this.statsSelectedAlbum = libSet.explorerStatsAlbum || 'playcount';
@@ -5659,6 +5881,43 @@ class LibExplorerData {
 		this.statsSelectedArtist = libSet.explorerStatsArtist || 'rating';
 		/** @type {string} The selected stat for similar artists view (e.g., 'rating'). */
 		this.statsSelectedSimilar = libSet.explorerStatsSimilar || 'rating';
+
+		// Meta
+		/** @type {Object} The Library Explorer titleformat strings. */
+		this.TF = {
+			// Core track/album identity
+			artist: '%artist%',
+			album_artist: '$if3(%album artist%, %artist%, %composer%)',
+			album: `[%album%][ '['${grTF.album_translation}']']`,
+			title: grTF.title,
+			date: grTF.date,
+			artist_album_title: `${grTF.artist} - [%album%][ '['${grTF.album_translation}']'] - ${grTF.title}`,
+			disc_header: `$ifgreater(%totaldiscs%,1,[Disc %discnumber% $if(${grTF.disc_subtitle}, ${Unicode.EmDash} ,) ],)[${grTF.disc_subtitle}]`,
+
+			// Categorical
+			genre: '[$meta_sep(genre, · )]',
+			label: '[$if($meta(label),$meta_sep(label, · ),$if3(%publisher%,%discogs_label%,))]',
+
+			// Playback stats
+			rating: '%rating%',
+			popularity: '%popularity%',
+
+			// Structure
+			totaldiscs: '[%totaldiscs%]',
+			discnumber: '$if(%discsubtitle%,[Disc %discnumber% – ]%discsubtitle%)',
+			tracknumber:'$pad(%tracknumber%,2,0)',
+			tracknumber_raw: '[%tracknumber%]',
+			discnumber_tracknumber: '%discnumber%|%tracknumber%',
+
+			// Audio technical
+			bitrate: '%bitrate%',
+			length_seconds_fp: '%length_seconds_fp%',
+			path_filesize: '%path%|%filesize%',
+			codec: '%codec%',
+			bitspersample: '$info(bitspersample)',
+			samplerate: '$info(samplerate)',
+			channel_mode: '$info(channel_mode)'
+		};
 	}
 
 
@@ -5731,7 +5990,7 @@ class LibExplorerData {
 	getAlbumRatingFromHandles(handles) {
 		if (handles.Count === 0) return 0;
 
-		const ratings = this.$('%rating%', handles);
+		const ratings = this.$(this.TF.rating, handles);
 		const validRatings = ratings.filter(r => r > 0);
 
 		return validRatings.length ? validRatings.reduce((a, b) => a + b, 0) / validRatings.length : 0;
@@ -5744,19 +6003,23 @@ class LibExplorerData {
 	 */
 	getAlbumsListFromHandles(handles) {
 		const albumMap = new Map();
-		const albumMeta = this.$('%album%', handles);
-		const yearMeta = this.$('%date%', handles);
+		const albumMeta = this.$(this.TF.album, handles);
+		const yearMeta = this.$(this.TF.date, handles);
 
 		for (let i = 0; i < handles.Count; i++) {
-			const h = handles[i];
-			const album = albumMeta[i];
-			const year = yearMeta[i];
-			const key = `${album}|${year}`;
-
+			const key = `${albumMeta[i]}|${yearMeta[i]}`;
 			if (!albumMap.has(key)) {
-				albumMap.set(key, { album, year, handles: new FbMetadbHandleList(), metadb: h });
+				albumMap.set(key, { album: albumMeta[i], year: yearMeta[i], handles: new FbMetadbHandleList(), metadb: handles[i] });
 			}
-			albumMap.get(key).handles.Add(h);
+			albumMap.get(key).handles.Add(handles[i]);
+		}
+
+		// * Filter out raw CD image file when both the image (no tracknumber) and CUE virtual tracks are present in the library.
+		for (const [key, entry] of albumMap) {
+			const withTrackNum = entry.handles.Convert().filter(h => this.$(this.TF.tracknumber_raw, h) !== '');
+			if (withTrackNum.length > 0) {
+				entry.handles = new FbMetadbHandleList(withTrackNum);
+			}
 		}
 
 		return Array.from(albumMap.values()).sort((a, b) => a.year.localeCompare(b.year));
@@ -5800,7 +6063,7 @@ class LibExplorerData {
 	 * @returns {FbMetadbHandleList} The handle list.
 	 */
 	getHandlesArtist(artistName) {
-		const query = `"%artist%" IS "${lib.ex.utils.escapeForQuery(artistName)}"`;
+		const query = `"${this.TF.album_artist}" IS "${lib.ex.utils.escapeForQuery(artistName)}"`;
 		return fb.GetQueryItems(fb.GetLibraryItems(), query);
 	}
 
@@ -5811,7 +6074,7 @@ class LibExplorerData {
 	 */
 	getHandlesArtists(artistNames) {
 		const escaped = artistNames.map(name => lib.ex.utils.escapeForQuery(name));
-		const query = escaped.map(n => `%artist% IS "${n}"`).join(' OR ');
+		const query = escaped.map(n => `${this.TF.album_artist} IS "${n}"`).join(' OR ');
 		return fb.GetQueryItems(fb.GetLibraryItems(), query);
 	}
 
@@ -5824,7 +6087,7 @@ class LibExplorerData {
 	getHandlesAlbum(artist, album) {
 		const safeArtist = lib.ex.utils.escapeForQuery(artist);
 		const safeAlbum = lib.ex.utils.escapeForQuery(album);
-		const query = `"%album artist%" IS "${safeArtist}" AND "%album%" IS "${safeAlbum}"`;
+		const query = `"${this.TF.album_artist}" IS "${safeArtist}" AND "${this.TF.album}" IS "${safeAlbum}"`;
 		return fb.GetQueryItems(fb.GetLibraryItems(), query);
 	}
 
@@ -5888,13 +6151,17 @@ class LibExplorerData {
 		if (handles.Count === 0) return [];
 
 		const tracks = [];
-		const titles = this.$('%title%', handles);
-		const ratings = this.$('%rating%', handles);
+		const trackArtists = this.$(this.TF.artist, handles);
+		const albumArtists = this.$(this.TF.album_artist, handles);
+		const titles = this.$(this.TF.title, handles);
+		const ratings = this.$(this.TF.rating, handles);
 
 		for (let i = 0; i < handles.Count; i++) {
 			tracks.push({
 				handle: handles[i],
 				index: i,
+				trackArtist: trackArtists[i],
+				albumArtist: albumArtists[i],
 				title: titles[i],
 				statistic: this.getTracksStatistic(new FbMetadbHandleList(handles[i]), this.getStatsSelected()),
 				rating: Number(ratings[i]) || 0,
@@ -5922,6 +6189,38 @@ class LibExplorerData {
 	}
 
 	/**
+	 * Sets album metadata for the current album.
+	 * @param {FbMetadbHandleList} handles - The track handles.
+	 */
+	setAlbumMeta(handles) {
+		handles.OrderByFormat(fb.TitleFormat(this.TF.discnumber_tracknumber), 1);
+		this.tracksList = this.getTracksFromHandles(handles);
+		this.albumRating = this.getAlbumRating();
+
+		// * Filter out raw CD image file when both the image (no tracknumber) and CUE virtual tracks are present in the library.
+		const trackNumMeta = this.tracksList.filter(track => this.$(this.TF.tracknumber_raw, track.handle) !== '');
+		const hasTrackNum = trackNumMeta.length > 0;
+
+		// * Only filter if we actually found some tracks with numbers, otherwise it's a pure CD image, keep to avoid null metadb issues
+		if (hasTrackNum) {
+			this.tracksList = trackNumMeta;
+		}
+
+		if (this.tracksList.length > 0) {
+			this.metadb = this.tracksList[0].handle;
+			this.artist = this.$(this.TF.album_artist, this.metadb);
+			this.album = this.$(this.TF.album, this.metadb);
+			this.albumRating = this.getAlbumRating();
+
+			for (const track of this.tracksList) {
+				const disc = this.$(this.TF.discnumber, track.handle);
+				const trackNum = hasTrackNum ? this.$(this.TF.tracknumber, track.handle) : (track.index + 1).toString().padStart(2, '0'); // Fallback if no tag
+				track.displayNum = (this.albumTotalDiscs > 1 && disc) ? `${disc}-${trackNum}` : trackNum;
+			}
+		}
+	}
+
+	/**
 	 * Sets header metadata for current view.
 	 * @param {boolean} [artistView] - The optional flag if this is an artist view.
 	 */
@@ -5931,7 +6230,7 @@ class LibExplorerData {
 		const cleanUpAndSeparate = (value) =>
 			value === '?' ? '' : value.replace(Regex.CommaSpace, ` ${Unicode.MiddleDot} `);
 
-		this.genre = cleanUpAndSeparate(this.$('%genre%', this.metadb));
+		this.genre = cleanUpAndSeparate(this.$(this.TF.genre, this.metadb));
 		this.genres = this.genre ? this.genre.split(` ${Unicode.MiddleDot} `).filter(Boolean) : [];
 
 		if (artistView) {
@@ -5940,9 +6239,9 @@ class LibExplorerData {
 		}
 
 		this.albumLength = this.tracksList.reduce((acc, track) => acc + track.handle.Length, 0);
-		this.albumTotalDiscs = Number(this.$('[%totaldiscs%]', this.metadb)) || 1;
-		this.year = this.$('%date%', this.metadb);
-		this.label = cleanUpAndSeparate(this.$('$if2(%label%,[%publisher%])', this.metadb));
+		this.albumTotalDiscs = Number(this.$(this.TF.totaldiscs, this.metadb)) || 1;
+		this.year = this.$(this.TF.date, this.metadb);
+		this.label = cleanUpAndSeparate(this.$(this.TF.label, this.metadb));
 		this.labels = this.label ? this.label.split(` ${Unicode.MiddleDot} `).filter(Boolean) : [];
 		this.infoText = [this.genre, this.label].filter(Boolean).join(` ${Unicode.MiddleDot} `);
 	}
@@ -5977,8 +6276,8 @@ class LibExplorerData {
 		}
 
 		lib.ex.cache.nowPlayingMeta = {
-			artist: this.$('%album artist%', handle) || this.$('%artist%', handle),
-			album: this.$('%album%', handle)
+			artist: this.$(this.TF.album_artist, handle),
+			album: this.$(this.TF.album, handle)
 		};
 	}
 
@@ -6014,8 +6313,8 @@ class LibExplorerData {
 		};
 
 		const updateTrackRating = (handle) => {
-			const newRating = Number(this.$('%rating%', handle)) || 0;
-			const trackId = this.$('%artist% - %album% - %title%', handle) || handle.RawPath;
+			const newRating = Number(this.$(this.TF.rating, handle)) || 0;
+			const trackId = this.$(this.TF.artist_album_title, handle) || handle.RawPath;
 			pl.track_ratings.set(trackId, newRating);
 			return newRating;
 		};
@@ -6051,16 +6350,19 @@ class LibExplorerData {
 		let needsPlaylistUpdate = false;
 
 		for (const handle of handles) {
-			const trackId = this.$('%artist% - %album% - %title%', handle) || handle.RawPath;
-			const newRating = Number(this.$('%rating%', handle)) || 0;
+			const trackId = this.$(this.TF.artist_album_title, handle) || handle.RawPath;
+			const newRating = Number(this.$(this.TF.rating, handle)) || 0;
 			pl.track_ratings.set(trackId, newRating);
 			needsPlaylistUpdate = true;
 
 			if (lib.ex.main.isAlbumView) {
 				const index = this.tracksList.findIndex(t => t.handle.Compare(handle));
 				if (index !== -1) {
-					this.tracksList[index].rating = newRating;
-					this.tracksList[index].statistic = this.getTracksStatistic(new FbMetadbHandleList(handle), this.getStatsSelected());
+					const track = this.tracksList[index];
+					track.rating = newRating;
+					track.statistic = this.getTracksStatistic(new FbMetadbHandleList(handle), this.getStatsSelected());
+					track.title = this.$(this.TF.title, handle);
+					track.duration = utils.FormatDuration(handle.Length);
 					needsUpdate = true;
 				}
 			}
@@ -6277,14 +6579,14 @@ class LibExplorerData {
 	 * @returns {string} The formatted bitrate.
 	 */
 	getStatsBitrate(handleList, label) {
-		const bitrates = this.$('%bitrate%', handleList);
+		const bitrates = this.$(this.TF.bitrate, handleList);
 		if (!bitrates.length) return '';
 		let value;
 
 		if (bitrates.length === 1) {
 			value = bitrates[0];
 		} else {
-			const lengths = this.$('%length_seconds_fp%', handleList);
+			const lengths = this.$(this.TF.length_seconds_fp, handleList);
 			let totalBits = 0;
 			let totalLen = 0;
 
@@ -6343,7 +6645,7 @@ class LibExplorerData {
 	 * @returns {string} The formatted size.
 	 */
 	getStatsSize(handleList, label) {
-		const bytes = this.$('%path%|%filesize%', handleList);
+		const bytes = this.$(this.TF.path_filesize, handleList);
 		if (!bytes.length) return '';
 
 		const sizes = bytes.map(v => parseInt(v.split('|').pop(), 10));
@@ -6359,7 +6661,7 @@ class LibExplorerData {
 	 * @returns {string|number} The formatted rating.
 	 */
 	getStatsRating(handleList, label) {
-		const values = lib.pop.getNumbers(this.$('%rating%', handleList));
+		const values = lib.pop.getNumbers(this.$(this.TF.rating, handleList));
 		if (!values.length) return '';
 
 		const sum = values.map(parseFloat).reduce((a, b) => a + b, 0);
@@ -6375,7 +6677,7 @@ class LibExplorerData {
 	 * @returns {string|number} The formatted popularity.
 	 */
 	getStatsPopularity(handleList, label) {
-		const values = lib.pop.getNumbers(this.$('%popularity%', handleList));
+		const values = lib.pop.getNumbers(this.$(this.TF.popularity, handleList));
 
 		if (values.length > 0) {
 			const sum = values.map(parseFloat).reduce((a, b) => a + b, 0);
@@ -6447,7 +6749,8 @@ class LibExplorerData {
 			date: () => this.getStatsDate(libSet.tfDate, handleList, label, 'First release', true),
 			added: () => this.getStatsDate(libSet.tfAdded, handleList, label, 'Added', true),
 			firstPlayed: () => this.getStatsDate(libSet.tfFirstPlayed, handleList, label, 'First played', true),
-			lastPlayed: () => this.getStatsDate(libSet.tfLastPlayed, handleList, label, 'Last played', false)
+			lastPlayed: () => this.getStatsDate(libSet.tfLastPlayed, handleList, label, 'Last played', false),
+			none: () => ''
 		};
 
 		return stats[statsType]();
@@ -6908,7 +7211,8 @@ class LibExplorerMenu {
 			'date': 'Date',
 			'added': 'Added',
 			'firstPlayed': 'First Played',
-			'lastPlayed': 'Last Played'
+			'lastPlayed': 'Last Played',
+			'none': 'None'
 		};
 
 		const stats = lib.ex.data.stats.slice();
@@ -7452,7 +7756,16 @@ class LibExplorerUtils {
 	 * @returns {number} The Y position.
 	 */
 	getAlbumTrackY(trackIndex) {
-		return lib.ex.main.ui.viewportY - lib.ex.sbar.scrollCurrent + trackIndex * lib.ex.album.trackHeight;
+		let cumY = 0;
+
+		for (const item of lib.ex.album.discLayoutItems) {
+			if (item.type === 'track' && item.trackIndex === trackIndex) {
+				return lib.ex.main.ui.viewportY + cumY - lib.ex.sbar.scrollCurrent;
+			}
+			cumY += item.height;
+		}
+
+		return lib.ex.main.ui.viewportY;
 	}
 
 	/**
@@ -7564,14 +7877,53 @@ class LibExplorerUtils {
 			return -1;
 		}
 
+		// Details view
+		if (lib.ex.main.isDetailsView) {
+			let cumY = 0;
+			const relativeY = y - lib.ex.main.ui.viewportY + lib.ex.sbar.scrollCurrent;
+
+			for (let i = 0; i < lib.ex.data.detailsList.length; i++) {
+				const h = lib.ex.data.detailsList[i].height || lib.ex.album.trackHeight;
+				if (relativeY >= cumY && relativeY < cumY + h) return i;
+				cumY += h;
+			}
+
+			return -1;
+		}
+
+		// Album view
 		let cumY = 0;
 		const relativeY = y - lib.ex.main.ui.viewportY + lib.ex.sbar.scrollCurrent;
-		const list = lib.ex.main.isDetailsView ? lib.ex.data.detailsList : lib.ex.data.tracksList;
 
-		for (let i = 0; i < list.length; i++) {
-			const h = lib.ex.main.isDetailsView ? (list[i].height || lib.ex.album.trackHeight) : lib.ex.album.trackHeight;
-			if (relativeY >= cumY && relativeY < cumY + h) return i;
-			cumY += h;
+		for (const item of lib.ex.album.discLayoutItems) {
+			if (relativeY >= cumY && relativeY < cumY + item.height) {
+				return item.type === 'track' ? item.trackIndex : -1; // -1 = disc header
+			}
+			cumY += item.height;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Gets the disc group index under the mouse, or -1 if not over a disc header.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 * @returns {number} The disc group index or -1.
+	 */
+	getHoveredDiscHeaderIndex(x, y) {
+		if (!lib.ex.main.isAlbumView || x < lib.ex.main.ui.column.x || y < lib.ex.main.ui.viewportY) {
+			return -1;
+		}
+
+		let cumY = 0;
+		const relativeY = y - lib.ex.main.ui.viewportY + lib.ex.sbar.scrollCurrent;
+
+		for (const item of lib.ex.album.discLayoutItems) {
+			if (relativeY >= cumY && relativeY < cumY + item.height) {
+				return item.type === 'disc' ? item.discIndex : -1;
+			}
+			cumY += item.height;
 		}
 
 		return -1;
@@ -7644,7 +7996,7 @@ class LibExplorerUtils {
 	 */
 	getScrollContentTotalHeight() {
 		if (lib.ex.main.isAlbumView) {
-			return lib.ex.data.tracksList.length * lib.ex.album.trackHeight;
+			return lib.ex.album.discLayoutItems.reduce((sum, item) => sum + item.height, 0);
 		}
 		else if (lib.ex.main.isArtistOrSimilarView) {
 			const numRows = Math.ceil((lib.ex.main.isSimilarArtistView ? lib.ex.data.similarArtistList.length : lib.ex.data.albumsList.length) / lib.ex.main.grid.columns);
@@ -9013,7 +9365,7 @@ class LibExplorerWeb {
 			}
 
 			const track = itemsToFetch.shift();
-			const trackArtist = lib.ex.data.$('%artist%', track.handle);
+			const trackArtist = lib.ex.data.$(lib.ex.data.TF.album_artist, track.handle);
 			const trackArtistCleaned = lib.ex.utils.cleanAlbumTitle(track.title);
 
 			this.lastfmFetchPopularity('tracks', trackArtist, trackArtistCleaned, (playcount, error) => {
@@ -9509,9 +9861,8 @@ class LibExplorerCallbacks {
 		} = lib.ex.data.updateStatsForHandles(handleList);
 
 		if (needsUpdate) {
-			if (lib.ex.main.isAlbumView) {
-				lib.ex.data.albumRating = lib.ex.data.getAlbumRating();
-			}
+			lib.ex.data.setHeaderMeta(false);
+			lib.ex.data.setAlbumMeta(handleList);
 			lib.ex.main.setMetrics();
 			lib.ex.utils.repaintColumn();
 		}
@@ -9600,6 +9951,7 @@ class LibExplorerCallbacks {
 	 * @returns {boolean} True to suppress the default context menu, otherwise depends on internal conditions.
 	 */
 	on_mouse_rbtn_up(x, y) {
+		lib.ex.control.handleRightClickSelection(x, y);
 		lib.men.items = lib.ex.data.getHandlesFromSelected();
 		lib.men.show_context = true;
 		libMenu.load(x, y);

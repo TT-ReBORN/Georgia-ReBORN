@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -363,9 +363,7 @@ class TopMenuOptions {
 					grm.day.stopTimer();
 				}
 
-				await ExecuteAndWait(() => {
-					grm.ui.setDesign(design);
-				}, () => !grm.ui.initThemeRunning);
+				grm.ui.setDesign(design);
 
 				if (design === 'modern_day_night') {
 					grm.day.setDayNightCustomTimeRange(true);
@@ -2812,8 +2810,8 @@ class TopMenuOptions {
 			updateLibraryExplorerSettings();
 		});
 		libraryExplorerArtworkMenu.addSeparator();
-		libraryExplorerArtworkMenu.addToggleItem('Full theme color change on new artwork', libSet, 'fullThemeColorChange', () => {
-			if (!libSet.fullThemeColorChange) {
+		libraryExplorerArtworkMenu.addToggleItem('Full theme color change on new artwork', libSet, 'explorerFullThemeColorChange', () => {
+			if (!libSet.explorerFullThemeColorChange) {
 				updateLibraryExplorerSettings();
 				return;
 			}
@@ -2822,9 +2820,27 @@ class TopMenuOptions {
 			const msgFb = grm.msg.getMessage('menu', 'explorerFullThemeColorChange', true);
 
 			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
-				libSet.fullThemeColorChange = confirmed;
+				libSet.explorerFullThemeColorChange = confirmed;
 				updateLibraryExplorerSettings();
 			});
+		});
+		libraryExplorerArtworkMenu.addSeparator();
+		libraryExplorerArtworkMenu.addToggleItem('Artwork cycle', libSet, 'explorerArtworkCycle', () => {
+			updateLibraryExplorerSettings();
+			if (libSet.explorerArtworkCycle) {
+				lib.ex.main.artworkCycleStop();
+				lib.ex.main.artworkCycleStart();
+			} else {
+				lib.ex.main.artworkCycleStop();
+			}
+		});
+		libraryExplorerArtworkMenu.createRadioSubMenu('Artwork cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], libSet.explorerArtworkCycleTime, [5000, 10000, 15000, 30000, 60000], (time) => {
+			libSet.explorerArtworkCycleTime = time;
+			updateLibraryExplorerSettings();
+			if (libSet.explorerArtworkCycle) {
+				lib.ex.main.artworkCycleStop();
+				lib.ex.main.artworkCycleStart();
+			}
 		});
 		libraryExplorerArtworkMenu.appendTo(libraryExplorerMenu);
 
@@ -2858,6 +2874,12 @@ class TopMenuOptions {
 			updateLibraryExplorerSettings();
 		});
 		libraryExplorerDisplayMenu.addToggleItem('Show track rating grid', libSet, 'explorerShowTrackRatingGrid', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.addToggleItem('Show artist name on difference', libSet, 'explorerShowDifferentArtist', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.addToggleItem('Show disc sub-header', libSet, 'explorerShowDiscHeader', () => {
 			updateLibraryExplorerSettings();
 		});
 		libraryExplorerDisplayMenu.appendTo(libraryExplorerMenu);

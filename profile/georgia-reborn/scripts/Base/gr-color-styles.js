@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -354,8 +354,8 @@ class ColorStyles {
 	 * Sets the style blend images for the album art based on current theme settings.
 	 * Calculates optimal alpha and blur values, then creates the processed blend image.
 	 * Only runs when grSet.styleBlend, grSet.styleBlend2, or blend progress bar is enabled.
-	 * @param {GdiBitmap} image - The album art image to analyze.
-	 * @param {Array} cache - The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls.
+	 * @param {GdiBitmap} [image] - The album art image to analyze.
+	 * @param {Array} [cache] - The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls.
 	 */
 	setStyleBlend(image = grm.ui.albumArt, cache = grm.ui.cachedAlbumArtColors) {
 		if (!image || (!grSet.styleBlend && !grSet.styleBlend2 && grSet.styleProgressBarFill !== 'blend')) {
