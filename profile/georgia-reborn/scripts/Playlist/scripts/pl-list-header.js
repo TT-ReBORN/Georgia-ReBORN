@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    17-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1243,8 +1243,9 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	 * @returns {string} The information about the group.
 	 */
 	getGroupInfoString(radio, hasGenre) {
+		const meta = this.group_info_meta;
 		const albumKey = PlaylistHeader.get_album_key(this.metadb);
-		const cacheKey = `${albumKey}_${radio ? 1 : 0}_${hasGenre ? 1 : 0}`;
+		const cacheKey = `${albumKey}_${radio ? 1 : 0}_${hasGenre ? 1 : 0}_${meta.codec}_${meta.encoding}_${meta.codec_profile}`;
 
 		// * Cache hit: immediate return if valid
 		if (pl.header_group_info.has(cacheKey)) {
@@ -1252,7 +1253,6 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		}
 
 		// * Cache miss: compute fully
-		const meta = this.group_info_meta;
 		const showSample = meta.bitspersample > 16 || meta.samplerate > 44100 || grCfg.settings.playlistShowBitSampleAlways;
 		const sample = showSample ? ` ${meta.bitspersample ? `${meta.bitspersample}bit/` : ''}${meta.samplerate / 1000}khz` : '';
 		const codec = this.getGroupInfoMetaCodec(meta, sample);
