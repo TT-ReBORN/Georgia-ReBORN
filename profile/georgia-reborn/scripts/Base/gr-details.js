@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-05-2026                                              * //
+// * Last change:    18-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2084,7 +2084,9 @@ class Details {
 	setDiscArtShadow() {
 		const isDisabled = !grm.ui.displayDetails || !grSet.displayDiscArt || grSet.layout === 'compact';
 		const isMissing = !this.discArt || !grm.ui.hasArtwork && !grm.ui.noAlbumArtStub;
-		const isCached = this.discArtShadowImg && this.discArtShadowImg.image && this.discArtShadowImg.size === this.discArtSize.h;
+		const isCached = this.discArtShadowImg && this.discArtShadowImg.image
+			&& this.discArtShadowImg.size === this.discArtSize.h
+			&& this.discArtShadowImg.x === this.discArtSize.x;
 
 		if (isDisabled || isMissing || isCached) return;
 
@@ -2121,6 +2123,7 @@ class Details {
 
 			this.discArtShadowImg.image = newShadowImg;
 			this.discArtShadowImg.size = this.discArtSize.h;
+			this.discArtShadowImg.x = this.discArtSize.x;
 		}
 
 		grm.debug.setDebugProfile(false, 'print', 'setDiscArtShadow');

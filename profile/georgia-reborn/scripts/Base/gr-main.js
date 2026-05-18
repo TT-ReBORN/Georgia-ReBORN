@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    18-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4089,15 +4089,8 @@ class MainUI {
 			}
 		}
 
-		// Update colors for dynamic themes
-		if (['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
-			this.newTrackFetchingArtwork = true;
-			grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
-			this.initTheme();
-			grm.debug.debugLog('\n>>> initTheme => on_mouse_wheel <<<\n');
-		}
-
-		// Update positions
+		// Update colors and positions
+		this.updateAlbumArtThemeColors();
 		this.resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
 		if (grSet.panelWidthAuto && this.albumArtSize.w !== this.albumArtSize.h) { // Re-adjust playlist if artwork size changes
 			this.setPlaylistSize();
@@ -4126,17 +4119,12 @@ class MainUI {
 		setTimeout(() => {
 			this.loadAlbumArtFromList(this.albumArtIndex);
 			this.checkAlbumArtFromListDiscArt();
-			if (['reborn', 'random'].includes(grSet.theme) || grSet.styleBlackAndWhiteReborn || grSet.styleBlackReborn) {
-				this.newTrackFetchingArtwork = true;
-				grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
-				this.initTheme();
-				grm.debug.debugLog('\n>>> initTheme => Album cover context menu => Display next/previous artwork <<<\n');
-			}
+			this.updateAlbumArtThemeColors();
+			this.resizeArtwork(true);
 			window.Repaint();
 		}, 1);
 
 		grm.details.clearCache('metrics');
-		this.resizeArtwork(true); // Needed to readjust discArt shadow size if artwork size changes
 		grm.debug.repaintWindow();
 
 		if (!timer) return;
@@ -4502,6 +4490,23 @@ class MainUI {
 			this.ww * 0.5;
 
 		this.albumArtSize.h = noAlbumArtSize;
+	}
+
+	/**
+	 * Updates theme colors when cycling through album art images for dynamic themes.
+	 */
+	updateAlbumArtThemeColors() {
+		if (!['reborn', 'random'].includes(grSet.theme) &&
+			!grSet.styleBlackAndWhiteReborn && !grSet.styleBlackReborn) {
+			return;
+		}
+
+		this.newTrackFetchingArtwork = true;
+		this.clearCache('albumArtColors');
+		grm.colorManager.setAlbumArtThemeColors(this.albumArt);
+
+		this.initTheme();
+		grm.debug.debugLog('\n>>> initTheme => updateAlbumArtThemeColors <<<\n');
 	}
 	// #endregion
 
