@@ -248,7 +248,7 @@ class BioServer {
 
 					if (this.expired(lfm_bio.pth, this.exp, '', text, 0) && !custBio || force == 2 && !custBio || force == 1) {
 						const dl_lfm_bio = new BioDldLastfm(() => dl_lfm_bio.onStateChange());
-						dl_lfm_bio.search(this.artist, lfm_bio.fo, lfm_bio.pth, force);
+						dl_lfm_bio.search($Bio.normalizeArtist(this.artist), lfm_bio.fo, lfm_bio.pth, force);
 					}
 				}
 
@@ -265,7 +265,7 @@ class BioServer {
 
 						if (this.expired(wiki_bio.pth, this.exp, '', text, 2) && !custBio || force == 2 && !custBio || force == 1) {
 							const dl_wiki_bio = new BioDldWikipedia(() => dl_wiki_bio.onStateChange());
-							dl_wiki_bio.search(0, this.artist, '', album, title, stndBio ? 0 : '!stndBio', wiki_bio.fo, wiki_bio.pth, art.focus, force);
+							dl_wiki_bio.search(0, $Bio.normalizeArtist(this.artist), '', album, title, stndBio ? 0 : '!stndBio', wiki_bio.fo, wiki_bio.pth, art.focus, force);
 						}
 					}
 				}
@@ -281,7 +281,7 @@ class BioServer {
 				if (!artist_done) {
 					if (bioCfg.dlArtImg) {
 						const dl_art = new BioDldArtImages();
-						dl_art.run(this.artist, force, art, stndBio, supCache);
+						dl_art.run($Bio.normalizeArtist(this.artist), force, art, stndBio, supCache);
 					} else bio.timer.decelerating();
 
 					if (bioCfg.lfmSim && stndBio) {
@@ -299,7 +299,7 @@ class BioServer {
 
 						if (this.expired(pth_sim, this.exp) || !valid || force) {
 							const dl_lfm_sim = new BioLfmSimilarArtists(() => dl_lfm_sim.onStateChange());
-							dl_lfm_sim.search(this.artist, '', '', len > 115 ? 249 : 100, fo_sim, pth_sim);
+							dl_lfm_sim.search($Bio.normalizeArtist(this.artist), '', '', len > 115 ? 249 : 100, fo_sim, pth_sim);
 						}
 					}
 
@@ -338,7 +338,7 @@ class BioServer {
 
 				if (force || this.expired(am_bio.pth, this.exp, `Bio ${bioCfg.partialMatch} ${this.artist} - ${title}`, false) && !$Bio.open(am_bio.pth).includes('Custom Biography')) {
 					const dl_am_bio = new BioDldAllmusic();
-					const url = title ? `${bio.server.url.am}songs/${encodeURIComponent(`${title} ${this.artist}`)}` : `${bio.server.url.am}artists/${encodeURIComponent(this.artist)}`;
+					const url = title ? `${bio.server.url.am}songs/${encodeURIComponent(`${title} ${$Bio.normalizeArtist(this.artist)}`)}` : `${bio.server.url.am}artists/${encodeURIComponent($Bio.normalizeArtist(this.artist))}`;
 					dl_am_bio.init(url, 'https://allmusic.com', title, this.artist, am_bio.fo, am_bio.pth, force);
 				}
 				break;

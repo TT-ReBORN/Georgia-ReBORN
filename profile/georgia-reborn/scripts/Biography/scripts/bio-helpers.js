@@ -238,6 +238,18 @@ class BioHelpers {
 		} catch (e) {}
 	}
 
+	normalizeArtist(n) {
+		// Converts "Bandname, A/An/The" -> "A/An/The Bandname"
+		const prefixMatch = n.match(Regex.TextPrefixAAnThe);
+		if (prefixMatch) return `${prefixMatch[2]} ${prefixMatch[1]}`;
+
+		// Converts "Surname, Firstname"-> "Firstname Surname"
+		const nameMatch = n.match(Regex.TextNameInverted);
+		if (nameMatch) return `${nameMatch[2]} ${nameMatch[1]}`;
+
+		return n;
+	}
+
 	objHasOwnProperty(obj, key) {
 		return Object.prototype.hasOwnProperty.call(obj, key);
 	}

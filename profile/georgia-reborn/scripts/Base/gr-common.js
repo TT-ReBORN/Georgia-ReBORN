@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    18-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1021,9 +1021,9 @@ const Unicode = {
  * @property {RegExp} TextDollarParen - Matches `$` to `(` for replacements `/\$.*?\(/gi`.
  * @property {RegExp} TextInPadded - Matches "in" with optional spaces `/\s*in\s/`.
  * @property {RegExp} TextJunior - Matches ", Jr." suffix `/, Jr\./g`.
- * @property {RegExp} TextNonAscii - Matches non-ASCII characters `/[^\u0000-\u007E]/g`.
+ * @property {RegExp} TextNameInverted - Matches inverted "Surname, Firstname" name format `/^([^,]+),\s+([^,]+)$/`.
  * @property {RegExp} TextPhD - Matches 'Ph.D.' `/Ph\.D\./g`.
- * @property {RegExp} TextPrefixAAnThe - Matches leading `The ` (case-insens.) `/^(.+),\s+(A|An|The)$/i`.
+ * @property {RegExp} TextPrefixAAnThe - Matches inverted "Bandname, A/An/The" article suffix format `/^(.+),\s+(A|An|The)$/i`.
  * @property {RegExp} TextPrefixThe - Matches leading `The ` (case-insens.) `/^[Tt]he\s+/i`.
  * @property {RegExp} TextPrefixTheThe - Matches exact string "The The" case-insensitively `/^The The$/i`.
  * @property {RegExp} TextTatu - Matches "t.A.T.u." typo `/t\.\r\n\r\nA.T.u./g`.
@@ -1462,6 +1462,7 @@ const Regex = {
 	TextDollarParen: /\$.*?\(/gi,
 	TextInPadded: /\s*in\s/,
 	TextJunior: /, Jr\./g,
+	TextNameInverted: /^([^,]+),\s+([^,]+)$/,
 	TextNonAscii: /[^\u0000-\u007E]/g,
 	TextPhD: /Ph\.D\./g,
 	TextPrefixAAnThe: /^(.+),\s+(A|An|The)$/i,
