@@ -1512,7 +1512,10 @@ class ConfigDefaults {
 			explorerStatsSimilar: 'rating',
 			librarySource: 1,
 			librarySourceFixedPlaylist: false,
-			librarySourceFixedPlaylistName: ''
+			librarySourceFixedPlaylistName: '',
+			libraryViewBy: 1,
+			libraryViews: JSON.stringify([]),
+			libraryFilters: JSON.stringify([])
 		};
 
 		/** @public @type {object} Options > Library settings config name dscription. */
@@ -1618,7 +1621,10 @@ class ConfigDefaults {
 			explorerStatsSimilar: 'Values: "bitrate", "duration", "size", "rating", "popularity", "date", "queue", "playcount", "trackcount", "firstPlayed", "lastPlayed", "added", "none" - Options > Library > Explorer > Stats > Similar artist view',
 			librarySource: 'Values: 0, 1 - Options > Library > Source',
 			librarySourceFixedPlaylist: 'Values: true, false - not in Options, managed by Library source menu',
-			librarySourceFixedPlaylistName: 'Values: "selected playlist name" - not in Options, managed by Library source menu'
+			librarySourceFixedPlaylistName: 'Values: "selected playlist name" - not in Options, managed by Library source menu',
+			libraryViewBy: 'Currently active library view index (libSet.viewBy) - not in Options, managed by Library views menu',
+			libraryViews: 'JSON string of all saved library view entries (Name // Pattern) - not in Options, managed by Library views config menu',
+			libraryFilters: 'JSON string of all saved library filter entries (Name // Query)- not in Options, managed by Library filters config menu',
 		};
 
 		/** @public @type {object} Options > Library settings config header dscription. */

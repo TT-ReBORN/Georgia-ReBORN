@@ -714,6 +714,55 @@ class ThemeSettingsManager {
 	// * PRIVATE METHODS * //
 	// #region PRIVATE METHODS
 	/**
+	 * Loads Library Filters or Views from a previously saved JSON string.
+	 * Clears existing items first, then writes the saved values back into the correct property slots (01–99).
+	 * @param {'filters' | 'views'} type - The type of library items to restore.
+	 * @param {string} [jsonData] - The JSON string containing the saved items.
+	 * @param {string} prefix - The base prefix for the property keys ("Panel Library - Filter" or "Panel Library - View").
+	 * @private
+	 */
+	_loadLibraryFiltersAndViews(type, jsonData, prefix) {
+		if (!jsonData) return;
+
+		try {
+			const items = JSON.parse(jsonData);
+			const isView = type === 'views';
+
+			if (!items.length) return;
+			lib.panel.clear(type);
+
+			items.forEach((val, idx) => {
+				const key = `${prefix} ${String(idx + 1).padStart(2, '0')}: Name // ${isView ? 'Pattern' : 'Query'}`;
+				libSet.set(key, val);
+			});
+		}
+		catch (e) {
+			console.log(`Georgia-ReBORN: Could not restore library ${type} from config.`, e);
+		}
+	}
+
+	/**
+	 * Saves all non-empty Library Filters or Views from the properties.
+	 * Used when saving configuration to store user-defined views/filters (slots 01–99).
+	 * @param {'filters' | 'views'} type - The type of library items to retrieve.
+	 * @param {string} prefix - The base prefix for the property keys ("Panel Library - Filter" or "Panel Library - View").
+	 * @returns {string[]} The array of non-empty view/filter strings.
+	 * @private
+	 */
+	_saveLibraryFiltersAndViews(type, prefix) {
+		const items = [];
+		const isView = type === 'views';
+
+		for (let i = 1; i < 100; i++) {
+			const key = `${prefix} ${String(i).padStart(2, '0')}: Name // ${isView ? 'Pattern' : 'Query'}`;
+			const val = libSet.get(key);
+			if (val) items.push(val);
+		}
+
+		return items;
+	}
+
+	/**
 	 * Sets an individual setting based on the config args from the other set methods as follows:
 	 * - `saveCfg`: configObj.keyname = prefObj.keyname;
 	 * - `loadCfg`: prefObj.keyname = configObj.keyname;
@@ -1310,13 +1359,28 @@ class ThemeSettingsManager {
 			grCfg.themeLibrary.librarySource = libSet.libSource;
 			grCfg.themeLibrary.librarySourceFixedPlaylist = libSet.fixedPlaylist;
 			grCfg.themeLibrary.librarySourceFixedPlaylistName = libSet.fixedPlaylistName;
-		} else {
+			grCfg.themeLibrary.libraryViewBy = libSet.viewBy;
+
+			grCfg.themeLibrary.libraryFilters = JSON.stringify(
+				this._saveLibraryFiltersAndViews('filters', 'Panel Library - Filter')
+			);
+			grCfg.themeLibrary.libraryViews = JSON.stringify(
+				this._saveLibraryFiltersAndViews('views', 'Panel Library - View')
+			);
+		}
+		else {
 			grSet.libraryLayout = grSet.libraryDesign === 'flowMode' ? 'full' : this.loadCfg ? grCfg.themeLibrary.libraryLayout : 'normal';
 			libSet.theme = grSet.libraryTheme = this.loadCfg ? grCfg.themeLibrary.libraryTheme : 0;
 			grSet.savedLibraryThumbnailSize = libSet.thumbNailSize = grSet.libraryThumbnailSize = this.loadCfg ? grCfg.themeLibrary.libraryThumbnailSize : 'auto';
 			libSet.libSource = grSet.librarySource = this.loadCfg ? grCfg.themeLibrary.librarySource : 1;
 			libSet.fixedPlaylist = grSet.librarySourceFixedPlaylist = this.loadCfg ? grCfg.themeLibrary.librarySourceFixedPlaylist : false;
 			libSet.fixedPlaylistName = grSet.librarySourceFixedPlaylistName = this.loadCfg ? grCfg.themeLibrary.librarySourceFixedPlaylistName : '';
+			libSet.viewBy =  this.loadCfg ? grCfg.themeLibrary.libraryViewBy : 1;
+
+			if (this.loadCfg) {
+				this._loadLibraryFiltersAndViews('filters', grCfg.themeLibrary.libraryFilters, 'Panel Library - Filter');
+				this._loadLibraryFiltersAndViews('views', grCfg.themeLibrary.libraryViews, 'Panel Library - View');
+			}
 		}
 
 		this._setSetting(grSet, 'libraryLayoutFullPreset', grCfg.themeLibrary, 'libraryLayoutFullPreset', true);
