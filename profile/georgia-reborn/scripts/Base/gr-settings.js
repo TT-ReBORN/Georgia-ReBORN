@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    20-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1374,6 +1374,46 @@ class ThemeSettingsManager {
 		this._setSetting(libSet, 'yearBeforeAlbum', grCfg.themeLibrary, 'yearBeforeAlbum', true);
 		this._setSetting(libSet, 'albumArtViewBy', grCfg.themeLibrary, 'albumArtViewBy', 0);
 		this._setSetting(libSet, 'treeViewBy', grCfg.themeLibrary, 'treeViewBy', 0);
+		this._setSetting(libSet, 'explorerAlbumImgScaling', grCfg.themeLibrary, 'explorerAlbumImgScaling', 'cropped');
+		this._setSetting(libSet, 'explorerAlbumThumbImgScaling', grCfg.themeLibrary, 'explorerAlbumThumbImgScaling', 'cropped');
+		this._setSetting(libSet, 'explorerArtistImgScaling', grCfg.themeLibrary, 'explorerArtistImgScaling', 'cropped');
+		this._setSetting(libSet, 'explorerArtistThumbImgScaling', grCfg.themeLibrary, 'explorerArtistThumbImgScaling', 'cropped');
+		this._setSetting(libSet, 'explorerFullThemeColorChange', grCfg.themeLibrary, 'explorerFullThemeColorChange', true);
+		this._setSetting(libSet, 'explorerArtworkCycle', grCfg.themeLibrary, 'explorerArtworkCycle', true);
+		this._setSetting(libSet, 'explorerArtworkCycleTime', grCfg.themeLibrary, 'explorerArtworkCycleTime', 15000);
+		this._setSetting(libSet, 'explorerPlaybackKeepPlaylist', grCfg.themeLibrary, 'explorerPlaybackKeepPlaylist', true);
+		this._setSetting(libSet, 'explorerWheelOutsideClose', grCfg.themeLibrary, 'explorerWheelOutsideClose', true);
+		this._setSetting(libSet, 'explorerTreeView', grCfg.themeLibrary, 'explorerTreeView', true);
+		this._setSetting(libSet, 'explorerTabIconsOnly', grCfg.themeLibrary, 'explorerTabIconsOnly', false);
+		this._setSetting(libSet, 'explorerTabIconNowPlaying', grCfg.themeLibrary, 'explorerTabIconNowPlaying', false);
+		this._setSetting(libSet, 'explorerExternalLinkIcon', grCfg.themeLibrary, 'explorerExternalLinkIcon', true);
+		this._setSetting(libSet, 'explorerAlbumYearType', grCfg.themeLibrary, 'explorerAlbumYearType', 'overlay');
+		this._setSetting(libSet, 'explorerShowTrackRatingGrid', grCfg.themeLibrary, 'explorerShowTrackRatingGrid', true);
+		this._setSetting(libSet, 'explorerShowDifferentArtist', grCfg.themeLibrary, 'explorerShowDifferentArtist', false);
+		this._setSetting(libSet, 'explorerShowDiscHeader', grCfg.themeLibrary, 'explorerShowDiscHeader', true);
+		this._setSetting(libSet, 'explorerAlbumImageDLAuto', grCfg.themeLibrary, 'explorerAlbumImageDLAuto', true);
+		this._setSetting(libSet, 'explorerAlbumImageDLQuality', grCfg.themeLibrary, 'explorerAlbumImageDLQuality', 'original');
+		this._setSetting(libSet, 'explorerAlbumImageNameMoveToDir', grCfg.themeLibrary, 'explorerAlbumImageNameMoveToDir', 'folder');
+		this._setSetting(libSet, 'explorerAlbumImageAutoAction', grCfg.themeLibrary, 'explorerAlbumImageAutoAction', 'move');
+		this._setSetting(libSet, 'explorerArtistImageDLAuto', grCfg.themeLibrary, 'explorerArtistImageDLAuto', true);
+		this._setSetting(libSet, 'explorerArtistImageDLCount', grCfg.themeLibrary, 'explorerArtistImageDLCount', 10);
+		this._setSetting(libSet, 'explorerArtistImageDLQuality', grCfg.themeLibrary, 'explorerArtistImageDLQuality', 'original');
+		this._setSetting(libSet, 'explorerMissingReleasesImageDLAuto', grCfg.themeLibrary, 'explorerMissingReleasesImageDLAuto', true);
+		this._setSetting(libSet, 'explorerSimilarArtistImageDLAuto', grCfg.themeLibrary, 'explorerSimilarArtistImageDLAuto', true);
+		this._setSetting(libSet, 'explorerMissingReleasesFetchSource', grCfg.themeLibrary, 'explorerMissingReleasesFetchSource', 'discogs');
+		this._setSetting(libSet, 'explorerPopularityFetchSource', grCfg.themeLibrary, 'explorerPopularityFetchSource', 'lastfm');
+		this._setSetting(libSet, 'explorerSimilarArtistView', grCfg.themeLibrary, 'explorerSimilarArtistView', 'local');
+		this._setSetting(libSet, 'explorerSimilarArtistFetchSource', grCfg.themeLibrary, 'explorerSimilarArtistFetchSource', 'lastfm');
+		this._setSetting(libSet, 'explorerSimilarArtistFetchLimitExternal', grCfg.themeLibrary, 'explorerSimilarArtistFetchLimitExternal', 50);
+		this._setSetting(libSet, 'explorerSortDirAlbum', grCfg.themeLibrary, 'explorerSortDirAlbum', 'ASC');
+		this._setSetting(libSet, 'explorerSortDirArtist', grCfg.themeLibrary, 'explorerSortDirArtist', 'ASC');
+		this._setSetting(libSet, 'explorerSortDirSimilar', grCfg.themeLibrary, 'explorerSortDirSimilar', 'DSC');
+		this._setSetting(libSet, 'explorerSortAlbum', grCfg.themeLibrary, 'explorerSortAlbum', 'Track number');
+		this._setSetting(libSet, 'explorerSortArtist', grCfg.themeLibrary, 'explorerSortArtist', 'Year');
+		this._setSetting(libSet, 'explorerSortSimilar', grCfg.themeLibrary, 'explorerSortSimilar', 'Similarity');
+		this._setSetting(libSet, 'explorerStatsAlbum', grCfg.themeLibrary, 'explorerStatsAlbum', 'playcount');
+		this._setSetting(libSet, 'explorerStatsArtist', grCfg.themeLibrary, 'explorerStatsArtist', 'rating');
+		this._setSetting(libSet, 'explorerStatsSimilar', grCfg.themeLibrary, 'explorerStatsSimilar', 'rating');
 	}
 
 	/**

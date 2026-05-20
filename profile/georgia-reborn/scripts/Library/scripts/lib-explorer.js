@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    20-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1704,6 +1704,7 @@ class LibExplorerMain {
 		// * DISPLAY * //
 		this.state.explorerTreeView = libSet.explorerTreeView;
 		lib.ex.button.tabs.showTabText = !libSet.explorerTabIconsOnly;
+		lib.ex.button.tabs.showTabIconNowPlaying = !libSet.explorerTabIconNowPlaying;
 		this.grid.externalLinkIcon = libSet.explorerExternalLinkIcon;
 		this.grid.yearType = libSet.explorerAlbumYearType;
 		lib.ex.album.showTrackRatingGrid = libSet.explorerShowTrackRatingGrid;
@@ -3438,6 +3439,7 @@ class LibExplorerButtons {
 		 * @property {Array} iconWidths - The actual measured widths of each tab icon.
 		 * @property {Array} iconContentWidths - The icon width + padding for each tab.
 		 * @property {boolean} showTabText - The flag to show tab text.
+		 * @property {boolean} showTabIconNowPlaying - The flag to show tab icon nowplaying.
 		 * @property {Array} tabTextStartX - The precomputed X positions for text start (icon + padding).
 		 * @property {Array} tabMaxTextWs - The precomputed max text widths per tab.
 		 * @property {Array} tabFullTextWidths - The precomputed full text widths per tab.
@@ -3471,6 +3473,7 @@ class LibExplorerButtons {
 
 			// Text rendering
 			showTabText: !libSet.explorerTabIconsOnly,
+			showTabIconNowPlaying: !libSet.explorerTabIconNowPlaying,
 			tabTextStartX: [],
 			tabMaxTextWs: [],
 			tabFullTextWidths: [],
@@ -3579,7 +3582,7 @@ class LibExplorerButtons {
 		}
 
 		// Add 'Now' button if available and album is not the same
-		if (fb.IsPlaying && libSet.explorerTabIconNowPlaying && lib.ex.cache.nowPlayingMeta) {
+		if (fb.IsPlaying && this.tabs.showTabIconNowPlaying && lib.ex.cache.nowPlayingMeta) {
 			const { artist, album } = lib.ex.cache.nowPlayingMeta;
 			const isSameAlbum = (lib.ex.main.isAlbumView && lib.ex.data.artist === artist && lib.ex.data.album === album);
 			if (!isSameAlbum) baseTabs.splice(baseTabs.indexOf('Sort'), 0, 'Now');
