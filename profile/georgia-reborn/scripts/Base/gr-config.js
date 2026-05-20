@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-01-2026                                              * //
+// * Last change:    20-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -361,12 +361,11 @@ class Configuration {
 		const lastKey = keys[keys.length - 1];
 
 		for (const [key, value] of Object.entries(configObject.values)) {
-			const val = typeof value === 'string' ? this.escapeBackslashes(value) : value;
-			const quotes = typeof val === 'string' ? '"' : '';
+			const val = typeof value === 'string' ? JSON.stringify(value) : value;
 			const separator = key === lastKey ? '' : ',';
 			const comment = configObject.comments[key] ? ` // ${this.escapeBackslashes(configObject.comments[key])}` : '';
 
-			configFile.WriteLine(`\t\t"${key}": ${quotes}${val}${quotes}${separator}${comment}`);
+			configFile.WriteLine(`\t\t"${key}": ${val}${separator}${comment}`);
 		}
 	}
 	// #endregion
