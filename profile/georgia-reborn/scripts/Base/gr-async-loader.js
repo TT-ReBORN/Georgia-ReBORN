@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    20-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -41,6 +41,7 @@ class FileLoader {
 
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-common.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-helpers.js`);
+		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-debug.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-config.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-config-defaults.js`);
 		include(`${fb.ProfilePath}georgia-reborn\\scripts\\base\\gr-settings.js`);
@@ -111,7 +112,6 @@ class FileLoader {
 			'base\\gr-color-manager.js',
 			'base\\gr-color-themes.js',
 			'base\\gr-color-styles.js',
-			'base\\gr-debug.js',
 			'base\\gr-details.js',
 			'base\\gr-display.js',
 			'base\\gr-theme-presets.js',
