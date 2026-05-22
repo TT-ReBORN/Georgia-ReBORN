@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-05-2026                                              * //
+// * Last change:    22-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1364,8 +1364,8 @@ class ConfigDefaults {
 			{ label: 'Rel. Date',       val: `$puts(d,${this.titleFormatDefaults.date})$if($strcmp($year($get(d)),$get(d)),,$get(d))`, age: true, comment: '\'Release Date\' is shown if the date format is YYYY-MM-DD' },
 			{ label: 'Edition',         val: this.titleFormatDefaults.edition },
 			{ label: 'Label',           val: `[$if($meta(label),$meta_sep(label, ${Unicode.MiddleDot} ),$if3(%publisher%,%discogs_label%,))]`, comment: 'The label(s) or publisher(s) that released the album.' },
-			{ label: 'Catalog',         val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),$get(cn)[ / ${this.titleFormatDefaults.releaseCountry}],)]` },
-			{ label: 'Rel. Country',    val: `$puts(cn,$if3(%catalognumber%,%discogs_catalog%,))[$if($get(cn),,$replace(${this.titleFormatDefaults.releaseCountry},XW,))]`, comment: 'Only shown if %catalognumber% or %discogs_catalog% is not present. If release country is entire world (\'XW\') value is hidden.' },
+			{ label: 'Catalog',         val: `$puts(cn,$if3(%catalognumber%,%catalog%,%discogs_catalog%,))[$if($get(cn),$get(cn)[ / ${this.titleFormatDefaults.releaseCountry}],)]` },
+			{ label: 'Rel. Country',    val: `$puts(cn,$if3(%catalognumber%,%catalog%,%discogs_catalog%,))[$if($get(cn),,$replace(${this.titleFormatDefaults.releaseCountry},XW,))]`, comment: 'Only shown if %catalognumber% or %discogs_catalog% is not present. If release country is entire world (\'XW\') value is hidden.' },
 			{ label: 'Track',           val: '$if(%tracknumber%,$num(%tracknumber%,1)$if(%totaltracks%,/$num(%totaltracks%,1))$ifgreater(%totaldiscs%,1,   CD %discnumber%/$num(%totaldiscs%,1),)' },
 			{ label: 'Genre',           val: `[$meta_sep(genre, ${Unicode.MiddleDot} )]` },
 			{ label: 'Style',           val: `$meta_sep(style, ${Unicode.MiddleDot} )]` },
