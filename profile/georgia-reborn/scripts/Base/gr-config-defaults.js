@@ -1856,8 +1856,8 @@ class ConfigDefaults {
 			customWaveformBarDir: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Use custom waveform bar directory',
 			waveformBarAutoDelete: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Auto-delete waveform bar cache on startup',
 			themePerformance: 'Values: "lowestQuality", "lowQuality", "balanced", "highQuality", "highestQuality" - Options > Settings > Theme performance',
-			themePerformance: 'Values: 0, 1, - Options > Settings > Renderer > Colors',
-			themePerformance: 'Values: 0, 1, - Options > Settings > Renderer > Graphics',
+			rendererColors: 'Values: 0, 1, - Options > Settings > Renderer > Colors',
+			rendererGraphics: 'Values: 0, 1, - Options > Settings > Renderer > Graphics',
 			devTools: 'Values: true, false - Options > Settings > Developer tools'
 		};
 
