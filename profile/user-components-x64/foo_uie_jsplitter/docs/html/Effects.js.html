@@ -1,0 +1,1628 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: Effects.js | JSplitter</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/tui-doc.css">
+
+    
+</head>
+<body>
+<nav class="lnb" id="lnb">
+    <div class="logo" style="">
+        
+            <img src="img/toast-ui.png" width="100%" height="100%">
+        
+    </div>
+    <div class="title">
+        <h1><a href="index.html" class="link">JSplitter</a></h1>
+        
+            <span class="version">v4.1.3</span>
+        
+    </div>
+    <div class="search-container" id="search-container">
+        <input type="text" placeholder="Search">
+        <ul></ul>
+    </div>
+    
+    <div class="lnb-api hidden"><h3>Modules</h3><ul><li><a href="module-Callbacks.html">Callbacks</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Callbacks_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Callbacks.html#.PerformanceObserverCallback">PerformanceObserverCallback</a></li><li><a href="module-Callbacks.html#.on_always_on_top_changed">on_always_on_top_changed</a></li><li><a href="module-Callbacks.html#.on_button_click">on_button_click</a></li><li><a href="module-Callbacks.html#.on_char">on_char</a></li><li><a href="module-Callbacks.html#.on_colours_changed">on_colours_changed</a></li><li><a href="module-Callbacks.html#.on_console_refresh">on_console_refresh</a></li><li><a href="module-Callbacks.html#.on_cursor_follow_playback_changed">on_cursor_follow_playback_changed</a></li><li><a href="module-Callbacks.html#.on_download_file_done">on_download_file_done</a></li><li><a href="module-Callbacks.html#.on_drag_drop">on_drag_drop</a></li><li><a href="module-Callbacks.html#.on_drag_enter">on_drag_enter</a></li><li><a href="module-Callbacks.html#.on_drag_leave">on_drag_leave</a></li><li><a href="module-Callbacks.html#.on_drag_over">on_drag_over</a></li><li><a href="module-Callbacks.html#.on_dsp_preset_changed">on_dsp_preset_changed</a></li><li><a href="module-Callbacks.html#.on_focus">on_focus</a></li><li><a href="module-Callbacks.html#.on_font_changed">on_font_changed</a></li><li><a href="module-Callbacks.html#.on_get_album_art_done">on_get_album_art_done</a></li><li><a href="module-Callbacks.html#.on_http_request_done">on_http_request_done</a></li><li><a href="module-Callbacks.html#.on_item_focus_change">on_item_focus_change</a></li><li><a href="module-Callbacks.html#.on_item_played">on_item_played</a></li><li><a href="module-Callbacks.html#.on_key_down">on_key_down</a></li><li><a href="module-Callbacks.html#.on_key_up">on_key_up</a></li><li><a href="module-Callbacks.html#.on_library_items_added">on_library_items_added</a></li><li><a href="module-Callbacks.html#.on_library_items_changed">on_library_items_changed</a></li><li><a href="module-Callbacks.html#.on_library_items_removed">on_library_items_removed</a></li><li><a href="module-Callbacks.html#.on_load_image_done">on_load_image_done</a></li><li><a href="module-Callbacks.html#.on_locations_added">on_locations_added</a></li><li><a href="module-Callbacks.html#.on_main_menu">on_main_menu</a></li><li><a href="module-Callbacks.html#.on_main_menu_dynamic">on_main_menu_dynamic</a></li><li><a href="module-Callbacks.html#.on_metadb_changed">on_metadb_changed</a></li><li><a href="module-Callbacks.html#.on_mouse_lbtn_dblclk">on_mouse_lbtn_dblclk</a></li><li><a href="module-Callbacks.html#.on_mouse_lbtn_down">on_mouse_lbtn_down</a></li><li><a href="module-Callbacks.html#.on_mouse_lbtn_up">on_mouse_lbtn_up</a></li><li><a href="module-Callbacks.html#.on_mouse_leave">on_mouse_leave</a></li><li><a href="module-Callbacks.html#.on_mouse_mbtn_dblclk">on_mouse_mbtn_dblclk</a></li><li><a href="module-Callbacks.html#.on_mouse_mbtn_down">on_mouse_mbtn_down</a></li><li><a href="module-Callbacks.html#.on_mouse_mbtn_up">on_mouse_mbtn_up</a></li><li><a href="module-Callbacks.html#.on_mouse_move">on_mouse_move</a></li><li><a href="module-Callbacks.html#.on_mouse_rbtn_dblclk">on_mouse_rbtn_dblclk</a></li><li><a href="module-Callbacks.html#.on_mouse_rbtn_down">on_mouse_rbtn_down</a></li><li><a href="module-Callbacks.html#.on_mouse_rbtn_up">on_mouse_rbtn_up</a></li><li><a href="module-Callbacks.html#.on_mouse_wheel">on_mouse_wheel</a></li><li><a href="module-Callbacks.html#.on_mouse_wheel_h">on_mouse_wheel_h</a></li><li><a href="module-Callbacks.html#.on_notify_data">on_notify_data</a></li><li><a href="module-Callbacks.html#.on_output_device_changed">on_output_device_changed</a></li><li><a href="module-Callbacks.html#.on_paint">on_paint</a></li><li><a href="module-Callbacks.html#.on_panel_mouse_enter">on_panel_mouse_enter</a></li><li><a href="module-Callbacks.html#.on_panel_mouse_leave">on_panel_mouse_leave</a></li><li><a href="module-Callbacks.html#.on_panel_mouse_move">on_panel_mouse_move</a></li><li><a href="module-Callbacks.html#.on_playback_dynamic_info">on_playback_dynamic_info</a></li><li><a href="module-Callbacks.html#.on_playback_dynamic_info_track">on_playback_dynamic_info_track</a></li><li><a href="module-Callbacks.html#.on_playback_edited">on_playback_edited</a></li><li><a href="module-Callbacks.html#.on_playback_follow_cursor_changed">on_playback_follow_cursor_changed</a></li><li><a href="module-Callbacks.html#.on_playback_new_track">on_playback_new_track</a></li><li><a href="module-Callbacks.html#.on_playback_order_changed">on_playback_order_changed</a></li><li><a href="module-Callbacks.html#.on_playback_pauseQueueChangeType">on_playback_pauseQueueChangeType</a></li><li><a href="module-Callbacks.html#.on_playback_queue_changed">on_playback_queue_changed</a></li><li><a href="module-Callbacks.html#.on_playback_seek">on_playback_seek</a></li><li><a href="module-Callbacks.html#.on_playback_starting">on_playback_starting</a></li><li><a href="module-Callbacks.html#.on_playback_stop">on_playback_stop</a></li><li><a href="module-Callbacks.html#.on_playback_time">on_playback_time</a></li><li><a href="module-Callbacks.html#.on_playlist_item_ensure_visible">on_playlist_item_ensure_visible</a></li><li><a href="module-Callbacks.html#.on_playlist_items_added">on_playlist_items_added</a></li><li><a href="module-Callbacks.html#.on_playlist_items_removed">on_playlist_items_removed</a></li><li><a href="module-Callbacks.html#.on_playlist_items_reordered">on_playlist_items_reordered</a></li><li><a href="module-Callbacks.html#.on_playlist_items_selection_change">on_playlist_items_selection_change</a></li><li><a href="module-Callbacks.html#.on_playlist_stop_after_current_changed">on_playlist_stop_after_current_changed</a></li><li><a href="module-Callbacks.html#.on_playlist_switch">on_playlist_switch</a></li><li><a href="module-Callbacks.html#.on_playlists_changed">on_playlists_changed</a></li><li><a href="module-Callbacks.html#.on_replaygain_mode_changed">on_replaygain_mode_changed</a></li><li><a href="module-Callbacks.html#.on_script_unload">on_script_unload</a></li><li><a href="module-Callbacks.html#.on_selection_changed">on_selection_changed</a></li><li><a href="module-Callbacks.html#.on_size">on_size</a></li><li><a href="module-Callbacks.html#.on_volume_change">on_volume_change</a></li></ul></div></li><li><a href="module-Codepages.html">Codepages</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Codepages_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-Codepages.html#.CharsetMapping">CharsetMapping</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Codepages.html#.convertCharsetToCodepage">convertCharsetToCodepage</a></li><li><a href="module-Codepages.html#.getLocalCharset">getLocalCharset</a></li></ul></div></li><li><a href="module-Effects.html">Effects</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Effects_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-Effects.html#.AlphaMode">AlphaMode</a></li><li><a href="module-Effects.html#.BlendMode">BlendMode</a></li><li><a href="module-Effects.html#.BorderEdgeMode">BorderEdgeMode</a></li><li><a href="module-Effects.html#.BorderMode">BorderMode</a></li><li><a href="module-Effects.html#.ChannelSelector">ChannelSelector</a></li><li><a href="module-Effects.html#.ColorMatrixAlphaMode">ColorMatrixAlphaMode</a></li><li><a href="module-Effects.html#.ConvolveMatrixScaleMode">ConvolveMatrixScaleMode</a></li><li><a href="module-Effects.html#.D2DAffinetransformInterpolationMode">D2DAffinetransformInterpolationMode</a></li><li><a href="module-Effects.html#.D2DEffectPropertyType">D2DEffectPropertyType</a></li><li><a href="module-Effects.html#.D3DPerspectiveTransformInterpolationMode">D3DPerspectiveTransformInterpolationMode</a></li><li><a href="module-Effects.html#.D3DTransformInterpolationMode">D3DTransformInterpolationMode</a></li><li><a href="module-Effects.html#.DirectionalBlurOptimization">DirectionalBlurOptimization</a></li><li><a href="module-Effects.html#.EdgeDetectionMode">EdgeDetectionMode</a></li><li><a href="module-Effects.html#.Effects">Effects</a></li><li><a href="module-Effects.html#.GaussianBlurOptimization">GaussianBlurOptimization</a></li><li><a href="module-Effects.html#.HdrToneMapDisplayMode">HdrToneMapDisplayMode</a></li><li><a href="module-Effects.html#.InputGamma">InputGamma</a></li><li><a href="module-Effects.html#.MorphologyMode">MorphologyMode</a></li><li><a href="module-Effects.html#.ScaleInterpolationMode">ScaleInterpolationMode</a></li><li><a href="module-Effects.html#.ShadowOptimization">ShadowOptimization</a></li><li><a href="module-Effects.html#.StraightenScaleMode">StraightenScaleMode</a></li><li><a href="module-Effects.html#.TurbulenceNoise">TurbulenceNoise</a></li></ul><div class="member-type">Typedef</div><ul class="inner"><li><a href="module-Effects.html#.Effects">Effects</a></li></ul></div></li><li><a href="module-Flags.html">Flags</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Flags_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-Flags.html#.AlbumArtId">AlbumArtId</a></li><li><a href="module-Flags.html#.BrushType">BrushType</a></li><li><a href="module-Flags.html#.BrushWrapMode">BrushWrapMode</a></li><li><a href="module-Flags.html#.CapStyle">CapStyle</a></li><li><a href="module-Flags.html#.ColourTypeCUI">ColourTypeCUI</a></li><li><a href="module-Flags.html#.ColourTypeDUI">ColourTypeDUI</a></li><li><a href="module-Flags.html#.CompositeMode">CompositeMode</a></li><li><a href="module-Flags.html#.D2DCompileFlags">D2DCompileFlags</a></li><li><a href="module-Flags.html#.DLGC_BUTTON">DLGC_BUTTON</a></li><li><a href="module-Flags.html#.DLGC_DEFPUSHBUTTON">DLGC_DEFPUSHBUTTON</a></li><li><a href="module-Flags.html#.DLGC_HASSETSEL">DLGC_HASSETSEL</a></li><li><a href="module-Flags.html#.DLGC_RADIOBUTTON">DLGC_RADIOBUTTON</a></li><li><a href="module-Flags.html#.DLGC_STATIC">DLGC_STATIC</a></li><li><a href="module-Flags.html#.DLGC_UNDEFPUSHBUTTON">DLGC_UNDEFPUSHBUTTON</a></li><li><a href="module-Flags.html#.DLGC_WANTALLKEYS">DLGC_WANTALLKEYS</a></li><li><a href="module-Flags.html#.DLGC_WANTARROWS">DLGC_WANTARROWS</a></li><li><a href="module-Flags.html#.DLGC_WANTCHARS">DLGC_WANTCHARS</a></li><li><a href="module-Flags.html#.DLGC_WANTMESSAGE">DLGC_WANTMESSAGE</a></li><li><a href="module-Flags.html#.DLGC_WANTTAB">DLGC_WANTTAB</a></li><li><a href="module-Flags.html#.DT_BOTTOM">DT_BOTTOM</a></li><li><a href="module-Flags.html#.DT_CALCRECT">DT_CALCRECT</a></li><li><a href="module-Flags.html#.DT_CENTER">DT_CENTER</a></li><li><a href="module-Flags.html#.DT_EDITCONTROL">DT_EDITCONTROL</a></li><li><a href="module-Flags.html#.DT_END_ELLIPSIS">DT_END_ELLIPSIS</a></li><li><a href="module-Flags.html#.DT_EXPANDTABS">DT_EXPANDTABS</a></li><li><a href="module-Flags.html#.DT_EXTERNALLEADING">DT_EXTERNALLEADING</a></li><li><a href="module-Flags.html#.DT_HIDEPREFIX">DT_HIDEPREFIX</a></li><li><a href="module-Flags.html#.DT_INTERNAL">DT_INTERNAL</a></li><li><a href="module-Flags.html#.DT_LEFT">DT_LEFT</a></li><li><a href="module-Flags.html#.DT_MODIFYSTRING">DT_MODIFYSTRING</a></li><li><a href="module-Flags.html#.DT_NOCLIP">DT_NOCLIP</a></li><li><a href="module-Flags.html#.DT_NOFULLWIDTHCHARBREAK">DT_NOFULLWIDTHCHARBREAK</a></li><li><a href="module-Flags.html#.DT_NOPREFIX">DT_NOPREFIX</a></li><li><a href="module-Flags.html#.DT_PATH_ELLIPSIS">DT_PATH_ELLIPSIS</a></li><li><a href="module-Flags.html#.DT_PREFIXONLY">DT_PREFIXONLY</a></li><li><a href="module-Flags.html#.DT_RIGHT">DT_RIGHT</a></li><li><a href="module-Flags.html#.DT_RTLREADING">DT_RTLREADING</a></li><li><a href="module-Flags.html#.DT_SINGLELINE">DT_SINGLELINE</a></li><li><a href="module-Flags.html#.DT_TABSTOP">DT_TABSTOP</a></li><li><a href="module-Flags.html#.DT_TOP">DT_TOP</a></li><li><a href="module-Flags.html#.DT_VCENTER">DT_VCENTER</a></li><li><a href="module-Flags.html#.DT_WORDBREAK">DT_WORDBREAK</a></li><li><a href="module-Flags.html#.DT_WORD_ELLIPSIS">DT_WORD_ELLIPSIS</a></li><li><a href="module-Flags.html#.DashStyle">DashStyle</a></li><li><a href="module-Flags.html#.DialogResult">DialogResult</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_ARCHIVE">FILE_ATTRIBUTE_ARCHIVE</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_COMPRESSED">FILE_ATTRIBUTE_COMPRESSED</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_DIRECTORY">FILE_ATTRIBUTE_DIRECTORY</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_ENCRYPTED">FILE_ATTRIBUTE_ENCRYPTED</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_HIDDEN">FILE_ATTRIBUTE_HIDDEN</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_NORMAL">FILE_ATTRIBUTE_NORMAL</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_NOT_CONTENT_INDEXED">FILE_ATTRIBUTE_NOT_CONTENT_INDEXED</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_OFFLINE">FILE_ATTRIBUTE_OFFLINE</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_READONLY">FILE_ATTRIBUTE_READONLY</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_REPARSE_POINT">FILE_ATTRIBUTE_REPARSE_POINT</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_SPARSE_FILE">FILE_ATTRIBUTE_SPARSE_FILE</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_SYSTEM">FILE_ATTRIBUTE_SYSTEM</a></li><li><a href="module-Flags.html#.FILE_ATTRIBUTE_TEMPORARY">FILE_ATTRIBUTE_TEMPORARY</a></li><li><a href="module-Flags.html#.FontStyle">FontStyle</a></li><li><a href="module-Flags.html#.FontTypeCUI">FontTypeCUI</a></li><li><a href="module-Flags.html#.FontTypeDUI">FontTypeDUI</a></li><li><a href="module-Flags.html#.IDC_APPSTARTING">IDC_APPSTARTING</a></li><li><a href="module-Flags.html#.IDC_ARROW">IDC_ARROW</a></li><li><a href="module-Flags.html#.IDC_CROSS">IDC_CROSS</a></li><li><a href="module-Flags.html#.IDC_HAND">IDC_HAND</a></li><li><a href="module-Flags.html#.IDC_HELP">IDC_HELP</a></li><li><a href="module-Flags.html#.IDC_IBEAM">IDC_IBEAM</a></li><li><a href="module-Flags.html#.IDC_ICON">IDC_ICON</a></li><li><a href="module-Flags.html#.IDC_NO">IDC_NO</a></li><li><a href="module-Flags.html#.IDC_SIZE">IDC_SIZE</a></li><li><a href="module-Flags.html#.IDC_SIZEALL">IDC_SIZEALL</a></li><li><a href="module-Flags.html#.IDC_SIZENESW">IDC_SIZENESW</a></li><li><a href="module-Flags.html#.IDC_SIZENS">IDC_SIZENS</a></li><li><a href="module-Flags.html#.IDC_SIZENWSE">IDC_SIZENWSE</a></li><li><a href="module-Flags.html#.IDC_SIZEWE">IDC_SIZEWE</a></li><li><a href="module-Flags.html#.IDC_UPARROW">IDC_UPARROW</a></li><li><a href="module-Flags.html#.IDC_WAIT">IDC_WAIT</a></li><li><a href="module-Flags.html#.InterpolationMode">InterpolationMode</a></li><li><a href="module-Flags.html#.LCMAP_BYTEREV">LCMAP_BYTEREV</a></li><li><a href="module-Flags.html#.LCMAP_FULLWIDTH">LCMAP_FULLWIDTH</a></li><li><a href="module-Flags.html#.LCMAP_HALFWIDTH">LCMAP_HALFWIDTH</a></li><li><a href="module-Flags.html#.LCMAP_HIRAGANA">LCMAP_HIRAGANA</a></li><li><a href="module-Flags.html#.LCMAP_KATAKANA">LCMAP_KATAKANA</a></li><li><a href="module-Flags.html#.LCMAP_LINGUISTIC_CASING">LCMAP_LINGUISTIC_CASING</a></li><li><a href="module-Flags.html#.LCMAP_LOWERCASE">LCMAP_LOWERCASE</a></li><li><a href="module-Flags.html#.LCMAP_SIMPLIFIED_CHINESE">LCMAP_SIMPLIFIED_CHINESE</a></li><li><a href="module-Flags.html#.LCMAP_SORTKEY">LCMAP_SORTKEY</a></li><li><a href="module-Flags.html#.LCMAP_TITLECASE">LCMAP_TITLECASE</a></li><li><a href="module-Flags.html#.LCMAP_TRADITIONAL_CHINESE">LCMAP_TRADITIONAL_CHINESE</a></li><li><a href="module-Flags.html#.LCMAP_UPPERCASE">LCMAP_UPPERCASE</a></li><li><a href="module-Flags.html#.MF_CHECKED">MF_CHECKED</a></li><li><a href="module-Flags.html#.MF_DISABLED">MF_DISABLED</a></li><li><a href="module-Flags.html#.MF_ENABLED">MF_ENABLED</a></li><li><a href="module-Flags.html#.MF_GRAYED">MF_GRAYED</a></li><li><a href="module-Flags.html#.MF_MENUBARBREAK">MF_MENUBARBREAK</a></li><li><a href="module-Flags.html#.MF_MENUBREAK">MF_MENUBREAK</a></li><li><a href="module-Flags.html#.MF_SEPARATOR">MF_SEPARATOR</a></li><li><a href="module-Flags.html#.MF_STRING">MF_STRING</a></li><li><a href="module-Flags.html#.MF_UNCHECKED">MF_UNCHECKED</a></li><li><a href="module-Flags.html#.MK_CONTROL">MK_CONTROL</a></li><li><a href="module-Flags.html#.MK_LBUTTON">MK_LBUTTON</a></li><li><a href="module-Flags.html#.MK_MBUTTON">MK_MBUTTON</a></li><li><a href="module-Flags.html#.MK_RBUTTON">MK_RBUTTON</a></li><li><a href="module-Flags.html#.MK_SHIFT">MK_SHIFT</a></li><li><a href="module-Flags.html#.MK_XBUTTON1">MK_XBUTTON1</a></li><li><a href="module-Flags.html#.MK_XBUTTON2">MK_XBUTTON2</a></li><li><a href="module-Flags.html#.MessageBoxButtons">MessageBoxButtons</a></li><li><a href="module-Flags.html#.MessageBoxDefaultButton">MessageBoxDefaultButton</a></li><li><a href="module-Flags.html#.MessageBoxIcon">MessageBoxIcon</a></li><li><a href="module-Flags.html#.PlaybackOrder">PlaybackOrder</a></li><li><a href="module-Flags.html#.PlaybackStartCmd">PlaybackStartCmd</a></li><li><a href="module-Flags.html#.PlaybackStopReason">PlaybackStopReason</a></li><li><a href="module-Flags.html#.QueueChangeOrigin">QueueChangeOrigin</a></li><li><a href="module-Flags.html#.ReplayGainMode">ReplayGainMode</a></li><li><a href="module-Flags.html#.RotateFlipType">RotateFlipType</a></li><li><a href="module-Flags.html#.SelectionType">SelectionType</a></li><li><a href="module-Flags.html#.SmoothingMode">SmoothingMode</a></li><li><a href="module-Flags.html#.StringAlignment">StringAlignment</a></li><li><a href="module-Flags.html#.StringFormatFlags">StringFormatFlags</a></li><li><a href="module-Flags.html#.StringTrimming">StringTrimming</a></li><li><a href="module-Flags.html#.TPM_BOTTOMALIGN">TPM_BOTTOMALIGN</a></li><li><a href="module-Flags.html#.TPM_CENTERALIGN">TPM_CENTERALIGN</a></li><li><a href="module-Flags.html#.TPM_HORIZONTAL">TPM_HORIZONTAL</a></li><li><a href="module-Flags.html#.TPM_HORNEGANIMATION">TPM_HORNEGANIMATION</a></li><li><a href="module-Flags.html#.TPM_HORPOSANIMATION">TPM_HORPOSANIMATION</a></li><li><a href="module-Flags.html#.TPM_LEFTALIGN">TPM_LEFTALIGN</a></li><li><a href="module-Flags.html#.TPM_NOANIMATION">TPM_NOANIMATION</a></li><li><a href="module-Flags.html#.TPM_RIGHTALIGN">TPM_RIGHTALIGN</a></li><li><a href="module-Flags.html#.TPM_TOPALIGN">TPM_TOPALIGN</a></li><li><a href="module-Flags.html#.TPM_VCENTERALIGN">TPM_VCENTERALIGN</a></li><li><a href="module-Flags.html#.TPM_VERNEGANIMATION">TPM_VERNEGANIMATION</a></li><li><a href="module-Flags.html#.TPM_VERPOSANIMATION">TPM_VERPOSANIMATION</a></li><li><a href="module-Flags.html#.TPM_VERTICAL">TPM_VERTICAL</a></li><li><a href="module-Flags.html#.TTDT_AUTOMATIC">TTDT_AUTOMATIC</a></li><li><a href="module-Flags.html#.TTDT_AUTOPOP">TTDT_AUTOPOP</a></li><li><a href="module-Flags.html#.TTDT_INITIAL">TTDT_INITIAL</a></li><li><a href="module-Flags.html#.TTDT_RESHOW">TTDT_RESHOW</a></li><li><a href="module-Flags.html#.TextRenderingHint">TextRenderingHint</a></li><li><a href="module-Flags.html#.UIInstanceType">UIInstanceType</a></li><li><a href="module-Flags.html#.VK_ALT">VK_ALT</a></li><li><a href="module-Flags.html#.VK_BACK">VK_BACK</a></li><li><a href="module-Flags.html#.VK_CONTROL">VK_CONTROL</a></li><li><a href="module-Flags.html#.VK_DELETE">VK_DELETE</a></li><li><a href="module-Flags.html#.VK_DOWN">VK_DOWN</a></li><li><a href="module-Flags.html#.VK_END">VK_END</a></li><li><a href="module-Flags.html#.VK_ESCAPE">VK_ESCAPE</a></li><li><a href="module-Flags.html#.VK_HOME">VK_HOME</a></li><li><a href="module-Flags.html#.VK_INSERT">VK_INSERT</a></li><li><a href="module-Flags.html#.VK_LEFT">VK_LEFT</a></li><li><a href="module-Flags.html#.VK_PGDN">VK_PGDN</a></li><li><a href="module-Flags.html#.VK_PGUP">VK_PGUP</a></li><li><a href="module-Flags.html#.VK_RETURN">VK_RETURN</a></li><li><a href="module-Flags.html#.VK_RIGHT">VK_RIGHT</a></li><li><a href="module-Flags.html#.VK_SHIFT">VK_SHIFT</a></li><li><a href="module-Flags.html#.VK_SPACEBAR">VK_SPACEBAR</a></li><li><a href="module-Flags.html#.VK_TAB">VK_TAB</a></li><li><a href="module-Flags.html#.VK_UP">VK_UP</a></li></ul></div></li><li><a href="module-Helpers.html">Helpers</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Helpers_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-Helpers.html#.colours">colours</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Helpers.html#.Point2Pixel">Point2Pixel</a></li><li><a href="module-Helpers.html#.RGB">RGB</a></li><li><a href="module-Helpers.html#.RGBA">RGBA</a></li><li><a href="module-Helpers.html#.StringFormat">StringFormat</a></li><li><a href="module-Helpers.html#.getAlpha">getAlpha</a></li><li><a href="module-Helpers.html#.getBlue">getBlue</a></li><li><a href="module-Helpers.html#.getGreen">getGreen</a></li><li><a href="module-Helpers.html#.getRed">getRed</a></li><li><a href="module-Helpers.html#.pos2vol">pos2vol</a></li><li><a href="module-Helpers.html#.setAlpha">setAlpha</a></li><li><a href="module-Helpers.html#.setBlue">setBlue</a></li><li><a href="module-Helpers.html#.setGreen">setGreen</a></li><li><a href="module-Helpers.html#.setRed">setRed</a></li><li><a href="module-Helpers.html#.toRGB">toRGB</a></li><li><a href="module-Helpers.html#.vol2pos">vol2pos</a></li></ul></div></li><li><a href="module-Matrix.html">Matrix</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Matrix_sub"></div></li></ul></div><div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="ActiveXObject.html">ActiveXObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ActiveXObject_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="ActiveXObject.html#ActiveX_CreateArray">ActiveX_CreateArray</a></li><li><a href="ActiveXObject.html#ActiveX_Get">ActiveX_Get</a></li><li><a href="ActiveXObject.html#ActiveX_Set">ActiveX_Set</a></li></ul></div></li><li><a href="ButtonObject.html">ButtonObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ButtonObject_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="ButtonObject.html#Click">Click</a></li><li><a href="ButtonObject.html#HandOnHover">HandOnHover</a></li><li><a href="ButtonObject.html#Height">Height</a></li><li><a href="ButtonObject.html#Hidden">Hidden</a></li><li><a href="ButtonObject.html#ID">ID</a></li><li><a href="ButtonObject.html#State">State</a></li><li><a href="ButtonObject.html#Width">Width</a></li><li><a href="ButtonObject.html#X">X</a></li><li><a href="ButtonObject.html#Y">Y</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="ButtonObject.html#Move">Move</a></li><li><a href="ButtonObject.html#Resize">Resize</a></li><li><a href="ButtonObject.html#Show">Show</a></li></ul></div></li><li><a href="ContextMenuManager.html">ContextMenuManager</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ContextMenuManager_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="ContextMenuManager.html#BuildMenu">BuildMenu</a></li><li><a href="ContextMenuManager.html#ExecuteByID">ExecuteByID</a></li><li><a href="ContextMenuManager.html#InitContext">InitContext</a></li><li><a href="ContextMenuManager.html#InitContextPlaylist">InitContextPlaylist</a></li><li><a href="ContextMenuManager.html#InitNowPlaying">InitNowPlaying</a></li></ul></div></li><li><a href="D2DBitmap.html">D2DBitmap</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="D2DBitmap_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="D2DBitmap.html#Height">Height</a></li><li><a href="D2DBitmap.html#Width">Width</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="D2DBitmap.html#ApplyAlpha">ApplyAlpha</a></li><li><a href="D2DBitmap.html#ApplyAlphaIndirect">ApplyAlphaIndirect</a></li><li><a href="D2DBitmap.html#ApplyMask">ApplyMask</a></li><li><a href="D2DBitmap.html#Clone">Clone</a></li><li><a href="D2DBitmap.html#CreateRawBitmap">CreateRawBitmap</a></li><li><a href="D2DBitmap.html#GetColourScheme">GetColourScheme</a></li><li><a href="D2DBitmap.html#GetColourSchemeJSON">GetColourSchemeJSON</a></li><li><a href="D2DBitmap.html#GetColourSchemeJSONV2">GetColourSchemeJSONV2</a></li><li><a href="D2DBitmap.html#GetGraphics">GetGraphics</a></li><li><a href="D2DBitmap.html#GetPixelData">GetPixelData</a></li><li><a href="D2DBitmap.html#InvertColours">InvertColours</a></li><li><a href="D2DBitmap.html#ReleaseGraphics">ReleaseGraphics</a></li><li><a href="D2DBitmap.html#Resize">Resize</a></li><li><a href="D2DBitmap.html#ResizeIndirect">ResizeIndirect</a></li><li><a href="D2DBitmap.html#RotateFlip">RotateFlip</a></li><li><a href="D2DBitmap.html#SaveAs">SaveAs</a></li><li><a href="D2DBitmap.html#StackBlur">StackBlur</a></li></ul></div></li><li><a href="D2DBrush.html">D2DBrush</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="D2DBrush_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="D2DBrush.html#Type">Type</a></li><li><a href="D2DBrush.html#WrapMode">WrapMode</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="D2DBrush.html#ApplyTransform">ApplyTransform</a></li><li><a href="D2DBrush.html#GetTransform">GetTransform</a></li><li><a href="D2DBrush.html#PopTransform">PopTransform</a></li><li><a href="D2DBrush.html#PushTransform">PushTransform</a></li><li><a href="D2DBrush.html#ResetTransform">ResetTransform</a></li><li><a href="D2DBrush.html#Rotate">Rotate</a></li><li><a href="D2DBrush.html#Scale">Scale</a></li><li><a href="D2DBrush.html#SetTransform">SetTransform</a></li><li><a href="D2DBrush.html#Skew">Skew</a></li><li><a href="D2DBrush.html#Translate">Translate</a></li></ul></div></li><li><a href="D2DCompileInfo.html">D2DCompileInfo</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="D2DCompileInfo_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="D2DCompileInfo.html#Code">Code</a></li><li><a href="D2DCompileInfo.html#Error">Error</a></li></ul></div></li><li><a href="D2DEffect.html">D2DEffect</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="D2DEffect_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="D2DEffect.html#CLSID">CLSID</a></li><li><a href="D2DEffect.html#Description">Description</a></li><li><a href="D2DEffect.html#InputCount">InputCount</a></li><li><a href="D2DEffect.html#Name">Name</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="D2DEffect.html#GetPropertyType">GetPropertyType</a></li><li><a href="D2DEffect.html#GetValue">GetValue</a></li><li><a href="D2DEffect.html#GetValueByName">GetValueByName</a></li><li><a href="D2DEffect.html#SetInput">SetInput</a></li><li><a href="D2DEffect.html#SetInputEffect">SetInputEffect</a></li><li><a href="D2DEffect.html#SetValue">SetValue</a></li><li><a href="D2DEffect.html#SetValueByName">SetValueByName</a></li></ul></div></li><li><a href="D2DFont.html">D2DFont</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="D2DFont_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="D2DFont.html#Height">Height</a></li><li><a href="D2DFont.html#Name">Name</a></li><li><a href="D2DFont.html#Size">Size</a></li><li><a href="D2DFont.html#Style">Style</a></li></ul></div></li><li><a href="D2DGraphics.html">D2DGraphics</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="D2DGraphics_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="D2DGraphics.html#Height">Height</a></li><li><a href="D2DGraphics.html#Width">Width</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="D2DGraphics.html#AlphaBlend">AlphaBlend</a></li><li><a href="D2DGraphics.html#ApplyTransform">ApplyTransform</a></li><li><a href="D2DGraphics.html#CalcTextHeight">CalcTextHeight</a></li><li><a href="D2DGraphics.html#CalcTextWidth">CalcTextWidth</a></li><li><a href="D2DGraphics.html#DrawEffect">DrawEffect</a></li><li><a href="D2DGraphics.html#DrawEllipse">DrawEllipse</a></li><li><a href="D2DGraphics.html#DrawImage">DrawImage</a></li><li><a href="D2DGraphics.html#DrawLine">DrawLine</a></li><li><a href="D2DGraphics.html#DrawPolygon">DrawPolygon</a></li><li><a href="D2DGraphics.html#DrawRect">DrawRect</a></li><li><a href="D2DGraphics.html#DrawRoundRect">DrawRoundRect</a></li><li><a href="D2DGraphics.html#DrawString">DrawString</a></li><li><a href="D2DGraphics.html#DrawStrokedText">DrawStrokedText</a></li><li><a href="D2DGraphics.html#DrawText">DrawText</a></li><li><a href="D2DGraphics.html#EstimateLineWrap">EstimateLineWrap</a></li><li><a href="D2DGraphics.html#FillEllipse">FillEllipse</a></li><li><a href="D2DGraphics.html#FillGradRect">FillGradRect</a></li><li><a href="D2DGraphics.html#FillGradRectV2">FillGradRectV2</a></li><li><a href="D2DGraphics.html#FillPolygon">FillPolygon</a></li><li><a href="D2DGraphics.html#FillRoundRect">FillRoundRect</a></li><li><a href="D2DGraphics.html#FillSolidRect">FillSolidRect</a></li><li><a href="D2DGraphics.html#GetTransform">GetTransform</a></li><li><a href="D2DGraphics.html#MeasureString">MeasureString</a></li><li><a href="D2DGraphics.html#PopTransform">PopTransform</a></li><li><a href="D2DGraphics.html#PushTransform">PushTransform</a></li><li><a href="D2DGraphics.html#ResetTransform">ResetTransform</a></li><li><a href="D2DGraphics.html#Rotate">Rotate</a></li><li><a href="D2DGraphics.html#Scale">Scale</a></li><li><a href="D2DGraphics.html#SetInterpolationMode">SetInterpolationMode</a></li><li><a href="D2DGraphics.html#SetSmoothingMode">SetSmoothingMode</a></li><li><a href="D2DGraphics.html#SetTextRenderingHint">SetTextRenderingHint</a></li><li><a href="D2DGraphics.html#SetTransform">SetTransform</a></li><li><a href="D2DGraphics.html#Skew">Skew</a></li><li><a href="D2DGraphics.html#Translate">Translate</a></li></ul></div></li><li><a href="D2DGraphics-MeasureStringInfo.html">MeasureStringInfo</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="D2DGraphics~MeasureStringInfo_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="D2DGraphics-MeasureStringInfo.html#Chars">Chars</a></li><li><a href="D2DGraphics-MeasureStringInfo.html#Height">Height</a></li><li><a href="D2DGraphics-MeasureStringInfo.html#Lines">Lines</a></li><li><a href="D2DGraphics-MeasureStringInfo.html#Width">Width</a></li><li><a href="D2DGraphics-MeasureStringInfo.html#X">X</a></li><li><a href="D2DGraphics-MeasureStringInfo.html#Y">Y</a></li></ul></div></li><li><a href="DropTargetAction.html">DropTargetAction</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="DropTargetAction_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="DropTargetAction.html#Base">Base</a></li><li><a href="DropTargetAction.html#Effect">Effect</a></li><li><a href="DropTargetAction.html#IsInternal">IsInternal</a></li><li><a href="DropTargetAction.html#Playlist">Playlist</a></li><li><a href="DropTargetAction.html#Text">Text</a></li><li><a href="DropTargetAction.html#ToSelect">ToSelect</a></li></ul></div></li><li><a href="Enumerator.html">Enumerator</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Enumerator_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Enumerator.html#atEnd">atEnd</a></li><li><a href="Enumerator.html#item">item</a></li><li><a href="Enumerator.html#moveFirst">moveFirst</a></li><li><a href="Enumerator.html#moveNext">moveNext</a></li></ul></div></li><li><a href="FbAudioChunk.html">FbAudioChunk</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbAudioChunk_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbAudioChunk.html#ChannelConfig">ChannelConfig</a></li><li><a href="FbAudioChunk.html#ChannelCount">ChannelCount</a></li><li><a href="FbAudioChunk.html#Data">Data</a></li><li><a href="FbAudioChunk.html#SampleCount">SampleCount</a></li><li><a href="FbAudioChunk.html#SampleRate">SampleRate</a></li></ul></div></li><li><a href="FbFileInfo.html">FbFileInfo</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbFileInfo_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbFileInfo.html#InfoCount">InfoCount</a></li><li><a href="FbFileInfo.html#InfoFind">InfoFind</a></li><li><a href="FbFileInfo.html#InfoName">InfoName</a></li><li><a href="FbFileInfo.html#InfoValue">InfoValue</a></li><li><a href="FbFileInfo.html#MetaCount">MetaCount</a></li><li><a href="FbFileInfo.html#MetaFind">MetaFind</a></li><li><a href="FbFileInfo.html#MetaName">MetaName</a></li><li><a href="FbFileInfo.html#MetaValue">MetaValue</a></li><li><a href="FbFileInfo.html#MetaValueCount">MetaValueCount</a></li></ul></div></li><li><a href="FbMetadbHandle.html">FbMetadbHandle</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbMetadbHandle_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbMetadbHandle.html#FileSize">FileSize</a></li><li><a href="FbMetadbHandle.html#Length">Length</a></li><li><a href="FbMetadbHandle.html#Path">Path</a></li><li><a href="FbMetadbHandle.html#RawPath">RawPath</a></li><li><a href="FbMetadbHandle.html#SubSong">SubSong</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbMetadbHandle.html#ClearStats">ClearStats</a></li><li><a href="FbMetadbHandle.html#Compare">Compare</a></li><li><a href="FbMetadbHandle.html#GetFileInfo">GetFileInfo</a></li><li><a href="FbMetadbHandle.html#RefreshStats">RefreshStats</a></li><li><a href="FbMetadbHandle.html#SetFirstPlayed">SetFirstPlayed</a></li><li><a href="FbMetadbHandle.html#SetLastPlayed">SetLastPlayed</a></li><li><a href="FbMetadbHandle.html#SetLoved">SetLoved</a></li><li><a href="FbMetadbHandle.html#SetPlayCount">SetPlayCount</a></li><li><a href="FbMetadbHandle.html#SetRating">SetRating</a></li></ul></div></li><li><a href="FbMetadbHandleList.html">FbMetadbHandleList</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbMetadbHandleList_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbMetadbHandleList.html#Count">Count</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbMetadbHandleList.html#Add">Add</a></li><li><a href="FbMetadbHandleList.html#AddRange">AddRange</a></li><li><a href="FbMetadbHandleList.html#AttachImage">AttachImage</a></li><li><a href="FbMetadbHandleList.html#BSearch">BSearch</a></li><li><a href="FbMetadbHandleList.html#CalcTotalDuration">CalcTotalDuration</a></li><li><a href="FbMetadbHandleList.html#CalcTotalSize">CalcTotalSize</a></li><li><a href="FbMetadbHandleList.html#Clone">Clone</a></li><li><a href="FbMetadbHandleList.html#Convert">Convert</a></li><li><a href="FbMetadbHandleList.html#Find">Find</a></li><li><a href="FbMetadbHandleList.html#GetLibraryRelativePaths">GetLibraryRelativePaths</a></li><li><a href="FbMetadbHandleList.html#Insert">Insert</a></li><li><a href="FbMetadbHandleList.html#InsertRange">InsertRange</a></li><li><a href="FbMetadbHandleList.html#MakeDifference">MakeDifference</a></li><li><a href="FbMetadbHandleList.html#MakeIntersection">MakeIntersection</a></li><li><a href="FbMetadbHandleList.html#MakeUnion">MakeUnion</a></li><li><a href="FbMetadbHandleList.html#OptimiseFileLayout">OptimiseFileLayout</a></li><li><a href="FbMetadbHandleList.html#OrderByFormat">OrderByFormat</a></li><li><a href="FbMetadbHandleList.html#OrderByPath">OrderByPath</a></li><li><a href="FbMetadbHandleList.html#OrderByRelativePath">OrderByRelativePath</a></li><li><a href="FbMetadbHandleList.html#RefreshStats">RefreshStats</a></li><li><a href="FbMetadbHandleList.html#Remove">Remove</a></li><li><a href="FbMetadbHandleList.html#RemoveAll">RemoveAll</a></li><li><a href="FbMetadbHandleList.html#RemoveAttachedImage">RemoveAttachedImage</a></li><li><a href="FbMetadbHandleList.html#RemoveAttachedImages">RemoveAttachedImages</a></li><li><a href="FbMetadbHandleList.html#RemoveById">RemoveById</a></li><li><a href="FbMetadbHandleList.html#RemoveRange">RemoveRange</a></li><li><a href="FbMetadbHandleList.html#SaveAs">SaveAs</a></li><li><a href="FbMetadbHandleList.html#Sort">Sort</a></li><li><a href="FbMetadbHandleList.html#UpdateFileInfoFromJSON">UpdateFileInfoFromJSON</a></li></ul></div></li><li><a href="FbPlaybackQueueItem.html">FbPlaybackQueueItem</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbPlaybackQueueItem_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbPlaybackQueueItem.html#Handle">Handle</a></li><li><a href="FbPlaybackQueueItem.html#PlaylistIndex">PlaylistIndex</a></li><li><a href="FbPlaybackQueueItem.html#PlaylistItemIndex">PlaylistItemIndex</a></li></ul></div></li><li><a href="FbPlayingItemLocation.html">FbPlayingItemLocation</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbPlayingItemLocation_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbPlayingItemLocation.html#IsValid">IsValid</a></li><li><a href="FbPlayingItemLocation.html#PlaylistIndex">PlaylistIndex</a></li><li><a href="FbPlayingItemLocation.html#PlaylistItemIndex">PlaylistItemIndex</a></li></ul></div></li><li><a href="FbPlaylistRecycler.html">FbPlaylistRecycler</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbPlaylistRecycler_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbPlaylistRecycler.html#Count">Count</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbPlaylistRecycler.html#GetContent">GetContent</a></li><li><a href="FbPlaylistRecycler.html#GetName">GetName</a></li><li><a href="FbPlaylistRecycler.html#Purge">Purge</a></li><li><a href="FbPlaylistRecycler.html#Restore">Restore</a></li></ul></div></li><li><a href="FbProfiler.html">FbProfiler</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbProfiler_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbProfiler.html#Time">Time</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbProfiler.html#Print">Print</a></li><li><a href="FbProfiler.html#Reset">Reset</a></li></ul></div></li><li><a href="FbTitleFormat.html">FbTitleFormat</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbTitleFormat_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="FbTitleFormat.html#Eval">Eval</a></li><li><a href="FbTitleFormat.html#EvalWithMetadb">EvalWithMetadb</a></li><li><a href="FbTitleFormat.html#EvalWithMetadbs">EvalWithMetadbs</a></li></ul></div></li><li><a href="FbTooltip.html">FbTooltip</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbTooltip_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="FbTooltip.html#Text">Text</a></li><li><a href="FbTooltip.html#TrackActivate">TrackActivate</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="FbTooltip.html#Activate">Activate</a></li><li><a href="FbTooltip.html#Deactivate">Deactivate</a></li><li><a href="FbTooltip.html#GetDelayTime">GetDelayTime</a></li><li><a href="FbTooltip.html#SetDelayTime">SetDelayTime</a></li><li><a href="FbTooltip.html#SetFont">SetFont</a></li><li><a href="FbTooltip.html#SetMaxWidth">SetMaxWidth</a></li><li><a href="FbTooltip.html#TrackPosition">TrackPosition</a></li></ul></div></li><li><a href="FbUiSelectionHolder.html">FbUiSelectionHolder</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="FbUiSelectionHolder_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="FbUiSelectionHolder.html#SetPlaylistSelectionTracking">SetPlaylistSelectionTracking</a></li><li><a href="FbUiSelectionHolder.html#SetPlaylistTracking">SetPlaylistTracking</a></li><li><a href="FbUiSelectionHolder.html#SetSelection">SetSelection</a></li></ul></div></li><li><a href="GdiBitmap.html">GdiBitmap</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiBitmap_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiBitmap.html#Height">Height</a></li><li><a href="GdiBitmap.html#Width">Width</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="GdiBitmap.html#ApplyAlpha">ApplyAlpha</a></li><li><a href="GdiBitmap.html#ApplyMask">ApplyMask</a></li><li><a href="GdiBitmap.html#Clone">Clone</a></li><li><a href="GdiBitmap.html#CreateRawBitmap">CreateRawBitmap</a></li><li><a href="GdiBitmap.html#GetColourScheme">GetColourScheme</a></li><li><a href="GdiBitmap.html#GetColourSchemeJSON">GetColourSchemeJSON</a></li><li><a href="GdiBitmap.html#GetColourSchemeJSONV2">GetColourSchemeJSONV2</a></li><li><a href="GdiBitmap.html#GetGraphics">GetGraphics</a></li><li><a href="GdiBitmap.html#GetPixelData">GetPixelData</a></li><li><a href="GdiBitmap.html#InvertColours">InvertColours</a></li><li><a href="GdiBitmap.html#ReleaseGraphics">ReleaseGraphics</a></li><li><a href="GdiBitmap.html#Resize">Resize</a></li><li><a href="GdiBitmap.html#RotateFlip">RotateFlip</a></li><li><a href="GdiBitmap.html#SaveAs">SaveAs</a></li><li><a href="GdiBitmap.html#StackBlur">StackBlur</a></li></ul></div></li><li><a href="GdiBrush.html">GdiBrush</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiBrush_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiBrush.html#Type">Type</a></li><li><a href="GdiBrush.html#WrapMode">WrapMode</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="GdiBrush.html#ApplyTransform">ApplyTransform</a></li><li><a href="GdiBrush.html#GetTransform">GetTransform</a></li><li><a href="GdiBrush.html#PopTransform">PopTransform</a></li><li><a href="GdiBrush.html#PushTransform">PushTransform</a></li><li><a href="GdiBrush.html#ResetTransform">ResetTransform</a></li><li><a href="GdiBrush.html#Rotate">Rotate</a></li><li><a href="GdiBrush.html#Scale">Scale</a></li><li><a href="GdiBrush.html#SetTransform">SetTransform</a></li><li><a href="GdiBrush.html#Skew">Skew</a></li><li><a href="GdiBrush.html#Translate">Translate</a></li></ul></div></li><li><a href="GdiFont.html">GdiFont</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiFont_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiFont.html#Height">Height</a></li><li><a href="GdiFont.html#Name">Name</a></li><li><a href="GdiFont.html#Size">Size</a></li><li><a href="GdiFont.html#Style">Style</a></li></ul></div></li><li><a href="GdiGraphics.html">GdiGraphics</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiGraphics_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiGraphics.html#Height">Height</a></li><li><a href="GdiGraphics.html#Width">Width</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="GdiGraphics.html#ApplyTransform">ApplyTransform</a></li><li><a href="GdiGraphics.html#CalcTextHeight">CalcTextHeight</a></li><li><a href="GdiGraphics.html#CalcTextWidth">CalcTextWidth</a></li><li><a href="GdiGraphics.html#DrawEllipse">DrawEllipse</a></li><li><a href="GdiGraphics.html#DrawImage">DrawImage</a></li><li><a href="GdiGraphics.html#DrawLine">DrawLine</a></li><li><a href="GdiGraphics.html#DrawPolygon">DrawPolygon</a></li><li><a href="GdiGraphics.html#DrawRect">DrawRect</a></li><li><a href="GdiGraphics.html#DrawRoundRect">DrawRoundRect</a></li><li><a href="GdiGraphics.html#DrawString">DrawString</a></li><li><a href="GdiGraphics.html#EstimateLineWrap">EstimateLineWrap</a></li><li><a href="GdiGraphics.html#FillEllipse">FillEllipse</a></li><li><a href="GdiGraphics.html#FillGradRect">FillGradRect</a></li><li><a href="GdiGraphics.html#FillGradRectV2">FillGradRectV2</a></li><li><a href="GdiGraphics.html#FillPolygon">FillPolygon</a></li><li><a href="GdiGraphics.html#FillRoundRect">FillRoundRect</a></li><li><a href="GdiGraphics.html#FillSolidRect">FillSolidRect</a></li><li><a href="GdiGraphics.html#GdiAlphaBlend">GdiAlphaBlend</a></li><li><a href="GdiGraphics.html#GdiDrawBitmap">GdiDrawBitmap</a></li><li><a href="GdiGraphics.html#GdiDrawText">GdiDrawText</a></li><li><a href="GdiGraphics.html#GetTransform">GetTransform</a></li><li><a href="GdiGraphics.html#MeasureString">MeasureString</a></li><li><a href="GdiGraphics.html#PopTransform">PopTransform</a></li><li><a href="GdiGraphics.html#PushTransform">PushTransform</a></li><li><a href="GdiGraphics.html#ResetTransform">ResetTransform</a></li><li><a href="GdiGraphics.html#Rotate">Rotate</a></li><li><a href="GdiGraphics.html#Scale">Scale</a></li><li><a href="GdiGraphics.html#SetInterpolationMode">SetInterpolationMode</a></li><li><a href="GdiGraphics.html#SetSmoothingMode">SetSmoothingMode</a></li><li><a href="GdiGraphics.html#SetTextRenderingHint">SetTextRenderingHint</a></li><li><a href="GdiGraphics.html#SetTransform">SetTransform</a></li><li><a href="GdiGraphics.html#Skew">Skew</a></li><li><a href="GdiGraphics.html#Translate">Translate</a></li></ul></div></li><li><a href="GdiGraphics-MeasureStringInfo.html">MeasureStringInfo</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiGraphics~MeasureStringInfo_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiGraphics-MeasureStringInfo.html#Chars">Chars</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Height">Height</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Lines">Lines</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Width">Width</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#X">X</a></li><li><a href="GdiGraphics-MeasureStringInfo.html#Y">Y</a></li></ul></div></li><li><a href="GdiRawBitmap.html">GdiRawBitmap</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="GdiRawBitmap_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="GdiRawBitmap.html#Height">Height</a></li><li><a href="GdiRawBitmap.html#Width">Width</a></li></ul></div></li><li><a href="IUIHacks.html">IUIHacks</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks.html#Aero">Aero</a></li><li><a href="IUIHacks.html#BlockMaximize">BlockMaximize</a></li><li><a href="IUIHacks.html#DisableSizing">DisableSizing</a></li><li><a href="IUIHacks.html#EnableSizing">EnableSizing</a></li><li><a href="IUIHacks.html#FoobarCPUUsage">FoobarCPUUsage</a></li><li><a href="IUIHacks.html#FrameStyle">FrameStyle</a></li><li><a href="IUIHacks.html#FullScreen">FullScreen</a></li><li><a href="IUIHacks.html#MainMenuState">MainMenuState</a></li><li><a href="IUIHacks.html#MainWindowID">MainWindowID</a></li><li><a href="IUIHacks.html#MainWindowState">MainWindowState</a></li><li><a href="IUIHacks.html#MasterVolume">MasterVolume</a></li><li><a href="IUIHacks.html#MaxSize">MaxSize</a></li><li><a href="IUIHacks.html#MinSize">MinSize</a></li><li><a href="IUIHacks.html#MoveStyle">MoveStyle</a></li><li><a href="IUIHacks.html#StatusBarState">StatusBarState</a></li><li><a href="IUIHacks.html#SystemCPUUsage">SystemCPUUsage</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="IUIHacks.html#SetPseudoCaption">SetPseudoCaption</a></li></ul></div></li><li><a href="IUIHacks-IAero.html">IAero</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks~IAero_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks-IAero.html#Active">Active</a></li><li><a href="IUIHacks-IAero.html#Bottom">Bottom</a></li><li><a href="IUIHacks-IAero.html#Effect">Effect</a></li><li><a href="IUIHacks-IAero.html#Left">Left</a></li><li><a href="IUIHacks-IAero.html#Right">Right</a></li><li><a href="IUIHacks-IAero.html#Top">Top</a></li><li><a href="IUIHacks-IAero.html#Transparency">Transparency</a></li></ul></div></li><li><a href="IUIHacks-IConstraints.html">IConstraints</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks~IConstraints_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks-IConstraints.html#Enabled">Enabled</a></li><li><a href="IUIHacks-IConstraints.html#Height">Height</a></li><li><a href="IUIHacks-IConstraints.html#Width">Width</a></li></ul></div></li><li><a href="IUIHacks-IMasterVolume.html">IMasterVolume</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="IUIHacks~IMasterVolume_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="IUIHacks-IMasterVolume.html#ChannelCount">ChannelCount</a></li><li><a href="IUIHacks-IMasterVolume.html#Mute">Mute</a></li><li><a href="IUIHacks-IMasterVolume.html#Volume">Volume</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="IUIHacks-IMasterVolume.html#GetChannelVolume">GetChannelVolume</a></li><li><a href="IUIHacks-IMasterVolume.html#SetChannelVolume">SetChannelVolume</a></li><li><a href="IUIHacks-IMasterVolume.html#VolumeStepDown">VolumeStepDown</a></li><li><a href="IUIHacks-IMasterVolume.html#VolumeStepUp">VolumeStepUp</a></li></ul></div></li><li><a href="MainMenuManager.html">MainMenuManager</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="MainMenuManager_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="MainMenuManager.html#BuildMenu">BuildMenu</a></li><li><a href="MainMenuManager.html#ExecuteByID">ExecuteByID</a></li><li><a href="MainMenuManager.html#Init">Init</a></li></ul></div></li><li><a href="MenuObject.html">MenuObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="MenuObject_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="MenuObject.html#AppendMenuItem">AppendMenuItem</a></li><li><a href="MenuObject.html#AppendMenuSeparator">AppendMenuSeparator</a></li><li><a href="MenuObject.html#AppendTo">AppendTo</a></li><li><a href="MenuObject.html#CheckMenuItem">CheckMenuItem</a></li><li><a href="MenuObject.html#CheckMenuRadioItem">CheckMenuRadioItem</a></li><li><a href="MenuObject.html#TrackPopupMenu">TrackPopupMenu</a></li></ul></div></li><li><a href="PanelObject.html">PanelObject</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="PanelObject_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="PanelObject.html#EraseBackground">EraseBackground</a></li><li><a href="PanelObject.html#Height">Height</a></li><li><a href="PanelObject.html#Hidden">Hidden</a></li><li><a href="PanelObject.html#Locked">Locked</a></li><li><a href="PanelObject.html#Name">Name</a></li><li><a href="PanelObject.html#ShowCaption">ShowCaption</a></li><li><a href="PanelObject.html#SupportPseudoTransparency">SupportPseudoTransparency</a></li><li><a href="PanelObject.html#Text">Text</a></li><li><a href="PanelObject.html#TopMost">TopMost</a></li><li><a href="PanelObject.html#Width">Width</a></li><li><a href="PanelObject.html#X">X</a></li><li><a href="PanelObject.html#Y">Y</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="PanelObject.html#Move">Move</a></li><li><a href="PanelObject.html#Show">Show</a></li></ul></div></li><li><a href="PerformanceObserver.html">PerformanceObserver</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="PerformanceObserver_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="PerformanceObserver.html#supportedEntryTypes">supportedEntryTypes</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="PerformanceObserver.html#disconnect">disconnect</a></li><li><a href="PerformanceObserver.html#observe">observe</a></li><li><a href="PerformanceObserver.html#takeRecords">takeRecords</a></li></ul></div></li><li><a href="PerformanceObserverEntryList.html">PerformanceObserverEntryList</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="PerformanceObserverEntryList_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="PerformanceObserverEntryList.html#getEntries">getEntries</a></li><li><a href="PerformanceObserverEntryList.html#getEntriesByName">getEntriesByName</a></li><li><a href="PerformanceObserverEntryList.html#getEntriesByType">getEntriesByType</a></li></ul></div></li><li><a href="ThemeManager.html">ThemeManager</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="ThemeManager_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="ThemeManager.html#DrawThemeBackground">DrawThemeBackground</a></li><li><a href="ThemeManager.html#IsThemePartDefined">IsThemePartDefined</a></li><li><a href="ThemeManager.html#SetPartAndStateID">SetPartAndStateID</a></li></ul></div></li><li><a href="module-Matrix.Matrix3x2.html">Matrix3x2</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Matrix.Matrix3x2_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Matrix.Matrix3x2.html#.Determinant">Determinant</a></li><li><a href="module-Matrix.Matrix3x2.html#.Identity">Identity</a></li><li><a href="module-Matrix.Matrix3x2.html#.Multiply">Multiply</a></li><li><a href="module-Matrix.Matrix3x2.html#.Rotation">Rotation</a></li><li><a href="module-Matrix.Matrix3x2.html#.Scale">Scale</a></li><li><a href="module-Matrix.Matrix3x2.html#.Skew">Skew</a></li><li><a href="module-Matrix.Matrix3x2.html#.TransformPoint">TransformPoint</a></li><li><a href="module-Matrix.Matrix3x2.html#.Translation">Translation</a></li></ul></div></li><li><a href="module-Matrix.Matrix4x4.html">Matrix4x4</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:Matrix.Matrix4x4_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="module-Matrix.Matrix4x4.html#.Determinant">Determinant</a></li><li><a href="module-Matrix.Matrix4x4.html#.Identity">Identity</a></li><li><a href="module-Matrix.Matrix4x4.html#.Multiply">Multiply</a></li><li><a href="module-Matrix.Matrix4x4.html#.PerspectiveProjection">PerspectiveProjection</a></li><li><a href="module-Matrix.Matrix4x4.html#.RotationArbitraryAxis">RotationArbitraryAxis</a></li><li><a href="module-Matrix.Matrix4x4.html#.RotationX">RotationX</a></li><li><a href="module-Matrix.Matrix4x4.html#.RotationY">RotationY</a></li><li><a href="module-Matrix.Matrix4x4.html#.RotationZ">RotationZ</a></li><li><a href="module-Matrix.Matrix4x4.html#.Scale">Scale</a></li><li><a href="module-Matrix.Matrix4x4.html#.SkewX">SkewX</a></li><li><a href="module-Matrix.Matrix4x4.html#.SkewY">SkewY</a></li><li><a href="module-Matrix.Matrix4x4.html#.Translation">Translation</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Namespaces</h3><ul><li><a href="console.html">console</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="console_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="console.html#.ClearBacklog">ClearBacklog</a></li><li><a href="console.html#.GetLines">GetLines</a></li><li><a href="console.html#.log">log</a></li></ul></div></li><li><a href="d2d.html">d2d</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="d2d_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="d2d.html#.Brush">Brush</a></li><li><a href="d2d.html#.Compile">Compile</a></li><li><a href="d2d.html#.CreateImage">CreateImage</a></li><li><a href="d2d.html#.CreateImageFromPixelData">CreateImageFromPixelData</a></li><li><a href="d2d.html#.Effect">Effect</a></li><li><a href="d2d.html#.Font">Font</a></li><li><a href="d2d.html#.Image">Image</a></li><li><a href="d2d.html#.LoadImageAsync">LoadImageAsync</a></li><li><a href="d2d.html#.LoadImageAsyncV2">LoadImageAsyncV2</a></li></ul></div></li><li><a href="fb.html">fb</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="fb_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="fb.html#.AlwaysOnTop">AlwaysOnTop</a></li><li><a href="fb.html#.ComponentPath">ComponentPath</a></li><li><a href="fb.html#.CursorFollowPlayback">CursorFollowPlayback</a></li><li><a href="fb.html#.CustomVolume">CustomVolume</a></li><li><a href="fb.html#.FoobarPath">FoobarPath</a></li><li><a href="fb.html#.IsPaused">IsPaused</a></li><li><a href="fb.html#.IsPlaying">IsPlaying</a></li><li><a href="fb.html#.PlaybackFollowCursor">PlaybackFollowCursor</a></li><li><a href="fb.html#.PlaybackLength">PlaybackLength</a></li><li><a href="fb.html#.PlaybackTime">PlaybackTime</a></li><li><a href="fb.html#.ProfilePath">ProfilePath</a></li><li><a href="fb.html#.ReplaygainMode">ReplaygainMode</a></li><li><a href="fb.html#.StopAfterCurrent">StopAfterCurrent</a></li><li><a href="fb.html#.Version">Version</a></li><li><a href="fb.html#.Volume">Volume</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="fb.html#.AcquireUiSelectionHolder">AcquireUiSelectionHolder</a></li><li><a href="fb.html#.AddDirectory">AddDirectory</a></li><li><a href="fb.html#.AddFiles">AddFiles</a></li><li><a href="fb.html#.AddLocationsAsync">AddLocationsAsync</a></li><li><a href="fb.html#.CheckClipboardContents">CheckClipboardContents</a></li><li><a href="fb.html#.ClearPlaylist">ClearPlaylist</a></li><li><a href="fb.html#.CopyHandleListToClipboard">CopyHandleListToClipboard</a></li><li><a href="fb.html#.CreateContextMenuManager">CreateContextMenuManager</a></li><li><a href="fb.html#.CreateHandleList">CreateHandleList</a></li><li><a href="fb.html#.CreateMainMenuManager">CreateMainMenuManager</a></li><li><a href="fb.html#.CreateProfiler">CreateProfiler</a></li><li><a href="fb.html#.DoDragDrop">DoDragDrop</a></li><li><a href="fb.html#.Exit">Exit</a></li><li><a href="fb.html#.GetAudioChunk">GetAudioChunk</a></li><li><a href="fb.html#.GetClipboardContents">GetClipboardContents</a></li><li><a href="fb.html#.GetDSPPresets">GetDSPPresets</a></li><li><a href="fb.html#.GetFocusItem">GetFocusItem</a></li><li><a href="fb.html#.GetLibraryItems">GetLibraryItems</a></li><li><a href="fb.html#.GetLibraryRelativePath">GetLibraryRelativePath</a></li><li><a href="fb.html#.GetNowPlaying">GetNowPlaying</a></li><li><a href="fb.html#.GetOutputDevices">GetOutputDevices</a></li><li><a href="fb.html#.GetQueryItems">GetQueryItems</a></li><li><a href="fb.html#.GetSelection">GetSelection</a></li><li><a href="fb.html#.GetSelectionType">GetSelectionType</a></li><li><a href="fb.html#.GetSelections">GetSelections</a></li><li><a href="fb.html#.IsLibraryEnabled">IsLibraryEnabled</a></li><li><a href="fb.html#.IsMainMenuCommandChecked">IsMainMenuCommandChecked</a></li><li><a href="fb.html#.IsMetadbInMediaLibrary">IsMetadbInMediaLibrary</a></li><li><a href="fb.html#.LoadPlaylist">LoadPlaylist</a></li><li><a href="fb.html#.Next">Next</a></li><li><a href="fb.html#.Pause">Pause</a></li><li><a href="fb.html#.Play">Play</a></li><li><a href="fb.html#.PlayOrPause">PlayOrPause</a></li><li><a href="fb.html#.Prev">Prev</a></li><li><a href="fb.html#.Random">Random</a></li><li><a href="fb.html#.RegisterMainMenuCommand">RegisterMainMenuCommand</a></li><li><a href="fb.html#.Restart">Restart</a></li><li><a href="fb.html#.RunContextCommand">RunContextCommand</a></li><li><a href="fb.html#.RunContextCommandWithMetadb">RunContextCommandWithMetadb</a></li><li><a href="fb.html#.RunMainMenuCommand">RunMainMenuCommand</a></li><li><a href="fb.html#.SavePlaylist">SavePlaylist</a></li><li><a href="fb.html#.SetDSPPreset">SetDSPPreset</a></li><li><a href="fb.html#.SetOutputDevice">SetOutputDevice</a></li><li><a href="fb.html#.ShowConsole">ShowConsole</a></li><li><a href="fb.html#.ShowLibrarySearchUI">ShowLibrarySearchUI</a></li><li><a href="fb.html#.ShowPictureViewer">ShowPictureViewer</a></li><li><a href="fb.html#.ShowPopupMessage">ShowPopupMessage</a></li><li><a href="fb.html#.ShowPreferences">ShowPreferences</a></li><li><a href="fb.html#.Stop">Stop</a></li><li><a href="fb.html#.TitleFormat">TitleFormat</a></li><li><a href="fb.html#.UnregisterMainMenuCommand">UnregisterMainMenuCommand</a></li><li><a href="fb.html#.VolumeDown">VolumeDown</a></li><li><a href="fb.html#.VolumeMute">VolumeMute</a></li><li><a href="fb.html#.VolumeUp">VolumeUp</a></li></ul></div></li><li><a href="gdi.html">gdi</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="gdi_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="gdi.html#.Brush">Brush</a></li><li><a href="gdi.html#.CreateImage">CreateImage</a></li><li><a href="gdi.html#.CreateImageFromPixelData">CreateImageFromPixelData</a></li><li><a href="gdi.html#.Font">Font</a></li><li><a href="gdi.html#.Image">Image</a></li><li><a href="gdi.html#.LoadImageAsync">LoadImageAsync</a></li><li><a href="gdi.html#.LoadImageAsyncV2">LoadImageAsyncV2</a></li></ul></div></li><li><a href="performance.html">performance</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="performance_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="performance.html#.timeOrigin">timeOrigin</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="performance.html#.Observer">Observer</a></li><li><a href="performance.html#.clearMarks">clearMarks</a></li><li><a href="performance.html#.clearMeasures">clearMeasures</a></li><li><a href="performance.html#.getEntries">getEntries</a></li><li><a href="performance.html#.getEntriesByName">getEntriesByName</a></li><li><a href="performance.html#.getEntriesByType">getEntriesByType</a></li><li><a href="performance.html#.mark">mark</a></li><li><a href="performance.html#.measure">measure</a></li><li><a href="performance.html#.now">now</a></li><li><a href="performance.html#.toString">toString</a></li></ul></div></li><li><a href="plman.html">plman</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="plman_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="plman.html#.ActivePlaylist">ActivePlaylist</a></li><li><a href="plman.html#.PlaybackOrder">PlaybackOrder</a></li><li><a href="plman.html#.PlayingPlaylist">PlayingPlaylist</a></li><li><a href="plman.html#.PlaylistCount">PlaylistCount</a></li><li><a href="plman.html#.PlaylistRecycler">PlaylistRecycler</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="plman.html#.AddItemToPlaybackQueue">AddItemToPlaybackQueue</a></li><li><a href="plman.html#.AddLocations">AddLocations</a></li><li><a href="plman.html#.AddPlaylistItemToPlaybackQueue">AddPlaylistItemToPlaybackQueue</a></li><li><a href="plman.html#.ClearPlaylist">ClearPlaylist</a></li><li><a href="plman.html#.ClearPlaylistSelection">ClearPlaylistSelection</a></li><li><a href="plman.html#.CreateAutoPlaylist">CreateAutoPlaylist</a></li><li><a href="plman.html#.CreatePlaylist">CreatePlaylist</a></li><li><a href="plman.html#.DuplicatePlaylist">DuplicatePlaylist</a></li><li><a href="plman.html#.EnsurePlaylistItemVisible">EnsurePlaylistItemVisible</a></li><li><a href="plman.html#.ExecutePlaylistDefaultAction">ExecutePlaylistDefaultAction</a></li><li><a href="plman.html#.FindByGUID">FindByGUID</a></li><li><a href="plman.html#.FindOrCreatePlaylist">FindOrCreatePlaylist</a></li><li><a href="plman.html#.FindPlaybackQueueItemIndex">FindPlaybackQueueItemIndex</a></li><li><a href="plman.html#.FindPlaylist">FindPlaylist</a></li><li><a href="plman.html#.FlushPlaybackQueue">FlushPlaybackQueue</a></li><li><a href="plman.html#.GetGUID">GetGUID</a></li><li><a href="plman.html#.GetPlaybackQueueContents">GetPlaybackQueueContents</a></li><li><a href="plman.html#.GetPlaybackQueueHandles">GetPlaybackQueueHandles</a></li><li><a href="plman.html#.GetPlayingItemLocation">GetPlayingItemLocation</a></li><li><a href="plman.html#.GetPlaylistFocusItemIndex">GetPlaylistFocusItemIndex</a></li><li><a href="plman.html#.GetPlaylistItems">GetPlaylistItems</a></li><li><a href="plman.html#.GetPlaylistLockName">GetPlaylistLockName</a></li><li><a href="plman.html#.GetPlaylistLockedActions">GetPlaylistLockedActions</a></li><li><a href="plman.html#.GetPlaylistName">GetPlaylistName</a></li><li><a href="plman.html#.GetPlaylistSelectedItems">GetPlaylistSelectedItems</a></li><li><a href="plman.html#.InsertPlaylistItems">InsertPlaylistItems</a></li><li><a href="plman.html#.InsertPlaylistItemsFilter">InsertPlaylistItemsFilter</a></li><li><a href="plman.html#.IsAutoPlaylist">IsAutoPlaylist</a></li><li><a href="plman.html#.IsPlaylistItemSelected">IsPlaylistItemSelected</a></li><li><a href="plman.html#.IsPlaylistLocked">IsPlaylistLocked</a></li><li><a href="plman.html#.IsRedoAvailable">IsRedoAvailable</a></li><li><a href="plman.html#.IsUndoAvailable">IsUndoAvailable</a></li><li><a href="plman.html#.MovePlaylist">MovePlaylist</a></li><li><a href="plman.html#.MovePlaylistSelection">MovePlaylistSelection</a></li><li><a href="plman.html#.PlaylistItemCount">PlaylistItemCount</a></li><li><a href="plman.html#.Redo">Redo</a></li><li><a href="plman.html#.RemoveItemFromPlaybackQueue">RemoveItemFromPlaybackQueue</a></li><li><a href="plman.html#.RemoveItemsFromPlaybackQueue">RemoveItemsFromPlaybackQueue</a></li><li><a href="plman.html#.RemovePlaylist">RemovePlaylist</a></li><li><a href="plman.html#.RemovePlaylistSelection">RemovePlaylistSelection</a></li><li><a href="plman.html#.RemovePlaylistSwitch">RemovePlaylistSwitch</a></li><li><a href="plman.html#.RenamePlaylist">RenamePlaylist</a></li><li><a href="plman.html#.SetActivePlaylistContext">SetActivePlaylistContext</a></li><li><a href="plman.html#.SetPlaylistFocusItem">SetPlaylistFocusItem</a></li><li><a href="plman.html#.SetPlaylistFocusItemByHandle">SetPlaylistFocusItemByHandle</a></li><li><a href="plman.html#.SetPlaylistLockedActions">SetPlaylistLockedActions</a></li><li><a href="plman.html#.SetPlaylistSelection">SetPlaylistSelection</a></li><li><a href="plman.html#.SetPlaylistSelectionSingle">SetPlaylistSelectionSingle</a></li><li><a href="plman.html#.ShowAutoPlaylistUI">ShowAutoPlaylistUI</a></li><li><a href="plman.html#.SortByFormat">SortByFormat</a></li><li><a href="plman.html#.SortByFormatV2">SortByFormatV2</a></li><li><a href="plman.html#.SortPlaylistsByName">SortPlaylistsByName</a></li><li><a href="plman.html#.Undo">Undo</a></li><li><a href="plman.html#.UndoBackup">UndoBackup</a></li></ul></div></li><li><a href="utils.html">utils</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="utils_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="utils.html#.Version">Version</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="utils.html#.CRC32">CRC32</a></li><li><a href="utils.html#.CRC32FromFile">CRC32FromFile</a></li><li><a href="utils.html#.CheckComponent">CheckComponent</a></li><li><a href="utils.html#.CheckFont">CheckFont</a></li><li><a href="utils.html#.ColourPicker">ColourPicker</a></li><li><a href="utils.html#.ConvertToAscii">ConvertToAscii</a></li><li><a href="utils.html#.CopyFile">CopyFile</a></li><li><a href="utils.html#.CopyFolder">CopyFolder</a></li><li><a href="utils.html#.CreateFolder">CreateFolder</a></li><li><a href="utils.html#.DetectCharset">DetectCharset</a></li><li><a href="utils.html#.DownloadFileAsync">DownloadFileAsync</a></li><li><a href="utils.html#.EditTextFile">EditTextFile</a></li><li><a href="utils.html#.FileExists">FileExists</a></li><li><a href="utils.html#.FilePicker">FilePicker</a></li><li><a href="utils.html#.FileTest">FileTest</a></li><li><a href="utils.html#.FolderPicker">FolderPicker</a></li><li><a href="utils.html#.FontPicker">FontPicker</a></li><li><a href="utils.html#.FormatDuration">FormatDuration</a></li><li><a href="utils.html#.FormatFileSize">FormatFileSize</a></li><li><a href="utils.html#.GetAlbumArtAsync">GetAlbumArtAsync</a></li><li><a href="utils.html#.GetAlbumArtAsyncV2">GetAlbumArtAsyncV2</a></li><li><a href="utils.html#.GetAlbumArtEmbedded">GetAlbumArtEmbedded</a></li><li><a href="utils.html#.GetAlbumArtV2">GetAlbumArtV2</a></li><li><a href="utils.html#.GetClipboardText">GetClipboardText</a></li><li><a href="utils.html#.GetFileSize">GetFileSize</a></li><li><a href="utils.html#.GetLastModified">GetLastModified</a></li><li><a href="utils.html#.GetPackageInfo">GetPackageInfo</a></li><li><a href="utils.html#.GetPackagePath">GetPackagePath</a></li><li><a href="utils.html#.GetSysColour">GetSysColour</a></li><li><a href="utils.html#.GetSystemMetrics">GetSystemMetrics</a></li><li><a href="utils.html#.Glob">Glob</a></li><li><a href="utils.html#.HTTPRequestAsync">HTTPRequestAsync</a></li><li><a href="utils.html#.InputBox">InputBox</a></li><li><a href="utils.html#.IsDirectory">IsDirectory</a></li><li><a href="utils.html#.IsFile">IsFile</a></li><li><a href="utils.html#.IsKeyPressed">IsKeyPressed</a></li><li><a href="utils.html#.ListFonts">ListFonts</a></li><li><a href="utils.html#.MD5">MD5</a></li><li><a href="utils.html#.MD5FromFile">MD5FromFile</a></li><li><a href="utils.html#.MapString">MapString</a></li><li><a href="utils.html#.MessageBox">MessageBox</a></li><li><a href="utils.html#.PathWildcardMatch">PathWildcardMatch</a></li><li><a href="utils.html#.ReadBinaryFile">ReadBinaryFile</a></li><li><a href="utils.html#.ReadINI">ReadINI</a></li><li><a href="utils.html#.ReadTextFile">ReadTextFile</a></li><li><a href="utils.html#.ReadUTF8">ReadUTF8</a></li><li><a href="utils.html#.RemovePath">RemovePath</a></li><li><a href="utils.html#.RenamePath">RenamePath</a></li><li><a href="utils.html#.ReplaceIllegalChars">ReplaceIllegalChars</a></li><li><a href="utils.html#.SHA1">SHA1</a></li><li><a href="utils.html#.SHA1FromFile">SHA1FromFile</a></li><li><a href="utils.html#.SetClipboardText">SetClipboardText</a></li><li><a href="utils.html#.ShowHtmlDialog">ShowHtmlDialog</a></li><li><a href="utils.html#.SplitFilePath">SplitFilePath</a></li><li><a href="utils.html#.WriteBinaryFile">WriteBinaryFile</a></li><li><a href="utils.html#.WriteINI">WriteINI</a></li><li><a href="utils.html#.WriteTextFile">WriteTextFile</a></li></ul></div></li><li><a href="window.html">window</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="window_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="window.html#.DPI">DPI</a></li><li><a href="window.html#.DlgCode">DlgCode</a></li><li><a href="window.html#.DrawMode">DrawMode</a></li><li><a href="window.html#.EraseOnRepaint">EraseOnRepaint</a></li><li><a href="window.html#.FoobarWindowHeight">FoobarWindowHeight</a></li><li><a href="window.html#.FoobarWindowWidth">FoobarWindowWidth</a></li><li><a href="window.html#.FoobarWindowX">FoobarWindowX</a></li><li><a href="window.html#.FoobarWindowY">FoobarWindowY</a></li><li><a href="window.html#.HandOnButtons">HandOnButtons</a></li><li><a href="window.html#.Height">Height</a></li><li><a href="window.html#.ID">ID</a></li><li><a href="window.html#.InstanceType">InstanceType</a></li><li><a href="window.html#.IsTransparent">IsTransparent</a></li><li><a href="window.html#.IsVisible">IsVisible</a></li><li><a href="window.html#.JsMemoryStats">JsMemoryStats</a></li><li><a href="window.html#.MaxHeight">MaxHeight</a></li><li><a href="window.html#.MaxWidth">MaxWidth</a></li><li><a href="window.html#.MemoryLimit">MemoryLimit</a></li><li><a href="window.html#.MinHeight">MinHeight</a></li><li><a href="window.html#.MinWidth">MinWidth</a></li><li><a href="window.html#.Name">Name</a></li><li><a href="window.html#.PanelMemoryUsage">PanelMemoryUsage</a></li><li><a href="window.html#.ScriptInfo">ScriptInfo</a></li><li><a href="window.html#.Tooltip">Tooltip</a></li><li><a href="window.html#.TotalMemoryUsage">TotalMemoryUsage</a></li><li><a href="window.html#.TrackMouseEnterLeaveOnPanels">TrackMouseEnterLeaveOnPanels</a></li><li><a href="window.html#.TrackMouseMoveOnPanels">TrackMouseMoveOnPanels</a></li><li><a href="window.html#.Width">Width</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="window.html#.ClearInterval">ClearInterval</a></li><li><a href="window.html#.ClearTimeout">ClearTimeout</a></li><li><a href="window.html#.CreateButton">CreateButton</a></li><li><a href="window.html#.CreatePopupMenu">CreatePopupMenu</a></li><li><a href="window.html#.CreateThemeManager">CreateThemeManager</a></li><li><a href="window.html#.CreateTooltip">CreateTooltip</a></li><li><a href="window.html#.DefinePanel">DefinePanel</a></li><li><a href="window.html#.DefineScript">DefineScript</a></li><li><a href="window.html#.EditScript">EditScript</a></li><li><a href="window.html#.GetButton">GetButton</a></li><li><a href="window.html#.GetColourCUI">GetColourCUI</a></li><li><a href="window.html#.GetColourDUI">GetColourDUI</a></li><li><a href="window.html#.GetFontCUI">GetFontCUI</a></li><li><a href="window.html#.GetFontDUI">GetFontDUI</a></li><li><a href="window.html#.GetPanel">GetPanel</a></li><li><a href="window.html#.GetPanelByIndex">GetPanelByIndex</a></li><li><a href="window.html#.GetPanelCount">GetPanelCount</a></li><li><a href="window.html#.GetProperty">GetProperty</a></li><li><a href="window.html#.NotifyOthers">NotifyOthers</a></li><li><a href="window.html#.RadioButtons">RadioButtons</a></li><li><a href="window.html#.Reload">Reload</a></li><li><a href="window.html#.RemoveButton">RemoveButton</a></li><li><a href="window.html#.Repaint">Repaint</a></li><li><a href="window.html#.RepaintRect">RepaintRect</a></li><li><a href="window.html#.SetCursor">SetCursor</a></li><li><a href="window.html#.SetInterval">SetInterval</a></li><li><a href="window.html#.SetProperty">SetProperty</a></li><li><a href="window.html#.SetShortcutFilter">SetShortcutFilter</a></li><li><a href="window.html#.SetTimeout">SetTimeout</a></li><li><a href="window.html#.ShowConfigure">ShowConfigure</a></li><li><a href="window.html#.ShowConfigureV2">ShowConfigureV2</a></li><li><a href="window.html#.ShowProperties">ShowProperties</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Global</h3><ul><li class="hidden"><a href="global.html#ArtPromiseResult">ArtPromiseResult</a></li><li class="hidden"><a href="global.html#JsMemoryStats">JsMemoryStats</a></li><li class="hidden"><a href="global.html#JsPackageDirs">JsPackageDirs</a></li><li class="hidden"><a href="global.html#JsPackageInfo">JsPackageInfo</a></li><li class="hidden"><a href="global.html#PerformanceEntry">PerformanceEntry</a></li><li class="hidden"><a href="global.html#ScriptInfo">ScriptInfo</a></li><li><a href="global.html#clearInterval">clearInterval</a></li><li><a href="global.html#clearTimeout">clearTimeout</a></li><li class="hidden"><a href="global.html#float">float</a></li><li><a href="global.html#include">include</a></li><li><a href="global.html#setInterval">setInterval</a></li><li><a href="global.html#setTimeout">setTimeout</a></li></ul></div>
+</nav>
+<div id="resizer"></div>
+
+<div class="main" id="main">
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Direct2D effects&lt;br>
+ * Minimum system requirements: Windows 7 Platform Update (Direct2D 1.1)&lt;br>
+ * Not all effects in this module supported by minimum Direct2D version.&lt;br>
+ * {@link d2d.Effect} returns null if effect is not supported.&lt;br>
+ * See examples on top and bottom of this page.
+ * @module Effects
+ * @example
+ * window.DrawMode = 1;
+ * 
+ * include(`${fb.ComponentPath}\\docs\\Effects.js`);
+ * 
+ * const img = d2d.Image(`${fb.ComponentPath}\\samples\\d2d\\images\\Flowers.jpg`);
+ * 
+ * const effect = d2d.Effect(Effects.Sepia.ID);
+ * effect.SetInput(0, img);
+ * effect.SetValue(Effects.Sepia.Intensity, 0.5);
+ * 
+ * function on_paint(dgr) {	
+ *     dgr.DrawEffect(effect, 0, 0, 0, 0, img.Width, img.Height);
+ * }
+ * 
+ * @example
+ * window.DrawMode = 1;
+ * 
+ * include(`${fb.ComponentPath}\\docs\\Effects.js`);
+ * 
+ * const img = d2d.Image(`${fb.ComponentPath}\\samples\\d2d\\images\\Flowers.jpg`);
+ * 
+ * const sepia = d2d.Effect(Effects.Sepia.ID);
+ * sepia.SetInput(0, img);
+ * sepia.SetValue(Effects.Sepia.Intensity, 0.5);
+ *
+ * const contrast = d2d.Effect(Effects.Contrast.ID);
+ * contrast.SetInputEffect(0, sepia);
+ * contrast.SetValue(Effects.Contrast.Contrast, 1.0);
+ *
+ * const scale = d2d.Effect(Effects.Scale.ID);
+ * scale.SetInputEffect(0, contrast);
+ * scale.SetValue(Effects.Scale.Scale, new Float32Array([0.7, 0.7]));
+ * 
+ * function on_paint(dgr) {	
+ *     dgr.DrawEffect(scale, 10, 10, 0, 0, img.Width, img.Height);
+ * }
+ * 
+ * @example
+ * include(`${fb.ComponentPath}\\docs\\Effects.js`);
+ * 
+ * window.DrawMode = 1;
+ * 
+ * // Simple colour inversion shader
+ * const shaderSource = `
+ *     // Input texture (Direct2D passed it into t0)
+ *     Texture2D InputTexture : register(t0);
+ *     SamplerState InputSampler : register(s0);
+ * 
+ *     // Direct2D input data structure
+ *     struct VS_OUTPUT {
+ *         float4 clipSpacePos : SV_POSITION;
+ *         float4 sceneSpacePos : SCENE_POS;
+ *         float4 texelSpacePos : TEXEL_POS;
+ *     };
+ * 
+ *     // Simple color inversion shader
+ *     float4 main(VS_OUTPUT input) : SV_Target
+ *     {
+ *         // Selecting a pixel from an input image
+ *         float4 color = InputTexture.Sample(InputSampler, input.texelSpacePos.xy);
+ * 	
+ *         // Invert RGB, keep alpha
+ *         return float4(1.0 - color.rgb, color.a) * color.a;
+ *     }
+ * `;
+ * 
+ * const img = d2d.Image(`${fb.ComponentPath}\\samples\\d2d\\images\\Flowers.jpg`);
+ * const effect = d2d.Effect(Effects.CustomShader.ID);
+ * effect.SetInput(0, img);
+ * 
+ * const shaderCode = d2d.Compile(shaderSource);
+ * if (shaderCode.Error !== "") 
+ *     fb.ShowPopupMessage(shaderCode.Error, "Direct2D compile error!");
+ * else
+ *     effect.SetValue(Effects.CustomShader.ShaderCode, shaderCode.Code);
+ * 
+ * function on_paint(dgr) {	
+ *     dgr.DrawEffect(effect, 10, 10, 0, 0, img.Width, img.Height);
+ * }
+ */
+
+/** 
+ * @typedef {Object} Effects
+ * @memberof module:Effects
+ * 
+ * @property {Object} ColorMatrix
+ * Use the color matrix effect to alter the RGBA values of a bitmap.&lt;br>
+ * You can use this effect to: &lt;br>
+ * ● Remove a color channel from an image.&lt;br>
+ * ● Reduce the color in an image.&lt;br>
+ * ● Swap color channels.&lt;br>
+ * ● Combine color channels.&lt;br>
+ * Many built-in effects are specializations of color matrix that are optimized for the intended use of the effects. Examples include saturation, hue rotate, sepia, and temperature and tint.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/color-matrix}
+ * @property {string} ColorMatrix.ID
+ * CLSID of effect.
+ * @property {string} ColorMatrix.ColorMatrix
+ * Value type: &lt;b>Float32Array(20)&lt;/b>&lt;br>
+ * A 5x4 matrix of float values. The elements in the matrix are not bounded and are unitless. The default is the identity matrix.&lt;br>
+ * The default value is [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+ * @property {string} ColorMatrix.AlphaMode
+ * Value type: &lt;b>{@link module:Effects.ColorMatrixAlphaMode ColorMatrixAlphaMode}&lt;/b>&lt;br>
+ * The alpha mode of the output.&lt;br>
+ * The default value is {@link module:Effects.ColorMatrixAlphaMode ColorMatrixAlphaMode.Premultiplied}
+ * @property {string} ColorMatrix.ClampOutput
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Whether the effect clamps color values to between 0 and 1 before the effect passes the values to the next effect in the graph. The effect clamps the values before it premultiplies the alpha. If you set this to TRUE the effect will clamp the values. If you set this to FALSE, the effect will not clamp the color values, but other effects and the output surface may clamp the values if they are not of high enough precision.&lt;br>
+ * The default value is FALSE
+ * 
+ * @property {Object} HdrToneMap
+ * This effect adjusts the dynamic range of an image to better suit its content to the capability of the output display.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/hdr-tone-map-effect}
+ * @property {string} HdrToneMap.ID
+ * CLSID of effect.
+ * @property {string} HdrToneMap.InputMaxLuminance
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The maximum light level (or MaxCLL) of the image, in nits.
+ * @property {string} HdrToneMap.OutputMaxLuminance
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The MaxCLL supported by the output target, in nits—typically set to the MaxCLL of the display.
+ * @property {string} HdrToneMap.DisplayMode
+ * Value type: &lt;b>{@link module:Effects.HdrToneMapDisplayMode HdrToneMapDisplayMode}&lt;/b>&lt;br>
+ * When set to HDR, the tone mapping curve is adjusted to better fit the fit the behavior of common HDR displays.&lt;br>
+ * 
+ * @property {Object} WhiteLevelAdjustment
+ * This effect allows the white level of an image to be linearly scaled. This is especially helpful when you convert between display-referred luminance space and scene-referred luminance space, or vice versa.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/white-level-adjustment-effect}
+ * @property {string} WhiteLevelAdjustment.ID
+ * CLSID of effect.
+ * @property {string} WhiteLevelAdjustment.InputWhiteLevel
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The white level of the input image, in nits.
+ * @property {string} WhiteLevelAdjustment.OutputWhiteLevel
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The white level of the output image, in nits.
+ * 
+ * @property {Object} AlphaMask
+ * This effect applies an alpha mask to an image. It has two inputs, named Destination and Mask. Color values in the Destination image are multiplied by the alpha channel of the Mask image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/alpha-mask-effect}
+ * @property {string} AlphaMask.ID
+ * CLSID of effect.
+ * 
+ * @property {Object} ArithmeticComposite
+ * Use the arithmetic composite effect to combine 2 images using a weighted sum of pixels from the input images.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/arithmetic-composite}
+ * @property {string} ArithmeticComposite.ID
+ * CLSID of effect.
+ * @property {string} ArithmeticComposite.Coefficients
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * The coefficients for the equation used to composite the two input images. The coefficients are unitless and unbounded.&lt;br>
+ * Default value is [1.0, 0.0, 0.0, 0.0].
+ * @property {string} ArithmeticComposite.ClampOutput
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * The effect clamps color values to between 0 and 1 before the effect passes the values to the next effect in the graph. If you set this to TRUE the effect will clamp the values. If you set this to FALSE, the effect will not clamp the color values, but other effects and the output surface may clamp the values if they are not of high enough precision.&lt;br>
+ * Default value is FALSE.
+ * 
+ * @property {Object} Blend
+ * Use the blend effect to combine 2 images. This effect has 26 blend modes.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/blend}
+ * @property {string} Blend.ID
+ * CLSID of effect.
+ * @property {string} Blend.Mode
+ * Value type: &lt;b>{@link module:Effects.Blend Blend}&lt;/b>&lt;br>
+ * The interpolation mode the effect uses to scale the image to the corresponding kernel unit length. There are six scale modes that range in quality and speed.&lt;br>
+ * The default value is {@link module:Effects.Blend Blend.Multiply}
+ * 
+ * @property {Object} Composite
+ * Use the composite effect to combine 2 or more images. This effect has 13 different composite modes. The composite effect accepts 2 or more inputs. When you specify 2 images, destination is the first input (index 0) and the source is the second input (index 1). If you specify more than 2 inputs the images are composited starting with the first input and the second and so on. This effect implements all of the modes using the blending unit of the graphics processing unit (GPU).&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/composite}
+ * @property {string} Composite.ID
+ * CLSID of effect.
+ * @property {string} Composite.Mode
+ * Value type: &lt;b>{@link module:Flags.CompositeMode CompositeMode}&lt;/b>&lt;br>
+ * The mode used for the effect.&lt;br>
+ * The default value is {@link module:Flags.CompositeMode CompositeMode.SourceOver}
+ * 
+ * @property {Object} CrossFade
+ * This effect combines two images by adding weighted pixels from input images. It has two inputs, named Destination and Source. The cross fade formula is output = weight * Destination + (1 - weight) * Source.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/cross-fade-effect}
+ * @property {string} CrossFade.ID
+ * CLSID of effect.
+ * @property {string} CrossFade.Weight
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * How much to weigh the source image color values versus the destination image. The minimum value is 0.0f (exclusively use the destination image to determine the output) and the maximum value is 1.0f (exclusively use the source image to determine the output).&lt;br>
+ * The default value is 0.5
+ * 
+ * @property {Object} ConvolveMatrix
+ * Use the convolve matrix effect to apply an arbitrary 2D kernel to an image. You can use this effect to blur, detect edges, emboss, or sharpen an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/convolve-matrix}
+ * @property {string} ConvolveMatrix.ID
+ * CLSID of effect.
+ * @property {number} ConvolveMatrix.KernelUnitLength
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The size of one unit in the kernel. The units are in (DIPs/kernel unit), where a kernel unit is the size of the element in the convolution kernel. A value of 1 (DIP/kernel unit) corresponds to one pixel in an image at 96 DPI.&lt;br>
+ * The default value is 1.0
+ * @property {number} ConvolveMatrix.ScaleMode
+ * Value type: &lt;b>{@link module:Effects.ConvolveMatrixScaleMode ConvolveMatrixScaleMode}&lt;/b>&lt;br>
+ * The interpolation mode the effect uses to scale the image to the corresponding kernel unit length. There are six scale modes that range in quality and speed.&lt;br>
+ * The default value is {@link module:Effects.ConvolveMatrixScaleMode ConvolveMatrixScaleMode.Linear}
+ * @property {number} ConvolveMatrix.KernelSizeX
+ * Value type: &lt;b>UINT32&lt;/b>&lt;br>
+ * The width of the kernel matrix. The units are specified in kernel units.&lt;br>
+ * The default value is 3
+ * @property {number} ConvolveMatrix.KernelSizeY
+ * Value type: &lt;b>UINT32&lt;/b>&lt;br>
+ * The height of the kernel matrix. The units are specified in kernel units.&lt;br>
+ * The default value is 3
+ * @property {number} ConvolveMatrix.KernelMatrix
+ * Value type: &lt;b>Float32Array(9)&lt;/b>&lt;br>
+ * The kernel matrix to be applied to the image. The kernel elements aren't bounded and are specified as floats. The first set of KernelSizeX numbers in the FLOAT[] corresponds to the first row in the kernel. The second set of KernelSizeX numbers correspond to the second row, and so on up to KernelSizeY rows.&lt;br>
+ * The default value is [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+ * @property {number} ConvolveMatrix.Divisor
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The kernel matrix is applied to a pixel and then the result is divided by this value. 0 behaves as a value of float epsilon.&lt;br>
+ * The default value is 1.0
+ * @property {number} ConvolveMatrix.Bias
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The effect applies the kernel matrix, the divisor, and then the bias is added to the result. The bias is unbounded and unitless.&lt;br>
+ * The default value is 0.0
+ * @property {number} ConvolveMatrix.KernelOffset
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * Shifts the convolution kernel from a centered position on the output pixel to a position you specify left/right and up/down. The offset is defined in kernel units. With some offsets and kernel sizes, the convolution kernel s samples won't land on a pixel image center. The pixel values for the kernel sample are computed by bilinear interpolation.&lt;br>
+ * The default value is [0.0, 0.0]
+ * @property {number} ConvolveMatrix.PreserveAlpha
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Specifies whether the convolution kernel is applied to the alpha channel or only the color channels. If you set this to TRUE the convolution kernel is applied only to the color channels. If you set this to FALSE the convolution kernel is applied to all channels.&lt;br>
+ * The default value is false.
+ * @property {number} ConvolveMatrix.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ * @property {number} ConvolveMatrix.ClampOutput
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Whether the effect clamps color values to between 0 and 1 before the effect passes the values to the next effect in the graph. The effect clamps the values before it premultiplies the alpha. If you set this to TRUE the effect will clamp the values. If you set this to FALSE, the effect will not clamp the color values, but other effects and the output surface may clamp the values if they are not of high enough precision.&lt;br>
+ * The default value is false.
+ * 
+ * @property {Object} DirectionalBlur
+ * The directional blur effect is similar to Gaussian blur, except you can skew the blur in a particular direction. You can use this effect to make an image look as if it is in motion or to emphasize an animated image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/directional-blur}
+ * @property {string} DirectionalBlur.ID
+ * CLSID of effect.
+ * @property {number} DirectionalBlur.StandardDeviation
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The amount of blur to be applied to the image. You can compute the blur radius of the kernel by multiplying the standard deviation by 3. The units of both the standard deviation and blur radius are DIPs. A value of 0 DIPs disables this effect.&lt;br>
+ * The default value is 3.0
+ * @property {number} DirectionalBlur.Angle
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The angle of the blur relative to the x-axis, in the counterclockwise direction. The units are specified in degrees. The blur kernel is first generated using the same process as for the Gaussian blur effect. The kernel values are then transformed according to the blur angle.&lt;br>
+ * The default value is 0.0
+ * @property {number} DirectionalBlur.Optimization
+ * Value type: &lt;b>{@link module:Effects.DirectionalBlurOptimization DirectionalBlurOptimization}&lt;/b>&lt;br>
+ * The optimization mode.
+ * The default value is  {@link module:Effects.DirectionalBlurOptimization DirectionalBlurOptimization.Balanced}
+ * @property {number} DirectionalBlur.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ *
+ * @property {Object} EdgeDetection
+ * Filters out the content of an image, leaving lines at the edges of contrasting sections of the image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/edge-detection-effect}
+ * @property {string} EdgeDetection.ID
+ * CLSID of effect.
+ * @property {number} EdgeDetection.Strength
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value modulating the response of the edge detection filter. A low strength value means that weaker edges will get filtered out, while a high value means stronger edges will get filtered out. The allowed range is 0.0 to 1.0&lt;br>
+ * The default value is 0.5
+ * @property {number} EdgeDetection.BlurRadius
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value specifying the amount of blur to apply. Applying blur is used to remove high frequencies and reduce phantom edges. The allowed range is 0.0 to 10.0&lt;br>
+ * The default value is 0.0 (no blur applied).
+ * @property {number} EdgeDetection.Mode
+ * Value type: &lt;b>{@link module:Effects.EdgeDetectionMode EdgeDetectionMode}&lt;/b>&lt;br>
+ * Value which mode to use for edge detection.
+ * The default value is {@link module:Effects.EdgeDetectionMode EdgeDetectionMode.Sobel}
+ * @property {number} EdgeDetection.OverlayEdges
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Edge detection only applies to the RGB channels, the alpha channel is ignored for purposes of detecting edges. If is false, the output edges is fully opaque. If is true, the input opacity is preserved.&lt;br>
+ * The default value is false.
+ * @property {number} EdgeDetection.AlphaMode
+ * Value type: &lt;b>{@link module:Effects.AlphaMode AlphaMode}&lt;/b>&lt;br>
+ * Value indicating the alpha mode of the input file. If the input is not opaque, this value is used to determine whether to unpremultiply the inputs. See the About Alpha Modes section of the {@link https://learn.microsoft.com/en-us/windows/desktop/Direct2D/supported-pixel-formats-and-alpha-modes Supported Pixel Formats and Alpha Modes} topic for additional information.&lt;br>
+ * The default value is {@link module:Effects.AlphaMode AlphaMode.Premultiplied}
+ * 
+ * @property {Object} GaussianBlur
+ * Use the Gaussian blur effect to create a blur based on the Gaussian function over the entire input image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/gaussian-blur}
+ * @property {string} GaussianBlur.ID
+ * CLSID of effect.
+ * @property {number} GaussianBlur.StandardDeviation
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The amount of blur to be applied to the image. You can compute the blur radius of the kernel by multiplying the standard deviation by 3.&lt;br>
+ * The units of both the standard deviation and blur radius are DIPs. A value of zero DIPs disables this effect entirely.&lt;br>
+ * The default value is 3.0
+ * @property {number} GaussianBlur.Optimization
+ * Value type: &lt;b>{@link module:Effects.GaussianBlurOptimization GaussianBlurOptimization}&lt;/b>&lt;br>
+ * The optimization mode.
+ * The default value is  {@link module:Effects.GaussianBlurOptimization GaussianBlurOptimization.Balanced}
+ * @property {number} GaussianBlur.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ *  
+ * @property {Object} Morphology
+ * Use the morphology effect to thin or thicken edge boundaries in an image. This effect creates a kernel that is 2 times the Width and Height values you specify. This effect centers the kernel on the pixel it is calculating and returns the maximum value in the kernel (if dilating) or minimum value in the kernel (if eroding).&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/morphology}
+ * @property {string} Morphology.ID
+ * CLSID of effect.
+ * @property {number} Morphology.Mode
+ * Value type: &lt;b>{@link module:Effects.MorphologyMode MorphologyMode}&lt;/b>&lt;br>
+ * The morphology mode. The available modes are erode (flatten) and dilate (thicken).&lt;br>
+ * The default value is {@link module:Effects.MorphologyMode MorphologyMode.Erode}
+ * @property {number} Morphology.Width
+ * Value type: &lt;b>UINT&lt;/b>&lt;br>
+ * Size of the kernel in the X direction. The units are in DIPs. Values must be between 1 and 100 inclusive.&lt;br>
+ * The default value is 1
+ * @property {number} Morphology.Height
+ * Value type: &lt;b>UINT&lt;/b>&lt;br>
+ * Size of the kernel in the Y direction. The units are in DIPs. Values must be between 1 and 100 inclusive.&lt;br>
+ * The default value is 1
+ * 
+ * @property {Object} Emboss
+ * Creates a grayscale version of the image that appears as though it has been stamped into paper.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/emboss-effect}
+ * @property {string} Emboss.ID
+ * CLSID of effect.
+ * @property {number} Emboss.Height
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value controlling the strength of the embossing effect. The allowed range is 0.0 to 10.0&lt;br>
+ * The default value is 1.0
+ * @property {number} Emboss.Direction
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value specifying the light direction used to create the effect. The allowed range is 0.0 to 360.0&lt;br>
+ * The default value is 0.0
+ *
+ * @property {Object} Posterize
+ * The posterize effect reduces the number of unique colors in an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/posterize-effect}
+ * @property {string} Posterize.ID
+ * CLSID of effect.
+ * @property {number} Posterize.RedValueCount
+ * Value type: &lt;b>UINT&lt;/b>&lt;br>
+ * Integer value specifying how many evenly spaced steps to divide the red channel range of 0.0 to 1.0 into. For example, a value of 4 generates a table with 4 steps, [0.0, 0.33, 0.67, 1.0]. The allowed range for this property is 2 to 16&lt;br>
+ * The default value is 4
+ * @property {number} Posterize.GreenValueCount
+ * Value type: &lt;b>UINT&lt;/b>&lt;br>
+ * Integer value specifying how many evenly spaced steps to divide the green channel range of 0.0 to 1.0 into. For example, a value of 4 generates a table with 4 steps, [0.0, 0.33, 0.67, 1.0]. The allowed range for this property is 2 to 16&lt;br>
+ * The default value is 4
+ * @property {number} Posterize.BlueValueCount
+ * Value type: &lt;b>UINT&lt;/b>&lt;br>
+ * Integer value specifying how many evenly spaced steps to divide the blue channel range of 0.0 to 1.0 into. For example, a value of 4 generates a table with 4 steps, [0.0, 0.33, 0.67, 1.0]. The allowed range for this property is 2 to 16&lt;br>
+ * The default value is 4
+ * 
+ * @property {Object} Shadow
+ * Use the shadow effect to generate a shadow from the alpha channel of an image. The shadow is more opaque for higher alpha values and more transparent for lower alpha values. You can set the amount of blur and the color of the shadow.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/drop-shadow}
+ * @property {string} Shadow.ID
+ * CLSID of effect.
+ * @property {number} Shadow.BlurStandardDeviation
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The amount of blur to be applied to the alpha channel of the image. You can compute the blur radius of the kernel by multiplying the standard deviation by 3. The units of both the standard deviation and blur radius are DIPs. This property is the same as the Gaussian Blur standard deviation property.&lt;br>
+ * The default value is 3.0
+ * @property {number} Shadow.Color
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * The color of the drop shadow. This property is a Float32Array(4) defined as: [R, G, B, A] (normalized in range [0.0, 1.0]). You must specify this color in straight alpha.&lt;br>
+ * The default value is [0.0, 0.0, 0.0, 1.0].&lt;br>
+ * @property {number} Shadow.Optimization
+ * Value type: &lt;b>{@link module:Effects.ShadowOptimization ShadowOptimization}&lt;/b>&lt;br>
+ * The level of performance optimization.
+ * The default value is {@link module:Effects.ShadowOptimization ShadowOptimization.Balanced}
+ * 
+ * @property {Object} Brightness
+ * Use the brightness effect to control the brightness of the image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/brightness}
+ * @property {string} Brightness.ID
+ * CLSID of effect.
+ * @property {number} Brightness.WhitePoint
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The upper portion of the brightness transfer curve.&lt;br>
+ * The white point adjusts the appearance of the brighter portions of the image.&lt;br>
+ * This property is for both the x value and the y value, in that order.&lt;br>
+ * Each of the values of this property are between 0 and 1, inclusive.
+ * The default value is [1.0, 1.0]
+ * @property {number} Brightness.BlackPoint
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The lower portion of the brightness transfer curve.&lt;br>
+ * The black point adjusts the appearance of the darker portions of the image.&lt;br>
+ * This property is for both the x value and the y value, in that order.&lt;br>
+ * Each of the values of this property are between 0 and 1, inclusive.
+ * The default value is [0.0, 0.0]
+ * 
+ * @property {Object} Contrast
+ * Increases or decreases the contrast of an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/contrast-effect}
+ * @property {string} Contrast.ID
+ * CLSID of effect.
+ * @property {number} Contrast.Contrast
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value indicating the amount by which to adjust the contrast of the image.&lt;br>
+ * Negative values reduce contrast, while positive values increase contrast.&lt;br>
+ * Minimum value is -1.0, maximum value is 1.0.&lt;br>
+ * The default value for the property is 0.0.
+ * @property {number} Contrast.ClampInput
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Value indicating whether or not to clamp the input to [0.0, 1.0].&lt;br>
+ * The default value for the property is false.
+ * 
+ * @property {Object} Exposure
+ * Increase or decreases the exposure of the image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/exposure-effect}
+ * @property {string} Exposure.ID
+ * CLSID of effect.
+ * @property {number} Exposure.ExposureValue
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Specifies how much to increase or decrease the exposure of the image. The allowed range is -2.0 to 2.0.&lt;br>
+ * The default value is 0.0 (no change).
+ * 
+ * @property {Object} Grayscale
+ * Converts an image to monochromatic gray.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/grayscale-effect}
+ * @property {string} Grayscale.ID
+ * CLSID of effect.
+ *
+ * @property {Object} HighlightsShadows
+ * Adjusts the highlights and shadows of the image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/highlights-and-shadows-effect}
+ * @property {string} HighlightsShadows.ID
+ * CLSID of effect.
+ * @property {number} HighlightsShadows.Highlights
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value indicating how much to increase or decrease highlights. The allowed range is -1.0 to 1.0&lt;br>
+ * The default value is 0.0
+ * @property {number} HighlightsShadows.Shadows
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value indicating how much to increase or decrease shadows. The allowed range is -1.0 to 1.0&lt;br>
+ * The default value is 0.0
+ * @property {number} HighlightsShadows.Clarity
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value indicating how much to increase or decrease clarity. The allowed range is -1.0 to 1.0&lt;br>
+ * The default value is 0.0
+ * @property {number} HighlightsShadows.InputGamma
+ * Value type: &lt;b>{@link module:Effects.InputGamma InputGamma}&lt;/b>&lt;br>
+ * Value indicating the gamma of the input image.&lt;br>
+ * The Highlights and Shadows effect works in linear gamma space, so if the input image is know to be linear, the {@link module:Effects.InputGamma InputGamma.Linear} value should be used to prevent sRGB to linear conversions from being performed.&lt;br>
+ * @property {number} HighlightsShadows.MaskBlurRadius
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value controlling the size of the region used around a pixel to classify the pixel as highlight or shadow. Lower values result in more localized adjustments. The allowed range is 0.0 to 10.0&lt;br>
+ * The default value is 1.25
+ * 
+ * @property {Object} Histogram
+ * Use the histogram effect to generate a histogram for the input bitmap based on the specified number of bins.&lt;br>
+ * The effect generates a histogram for pixel values between 0 and 1. Values outside of this range are clamped to the range. The range of a particular bucket depends on the number of buckets.&lt;br>
+ * This effect works on straight bitmap pixels. The color channels of the input bitmap are divided by the alpha channel to compute this effect.
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/histogram}
+ * @property {string} Histogram.ID
+ * CLSID of effect.
+ * @property {number} Histogram.NumBins
+ * Value type: &lt;b>UINT32&lt;/b>&lt;br>
+ * Specifies the number of bins used for the histogram. The range of intensity values that fall into a particular bucket depend on the number of specified buckets.
+ * The default value is 256
+ * @property {number} Histogram.ChannelSelect
+ * Value type: &lt;b>{@link module:Effects.ChannelSelector ChannelSelector}&lt;/b>&lt;br>
+ * Specifies the channel used to generate the histogram. This effect has a single data output corresponding to the specified channel. See Channel selectors for more info.
+ * The default value is {@link module:Effects.ChannelSelector ChannelSelector.R}
+ * @property {number} Histogram.HistogramOutput
+ * Value type: &lt;b>Float32Array (output property only!)&lt;/b>&lt;br> 
+ * This effect outputs a Float32Array, with the number of elements corresponding to the number of specified NumBins.&lt;br>
+ * @example
+ * //=========================== Histogram ========================================
+ * 
+ * window.DrawMode = 1;
+ * include(`${fb.ComponentPath}\\docs\\Effects.js`);
+ * 
+ * const img = d2d.Image(`${fb.ComponentPath}\\samples\\d2d\\images\\Flowers.jpg`);
+ * 
+ * const effect = d2d.Effect(Effects.Histogram.ID);
+ * effect.SetInput(0, img);
+ * effect.SetValue(Effects.Histogram.NumBins, 10);
+ * effect.SetValue(Effects.Histogram.ChannelSelect, ChannelSelector.R);
+ * 
+ * const dgrImg = d2d.CreateImage(1,1);
+ * const dgr = dgrImg.GetGraphics();
+ * dgr.DrawEffect(effect, 0, 0, 0, 0, img.Width, img.Height);
+ * dgrImg.ReleaseGraphics(dgr);
+ * const histogram = effect.GetValue(Effects.Histogram.HistogramOutput);
+ * 
+ * console.log(histogram); // Float32Array {0=0.04278142377734184, 1=0.03943245857954025, 2=0.06783067435026169, 3=0.08444418758153915, 4=0.12744605541229248, 5=0.13865619897842407, 6=0.14809100329875946, 7=0.16188085079193115, 8=0.15734052658081055, 9=0.03209662064909935}
+ * 
+ * @property {Object} Invert
+ * Inverts the colors of an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/invert-effect}
+ * @property {string} Invert.ID
+ * CLSID of effect.
+ * 
+ * @property {Object} Sepia
+ * Increase or decreases the exposure of the image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/sepia-effect}
+ * @property {string} Sepia.ID
+ * CLSID of effect.
+ * @property {number} Sepia.Intensity
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value indicating the intensity of the sepia effect. The allowed range is 0.0 to 1.0&lt;br>
+ * The default value is 0.5
+ * @property {number} Sepia.AlphaMode
+ * Value type: &lt;b>{@link module:Effects.AlphaMode AlphaMode}&lt;/b>&lt;br>
+ * enumeration value indicating the alpha mode of the input file.&lt;br>
+ * The default value is {@link module:Effects.AlphaMode AlphaMode.Premultiplied}
+ * 
+ * @property {Object} Sharpen
+ * Sharpens the image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/sharpen-effect}
+ * @property {string} Sharpen.ID
+ * CLSID of effect.
+ * @property {number} Sharpen.Sharpness
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value indicating how much to sharpen the input image. The allowed range is 0.0 to 10.0&lt;br>
+ * The default value is 0.0
+ * @property {number} Sharpen.Threshold
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The allowed range is 0.0 to 1.0&lt;br>
+ * The default value is 0.0
+ * 
+ * @property {Object} Straighten
+ * Rotates and optionally scales an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/straighten-effect}
+ * @property {string} Straighten.ID
+ * CLSID of effect.
+ * @property {number} Straighten.Angle
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value that specifies how much the image should be rotated. The allowed range is -45.0 to 45.0&lt;br>
+ * The default value is 0.0
+ * @property {number} Straighten.MaintainSize
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Value that specifies whether the image will be scaled such that the original size is maintained without any invalid regions.&lt;br>
+ * The default value is false.
+ * @property {number} Straighten.ScaleMode
+ * Value type: &lt;b>{@link module:Effects.StraightenScaleMode StraightenScaleMode}&lt;/b>&lt;br>
+ * Value indicating the scaling mode that should be used.
+ * See {@link module:Effects.StraightenScaleMode}
+ * 
+ * @property {Object} TemperatureTint
+ * Rotates and optionally scales an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/temperature-and-tint-effect}
+ * @property {string} TemperatureTint.ID
+ * CLSID of effect.
+ * @property {number} TemperatureTint.Temperature
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value specifying how much to increase or decrease the temperature of the input image. The allowed range is -1.0 to 1.0&lt;br>
+ * The default value is 0.0
+ * @property {number} TemperatureTint.Tint
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value specifying how much to increase or decrease the tint of the input image. The allowed range is -1.0 to 1.0&lt;br>
+ * The default value is 0.0
+ * 
+ * @property {Object} Vignette
+ * Fades the input image at the edges to a user-set color.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/vignette-effect}
+ * @property {string} Vignette.ID
+ * CLSID of effect.
+ * @property {number} Vignette.Color
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * RGBA values (normalized in range [0.0, 1.0]) that specifies the color to fade the image's edges to.&lt;br>
+ * The default color is black [0.0, 0.0, 0.0, 1.0]
+ * @property {number} Vignette.TransitionSize
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value that specifies the size of the vignette region as a percentage of the full image region. A size of 0 means the unfaded region is the entire image, while a size of 1 means the faded region is the entire source image. The allowed range is 0.0 to 1.0&lt;br>
+ * The default value is 0.1
+ * @property {number} Vignette.Strength
+ * Value that specifies how much the vignette color bleeds in for a given transition size. The allowed range is 0.0 to 1.0&lt;br>
+ * The default value is 0.5
+ * 
+ * @property {Object} Flood
+ * Use the flood effect to generate a bitmap based on the specified color and alpha value. You can use this effect when you want a specific color as an input for an effect, like a background color.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/flood}
+ * @property {string} Flood.ID
+ * CLSID of effect.
+ * @property {number} Flood.Color
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * The color and opacity of the bitmap. This property is a Float32Array(4). The individual values for each channel are of type FLOAT, unbounded and unitless. The effect doesn't modify the values for the channels. The RGBA values for each channel range from 0 to 1&lt;br>
+ * The default value is [0.0, 0.0, 0.0, 1.0f]
+ * 
+ * @property {Object} Turbulence
+ * Use the turbulence effect to generate a bitmap based on the Perlin noise function.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/turbulence}
+ * @property {string} Turbulence.ID
+ * CLSID of effect.
+ * @property {number} Turbulence.Offset
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The coordinates where the turbulence output is generated.&lt;br>
+ * The algorithm used to generate the Perlin noise is position dependent, so a different offset results in a different output. This property is not bounded and the units are specified in DIPs&lt;br>
+ * Note: The offset does not have the same effect as a translation because the noise function output is infinite and the function will wrap around the tile.&lt;br>
+ * The default value is [0.0, 0.0]
+ * @property {number} Turbulence.Size
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The size of the turbulence output. This property is not bounded and the units are specified in DIPs&lt;br>
+ * The default value is [0.0, 0.0]
+ * @property {number} Turbulence.BaseFrequency
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The base frequencies in the X and Y direction. This property is a float and must be greater than 0. The units are specified in 1/DIPs.&lt;br>
+ * A value of 1 (1/DIPs) for the base frequency results in the Perlin noise completing an entire cycle between two pixels. The ease interpolation for these pixels results in completely random pixels, since there is no correlation between the pixels.&lt;br>
+ * A value of 0.1(1/DIPs) for the base frequency, the Perlin noise function repeats every 10 DIPs. This results in correlation between pixels and the typical turbulence effect is visible.&lt;br>
+ * The default value is [0.01, 0.01]
+ * @property {number} Turbulence.NumOctaves
+ * Value type: &lt;b>UINT32&lt;/b>&lt;br>
+ * The number of octaves for the noise function. This property is a UINT32 and must be greater than 0.&lt;br>
+ * The default value is 1
+ * @property {number} Turbulence.Seed
+ * Value type: &lt;b>UINT32&lt;/b>&lt;br>
+ * The seed for the pseudo random generator. This property is unbounded.&lt;br>
+ * The default value is 0
+ * @property {number} Turbulence.Noise
+ * Value type: &lt;b>{@link module:Effects.TurbulenceNoise TurbulenceNoise}&lt;/b>&lt;br>
+ * The turbulence noise mode. This property can be either fractal sum or turbulence. Indicates whether to generate a bitmap based on Fractal Noise or the Turbulence function.&lt;br>
+ * The default value is {@link module:Effects.TurbulenceNoise TurbulenceNoise.FractalSum}
+ * @property {number} Turbulence.Stitchable
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Turns stitching on or off. The base frequency is adjusted so that output bitmap can be stitched. This is useful if you want to tile multiple copies of the turbulence effect output.&lt;br>
+ * &lt;b>True&lt;/b> The output bitmap can be tiled (using the tile effect) without the appearance of seams. The base frequency is adjusted so that output bitmap can be stitched.&lt;br>
+ * &lt;b>False&lt;/b> The base frequency is not adjusted, so seams may appear between tiles if the bitmap is tiled.&lt;br>
+ * The default value is FALSE
+ * 
+ * @property {Object} AffineTransform
+ * The 2D affine transform effect applies a spatial transform to an image based on a 3X2 matrix using the Direct2D matrix transform and any of six interpolation modes. You can use this effect to rotate, scale, skew, or translate an image. Or, you can combine these operations. Affine transfers preserve parallel lines and the ratio of distances between any three points in an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/2d-affine-transform}
+ * @property {string} AffineTransform.ID
+ * CLSID of effect.
+ * @property {number} AffineTransform.InterpolationMode
+ * Value type: &lt;b>{@link module:Effects.D2DAffinetransformInterpolationMode D2DAffinetransformInterpolationMode}&lt;/b>&lt;br>
+ * The interpolation mode used to scale the image. There are 6 scale modes that range in quality and speed.&lt;br>
+ * The default value is {@link module:Effects.D2DAffinetransformInterpolationMode D2DAffinetransformInterpolationMode.Linear}
+ * @property {number} AffineTransform.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ * @property {number} AffineTransform.TransformMatrix
+ * Value type: &lt;b>Float32Array(6)&lt;/b>&lt;br>
+ * The 3x2 matrix to transform the image using the Direct2D matrix transform.&lt;br>
+ * Default value is [1, 0, 0, 1, 0, 0]
+ * @property {number} AffineTransform.Sharpness
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * In the high quality cubic interpolation mode, the sharpness level of the scaling filter as a float between 0 and 1. The values are unitless. You can use sharpness to adjust the quality of an image when you scale the image. The sharpness factor affects the shape of the kernel. The higher the sharpness factor, the smaller the kernel.&lt;br>
+ * &lt;b>Note&lt;/b>: This property affects only the high quality cubic interpolation mode.&lt;br>
+ * Default value is 0.0
+ * 
+ * @property {Object} D3DTransform
+ * Use the 3D transform effect to apply an arbitrary 4x4 transform matrix to an image.
+ * This effect applies the matrix (M) you provide to the corner vertices of the source image ([ x y z 1 ]) using this calculation: [ xr yr zr 1 ]=[ x y z 1 ]*M&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/3d-transform}
+ * @property {string} D3DTransform.ID
+ * CLSID of effect.
+ * @property {number} D3DTransform.InterpolationMode
+ * Value type: &lt;b>{@link module:Effects.D3DTransformInterpolationMode D3DTransformInterpolationMode}&lt;/b>&lt;br>
+ * The interpolation mode used to scale the image. There are 6 scale modes that range in quality and speed.&lt;br>
+ * The default value is {@link module:Effects.D3DTransformInterpolationMode D3DTransformInterpolationMode.Linear}
+ * @property {number} D3DTransform.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ * @property {number} D3DTransform.TransformMatrix
+ * Value type: &lt;b>Float32Array(16)&lt;/b>&lt;br>
+ * A 4x4 transform matrix applied to the projection plane. The following matrix calculation is used to map points from one 3D coordinate system to the transformed 2D coordinate system. The individual matrix elements are not bounded and are unitless.&lt;br>
+ * Default value is [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+ * 
+ * @property {Object} D3DPerspectiveTransform
+ * Use the 3D perspective transform effect to rotate the image in 3 dimensions as if viewed from a distance.&lt;br>
+ * The 3D perspective transform is more convenient than the {@link module:Effects.D3DTransform 3D transform effect}, but only exposes a subset of the functionality. You can compute a full 3D transformation matrix and apply a more arbitrary transform matrix to an image using the {@link module:Effects.D3DTransform 3D transform effect}&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/3d-perspective-transform}
+ * @property {string} D3DPerspectiveTransform.ID
+ * CLSID of effect.
+ * @property {number} D3DPerspectiveTransform.InterpolationMode
+ * Value type: &lt;b>{@link module:Effects.D3DPerspectiveTransformInterpolationMode D3DPerspectiveTransformInterpolationMode}&lt;/b>&lt;br>
+ * The interpolation mode the effect uses on the image. There are 5 scale modes that range in quality and speed.&lt;br>
+ * The default value is {@link module:Effects.D3DPerspectiveTransformInterpolationMode D3DPerspectiveTransformInterpolationMode.Linear}
+ * @property {number} D3DPerspectiveTransform.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ * @property {number} D3DPerspectiveTransform.Depth
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The distance from the PerspectiveOrigin to the projection plane. The value specified in DIPs and must be greater than 0.&lt;br>
+ * Default value is 1000.0
+ * @property {number} D3DPerspectiveTransform.PerspectiveOrigin
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The X and Y location of the viewer in the 3D scene. This property is a D2D1_VECTOR_2F defined as: (point X, point Y). The units are in DIPs. You set the Z value with the Depth property.&lt;br>
+ * Default value is [0.0, 0.0]
+ * @property {number} D3DPerspectiveTransform.LocalOffset
+ * Value type: &lt;b>Float32Array(3)&lt;/b>&lt;br>
+ * A translation the effect performs before it rotates the projection plane.&lt;br>
+ * Default value is [0.0, 0.0, 0.0]
+ * @property {number} D3DPerspectiveTransform.GlobalOffset
+ * Value type: &lt;b>Float32Array(3)&lt;/b>&lt;br>
+ * A translation the effect performs after it rotates the projection plane.&lt;br>
+ * Default value is [0.0, 0.0, 0.0]
+ * @property {number} D3DPerspectiveTransform.RotationOrigin
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The center point of the rotation the effect performs.&lt;br>
+ * Default value is [0.0, 0.0, 0.0]
+ * @property {number} D3DPerspectiveTransform.Rotation
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The angles of rotation for each axis.
+ * Default value is [0.0, 0.0, 0.0]
+ * @example
+ * //=========================== D3DPerspectiveTransform ========================================
+ * 
+ * window.DrawMode = 1;
+ * include(`${fb.ComponentPath}\\docs\\Effects.js`);
+ * 
+ * const img = d2d.Image(`${fb.ComponentPath}\\samples\\d2d\\images\\Flowers.jpg`);
+ * 
+ * const scale = d2d.Effect(Effects.Scale.ID);
+ * scale.SetInput(0, img);
+ * 
+ * const transform = d2d.Effect(Effects.D3DPerspectiveTransform.ID);
+ * transform.SetInputEffect(0, scale);
+ * 
+ * const angles = new Float32Array(3);
+ * 
+ * window.SetInterval(() => {
+ * 	
+ *   angles[0] += 1;
+ *   angles[1] += 0.5;
+ *   angles[2] += 0.8;
+ *   if(angles[0] >= 360) angles[0] = 0;
+ *   if(angles[1] >= 360) angles[1] = 0;
+ *   if(angles[2] >= 360) angles[2] = 0;
+ * 	
+ *   transform.SetValue(Effects.D3DPerspectiveTransform.Rotation, angles);
+ *   window.Repaint();
+ *
+ * }, 10);
+ * 
+ * var ww = 0, wh = 0;
+ * function on_size(width, height) {
+ *   ww = width;
+ *   wh = height;
+ *   scale.SetValue(Effects.Scale.Scale, new Float32Array([ww / img.Width, wh / img.Height]));
+ *   transform.SetValue(Effects.D3DPerspectiveTransform.RotationOrigin, new Float32Array([ww / 2, wh / 2, 0]));
+ *   transform.SetValue(Effects.D3DPerspectiveTransform.PerspectiveOrigin, new Float32Array([ww / 2, wh / 2]));	
+ * }
+ * 
+ * function on_paint(dgr) {
+ *   dgr.FillSolidRect(0, 0, ww, wh, 0xFFAAAAAA);	
+ *   dgr.DrawEffect(transform, 0, 0, 0, 0, ww, wh);
+ * }
+ * 
+ * @property {Object} Atlas
+ * You can use this effect to output a portion of an image but retain the region outside of the portion for use in subsequent operations.&lt;br>
+ * The atlas effect is useful if you want to load a large image made up of many smaller images, such as various frames of a sprite.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/atlas}
+ * @property {string} Atlas.ID
+ * CLSID of effect.
+ * @property {number} Atlas.InputRect
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * The portion of the image passed to the next effect.&lt;br>
+ * Default value is [-FLT_MAX, -FLT_MAX, FLT_MAX, FLT_MAX].
+ * @property {number} Atlas.InputPaddingRect
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * The maximum size sampled for the output rectangle.&lt;br>
+ * Default value is [-FLT_MAX, -FLT_MAX, FLT_MAX, FLT_MAX].
+ *
+ * @property {Object} Border
+ * Use the border effect to extend an image from the edges. You can use this effect to repeat the pixels from the edges of the image, wrap the pixels from the opposite end of the image, or mirror the pixels across the bitmap border to extend the bitmap region.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/border}
+ * @property {string} Border.ID
+ * CLSID of effect.
+ * @property {number} Border.EdgeModeX
+ * Value type: &lt;b>{@link module:Effects.BorderEdgeMode BorderEdgeMode}&lt;/b>&lt;br>
+ * The edge mode in the X direction for the effect. You can set this to clamp, wrap, or mirror.&lt;br>
+ * The default value is {@link module:Effects.BorderEdgeMode BorderEdgeMode.Clamp}
+ * @property {number} Border.EdgeModeY
+ * Value type: &lt;b>{@link module:Effects.BorderEdgeMode BorderEdgeMode}&lt;/b>&lt;br>
+ * The edge mode in the Y direction for the effect. You can set this to clamp, wrap, or mirror.&lt;br>
+ * The default value is {@link module:Effects.BorderEdgeMode BorderEdgeMode.Clamp}
+ * 
+ * @property {Object} Crop
+ * Use the crop effect to output a specified region of an image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/crop}
+ * @property {string} Crop.ID
+ * CLSID of effect.
+ * @property {number} Crop.Rect
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * The region to be cropped specified as a vector in the form (left, top, right, bottom).&lt;br>
+ * The default value is [-FLT_MAX, -FLT_MAX, FLT_MAX, FLT_MAX]
+ * @property {number} Crop.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ * 
+ * @property {Object} Scale
+ * Use this effect to scale an image up or down.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/high-quality-scale}
+ * @property {string} Scale.ID
+ * CLSID of effect.
+ * @property {number} Scale.Scale
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The scale amount in the X and Y direction as a ratio of the output size to the input size.&lt;br>
+ * This property an array defined as: (X scale, Y scale). The scale amounts are FLOAT, unitless, and must be positive or 0.&lt;br>
+ * The default value is [1.0, 1.0].
+ * @property {number} Scale.CenterPoint
+ * Value type: &lt;b>Float32Array(2)&lt;/b>&lt;br>
+ * The image scaling center point. This property is an array defined as: (point X, point Y).&lt;br>
+ * Use the center point property to scale around a point other than the upper-left corner.&lt;br>
+ * The default value is [0.0, 0.0].
+ * @property {number} Scale.InterpolationMode
+ * Value type: &lt;b>{@link module:Effects.ScaleInterpolationMode ScaleInterpolationMode}&lt;/b>&lt;br>
+ * The interpolation mode the effect uses to scale the image. There are 6 scale modes that range in quality and speed. See Interpolation modes for more info.&lt;br>
+ * The default value is {@link module:Effects.ScaleInterpolationMode ScaleInterpolationMode.Linear}
+ * @property {number} Scale.BorderMode
+ * Value type: &lt;b>{@link module:Effects.BorderMode BorderMode}&lt;/b>&lt;br>
+ * The mode used to calculate the border of the image, soft or hard.&lt;br>
+ * The default value is {@link module:Effects.BorderMode BorderMode.Soft}
+ * 
+ * @property {Object} Tile
+ * Use the tile effect to repeat the specified region of the image.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/tile}
+ * @property {string} Tile.ID
+ * CLSID of effect.
+ * @property {number} Tile.Rect
+ * Value type: &lt;b>Float32Array(4)&lt;/b>&lt;br>
+ * The region of the image to be tiled. This property is a Float32Array defined as: [left, top, right, bottom]. &lt;br>
+ * The default value is [0, 0, 100, 100]
+ * 
+ * @property {Object} ChromaKey
+ * Converts a given color plus or minus a tolerance to alpha. For example, chroma-key can remove the background of an image for a green-screen overlay effect.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/chromakey-effect}
+ * @property {string} ChromaKey.ID
+ * CLSID of effect.
+ * @property {number} ChromaKey.Color
+ * Value type: &lt;b>Float32Array(3)&lt;/b>&lt;br>
+ * Value indicating the color that should be converted to alpha. Array contains RGB values normalized in range [0.0, 1.0]&lt;br>
+ * The default color is black [0, 0, 0]
+ * @property {number} ChromaKey.Tolerance
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * Value indicating the tolerance for matching the color specified in the Color property. The allowed range is 0.0 to 1.0&lt;br>
+ * The default value is 0.1
+ * @property {number} ChromaKey.InvertAlpha
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Value indicating whether the alpha values should be inverted.&lt;br>
+ * The default value if FALSE
+ * @property {number} ChromaKey.Feather
+ * Value type: &lt;b>BOOL&lt;/b>&lt;br>
+ * Value whether the edges of the output should be softened in the alpha channel. When set to FALSE, the alpha output by the effect is 1-bit: either fully opaque or fully transparent. Setting to TRUE results in a softening of edges in the alpha channel of the Chroma Key output.&lt;br>
+ * The default value is False.
+ * 
+ * @property {Object} LuminanceToAlpha
+ * Use the luminance to alpha effect to set the alpha channel to the luminance of the image and sets the color channels to 0. You can use the output of this effect to make a semitransparent overlay based on the brightness of the input image. Or you can use it to make an image mask.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/luminance-to-alpha}
+ * @property {string} LuminanceToAlpha.ID
+ * CLSID of effect.
+ * 
+ * @property {Object} Opacity
+ * This effect adjusts the opacity of an image by multiplying the alpha channel of the input by the specified opacity value. It has a single input.&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/opacity-effect}
+ * @property {string} Opacity.ID
+ * CLSID of effect.
+ * @property {number} Opacity.Opacity
+ * Value type: &lt;b>FLOAT&lt;/b>&lt;br>
+ * The multiplier to the input image's alpha channel. The minimum value is 0.0f and the maximum value is 1.0f&lt;br>
+ * The default value is 1.0
+ * 
+ * @property {Object} CustomShader
+ * Applies custom shader to image.&lt;br> 
+ * @property {string} CustomShader.ID
+ * CLSID of effect.
+ * @property {number} CustomShader.ShaderCode
+ * Value type: &lt;b>Uint8Array (code bytes blob array)&lt;/b>&lt;br>
+ * Compiled shader bytecode. Shader MUST be compiled before setting it as an input value for this effect.&lt;br>
+ * Use {@link d2d.Compile} to compile shader source code (see example in the page end).&lt;br>
+ * For more information, see: {@link https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-writing-shaders-9}
+ */
+
+/**
+ * Contains identifiers of built-in Direct2D effects with their CLSIDs and tuning properties.
+ * @memberof module:Effects
+ * @default
+ */
+const Effects = {
+    
+    // ================================ Color ========================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#color
+
+    ColorMatrix: {
+        ID: '{921F03D6-641C-47DF-852D-B4BB6153AE11}',
+        ColorMatrix: 0,
+        AlphaMode: 1,
+        ClampOutput: 2
+    },
+
+    HdrToneMap: {
+        ID: '{7b0b748d-4610-4486-a90c-999d9a2e2b11}',
+        InputMaxLuminance: 0,
+        OutputMaxLuminance: 1,
+        DisplayMode: 2
+    },
+    
+    WhiteLevelAdjustment: {
+        ID: '{44a1cadb-6cdd-4818-8ff4-26c1cfe95bdb}',
+        InputWhiteLevel: 0,
+        OutputWhiteLevel: 1
+    },
+    
+    // ================================ Composition ========================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#composition
+
+    AlphaMask: {
+        ID: '{c80ecff0-3fd5-4f05-8328-c5d1724b4f0a}'
+    },
+
+    ArithmeticComposite: {
+        ID: '{fc151437-049a-4784-a24a-f1c4daf20987}',
+        Coefficients: 0,
+        ClampOutput: 1
+    },
+
+    Blend: {
+        ID: '{81c5b77b-13f8-4cdd-ad20-c890547ac65d}',
+        Mode: 0
+    },
+
+    Composite: {
+        ID: '{48fc9f51-f6ac-48f1-8b58-3b28ac46f76d}',
+        Mode: 0
+    },
+
+    CrossFade: {
+        ID: '{12f575e8-4db1-485f-9a84-03a07dd3829f}',
+        Weight: 0
+    },
+
+    // ================================== Filter ======================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#filter
+
+    ConvolveMatrix: {
+        ID: '{407f8c08-5533-4331-a341-23cc3877843e}',
+        KernelUnitLength: 0,
+        ScaleMode: 1,
+        KernelSizeX: 2,
+        KernelSizeY: 3,
+        KernelMatrix: 4,
+        Divisor: 5,
+        Bias: 6,
+        KernelOffset: 7,
+        PreserveAlpha: 8,
+        BorderMode: 9,
+        ClampOutput: 10
+    },   
+
+    DirectionalBlur: {
+        ID: '{174319a6-58e9-49b2-bb63-caf2c811a3db}',
+        StandardDeviation: 0,
+        Angle: 1,
+        Optimization: 2,
+        BorderMode: 3
+    },
+
+    EdgeDetection: {
+        ID: '{EFF583CA-CB07-4AA9-AC5D-2CC44C76460F}',
+        Strength: 0,
+        BlurRadius: 1,
+        Mode: 2,
+        OverlayEdges: 3,
+        AlphaMode: 4        
+    },   
+
+    GaussianBlur: {
+        ID: '{1feb6d69-2fe6-4ac9-8c58-1d7f93e7a6a5}',
+        StandardDeviation: 0,
+        Optimization: 1,
+        BorderMode: 2
+    },   
+
+    Morphology: {
+        ID: '{eae6c40d-626a-4c2d-bfcb-391001abe202}',
+        Mode: 0,
+        Width: 1,
+        Height: 2
+    },   
+
+    // ================================== Lighting and Stylizing ======================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#lighting-and-stylizing
+
+    Emboss: {
+        ID: '{b1c5eb2b-0348-43f0-8107-4957cacba2ae}',
+        Height: 0,
+        Direction: 1,
+    },
+
+    Posterize: {
+        ID: '{2188945e-33a3-4366-b7bc-086bd02d0884}',
+        RedValueCount: 0,
+        GreenValueCount: 1,
+        BlueValueCount: 2
+    },
+
+    Shadow: {
+        ID: '{C67EA361-1863-4e69-89DB-695D3E9A5B6B}',
+        BlurStandardDeviation: 0,
+        Color: 1,
+        Optimization: 2
+    },
+
+    // ================================== Photo ======================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#photo
+
+    Brightness: {
+        ID: '{8cea8d1e-77b0-4986-b3b9-2f0c0eae7887}',
+        WhitePoint: 0,
+        BlackPoint: 1,
+    },
+    
+    Contrast: {
+        ID: '{b648a78a-0ed5-4f80-a94a-8e825aca6b77}',
+        Contrast: 0,
+        ClampInput: 1,
+    },
+
+    Exposure: {
+        ID: '{b56c8cfa-f634-41ee-bee0-ffa617106004}',
+        ExposureValue: 0,
+    },
+
+    Grayscale: {
+        ID: '{36DDE0EB-3725-42E0-836D-52FB20AEE644}'
+    },
+
+    HighlightsShadows: {
+        ID: '{CADC8384-323F-4C7E-A361-2E2B24DF6EE4}',
+        Highlights: 0,
+        Shadows: 1,
+        Clarity: 2,
+        InputGamma: 3,
+        MaskBlurRadius: 4        
+    },
+
+    Histogram: {
+        ID: '{881db7d0-f7ee-4d4d-a6d2-4697acc66ee8}',
+        NumBins: 0,
+        ChannelSelect: 1,
+        HistogramOutput: 2
+    },
+
+    Invert: {
+        ID: '{e0c3784d-cb39-4e84-b6fd-6b72f0810263}'
+    },
+
+    Sepia: {
+        ID: '{3a1af410-5f1d-4dbe-84df-915da79b7153}',
+        Intensity: 0,
+        AlphaMode: 1,
+    },
+
+    Sharpen: {
+        ID: '{C9B887CB-C5FF-4DC5-9779-273DCF417C7D}',
+        Sharpness: 0,
+        Threshold: 1
+    },
+
+    Straighten: {
+        ID: '{4da47b12-79a3-4fb0-8237-bbc3b2a4de08}',
+        Angle: 0,
+        MaintainSize: 1,
+        ScaleMode: 2
+    },
+
+    TemperatureTint: {
+        ID: '{89176087-8AF9-4A08-AEB1-895F38DB1766}',
+        Temperature: 0,
+        Tint: 1
+    },
+
+    Vignette: {
+        ID: '{c00c40be-5e67-4ca3-95b4-f4b02c115135}',
+        Color: 0,
+        TransitionSize: 1,
+        Strength: 2
+    },
+
+    // ================================== Source ======================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#source
+
+    Flood: {
+        ID: '{61c23c20-ae69-4d8e-94cf-50078df638f2}',
+        Color: 0
+    },
+
+    Turbulence: {
+        ID: '{CF2BB6AE-889A-4ad7-BA29-A2FD732C9FC9}',
+        Offset: 0,
+        Size:1 ,
+        BaseFrequency: 2,
+        NumOctaves: 3,
+        Seed: 4,
+        Noise: 5,
+        Stitchable: 6
+    },
+
+    // ================================== Transform ======================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#transform
+    
+    AffineTransform: {
+        ID: '{6AA97485-6354-4cfc-908C-E4A74F62C96C}',
+        InterpolationMode: 0,
+        BorderMode: 1,
+        TransformMatrix: 2,
+        Sharpness: 3
+    },
+
+    D3DTransform: {
+        ID: '{e8467b04-ec61-4b8a-b5de-d4d73debea5a}',
+        InterpolationMode: 0,
+        BorderMode: 1,
+        TransformMatrix: 2
+    },
+
+    D3DPerspectiveTransform: {
+        ID: '{C2844D0B-3D86-46e7-85BA-526C9240F3FB}',
+        InterpolationMode: 0,
+        BorderMode: 1,
+        Depth: 2,
+        PerspectiveOrigin: 3,
+        LocalOffset: 4,
+        GlobalOffset: 5,
+        RotationOrigin: 6,
+        Rotation: 7
+    },
+
+    Atlas: {
+        ID: '{913e2be4-fdcf-4fe2-a5f0-2454f14ff408}',
+        InputRect: 0,
+        InputPaddingRect: 1
+    },
+
+    Border: {
+        ID: '{2A2D49C0-4ACF-43c7-8C6A-7C4A27874D27}',
+        EdgeModeX: 0,
+        EdgeModeY: 1
+    },
+
+    Crop: {
+        ID: '{E23F7110-0E9A-4324-AF47-6A2C0C46F35B}',
+        Rect: 0,
+        BorderMode: 1
+    },
+
+    Scale: {
+        ID: '{9daf9369-3846-4d0e-a44e-0c607934a5d7}',
+        Scale: 0,
+        CenterPoint: 1,
+        InterpolationMode: 2,
+        BorderMode: 3,
+        Sharpness: 4
+    },    
+
+    Tile: {
+        ID: '{B0784138-3B76-4bc5-B13B-0FA2AD02659F}',
+        Rect: 0
+    },
+
+    // ================================== Transparency ======================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/built-in-effects#transparency
+
+    ChromaKey: {
+        ID: '{74C01F5B-2A0D-408C-88E2-C7A3C7197742}',
+        Color: 0,
+        Tolerance: 1,
+        InvertAlpha: 2,
+        Feather: 3
+    },
+    
+    LuminanceToAlpha: {
+        ID: '{41251ab7-0beb-46f8-9da7-59e93fcce5de}'
+    },
+
+    Opacity: {
+        ID: '{811d79a4-de28-4454-8094-c64685f8bd4c}',
+        Opacity: 0
+    },
+
+    // ================================== Custom ======================================
+    // https://learn.microsoft.com/en-us/windows/win32/direct2d/custom-effects
+
+    CustomShader: {
+        ID: '{fd4e017c-d9a4-4fb1-ae38-031e3b9cd97e}',
+        ShaderCode: 0,
+    },
+
+};
+
+/**
+ * Specifies the types of properties supported by the Direct2D property interface.&lt;br>
+ * Used as return type of {@link D2DEffect#GetPropertyType GetPropertyType}&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const D2DEffectPropertyType = {
+    Unknown: 0,
+    String: 1,
+    Bool: 2,
+    Uint32: 3,
+    Int32: 4,
+    Float: 5,
+    Vector2: 6,
+    Vector3: 7,
+    Vector4: 8,
+    Blob: 9,
+    IUnknown: 10,
+    Enum: 11,
+    Array: 12,
+    CLSID: 13,
+    Matrix3x2: 14,
+    Matrix4x3: 15,
+    Matrix4x4: 16,
+    Matrix5x4: 17,
+    ColorContext: 18
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.Scale}&lt;br>
+ * &lt;b>NearestNeighbor&lt;/b>: Samples the nearest single point and uses that. This mode uses less processing time, but outputs the lowest quality image.&lt;br>
+ * &lt;b>Linear&lt;/b>: Uses a four point sample and linear interpolation. This mode uses more processing time than the nearest neighbor mode, but outputs a higher quality image.&lt;br>
+ * &lt;b>Cubic&lt;/b>: Uses a 16 sample cubic kernel for interpolation. This mode uses the most processing time, but outputs a higher quality image.&lt;br>
+ * &lt;b>MultiSampleLinear&lt;/b>: Uses 4 linear samples within a single pixel for good edge anti-aliasing. This mode is good for scaling down by small amounts on images with few pixels.&lt;br>
+ * &lt;b>Anisotropic&lt;/b>: Uses anisotropic filtering to sample a pattern according to the transformed shape of the bitmap.&lt;br>
+ * &lt;b>HighQualityCubic&lt;/b>: Uses a variable size high quality cubic kernel to perform a pre-downscale the image if downscaling is involved in the transform matrix. Then uses the cubic interpolation mode for the final output.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const ScaleInterpolationMode = {
+    NearestNeighbor: 0,
+    Linear: 1,
+    Cubic: 2,
+    MultiSampleLinear: 3,
+    Anisotropic: 4,
+    HighQualityCubic: 5
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.Scale}, {@link module:Effects.Effects Effects.DirectionalBlur}, {@link module:Effects.Effects Effects.GaussianBlur}, {@link module:Effects.Effects Effects.ConvolveMatrix}&lt;br>
+ * &lt;b>Soft&lt;/b>: The effect pads the input image with transparent black pixels for samples outside of the input bounds when it applies the convolution kernel. This creates a soft edge for the image, and in the process expands the output bitmap by the size of the kernel.&lt;br>
+ * &lt;b>Hard&lt;/b>: The effect extends the input image with a mirror-type border transform for samples outside of the input bounds. The size of the output bitmap is equal to the size of the input bitmap.
+ * @memberof module:Effects
+ * @default
+ */
+const BorderMode = {
+    Soft: 0,
+    Hard: 1
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.DirectionalBlur}&lt;br>
+ * &lt;b>Speed&lt;/b>: Applies internal optimizations such as pre-scaling at relatively small radii. Uses linear filtering.&lt;br>
+ * &lt;b>Balanced&lt;/b>: Uses the same optimization thresholds as Speed mode, but uses trilinear filtering.&lt;br>
+ * &lt;b>Quality&lt;/b>: Only uses internal optimizations with large blur radii, where approximations are less likely to be visible. Uses trilinear filtering.
+ * @memberof module:Effects
+ * @default
+ */
+const DirectionalBlurOptimization = {
+    Speed: 0,
+    Balanced: 1,
+    Quality: 2
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.GaussianBlur}&lt;br>
+ * &lt;b>Speed&lt;/b>: Applies internal optimizations such as pre-scaling at relatively small radii. Uses linear filtering.&lt;br>
+ * &lt;b>Balanced&lt;/b>: Uses the same optimization thresholds as Speed mode, but uses trilinear filtering.&lt;br>
+ * &lt;b>Quality&lt;/b>: Only uses internal optimizations with large blur radii, where approximations are less likely to be visible. Uses trilinear filtering.
+ * @memberof module:Effects
+ * @default
+ */
+const GaussianBlurOptimization = {
+    Speed: 0,
+    Balanced: 1,
+    Quality: 2
+};
+
+/**
+ * Used in {@link module:Effects Effects.Sepia} and {@link module:Effects Effects.EdgeDetection}&lt;br>
+ * &lt;b>Unknown&lt;/b>: The alpha value might not be meaningful.&lt;br>
+ * &lt;b>Premultiplied&lt;/b>: The alpha value has been premultiplied. Each color is first scaled by the alpha value. The alpha value itself is the same in both straight and premultiplied alpha. Typically, no color channel value is greater than the alpha channel value. If a color channel value in a premultiplied format is greater than the alpha channel, the standard source-over blending math results in an additive blend.&lt;br>
+ * &lt;b>Straight&lt;/b>: The alpha value has not been premultiplied. The alpha channel indicates the transparency of the color.&lt;br>
+ * &lt;b>Ignore&lt;/b>: The alpha value is ignored.
+ * @memberof module:Effects
+ * @default
+ */
+const AlphaMode = {
+    Unknown: 0,
+    Premultiplied: 1,
+    Straight: 2,
+    Ignore: 3,
+};
+
+/**
+ * Used in {@link module:Effects Effects.HighlightsShadows}&lt;br>
+ * &lt;b>Linear&lt;/b>: Indicates the input image is in linear gamma space.&lt;br>
+ * &lt;b>SRGB&lt;/b>: Indicates the input image is sRGB gamma space.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const InputGamma = {
+    Linear: 0,
+    SRGB: 1
+};
+
+/**
+ * Used in {@link module:Effects Effects.Histogram}&lt;br>
+ * &lt;b>R&lt;/b>: The effect generates the histogram output based on the red channel.&lt;br>
+ * &lt;b>G&lt;/b>: The effect generates the histogram output based on the green channel.&lt;br>
+ * &lt;b>B&lt;/b>: The effect generates the histogram output based on the blue channel.&lt;br>
+ * &lt;b>A&lt;/b>: The effect generates the histogram output based on the alpha channel.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const ChannelSelector = {
+    R: 0,
+    G: 1,
+    B: 2,
+    A: 3
+};
+
+/**
+ * Used in {@link module:Effects Effects.Straighten}&lt;br>
+ * &lt;b>NearestNeighbor&lt;/b>: Indicates nearest neighbor interpolation should be used.&lt;br>
+ * &lt;b>Linear&lt;/b>: Indicates linear interpolation should be used.&lt;br>
+ * &lt;b>Cubic&lt;/b>: Indicates cubic interpolation should be used.&lt;br>
+ * &lt;b>MultisampleLinear&lt;/b>: Indicates multi-sample linear interpolation should be used.&lt;br>
+ * &lt;b>Anisotropic&lt;/b>: Indicates anisotropic filtering should be used.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const StraightenScaleMode = {
+    NearestNeighbor: 0,
+    Linear: 1,
+    Cubic: 2,
+    MultisampleLinear: 3,
+    Anisotropic: 4
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.Scale}&lt;br>
+ * &lt;b>NearestNeighbor&lt;/b>: Samples the nearest single point and uses that. This mode uses less processing time, but outputs the lowest quality image.&lt;br>
+ * &lt;b>Linear&lt;/b>: Uses a four point sample and linear interpolation. This mode uses more processing time than the nearest neighbor mode, but outputs a higher quality image.&lt;br>
+ * &lt;b>Cubic&lt;/b>: Uses a 16 sample cubic kernel for interpolation. This mode uses the most processing time, but outputs a higher quality image.&lt;br>
+ * &lt;b>MultiSampleLinear&lt;/b>: Uses 4 linear samples within a single pixel for good edge anti-aliasing. This mode is good for scaling down by small amounts on images with few pixels.&lt;br>
+ * &lt;b>Anisotropic&lt;/b>: Uses anisotropic filtering to sample a pattern according to the transformed shape of the bitmap.&lt;br>
+ * &lt;b>HighQualityCubic&lt;/b>: Uses a variable size high quality cubic kernel to perform a pre-downscale the image if downscaling is involved in the transform matrix. Then uses the cubic interpolation mode for the final output.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const ConvolveMatrixScaleMode = {
+    NearestNeighbor: 0,
+    Linear: 1,
+    Cubic: 2,
+    MultiSampleLinear: 3,
+    Anisotropic: 4,
+    HighQualityCubic: 5
+};
+
+/**
+ * Used in {@link module:Effects Effects.EdgeDetection}&lt;br>
+ * &lt;b>Sobel&lt;/b>: Indicates the Sobel operator should be used for edge detection.&lt;br>
+ * &lt;b>Prewitt&lt;/b>: Indicates the Prewitt operator should be used for edge detection.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const EdgeDetectionMode = {
+    Sobel: 0,
+    Prewitt: 1
+};
+
+/**
+ * Used in {@link module:Effects Effects.Morphology}&lt;br>
+ * &lt;b>Erode&lt;/b>: The minimum value from each RGB channel in the kernel is used.&lt;br>
+ * &lt;b>Dilate&lt;/b>: The maximum value from each RGB channel in the kernel is used.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const MorphologyMode = {
+    Erode: 0,
+    Dilate: 1
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.AffineTransform}&lt;br>
+ * &lt;b>NearestNeighbor&lt;/b>: Samples the nearest single point and uses that. This mode uses less processing time, but outputs the lowest quality image.&lt;br>
+ * &lt;b>Linear&lt;/b>: Uses a four point sample and linear interpolation. This mode uses more processing time than the nearest neighbor mode, but outputs a higher quality image.&lt;br>
+ * &lt;b>Cubic&lt;/b>: Uses a 16 sample cubic kernel for interpolation. This mode uses the most processing time, but outputs a higher quality image.&lt;br>
+ * &lt;b>MultiSampleLinear&lt;/b>: Uses 4 linear samples within a single pixel for good edge anti-aliasing. This mode is good for scaling down by small amounts on images with few pixels.&lt;br>
+ * &lt;b>Anisotropic&lt;/b>: Uses anisotropic filtering to sample a pattern according to the transformed shape of the bitmap.&lt;br>
+ * &lt;b>HighQualityCubic&lt;/b>: Uses a variable size high quality cubic kernel to perform a pre-downscale the image if downscaling is involved in the transform matrix. Then uses the cubic interpolation mode for the final output.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const D2DAffinetransformInterpolationMode = {
+    NearestNeighbor: 0,
+    Linear: 1,
+    Cubic: 2,
+    MultiSampleLinear: 3,
+    Anisotropic: 4,
+    HighQualityCubic: 5
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.D3DTransform}&lt;br>
+ * &lt;b>NearestNeighbor&lt;/b>: Samples the nearest single point and uses that. This mode uses less processing time, but outputs the lowest quality image.&lt;br>
+ * &lt;b>Linear&lt;/b>: Uses a four point sample and linear interpolation. This mode uses more processing time than the nearest neighbor mode, but outputs a higher quality image.&lt;br>
+ * &lt;b>Cubic&lt;/b>: Uses a 16 sample cubic kernel for interpolation. This mode uses the most processing time, but outputs a higher quality image.&lt;br>
+ * &lt;b>MultiSampleLinear&lt;/b>: Uses 4 linear samples within a single pixel for good edge anti-aliasing. This mode is good for scaling down by small amounts on images with few pixels.&lt;br>
+ * &lt;b>Anisotropic&lt;/b>: Uses anisotropic filtering to sample a pattern according to the transformed shape of the bitmap.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const D3DTransformInterpolationMode = {
+    NearestNeighbor: 0,
+    Linear: 1,
+    Cubic: 2,
+    MultiSampleLinear: 3,
+    Anisotropic: 4
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.D3DPerspectiveTransform}&lt;br>
+ * &lt;b>NearestNeighbor&lt;/b>: Samples the nearest single point and uses that. This mode uses less processing time, but outputs the lowest quality image.&lt;br>
+ * &lt;b>Linear&lt;/b>: Uses a four point sample and linear interpolation. This mode uses more processing time than the nearest neighbor mode, but outputs a higher quality image.&lt;br>
+ * &lt;b>Cubic&lt;/b>: Uses a 16 sample cubic kernel for interpolation. This mode uses the most processing time, but outputs a higher quality image.&lt;br>
+ * &lt;b>MultiSampleLinear&lt;/b>: Uses 4 linear samples within a single pixel for good edge anti-aliasing. This mode is good for scaling down by small amounts on images with few pixels.&lt;br>
+ * &lt;b>Anisotropic&lt;/b>: Uses anisotropic filtering to sample a pattern according to the transformed shape of the bitmap.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const D3DPerspectiveTransformInterpolationMode = {
+    NearestNeighbor: 0,
+    Linear: 1,
+    Cubic: 2,
+    MultiSampleLinear: 3,
+    Anisotropic: 4
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.Border}&lt;br>
+ * &lt;b>Clamp&lt;/b>: Repeats the pixels from the edges of the image.&lt;br>
+ * &lt;b>Wrap&lt;/b>: Uses pixels from the opposite end edge of the image.&lt;br>
+ * &lt;b>Mirror&lt;/b>: Reflects pixels about the edge of the image.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const BorderEdgeMode = {
+    Clamp: 0,
+    Wrap: 1,
+    Mirror: 2
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.Blend}&lt;br>
+ * For blend modes description see: {@link https://learn.microsoft.com/en-us/windows/win32/direct2d/blend#blend-modes}
+ * @memberof module:Effects
+ * @default
+ */
+const BlendMode = {
+    Multiply: 0,
+    Screen: 1,
+    Darken: 2,
+    Lighten: 3,
+    Dissolve: 4,
+    Burn: 5,
+    LinearBurn: 6,
+    DarkerColor: 7,
+    LighterColor: 8,
+    ColorDodge: 9,
+    LinearDodge: 10,
+    Overlay: 11,
+    SoftLight: 12,
+    HardLight: 13,
+    VividLight: 14,
+    LinearLight: 15,
+    PinLight: 16,
+    HardMix: 17,
+    Difference: 18,
+    Exclusion: 19,
+    Hue: 20,
+    Saturation: 21,
+    Color: 22,
+    Luminosity: 23,
+    Subtract: 24,
+    Division: 25
+};
+
+/**
+ * Used in {@link module:Effects.Effects Effects.Shadow}&lt;br>
+ * &lt;b>Speed&lt;/b>: Applies internal optimizations such as pre-scaling at relatively small radii. Uses linear filtering.&lt;br>
+ * &lt;b>Balanced&lt;/b>: Uses the same optimization thresholds as Speed mode, but uses trilinear filtering.&lt;br>
+ * &lt;b>Quality&lt;/b>: Only uses internal optimizations with large blur radii, where approximations are less likely to be visible. Uses trilinear filtering.
+ * @memberof module:Effects
+ * @default
+ */
+const ShadowOptimization = {
+    Speed: 0,
+    Balanced: 1,
+    Quality: 2
+};
+
+/**
+ * Used in {@link module:Effects Effects.ColorMatrix}&lt;br>
+ * &lt;b>Unknown&lt;/b>: The alpha value might not be meaningful.&lt;br>
+ * &lt;b>Premultiplied&lt;/b>: The alpha value has been premultiplied. Each color is first scaled by the alpha value. The alpha value itself is the same in both straight and premultiplied alpha. Typically, no color channel value is greater than the alpha channel value. If a color channel value in a premultiplied format is greater than the alpha channel, the standard source-over blending math results in an additive blend.&lt;br>
+ * &lt;b>Straight&lt;/b>: The alpha value has not been premultiplied. The alpha channel indicates the transparency of the color.&lt;br>
+ * &lt;b>Ignore&lt;/b>: The alpha value is ignored.
+ * @memberof module:Effects
+ * @default
+ */
+const ColorMatrixAlphaMode = {
+    Unknown: 0,
+    Premultiplied: 1,
+    Straight: 2,
+    Ignore: 3,
+};
+
+/**
+ * Used in {@link module:Effects Effects.HdrToneMap}&lt;br>
+ * &lt;b>SDR&lt;/b>: Specifies that the tone mapper algorithm be optimized for best appearance on a standard dynamic range (SDR) display.&lt;br>
+ * &lt;b>HDR&lt;/b>: Specifies that the tone mapper algorithm be optimized for best appearance on a high dynamic range (HDR) display.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const HdrToneMapDisplayMode = {
+    SDR: 0,
+    HDR: 1
+};
+
+/**
+ * Used in {@link module:Effects Effects.TurbulenceNoise}&lt;br>
+ * &lt;b>FractalSum&lt;/b>: Computes a sum of the octaves, shifting the output range from [-1, 1], to [0, 1].&lt;br>
+ * &lt;b>Turbulence&lt;/b>: Computes a sum of the absolute value of each octave.&lt;br>
+ * @memberof module:Effects
+ * @default
+ */
+const TurbulenceNoise = {
+    FractalSum: 0,
+    Turbulence: 1
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<footer>
+    <img class="logo" src="img/toast-ui.png" style="">
+    <div class="footer-text">NHN Entertainment. Frontend Development Lab</div>
+</footer>
+<script>prettyPrint();</script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/tui-doc.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+    <script>
+        var id = '_sub'.replace(/"/g, '_');
+        var selectedApi = document.getElementById(id); // do not use jquery selector
+        var $selectedApi = $(selectedApi);
+
+        $selectedApi.removeClass('hidden');
+        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        showLnbApi();
+    </script>
+
+</body>
+</html>

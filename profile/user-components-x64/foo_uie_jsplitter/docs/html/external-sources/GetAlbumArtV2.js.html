@@ -1,0 +1,53 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: GetAlbumArtV2.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;GetAlbumArtV2&#x27;</span>, { <span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;T.P Wang&#x27;</span> });
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Flags.js&#x27;</span>);
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Helpers.js&#x27;</span>);
+
+<span class="hljs-comment">// Nothing will show until you start playing a new track</span>
+
+<span class="hljs-keyword">let</span> g_img = <span class="hljs-literal">null</span>;
+<span class="hljs-keyword">let</span> ww = <span class="hljs-number">0</span>, wh = <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, wh, <span class="hljs-title function_">RGB</span>(<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>));
+    <span class="hljs-keyword">if</span> (!g_img) {
+        <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-comment">// Keep aspect ratio</span>
+    <span class="hljs-keyword">let</span> scale_w = ww / g_img.<span class="hljs-property">Width</span>;
+    <span class="hljs-keyword">let</span> scale_h = wh / g_img.<span class="hljs-property">Height</span>;
+    <span class="hljs-keyword">let</span> scale = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(scale_w, scale_h);
+    <span class="hljs-keyword">let</span> pos_x = <span class="hljs-number">0</span>, pos_y = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">if</span> (scale_w &lt; scale_h) {
+        pos_y = (wh - g_img.<span class="hljs-property">Height</span> * scale) / <span class="hljs-number">2</span>;
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (scale_w &gt; scale_h) {
+        pos_x = (ww - g_img.<span class="hljs-property">Width</span> * scale) / <span class="hljs-number">2</span>;
+    }
+    gr.<span class="hljs-title class_">DrawImage</span>(g_img, pos_x, pos_y, g_img.<span class="hljs-property">Width</span> * scale, g_img.<span class="hljs-property">Height</span> * scale, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, g_img.<span class="hljs-property">Width</span>, g_img.<span class="hljs-property">Height</span>);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_size</span>(<span class="hljs-params"></span>) {
+    ww = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Width</span>;
+    wh = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Height</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_playback_new_track</span>(<span class="hljs-params">metadb</span>) {
+    <span class="hljs-keyword">if</span> (!metadb) {
+        <span class="hljs-keyword">return</span>;
+    }
+    g_img = utils.<span class="hljs-title class_">GetAlbumArtV2</span>(metadb, <span class="hljs-title class_">AlbumArtId</span>.<span class="hljs-property">front</span>);
+    <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+}
+</code></pre>
+      </body>
+    </html>
+  

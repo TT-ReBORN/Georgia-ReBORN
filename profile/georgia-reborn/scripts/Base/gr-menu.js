@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    23-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3924,6 +3924,21 @@ class TopMenuOptions {
 			});
 		});
 		settingsMenu.addSeparator();
+
+		// * THEME RENDERER * //
+		if (Component.JSplitter) {
+			const rendererMenu = new Menu('Renderer');
+			rendererMenu.createRadioSubMenu('Colors', ['V1 old (K-means/RGB)', 'V2 new (K-means++/Oklab)'], grSet.rendererColors, [0, 1], (mode) => {
+				grSet.rendererColors = mode;
+				window.Reload();
+			});
+			rendererMenu.createRadioSubMenu('Graphics', ['GDI+ (default)', 'Direct2D'], grSet.rendererGraphics, [0, 1], (mode) => {
+				grSet.rendererGraphics = mode;
+				window.Reload();
+			});
+			rendererMenu.appendTo(settingsMenu);
+			settingsMenu.addSeparator();
+		}
 
 		// * OTHER SETTINGS * //
 		settingsMenu.addItem('Output device', false, () => {

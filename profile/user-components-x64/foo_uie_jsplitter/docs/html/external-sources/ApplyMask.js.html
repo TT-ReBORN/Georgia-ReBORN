@@ -1,0 +1,62 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: ApplyMask.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;ApplyMask&#x27;</span>, { <span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;T.P Wang / marc2003&#x27;</span> });
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Flags.js&#x27;</span>);
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Helpers.js&#x27;</span>);
+
+<span class="hljs-keyword">const</span> g_img = gdi.<span class="hljs-title class_">Image</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>samples/basic/images/post.jpg`</span>);
+<span class="hljs-keyword">const</span> g_mask = gdi.<span class="hljs-title class_">Image</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>samples/basic/images/mask.png`</span>);
+<span class="hljs-keyword">const</span> font = gdi.<span class="hljs-title class_">Font</span>(<span class="hljs-string">&#x27;Segoe UI&#x27;</span>, <span class="hljs-number">16</span>, <span class="hljs-number">1</span>);
+
+<span class="hljs-keyword">let</span> ww = <span class="hljs-number">0</span>, wh = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">let</span> applied = <span class="hljs-literal">false</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_size</span>(<span class="hljs-params"></span>) {
+    ww = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Width</span>;
+    wh = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Height</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    <span class="hljs-keyword">if</span> (g_img) {
+        <span class="hljs-comment">// Keep aspect ratio</span>
+        <span class="hljs-keyword">let</span> scale_w = ww / g_img.<span class="hljs-property">Width</span>;
+        <span class="hljs-keyword">let</span> scale_h = wh / g_img.<span class="hljs-property">Height</span>;
+        <span class="hljs-keyword">let</span> scale = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(scale_w, scale_h);
+        <span class="hljs-keyword">let</span> pos_x = <span class="hljs-number">0</span>, pos_y = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">if</span> (scale_w &lt; scale_h)
+            pos_y = (wh - g_img.<span class="hljs-property">Height</span> * scale) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (scale_w &gt; scale_h)
+            pos_x = (ww - g_img.<span class="hljs-property">Width</span> * scale) / <span class="hljs-number">2</span>;
+        gr.<span class="hljs-title class_">DrawImage</span>(g_img, pos_x, pos_y, g_img.<span class="hljs-property">Width</span> * scale, g_img.<span class="hljs-property">Height</span> * scale, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, g_img.<span class="hljs-property">Width</span>, g_img.<span class="hljs-property">Height</span>);
+    }
+    <span class="hljs-keyword">if</span> (!applied) {
+        gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, <span class="hljs-number">24</span>, <span class="hljs-title function_">RGB</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>));
+        gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-string">&#x27;Double click panel to apply mask&#x27;</span>, font, <span class="hljs-title function_">RGB</span>(<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>), <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, <span class="hljs-number">24</span>, <span class="hljs-variable constant_">DT_CENTER</span>);
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_dblclk</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">if</span> (!applied) {
+        <span class="hljs-title function_">apply</span>();
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">apply</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">let</span> g_img_mask = g_mask;
+    <span class="hljs-comment">// mask *MUST* be the same size as g_img</span>
+    <span class="hljs-keyword">let</span> mask = g_img_mask.<span class="hljs-title class_">Resize</span>(g_img.<span class="hljs-property">Width</span>, g_img.<span class="hljs-property">Height</span>);
+    <span class="hljs-comment">// Apply mask image to g_img</span>
+    g_img.<span class="hljs-title class_">ApplyMask</span>(mask);
+    applied = <span class="hljs-literal">true</span>;
+    <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+}
+</code></pre>
+      </body>
+    </html>
+  

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    23-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2150,7 +2150,10 @@ function GetAlbumArtColors(image, colorCache, maxColorsToPull = 14) {
 
 	try {
 		// Extract colors
-		const colors = JSON.parse(image.GetColourSchemeJSON(maxColorsToPull));
+		const colors = JSON.parse(Component.JSplitter && grSet.rendererColors === 1
+			? image.GetColourSchemeJSONV2(maxColorsToPull)
+			: image.GetColourSchemeJSON(maxColorsToPull)
+		);
 
 		// Store in cache if provided
 		if (Array.isArray(colorCache)) {

@@ -1,0 +1,455 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: Matrix.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-comment">/**
+ * Matrix helpers&lt;br&gt;
+ * <span class="hljs-doctag">@module</span> <span class="hljs-variable">Matrix</span>
+*/</span>
+
+<span class="hljs-comment">/**
+ * Matrix class to provide helper functions for transforming the image in 3 dimensions.&lt;br&gt;
+ * For more information, see: {<span class="hljs-doctag">@link</span> https://learn.microsoft.com/en-us/windows/win32/api/d2d1helper/nl-d2d1helper-matrix3x2f}&lt;br&gt;
+ * May be used for {<span class="hljs-doctag">@link</span> D2DGraphics#SetTransform SetTransform}, {<span class="hljs-doctag">@link</span> D2DGraphics#ApplyTransform ApplyTransform} or {<span class="hljs-doctag">@link</span> module:Effects.Effects Effects.AffineTransform}&lt;br&gt;
+ * <span class="hljs-doctag">@memberof</span> module:Matrix
+ * <span class="hljs-doctag">@class</span>
+ * <span class="hljs-doctag">@hideconstructor</span>
+ */</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Matrix3x2</span> {
+
+    <span class="hljs-comment">/**
+     * Generates identity matrix.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Identity</span>() {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">1</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Creates a translation transformation that has the specified x and y displacements.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">dx</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">dy</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Translation</span>(dx, dy) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">1</span>,
+            dx, dy
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Creates a scale transformation that has the specified scale factors and center point.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">sx</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">sy</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">centerX</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">centerY</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Scale</span>(sx, sy, centerX, centerY) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            sx, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, sy,
+            centerX - sx * centerX, centerY - sy * centerY
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Creates a rotation transformation that has the specified angle and center point.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">angle</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">centerX</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">centerY</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Rotation</span>(angle, centerX, centerY) {
+        <span class="hljs-keyword">const</span> angleInRadian = angle * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> sinAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sin</span>(angleInRadian);
+        <span class="hljs-keyword">const</span> cosAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">cos</span>(angleInRadian);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            cosAngle, sinAngle,
+            -sinAngle, cosAngle,
+            centerX - centerX * cosAngle + centerY * sinAngle, centerY - centerX * sinAngle - centerY * cosAngle
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Creates a skew transformation that has the specified x-axis and y-axis values and center point.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">degreeX</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Skew</span>(angleX, angleY, centerX, centerY) {
+        <span class="hljs-keyword">const</span> angleXInRadian = angleX * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> angleYInRadian = angleY * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> tanAngleX = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">tan</span>(angleXInRadian);
+        <span class="hljs-keyword">const</span> tanAngleY = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">tan</span>(angleYInRadian);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, tanAngleY,
+            tanAngleX, <span class="hljs-number">1</span>,
+            -centerY * tanAngleX, -centerX * tanAngleY
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Returns determinant for specified matrix.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Float32Array</span>} <span class="hljs-variable">m</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">float</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Determinant</span>(m) {
+        <span class="hljs-keyword">return</span> m[<span class="hljs-number">0</span>] * m[<span class="hljs-number">3</span>] - m[<span class="hljs-number">1</span>] * m[<span class="hljs-number">2</span>];
+    }
+
+    <span class="hljs-comment">/**
+     * Returns product of two or more matrices.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Array&lt;Float32Array&gt;</span>} <span class="hljs-variable">matrices</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Multiply</span>(...matrices) {
+        <span class="hljs-keyword">if</span> (matrices.<span class="hljs-property">length</span> &lt; <span class="hljs-number">2</span>) {
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;At least two matrices are required for multiplication&#x27;</span>);
+        }
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> m <span class="hljs-keyword">of</span> matrices) {
+            <span class="hljs-keyword">if</span> (!(m <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Float32Array</span>) || m.<span class="hljs-property">length</span> !== <span class="hljs-number">6</span>) {
+                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Each matrix must be a Float32Array of 6 numbers&#x27;</span>);
+            }
+        }
+
+        <span class="hljs-keyword">function</span> <span class="hljs-title function_">mul</span>(<span class="hljs-params">a, b</span>) {
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+                a[<span class="hljs-number">0</span>] * b[<span class="hljs-number">0</span>] + a[<span class="hljs-number">1</span>] * b[<span class="hljs-number">2</span>],
+                a[<span class="hljs-number">0</span>] * b[<span class="hljs-number">1</span>] + a[<span class="hljs-number">1</span>] * b[<span class="hljs-number">3</span>],
+
+                a[<span class="hljs-number">2</span>] * b[<span class="hljs-number">0</span>] + a[<span class="hljs-number">3</span>] * b[<span class="hljs-number">2</span>],
+                a[<span class="hljs-number">2</span>] * b[<span class="hljs-number">1</span>] + a[<span class="hljs-number">3</span>] * b[<span class="hljs-number">3</span>],
+
+                a[<span class="hljs-number">4</span>] * b[<span class="hljs-number">0</span>] + a[<span class="hljs-number">5</span>] * b[<span class="hljs-number">2</span>] + b[<span class="hljs-number">4</span>],
+                a[<span class="hljs-number">4</span>] * b[<span class="hljs-number">1</span>] + a[<span class="hljs-number">5</span>] * b[<span class="hljs-number">3</span>] + b[<span class="hljs-number">5</span>]
+            ]);
+        }
+
+        <span class="hljs-keyword">let</span> result = matrices[<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">1</span>; i &lt; matrices.<span class="hljs-property">length</span>; i++) {
+            result = <span class="hljs-title function_">mul</span>(result, matrices[i]);
+        }
+        <span class="hljs-keyword">return</span> result;
+    }
+
+    <span class="hljs-comment">/**
+     * Uses this matrix m to transform the specified point and returns the result.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Array&lt;Float32Array&gt;</span>} <span class="hljs-variable">matrices</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Object(x, y)</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">TransformPoint</span>(pointX, pointY, m) {
+        <span class="hljs-keyword">return</span> { 
+            <span class="hljs-attr">x</span>: pointX * m[<span class="hljs-number">0</span>] + pointY * m[<span class="hljs-number">2</span>] + m[<span class="hljs-number">4</span>],
+            <span class="hljs-attr">y</span>: pointX * m[<span class="hljs-number">1</span>] + pointY * m[<span class="hljs-number">3</span>] + m[<span class="hljs-number">5</span>]
+        };
+    }
+}
+
+<span class="hljs-comment">/**
+ * Matrix class to provide helper functions for transforming the image in 3 dimensions.&lt;br&gt;
+ * For more information, see: {<span class="hljs-doctag">@link</span> https://learn.microsoft.com/en-us/windows/win32/api/d2d1_1helper/nl-d2d1_1helper-matrix4x4f}&lt;br&gt;
+ * May be used for {<span class="hljs-doctag">@link</span> module:Effects.Effects Effects.D3DTransform}&lt;br&gt;
+ * <span class="hljs-doctag">@memberof</span> module:Matrix
+ * <span class="hljs-doctag">@class</span>
+ * <span class="hljs-doctag">@hideconstructor</span>
+ */</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Matrix4x4</span> {
+
+    <span class="hljs-comment">/**
+     * Generates identity matrix.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Identity</span>() {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Generates a transform matrix that translates the projection plane in the X, Y, or Z direction.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">x</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">y</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">z</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Translation</span>(x, y, z) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,
+            x, y, z, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Generates a transform matrix that scales the projection plane in the X, Y, and/or Z direction.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">x</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">y</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">z</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Scale</span>(sx, sy, sz) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            sx, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, sy, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, sz, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Generates a transform matrix that rotates the projection plane about the X axis.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">degreeX</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">RotationX</span>(degreeX) {
+        <span class="hljs-keyword">const</span> angleInRadian = degreeX * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> sinAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sin</span>(angleInRadian);
+        <span class="hljs-keyword">const</span> cosAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">cos</span>(angleInRadian);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, cosAngle, sinAngle, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, -sinAngle, cosAngle, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Generates a transform matrix that rotates the projection plane about the Y axis.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">degreeY</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">RotationY</span>(degreeY) {
+        <span class="hljs-keyword">const</span> angleInRadian = degreeY * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> sinAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sin</span>(angleInRadian);
+        <span class="hljs-keyword">const</span> cosAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">cos</span>(angleInRadian);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            cosAngle, <span class="hljs-number">0</span>, -sinAngle, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            sinAngle, <span class="hljs-number">0</span>, cosAngle, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Generates a transform matrix that rotates the projection plane about the Z axis.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">degreeZ</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">RotationZ</span>(degreeZ) {
+        <span class="hljs-keyword">const</span> angleInRadian = degreeZ * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> sinAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sin</span>(angleInRadian);
+        <span class="hljs-keyword">const</span> cosAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">cos</span>(angleInRadian);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            cosAngle, sinAngle, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            -sinAngle, cosAngle, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Generates a transform matrix that skews the projection plane in the X direction.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">degreeX</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">SkewX</span>(degreeX) {
+        <span class="hljs-keyword">const</span> angleInRadian = degreeX * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> tanAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">tan</span>(angleInRadian);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            tanAngle, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Generates a transform matrix that skews the projection plane in the Y direction.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">degreeY</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">SkewY</span>(degreeY) {
+        <span class="hljs-keyword">const</span> angleInRadian = degreeY * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> tanAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">tan</span>(angleInRadian);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, tanAngle, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * A perspective transformation with a depth value.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">depth</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">PerspectiveProjection</span>(depth)
+    {
+        <span class="hljs-keyword">let</span> proj = <span class="hljs-number">0</span>;
+
+        <span class="hljs-keyword">if</span> (depth &gt; <span class="hljs-number">0</span>)
+        {
+            proj = -<span class="hljs-number">1</span>/depth;
+        }
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, proj,
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Rotates the projection plane about the axis you specify.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">x</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">y</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">z</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">float</span>} <span class="hljs-variable">degree</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">RotationArbitraryAxis</span>(x, y, z, degree)
+    {
+        <span class="hljs-comment">// Normalize the vector represented by x, y, and z</span>
+        <span class="hljs-keyword">const</span> magnitude = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sqrt</span>(x*x + y*y + z*z);
+        x /= magnitude;
+        y /= magnitude;
+        z /= magnitude;
+
+        <span class="hljs-keyword">const</span> angleInRadian = degree * (<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> / <span class="hljs-number">180</span>);
+        <span class="hljs-keyword">const</span> sinAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sin</span>(angleInRadian);
+        <span class="hljs-keyword">const</span> cosAngle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">cos</span>(angleInRadian);
+
+        <span class="hljs-keyword">const</span> oneMinusCosAngle = <span class="hljs-number">1</span> - cosAngle;
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+            <span class="hljs-number">1</span>             + oneMinusCosAngle * (x * x - <span class="hljs-number">1</span>),
+            z  * sinAngle + oneMinusCosAngle *  x * y,
+            -y * sinAngle + oneMinusCosAngle *  x * z,
+            <span class="hljs-number">0</span>,
+
+            -z * sinAngle + oneMinusCosAngle *  y * x,
+            <span class="hljs-number">1</span>             + oneMinusCosAngle * (y * y - <span class="hljs-number">1</span>),
+            x  * sinAngle + oneMinusCosAngle *  y * z,
+            <span class="hljs-number">0</span>,
+
+            y  * sinAngle + oneMinusCosAngle *  z * x,
+            -x * sinAngle + oneMinusCosAngle *  z * y,
+            <span class="hljs-number">1</span>             + oneMinusCosAngle * (z * z - <span class="hljs-number">1</span>),
+            <span class="hljs-number">0</span>,
+
+            <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+        ]);
+    }
+
+    <span class="hljs-comment">/**
+     * Returns product of two or more matrices.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Array&lt;Float32Array&gt;</span>} <span class="hljs-variable">matrices</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">Float32Array</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Multiply</span>(...matrices) {
+        <span class="hljs-keyword">if</span> (matrices.<span class="hljs-property">length</span> &lt; <span class="hljs-number">2</span>) {
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;At least two matrices are required for multiplication&#x27;</span>);
+        }
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> m <span class="hljs-keyword">of</span> matrices) {
+            <span class="hljs-keyword">if</span> (!(m <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Float32Array</span>) || m.<span class="hljs-property">length</span> !== <span class="hljs-number">16</span>) {
+                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Each matrix must be a Float32Array of 16 numbers&#x27;</span>);
+            }
+        }
+
+        <span class="hljs-keyword">function</span> <span class="hljs-title function_">mul</span>(<span class="hljs-params">a, b</span>) {
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>([
+                a[<span class="hljs-number">0</span>] * b[<span class="hljs-number">0</span>] + a[<span class="hljs-number">1</span>] * b[<span class="hljs-number">4</span>] + a[<span class="hljs-number">2</span>] * b[<span class="hljs-number">8</span>] + a[<span class="hljs-number">3</span>] * b[<span class="hljs-number">12</span>], 
+                a[<span class="hljs-number">0</span>] * b[<span class="hljs-number">1</span>] + a[<span class="hljs-number">1</span>] * b[<span class="hljs-number">5</span>] + a[<span class="hljs-number">2</span>] * b[<span class="hljs-number">9</span>] + a[<span class="hljs-number">3</span>] * b[<span class="hljs-number">13</span>], 
+                a[<span class="hljs-number">0</span>] * b[<span class="hljs-number">2</span>] + a[<span class="hljs-number">1</span>] * b[<span class="hljs-number">6</span>] + a[<span class="hljs-number">2</span>] * b[<span class="hljs-number">10</span>] + a[<span class="hljs-number">3</span>] * b[<span class="hljs-number">14</span>], 
+                a[<span class="hljs-number">0</span>] * b[<span class="hljs-number">3</span>] + a[<span class="hljs-number">1</span>] * b[<span class="hljs-number">7</span>] + a[<span class="hljs-number">2</span>] * b[<span class="hljs-number">11</span>] + a[<span class="hljs-number">3</span>] * b[<span class="hljs-number">15</span>],
+
+                a[<span class="hljs-number">4</span>] * b[<span class="hljs-number">0</span>] + a[<span class="hljs-number">5</span>] * b[<span class="hljs-number">4</span>] + a[<span class="hljs-number">6</span>] * b[<span class="hljs-number">8</span>] + a[<span class="hljs-number">7</span>] * b[<span class="hljs-number">12</span>], 
+                a[<span class="hljs-number">4</span>] * b[<span class="hljs-number">1</span>] + a[<span class="hljs-number">5</span>] * b[<span class="hljs-number">5</span>] + a[<span class="hljs-number">6</span>] * b[<span class="hljs-number">9</span>] + a[<span class="hljs-number">7</span>] * b[<span class="hljs-number">13</span>], 
+                a[<span class="hljs-number">4</span>] * b[<span class="hljs-number">2</span>] + a[<span class="hljs-number">5</span>] * b[<span class="hljs-number">6</span>] + a[<span class="hljs-number">6</span>] * b[<span class="hljs-number">10</span>] + a[<span class="hljs-number">7</span>] * b[<span class="hljs-number">14</span>], 
+                a[<span class="hljs-number">4</span>] * b[<span class="hljs-number">3</span>] + a[<span class="hljs-number">5</span>] * b[<span class="hljs-number">7</span>] + a[<span class="hljs-number">6</span>] * b[<span class="hljs-number">11</span>] + a[<span class="hljs-number">7</span>] * b[<span class="hljs-number">15</span>],
+
+                a[<span class="hljs-number">8</span>] * b[<span class="hljs-number">0</span>] + a[<span class="hljs-number">9</span>] * b[<span class="hljs-number">4</span>] + a[<span class="hljs-number">10</span>] * b[<span class="hljs-number">8</span>] + a[<span class="hljs-number">11</span>] * b[<span class="hljs-number">12</span>], 
+                a[<span class="hljs-number">8</span>] * b[<span class="hljs-number">1</span>] + a[<span class="hljs-number">9</span>] * b[<span class="hljs-number">5</span>] + a[<span class="hljs-number">10</span>] * b[<span class="hljs-number">9</span>] + a[<span class="hljs-number">11</span>] * b[<span class="hljs-number">13</span>], 
+                a[<span class="hljs-number">8</span>] * b[<span class="hljs-number">2</span>] + a[<span class="hljs-number">9</span>] * b[<span class="hljs-number">6</span>] + a[<span class="hljs-number">10</span>] * b[<span class="hljs-number">10</span>] + a[<span class="hljs-number">11</span>] * b[<span class="hljs-number">14</span>],
+                a[<span class="hljs-number">8</span>] * b[<span class="hljs-number">3</span>] + a[<span class="hljs-number">9</span>] * b[<span class="hljs-number">7</span>] + a[<span class="hljs-number">10</span>] * b[<span class="hljs-number">11</span>] + a[<span class="hljs-number">11</span>] * b[<span class="hljs-number">15</span>],
+
+                a[<span class="hljs-number">12</span>] * b[<span class="hljs-number">0</span>] + a[<span class="hljs-number">13</span>] * b[<span class="hljs-number">4</span>] + a[<span class="hljs-number">14</span>] * b[<span class="hljs-number">8</span>] + a[<span class="hljs-number">15</span>] * b[<span class="hljs-number">12</span>], 
+                a[<span class="hljs-number">12</span>] * b[<span class="hljs-number">1</span>] + a[<span class="hljs-number">13</span>] * b[<span class="hljs-number">5</span>] + a[<span class="hljs-number">14</span>] * b[<span class="hljs-number">9</span>] + a[<span class="hljs-number">15</span>] * b[<span class="hljs-number">13</span>], 
+                a[<span class="hljs-number">12</span>] * b[<span class="hljs-number">2</span>] + a[<span class="hljs-number">13</span>] * b[<span class="hljs-number">6</span>] + a[<span class="hljs-number">14</span>] * b[<span class="hljs-number">10</span>] + a[<span class="hljs-number">15</span>] * b[<span class="hljs-number">14</span>],
+                a[<span class="hljs-number">12</span>] * b[<span class="hljs-number">3</span>] + a[<span class="hljs-number">13</span>] * b[<span class="hljs-number">7</span>] + a[<span class="hljs-number">14</span>] * b[<span class="hljs-number">11</span>] + a[<span class="hljs-number">15</span>] * b[<span class="hljs-number">15</span>]
+            ]);            
+            <span class="hljs-comment">// const result = new Float32Array(16);</span>
+            <span class="hljs-comment">// for (let i = 0; i &lt; 4; i++) {</span>
+            <span class="hljs-comment">//     for (let j = 0; j &lt; 4; j++) {</span>
+            <span class="hljs-comment">//         let sum = 0;</span>
+            <span class="hljs-comment">//         for (let k = 0; k &lt; 4; k++) {</span>
+            <span class="hljs-comment">//             sum += a[i * 4 + k] * b[k * 4 + j];</span>
+            <span class="hljs-comment">//         }</span>
+            <span class="hljs-comment">//         result[i * 4 + j] = sum;</span>
+            <span class="hljs-comment">//     }</span>
+            <span class="hljs-comment">// }</span>
+            <span class="hljs-comment">// return result;</span>
+        }
+
+        <span class="hljs-keyword">let</span> result = matrices[<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">1</span>; i &lt; matrices.<span class="hljs-property">length</span>; i++) {
+            result = <span class="hljs-title function_">mul</span>(result, matrices[i]);
+        }
+        <span class="hljs-keyword">return</span> result;
+    }
+
+    <span class="hljs-comment">/**
+     * Returns determinant for specified matrix.
+     * <span class="hljs-doctag">@method</span>
+     * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Float32Array</span>} <span class="hljs-variable">m</span>
+     * <span class="hljs-doctag">@return</span> {<span class="hljs-type">float</span>}
+     */</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-title class_">Determinant</span>(m)
+    {
+        <span class="hljs-keyword">const</span> minor1 = m[<span class="hljs-number">12</span>] * (m[<span class="hljs-number">1</span>] * (m[<span class="hljs-number">6</span>] * m[<span class="hljs-number">11</span>] - m[<span class="hljs-number">10</span>] * m[<span class="hljs-number">7</span>]) - m[<span class="hljs-number">2</span>] * (m[<span class="hljs-number">5</span>] * m[<span class="hljs-number">11</span>] - m[<span class="hljs-number">7</span>] * m[<span class="hljs-number">9</span>]) + m[<span class="hljs-number">3</span>] * (m[<span class="hljs-number">5</span>] * m[<span class="hljs-number">10</span>] - m[<span class="hljs-number">6</span>] * m[<span class="hljs-number">9</span>]));
+        <span class="hljs-keyword">const</span> minor2 = m[<span class="hljs-number">13</span>] * (m[<span class="hljs-number">0</span>] * (m[<span class="hljs-number">4</span>] * m[<span class="hljs-number">11</span>] - m[<span class="hljs-number">8</span>] * m[<span class="hljs-number">7</span>]) - m[<span class="hljs-number">2</span>] * (m[<span class="hljs-number">4</span>] * m[<span class="hljs-number">11</span>] - m[<span class="hljs-number">7</span>] * m[<span class="hljs-number">8</span>]) + m[<span class="hljs-number">3</span>] * (m[<span class="hljs-number">4</span>] * m[<span class="hljs-number">10</span>] - m[<span class="hljs-number">6</span>] * m[<span class="hljs-number">8</span>]));
+        <span class="hljs-keyword">const</span> minor3 = m[<span class="hljs-number">14</span>] * (m[<span class="hljs-number">0</span>] * (m[<span class="hljs-number">5</span>] * m[<span class="hljs-number">11</span>] - m[<span class="hljs-number">9</span>] * m[<span class="hljs-number">7</span>]) - m[<span class="hljs-number">1</span>] * (m[<span class="hljs-number">4</span>] * m[<span class="hljs-number">11</span>] - m[<span class="hljs-number">7</span>] * m[<span class="hljs-number">8</span>]) + m[<span class="hljs-number">3</span>] * (m[<span class="hljs-number">4</span>] * m[<span class="hljs-number">9</span>] - m[<span class="hljs-number">5</span>] * m[<span class="hljs-number">8</span>]));
+        <span class="hljs-keyword">const</span> minor4 = m[<span class="hljs-number">15</span>] * (m[<span class="hljs-number">0</span>] * (m[<span class="hljs-number">5</span>] * m[<span class="hljs-number">10</span>] - m[<span class="hljs-number">9</span>] * m[<span class="hljs-number">6</span>]) - m[<span class="hljs-number">1</span>] * (m[<span class="hljs-number">4</span>] * m[<span class="hljs-number">10</span>] - m[<span class="hljs-number">6</span>] * m[<span class="hljs-number">8</span>]) + m[<span class="hljs-number">2</span>] * (m[<span class="hljs-number">4</span>] * m[<span class="hljs-number">9</span>] - m[<span class="hljs-number">5</span>] * m[<span class="hljs-number">8</span>]));
+
+        <span class="hljs-keyword">return</span> minor1 - minor2 + minor3 - minor4;
+    }
+}
+</code></pre>
+      </body>
+    </html>
+  

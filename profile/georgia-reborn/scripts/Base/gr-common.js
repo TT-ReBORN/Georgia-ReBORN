@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-05-2026                                              * //
+// * Last change:    23-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -42,6 +42,7 @@ const WshShell = new ActiveXObject('WScript.Shell');
  * @property {boolean} ChronFlow - The state indicates if the foo_chronflow component or its mod version is installed.
  * @property {boolean} EnhancedPlaycount - The state indicates if the foo_enhanced_playcount component is installed.
  * @property {boolean} ESLyric - The state indicates if the foo_uie_eslyric component is installed.
+ * @property {boolean} JSplitter - The state indicates if the foo_uie_jsplitter component is installed.
  * @property {boolean} UIWizard - The state indicates if the foo_ui_wizard component is installed.
  */
 /** @global @type {Component} */
@@ -50,6 +51,7 @@ const Component = {
 	ChronFlow: utils.CheckComponent('foo_chronflow') || utils.CheckComponent('foo_chronflow_mod'),
 	EnhancedPlaycount: utils.CheckComponent('foo_enhanced_playcount'),
 	ESLyric: utils.CheckComponent('foo_uie_eslyric'),
+	JSplitter: utils.CheckComponent('foo_uie_jsplitter'),
 	UIWizard: utils.CheckComponent('foo_ui_wizard')
 };
 
@@ -318,6 +320,12 @@ const LUM_REF = {
 ///////////////////
 // * RENDERING * //
 ///////////////////
+/** @global @typedef {boolean} D2D The D2D renderer state, true (D2D) and false (GDI). */
+const D2D = (Component.JSplitter
+	? window.DrawMode = window.GetProperty('Georgia-ReBORN - 15. Settings: Renderer graphics')
+	: 0
+) === 1;
+
 /**
  * A set of several different quality type settings for interpolation of image processing when resizing or transforming.
  * Used in SetInterpolationMode().

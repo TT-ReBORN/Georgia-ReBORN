@@ -1,0 +1,31 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: FontPicker.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-meta">﻿&quot;use strict&quot;</span>;
+
+<span class="hljs-title function_">include</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>\\docs\\Flags.js`</span>);
+
+<span class="hljs-keyword">let</span> font = gdi.<span class="hljs-title class_">Font</span>(<span class="hljs-string">&quot;Segoe UI&quot;</span>, <span class="hljs-number">32</span>);
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    gr.<span class="hljs-title class_">GdiDrawText</span>(<span class="hljs-string">&quot;TEXT FOR TEST&quot;</span>, font, <span class="hljs-number">0xFF000000</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">Width</span>, <span class="hljs-variable language_">window</span>.<span class="hljs-property">Height</span>, <span class="hljs-variable constant_">DT_SINGLELINE</span> | <span class="hljs-variable constant_">DT_CENTER</span> | <span class="hljs-variable constant_">DT_VCENTER</span>);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_down</span>(<span class="hljs-params">x, y, mask</span>) {
+	<span class="hljs-keyword">const</span> ft = utils.<span class="hljs-title class_">FontPicker</span>(font);
+	<span class="hljs-keyword">if</span>(ft == font) 
+		fb.<span class="hljs-title class_">ShowPopupMessage</span>(<span class="hljs-string">&quot;User cancelled the dialog&quot;</span>, <span class="hljs-string">&quot;Cancel&quot;</span>);
+	<span class="hljs-keyword">else</span> {
+		font = ft;	
+		<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+	}
+}
+</code></pre>
+      </body>
+    </html>
+  

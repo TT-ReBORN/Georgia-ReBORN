@@ -1,0 +1,72 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: Brushes.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-meta">﻿&quot;use strict&quot;</span>;
+
+<span class="hljs-comment">// window.DrawMode = 1;</span>
+
+<span class="hljs-title function_">include</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>\\docs\\Helpers.js`</span>);
+<span class="hljs-title function_">include</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>\\docs\\Flags.js`</span>);
+
+<span class="hljs-keyword">let</span> ww = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">let</span> wh = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_size</span>(<span class="hljs-params">width, height</span>) {
+    ww = width;
+    wh = height;
+}
+
+<span class="hljs-keyword">const</span> solidBrush = gdi.<span class="hljs-title class_">Brush</span>(<span class="hljs-title class_">BrushType</span>.<span class="hljs-property">Solid</span>, <span class="hljs-number">0xFF000000</span>);
+
+<span class="hljs-keyword">const</span> img = gdi.<span class="hljs-title class_">Image</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>\\samples\\d2d\\images\\Flowers.jpg`</span>);
+<span class="hljs-keyword">const</span> bitmapBrush = gdi.<span class="hljs-title class_">Brush</span>(<span class="hljs-title class_">BrushType</span>.<span class="hljs-property">Bitmap</span>, img, <span class="hljs-title class_">BrushWrapMode</span>.<span class="hljs-property">TileFlipXY</span>);
+
+<span class="hljs-keyword">const</span> font = gdi.<span class="hljs-title class_">Font</span>(<span class="hljs-string">&quot;Segoe UI&quot;</span>, <span class="hljs-number">96</span>, <span class="hljs-number">1</span>);
+<span class="hljs-keyword">const</span> text = <span class="hljs-string">&quot;TEST FOR TEXT BRUSH&quot;</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+
+    gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, wh, solidBrush);
+	
+    gr.<span class="hljs-title class_">SetSmoothingMode</span>(<span class="hljs-title class_">SmoothingMode</span>.<span class="hljs-property">HighQuality</span>);
+    gr.<span class="hljs-title class_">SetTextRenderingHint</span>(<span class="hljs-title class_">TextRenderingHint</span>.<span class="hljs-property">AntiAlias</span>);
+
+	<span class="hljs-keyword">const</span> ms = gr.<span class="hljs-title class_">MeasureString</span>(text, font, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, wh, <span class="hljs-title class_">StringFormat</span>(<span class="hljs-number">1</span>));
+	<span class="hljs-keyword">const</span> linearGradientBrush = gdi.<span class="hljs-title class_">Brush</span>(
+		<span class="hljs-title class_">BrushType</span>.<span class="hljs-property">LinearGradient</span>, 
+		[ms.<span class="hljs-property">X</span>, ms.<span class="hljs-property">Y</span>], 
+		[ms.<span class="hljs-property">X</span>, ms.<span class="hljs-property">Y</span> + ms.<span class="hljs-property">Height</span>], 
+		[<span class="hljs-number">0.0</span>, <span class="hljs-number">0xFFFFFFFF</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">0xFFFF0000</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0xFF000000</span>]
+	);
+	gr.<span class="hljs-title class_">DrawString</span>(text, font, linearGradientBrush, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, wh, <span class="hljs-title class_">StringFormat</span>(<span class="hljs-number">1</span>));
+	
+	bitmapBrush.<span class="hljs-title class_">Scale</span>(ww / img.<span class="hljs-property">Width</span> / <span class="hljs-number">2</span>, (wh - ms.<span class="hljs-property">Height</span>) / img.<span class="hljs-property">Height</span> / <span class="hljs-number">2</span>);
+	bitmapBrush.<span class="hljs-title class_">Translate</span>(<span class="hljs-number">0</span>, ms.<span class="hljs-property">Height</span>);
+	gr.<span class="hljs-title class_">FillEllipse</span>(<span class="hljs-number">0</span>, ms.<span class="hljs-property">Height</span>, ww, wh - ms.<span class="hljs-property">Height</span>, bitmapBrush);
+	bitmapBrush.<span class="hljs-title class_">ResetTransform</span>();
+
+	<span class="hljs-keyword">const</span> lightRadius = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(ww, wh) / <span class="hljs-number">2</span>;
+	<span class="hljs-keyword">const</span> radialGradientBrush = gdi.<span class="hljs-title class_">Brush</span>(
+		<span class="hljs-title class_">BrushType</span>.<span class="hljs-property">RadialGradient</span>, 
+		[lastX, lastY],
+		[lightRadius, lightRadius],
+		[<span class="hljs-number">0.0</span>, <span class="hljs-number">0x00FFFFFF</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0xFFFFFFFF</span>],
+		<span class="hljs-title class_">BrushWrapMode</span>.<span class="hljs-property">Clamp</span>
+	);	
+	gr.<span class="hljs-title class_">FillEllipse</span>(lastX - lightRadius, lastY - lightRadius, lightRadius * <span class="hljs-number">2</span>, lightRadius * <span class="hljs-number">2</span>, radialGradientBrush);
+}
+
+<span class="hljs-keyword">let</span> lastX = <span class="hljs-number">0</span>, lastY = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_move</span>(<span class="hljs-params">x, y</span>) {
+	lastX = x;
+	lastY = y;
+	<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+}
+</code></pre>
+      </body>
+    </html>
+  

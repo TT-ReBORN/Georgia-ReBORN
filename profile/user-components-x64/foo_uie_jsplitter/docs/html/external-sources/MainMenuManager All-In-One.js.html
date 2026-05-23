@@ -1,0 +1,98 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: MainMenuManager All-In-One.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;MainMenuManager All-In-One&#x27;</span>, { <span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;YBStone / T.P Wang / marc2003&#x27;</span> });
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Flags.js&#x27;</span>);
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Helpers.js&#x27;</span>);
+
+<span class="hljs-keyword">const</span> img = gdi.<span class="hljs-title class_">Image</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>samples/basic/images/cog.png`</span>);
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    gr.<span class="hljs-title class_">DrawImage</span>(img, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, img.<span class="hljs-property">Width</span>, img.<span class="hljs-property">Height</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, img.<span class="hljs-property">Width</span>, img.<span class="hljs-property">Height</span>);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_up</span>(<span class="hljs-params">x, y</span>) {
+    <span class="hljs-keyword">if</span> (x &gt; <span class="hljs-number">0</span> &amp;&amp; x &lt; img.<span class="hljs-property">Width</span> &amp;&amp; y &gt; <span class="hljs-number">0</span> &amp;&amp; y &lt; img.<span class="hljs-property">Height</span>) {
+        <span class="hljs-title function_">menu</span>();
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">menu</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">let</span> basemenu = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>();
+    <span class="hljs-keyword">let</span> contextman = fb.<span class="hljs-title class_">CreateContextMenuManager</span>();
+    contextman.<span class="hljs-title class_">InitNowPlaying</span>();
+    
+    <span class="hljs-keyword">let</span> child1 = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>(); <span class="hljs-comment">//File</span>
+    <span class="hljs-keyword">let</span> child2 = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>(); <span class="hljs-comment">//Edit</span>
+    <span class="hljs-keyword">let</span> child3 = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>(); <span class="hljs-comment">//View</span>
+    <span class="hljs-keyword">let</span> child4 = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>(); <span class="hljs-comment">//Playback</span>
+    <span class="hljs-keyword">let</span> child5 = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>(); <span class="hljs-comment">//Library</span>
+    <span class="hljs-keyword">let</span> child6 = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>(); <span class="hljs-comment">//Help</span>
+    <span class="hljs-keyword">let</span> child7 = <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">CreatePopupMenu</span>(); <span class="hljs-comment">//Now playing</span>
+    
+    <span class="hljs-keyword">let</span> menuman1 = fb.<span class="hljs-title class_">CreateMainMenuManager</span>();
+    <span class="hljs-keyword">let</span> menuman2 = fb.<span class="hljs-title class_">CreateMainMenuManager</span>();
+    <span class="hljs-keyword">let</span> menuman3 = fb.<span class="hljs-title class_">CreateMainMenuManager</span>();
+    <span class="hljs-keyword">let</span> menuman4 = fb.<span class="hljs-title class_">CreateMainMenuManager</span>();
+    <span class="hljs-keyword">let</span> menuman5 = fb.<span class="hljs-title class_">CreateMainMenuManager</span>();
+    <span class="hljs-keyword">let</span> menuman6 = fb.<span class="hljs-title class_">CreateMainMenuManager</span>();
+    
+    <span class="hljs-comment">// MF_STRING is defined in docs/Flags.js</span>
+    child1.<span class="hljs-title class_">AppendTo</span>(basemenu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;File&#x27;</span>);
+    child2.<span class="hljs-title class_">AppendTo</span>(basemenu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;Edit&#x27;</span>);
+    child3.<span class="hljs-title class_">AppendTo</span>(basemenu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;View&#x27;</span>);
+    child4.<span class="hljs-title class_">AppendTo</span>(basemenu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;Playback&#x27;</span>);
+    child5.<span class="hljs-title class_">AppendTo</span>(basemenu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;Library&#x27;</span>);
+    child6.<span class="hljs-title class_">AppendTo</span>(basemenu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;Help&#x27;</span>);
+    basemenu.<span class="hljs-title class_">AppendMenuSeparator</span>();
+    child7.<span class="hljs-title class_">AppendTo</span>(basemenu, <span class="hljs-variable constant_">MF_STRING</span>, <span class="hljs-string">&#x27;Now Playing&#x27;</span>);
+    
+    menuman1.<span class="hljs-title class_">Init</span>(<span class="hljs-string">&#x27;file&#x27;</span>);
+    menuman2.<span class="hljs-title class_">Init</span>(<span class="hljs-string">&#x27;edit&#x27;</span>);
+    menuman3.<span class="hljs-title class_">Init</span>(<span class="hljs-string">&#x27;View&#x27;</span>);
+    menuman4.<span class="hljs-title class_">Init</span>(<span class="hljs-string">&#x27;playback&#x27;</span>);
+    menuman5.<span class="hljs-title class_">Init</span>(<span class="hljs-string">&#x27;library&#x27;</span>);
+    menuman6.<span class="hljs-title class_">Init</span>(<span class="hljs-string">&#x27;help&#x27;</span>);
+    
+    menuman1.<span class="hljs-title class_">BuildMenu</span>(child1, <span class="hljs-number">1</span>, <span class="hljs-number">200</span>);
+    menuman2.<span class="hljs-title class_">BuildMenu</span>(child2, <span class="hljs-number">201</span>, <span class="hljs-number">200</span>);
+    menuman3.<span class="hljs-title class_">BuildMenu</span>(child3, <span class="hljs-number">401</span>, <span class="hljs-number">200</span>);
+    menuman4.<span class="hljs-title class_">BuildMenu</span>(child4, <span class="hljs-number">601</span>, <span class="hljs-number">300</span>);
+    menuman5.<span class="hljs-title class_">BuildMenu</span>(child5, <span class="hljs-number">901</span>, <span class="hljs-number">300</span>);
+    menuman6.<span class="hljs-title class_">BuildMenu</span>(child6, <span class="hljs-number">1201</span>, <span class="hljs-number">100</span>);
+    
+    contextman.<span class="hljs-title class_">InitNowPlaying</span>();
+    contextman.<span class="hljs-title class_">BuildMenu</span>(child7, <span class="hljs-number">1301</span>);
+    <span class="hljs-keyword">const</span> ret = basemenu.<span class="hljs-title class_">TrackPopupMenu</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>);
+
+    <span class="hljs-keyword">if</span> (ret &gt;= <span class="hljs-number">1</span> &amp;&amp; ret &lt; <span class="hljs-number">201</span>) {
+        menuman1.<span class="hljs-title class_">ExecuteByID</span>(ret - <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ret &gt;= <span class="hljs-number">201</span> &amp;&amp; ret &lt; <span class="hljs-number">401</span>) {
+        menuman2.<span class="hljs-title class_">ExecuteByID</span>(ret - <span class="hljs-number">201</span>);
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ret &gt;= <span class="hljs-number">401</span> &amp;&amp; ret &lt; <span class="hljs-number">601</span>) {
+        menuman3.<span class="hljs-title class_">ExecuteByID</span>(ret - <span class="hljs-number">401</span>);
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ret &gt;= <span class="hljs-number">601</span> &amp;&amp; ret &lt; <span class="hljs-number">901</span>) {
+        menuman4.<span class="hljs-title class_">ExecuteByID</span>(ret - <span class="hljs-number">601</span>);
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ret &gt;= <span class="hljs-number">901</span> &amp;&amp; ret &lt; <span class="hljs-number">1201</span>) {
+        menuman5.<span class="hljs-title class_">ExecuteByID</span>(ret - <span class="hljs-number">901</span>);
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ret &gt;= <span class="hljs-number">1201</span> &amp;&amp; ret &lt; <span class="hljs-number">1301</span>) {
+        menuman6.<span class="hljs-title class_">ExecuteByID</span>(ret - <span class="hljs-number">1201</span>);
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ret &gt;= <span class="hljs-number">1301</span>) {
+        contextman.<span class="hljs-title class_">ExecuteByID</span>(ret - <span class="hljs-number">1301</span>);
+    }
+}
+</code></pre>
+      </body>
+    </html>
+  

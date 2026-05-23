@@ -1,0 +1,29 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: CreateImageFromPixelData.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-meta">﻿&quot;use strict&quot;</span>;
+
+<span class="hljs-comment">// Use pixel data from a real image as example</span>
+<span class="hljs-keyword">const</span> example = gdi.<span class="hljs-title class_">Image</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>\\samples\\d2d\\images\\Field.jpg`</span>).<span class="hljs-title class_">GetPixelData</span>();
+
+<span class="hljs-comment">// Create a temp folder</span>
+<span class="hljs-keyword">const</span> filePath = <span class="hljs-string">&quot;js_data\\temp\\Field.bin&quot;</span>;
+<span class="hljs-keyword">if</span> (!utils.<span class="hljs-title class_">IsDirectory</span>(fb.<span class="hljs-property">ProfilePath</span> + filePath)) { utils.<span class="hljs-title class_">CreateFolder</span>(fb.<span class="hljs-property">ProfilePath</span> + <span class="hljs-string">&#x27;js_data\\temp\\&#x27;</span>); }
+
+<span class="hljs-comment">// Write data to a file, and load it</span>
+utils.<span class="hljs-title class_">WriteBinaryFile</span>(fb.<span class="hljs-property">ProfilePath</span> + filePath, example);
+<span class="hljs-keyword">const</span> imgPixelData = utils.<span class="hljs-title class_">ReadBinaryFile</span>(fb.<span class="hljs-property">ProfilePath</span> + filePath);
+<span class="hljs-keyword">const</span> img = gdi.<span class="hljs-title class_">CreateImageFromPixelData</span>(imgPixelData, <span class="hljs-number">2208</span>, <span class="hljs-number">1242</span>);
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+	gr.<span class="hljs-title class_">DrawImage</span>(img, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, img.<span class="hljs-property">Width</span>, img.<span class="hljs-property">Height</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, img.<span class="hljs-property">Width</span>, img.<span class="hljs-property">Height</span>);
+}
+</code></pre>
+      </body>
+    </html>
+  

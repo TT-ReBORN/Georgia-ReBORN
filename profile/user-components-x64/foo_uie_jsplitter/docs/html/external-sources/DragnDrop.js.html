@@ -1,0 +1,361 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: DragnDrop.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-comment">// This sample demonstrates a basic drag-n-drop implementation.</span>
+<span class="hljs-comment">// Don&#x27;t forget to open some playlist viewer to see all the performed actions.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// CTRL, SHIFT, ALT and their combination will modify the action</span>
+<span class="hljs-comment">// that will be performed on item (you can try that by moving file in Windows Explorer).</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Warning: drag-n-drop is an advanced technique, so beware!</span>
+<span class="hljs-comment">//</span>
+
+<span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;Drag n drop&#x27;</span>, { <span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;TheQwertiest&#x27;</span>, <span class="hljs-attr">features</span>: { <span class="hljs-attr">drag_n_drop</span>: <span class="hljs-literal">true</span> } });
+
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Flags.js&#x27;</span>);
+
+<span class="hljs-keyword">const</span> fso = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ActiveXObject</span>(<span class="hljs-string">&#x27;Scripting.FileSystemObject&#x27;</span>);
+<span class="hljs-keyword">const</span> font = gdi.<span class="hljs-title class_">Font</span>(<span class="hljs-string">&#x27;Segoe Ui&#x27;</span>, <span class="hljs-number">12</span>);
+<span class="hljs-keyword">const</span> g_drop_effect = {
+    <span class="hljs-attr">none</span>:   <span class="hljs-number">0</span>,
+    <span class="hljs-attr">copy</span>:   <span class="hljs-number">1</span>,
+    <span class="hljs-attr">move</span>:   <span class="hljs-number">2</span>,
+    <span class="hljs-attr">link</span>:   <span class="hljs-number">4</span>,
+    <span class="hljs-attr">scroll</span>: <span class="hljs-number">0x80000000</span>
+};
+
+<span class="hljs-keyword">let</span> ww, wh;
+
+<span class="hljs-keyword">let</span> mouse_in = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">let</span> mouse_down = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">let</span> mouse_on_item = <span class="hljs-literal">false</span>;
+
+<span class="hljs-keyword">let</span> last_pressed_coord = {};
+
+<span class="hljs-keyword">let</span> is_dragging = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">let</span> is_internal_drag_n_drop_active = <span class="hljs-literal">false</span>;
+
+<span class="hljs-keyword">let</span> status_text = <span class="hljs-string">&#x27;Start dragging to or from the panel&#x27;</span>;
+<span class="hljs-keyword">let</span> status_text_2 = <span class="hljs-string">&#x27;&#x27;</span>;
+
+
+<span class="hljs-comment">////////////////////////////</span>
+<span class="hljs-comment">// Callbacks</span>
+<span class="hljs-comment">////////////////////////////</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    gr.<span class="hljs-title class_">SetTextRenderingHint</span>(<span class="hljs-title class_">TextRenderingHint</span>.<span class="hljs-property">ClearTypeGridFit</span>);
+    
+    gr.<span class="hljs-title class_">FillSolidRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">60</span>, ww/<span class="hljs-number">2</span>, wh - <span class="hljs-number">60</span>, <span class="hljs-number">0xFF83FFFF</span>);
+    gr.<span class="hljs-title class_">FillSolidRect</span>(ww/<span class="hljs-number">2</span>, <span class="hljs-number">60</span>, ww/<span class="hljs-number">2</span>, wh - <span class="hljs-number">60</span>, <span class="hljs-number">0xFFFF83FF</span>);
+    
+    gr.<span class="hljs-title class_">DrawString</span>(status_text, font, <span class="hljs-number">0xFF000000</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, <span class="hljs-number">30</span>, <span class="hljs-number">0x11000000</span>);
+    gr.<span class="hljs-title class_">DrawString</span>(status_text_2, font, <span class="hljs-number">0xFF000000</span>, <span class="hljs-number">0</span>, <span class="hljs-number">30</span>, ww, <span class="hljs-number">30</span>, <span class="hljs-number">0x11000000</span>);
+    
+    gr.<span class="hljs-title class_">DrawString</span>(<span class="hljs-string">&#x27;Drag from here or from outside&#x27;</span>, font, <span class="hljs-number">0xFF000000</span>, <span class="hljs-number">0</span>, <span class="hljs-number">60</span>, ww/<span class="hljs-number">2</span>, wh - <span class="hljs-number">60</span>, <span class="hljs-number">0x11000000</span>);
+    gr.<span class="hljs-title class_">DrawString</span>(<span class="hljs-string">&#x27;Drop here or outside&#x27;</span>, font, <span class="hljs-number">0xFF000000</span>, ww/<span class="hljs-number">2</span>, <span class="hljs-number">60</span>, ww/<span class="hljs-number">2</span>, wh - <span class="hljs-number">60</span>, <span class="hljs-number">0x11000000</span>);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_size</span>(<span class="hljs-params">w,h</span>) {
+    ww = w;
+    wh = h;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_move</span>(<span class="hljs-params">x,y,m</span>){
+    <span class="hljs-keyword">if</span> (!mouse_down) {
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    }
+
+    <span class="hljs-keyword">if</span> (!is_dragging &amp;&amp; mouse_on_item) {
+        <span class="hljs-keyword">let</span> drag_diff = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sqrt</span>((<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">pow</span>(last_pressed_coord.<span class="hljs-property">x</span> - x, <span class="hljs-number">2</span>) + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">pow</span>(last_pressed_coord.<span class="hljs-property">y</span> - y, <span class="hljs-number">2</span>)));
+        <span class="hljs-keyword">if</span> (drag_diff &gt;= <span class="hljs-number">7</span>) {
+            last_pressed_coord = {
+                <span class="hljs-attr">x</span>: <span class="hljs-literal">undefined</span>,
+                <span class="hljs-attr">y</span>: <span class="hljs-literal">undefined</span>
+            };
+
+            <span class="hljs-title function_">perform_internal_drag_n_drop</span>();
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_down</span>(<span class="hljs-params">x, y, m</span>) {
+    mouse_down = <span class="hljs-literal">true</span>;
+    
+    last_pressed_coord.<span class="hljs-property">x</span> = x;
+    last_pressed_coord.<span class="hljs-property">y</span> = y;
+
+    mouse_on_item = <span class="hljs-title function_">trace_start_zone</span>(x,y);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_up</span>(<span class="hljs-params">x, y, m</span>) {   
+    mouse_down = <span class="hljs-literal">false</span>;
+    
+    last_pressed_coord = {
+        <span class="hljs-attr">x</span>: <span class="hljs-literal">undefined</span>,
+        <span class="hljs-attr">y</span>: <span class="hljs-literal">undefined</span>
+    };
+
+    mouse_on_item = <span class="hljs-literal">false</span>;
+
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_drag_enter</span>(<span class="hljs-params">action, x, y, mask</span>) {
+    mouse_in = <span class="hljs-literal">true</span>;
+    mouse_down = <span class="hljs-literal">true</span>;
+
+    <span class="hljs-keyword">if</span> (!is_dragging) {
+        is_dragging = <span class="hljs-literal">true</span>;
+    }
+
+    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">trace_end_zone</span>(x, y)) {
+        action.<span class="hljs-property">Effect</span> = (action.<span class="hljs-property">Effect</span> &amp; g_drop_effect.<span class="hljs-property">move</span>)
+                || (action.<span class="hljs-property">Effect</span> &amp; g_drop_effect.<span class="hljs-property">copy</span>)
+                || (action.<span class="hljs-property">Effect</span> &amp; g_drop_effect.<span class="hljs-property">link</span>);
+        action.<span class="hljs-property">Text</span> = <span class="hljs-title function_">get_text_from_effect</span>(action.<span class="hljs-property">Effect</span>, action.<span class="hljs-property">IsInternal</span>);
+    }
+    <span class="hljs-keyword">else</span> {        
+        action.<span class="hljs-property">Effect</span> = g_drop_effect.<span class="hljs-property">none</span>;
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_drag_leave</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">if</span> (is_dragging) {
+        is_dragging = <span class="hljs-literal">false</span>;
+    }
+
+    mouse_in = <span class="hljs-literal">false</span>;
+    mouse_down = <span class="hljs-literal">false</span>;
+
+    status_text_2 = <span class="hljs-string">&#x27;Item was dragged outside or dropped on no-drop zone&#x27;</span>;
+    <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>(); 
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_drag_over</span>(<span class="hljs-params">action, x, y, mask</span>) {
+    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">trace_end_zone</span>(x, y)) {
+        action.<span class="hljs-property">Effect</span> = <span class="hljs-title function_">filter_effect_by_modifiers</span>(action.<span class="hljs-property">Effect</span>);
+        action.<span class="hljs-property">Text</span> = <span class="hljs-title function_">get_text_from_effect</span>(action.<span class="hljs-property">Effect</span>, action.<span class="hljs-property">IsInternal</span>);
+    }
+    <span class="hljs-keyword">else</span> {
+        action.<span class="hljs-property">Effect</span> = g_drop_effect.<span class="hljs-property">none</span>;
+    }
+    
+    <span class="hljs-keyword">if</span> (status_text_2 !== <span class="hljs-string">&#x27;Item is being dragged&#x27;</span>) {
+        status_text_2 = <span class="hljs-string">&#x27;Item is being dragged&#x27;</span>;
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>(); 
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_drag_drop</span>(<span class="hljs-params">action, x, y, m</span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">mouse_down</span> = <span class="hljs-literal">false</span>; <span class="hljs-comment">///&lt; because on_drag_drop suppresses on_mouse_lbtn_up call</span>
+
+    <span class="hljs-keyword">if</span> (!is_dragging || !<span class="hljs-title function_">trace_end_zone</span>(x, y)) {
+        is_dragging = <span class="hljs-literal">false</span>;
+        action.<span class="hljs-property">Effect</span> = g_drop_effect.<span class="hljs-property">none</span>;
+        
+        <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-keyword">let</span> ctrl_pressed = utils.<span class="hljs-title class_">IsKeyPressed</span>(<span class="hljs-variable constant_">VK_CONTROL</span>);
+
+    <span class="hljs-keyword">if</span> (action.<span class="hljs-property">IsInternal</span>) {        
+        <span class="hljs-keyword">let</span> copy_drop = ctrl_pressed &amp;&amp; ((action.<span class="hljs-property">Effect</span> &amp; <span class="hljs-number">1</span>) || (action.<span class="hljs-property">Effect</span> &amp; <span class="hljs-number">4</span>));
+        <span class="hljs-title function_">drop</span>(copy_drop);
+
+        <span class="hljs-comment">// Suppress native drop, since we&#x27;ve handled it ourselves</span>
+        action.<span class="hljs-property">Effect</span> = g_drop_effect.<span class="hljs-property">none</span>;
+                
+        status_text_2 = <span class="hljs-string">&#x27;Item from playlist was dropped and &#x27;</span>;
+        status_text_2 += copy_drop ? <span class="hljs-string">&#x27;copied&#x27;</span> : <span class="hljs-string">&#x27;moved&#x27;</span>;            
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();        
+    }
+    <span class="hljs-keyword">else</span> {
+        action.<span class="hljs-property">Effect</span> = <span class="hljs-title function_">filter_effect_by_modifiers</span>(action.<span class="hljs-property">Effect</span>);
+        <span class="hljs-keyword">if</span> (g_drop_effect.<span class="hljs-property">none</span> !== action.<span class="hljs-property">Effect</span>) {
+            <span class="hljs-title function_">external_drop</span>(action);
+            status_text_2 = <span class="hljs-string">&#x27;Item from outside was dropped and &#x27;</span>;
+            status_text_2 += g_drop_effect.<span class="hljs-property">move</span> &amp; action.<span class="hljs-property">Effect</span> ? <span class="hljs-string">&#x27;moved&#x27;</span> : <span class="hljs-string">&#x27;copied&#x27;</span>;
+            <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();    
+        }
+        <span class="hljs-keyword">else</span> {
+            is_dragging = <span class="hljs-literal">false</span>;
+            
+            status_text_2 = <span class="hljs-string">&#x27;Item from outside was dropped but the action was forbidden&#x27;</span>;            
+            <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>(); 
+        }
+    }
+}
+
+<span class="hljs-comment">////////////////////////////</span>
+<span class="hljs-comment">// Methods</span>
+<span class="hljs-comment">////////////////////////////</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">trace_start_zone</span>(<span class="hljs-params">x,y</span>) {
+    <span class="hljs-keyword">return</span> x &gt;= <span class="hljs-number">0</span> &amp;&amp; x &lt; ww/<span class="hljs-number">2</span> &amp;&amp; y &gt;= <span class="hljs-number">60</span> &amp;&amp; y &lt; wh;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">trace_end_zone</span>(<span class="hljs-params">x,y</span>) {
+    <span class="hljs-keyword">return</span> x &gt;= ww/<span class="hljs-number">2</span> &amp;&amp; x &lt; ww &amp;&amp; y &gt;= <span class="hljs-number">60</span> &amp;&amp; y &lt; wh;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">perform_internal_drag_n_drop</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">let</span> cur_selected_index = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">let</span> cur_playlist_idx = plman.<span class="hljs-property">ActivePlaylist</span>;
+    
+    is_dragging = <span class="hljs-literal">true</span>;
+    
+    plman.<span class="hljs-title class_">ClearPlaylistSelection</span>(cur_playlist_idx);
+    plman.<span class="hljs-title class_">SetPlaylistSelectionSingle</span>(cur_playlist_idx, cur_selected_index, <span class="hljs-literal">true</span>);
+    plman.<span class="hljs-title class_">SetPlaylistFocusItem</span>(cur_playlist_idx, cur_selected_index);
+    
+    <span class="hljs-keyword">let</span> cur_playlist_size = plman.<span class="hljs-title class_">PlaylistItemCount</span>(cur_playlist_idx);
+    <span class="hljs-keyword">let</span> cur_playlist_selection = plman.<span class="hljs-title class_">GetPlaylistSelectedItems</span>(cur_playlist_idx);
+    
+    <span class="hljs-keyword">let</span> effect = fb.<span class="hljs-title class_">DoDragDrop</span>(<span class="hljs-number">0</span>, cur_playlist_selection, g_drop_effect.<span class="hljs-property">copy</span> | g_drop_effect.<span class="hljs-property">move</span> | g_drop_effect.<span class="hljs-property">link</span>);
+
+    <span class="hljs-keyword">if</span> (is_dragging) {
+        <span class="hljs-comment">// If drag operation was not cancelled, then it means that nor on_drag_drop, nor on_drag_leave event handlers</span>
+        <span class="hljs-comment">// were triggered, which means that the items were most likely dropped inside the panel</span>
+        <span class="hljs-comment">// (and relevant methods were not called because of async event processing)        </span>
+        <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-keyword">function</span> <span class="hljs-title function_">can_handle_move_drop</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-comment">// We can handle the &#x27;move drop&#x27; properly only when playlist is still in the same state</span>
+        <span class="hljs-keyword">return</span> cur_playlist_size === plman.<span class="hljs-title class_">PlaylistItemCount</span>(cur_playlist_idx)
+            &amp;&amp; plman.<span class="hljs-title class_">IsPlaylistItemSelected</span>(cur_playlist_idx, cur_selected_index);
+    }
+
+    <span class="hljs-keyword">if</span> (g_drop_effect.<span class="hljs-property">none</span> === effect &amp;&amp; <span class="hljs-title function_">can_handle_move_drop</span>()) {
+        <span class="hljs-comment">// DROPEFFECT_NONE needs special handling, because on NT it</span>
+        <span class="hljs-comment">// is returned for some move operations, instead of DROPEFFECT_MOVE.</span>
+        <span class="hljs-comment">// See Q182219 for the details.</span>
+
+        <span class="hljs-keyword">let</span> items_to_remove = [];
+        <span class="hljs-keyword">let</span> playlist_items = plman.<span class="hljs-title class_">GetPlaylistItems</span>(cur_playlist_idx);
+        [cur_selected_index].<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">idx</span>) {
+            <span class="hljs-keyword">let</span> cur_item = playlist_items[idx];
+            <span class="hljs-keyword">if</span> (cur_item.<span class="hljs-property">RawPath</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&#x27;file://&#x27;</span>) &amp;&amp; !fso.<span class="hljs-title class_">FileExists</span>(cur_item.<span class="hljs-property">Path</span>)) {
+                items_to_remove.<span class="hljs-title function_">push</span>(idx);
+            }
+        });
+
+        <span class="hljs-keyword">if</span> (items_to_remove.<span class="hljs-property">length</span>) {
+            plman.<span class="hljs-title class_">ClearPlaylistSelection</span>(cur_playlist_idx);
+            plman.<span class="hljs-title class_">SetPlaylistSelection</span>(cur_playlist_idx, items_to_remove, <span class="hljs-literal">true</span>);
+            plman.<span class="hljs-title class_">RemovePlaylistSelection</span>(cur_playlist_idx);
+        }
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (g_drop_effect.<span class="hljs-property">move</span> === effect &amp;&amp; <span class="hljs-title function_">can_handle_move_drop</span>()) {
+        plman.<span class="hljs-title class_">RemovePlaylistSelection</span>(cur_playlist_idx);
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">drop</span>(<span class="hljs-params">copy_selection</span>) {
+    <span class="hljs-keyword">let</span> cur_playlist_idx = plman.<span class="hljs-property">ActivePlaylist</span>;
+    
+    <span class="hljs-keyword">if</span> (!is_dragging) {
+        <span class="hljs-keyword">return</span>;
+    }
+
+    is_dragging = <span class="hljs-literal">false</span>;
+
+    <span class="hljs-keyword">let</span> drop_idx = plman.<span class="hljs-title class_">PlaylistItemCount</span>(cur_playlist_idx);
+    <span class="hljs-keyword">if</span> (!copy_selection) {
+        plman.<span class="hljs-title class_">MovePlaylistSelection</span>(cur_playlist_idx, drop_idx);
+        plman.<span class="hljs-title class_">SetPlaylistFocusItem</span>(cur_playlist_idx, drop_idx + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">else</span> {
+        plman.<span class="hljs-title class_">UndoBackup</span>(cur_playlist_idx);
+
+        <span class="hljs-keyword">let</span> cur_selection = plman.<span class="hljs-title class_">GetPlaylistSelectedItems</span>(cur_playlist_idx);        
+        plman.<span class="hljs-title class_">ClearPlaylistSelection</span>(cur_playlist_idx);
+        plman.<span class="hljs-title class_">InsertPlaylistItems</span>(cur_playlist_idx, drop_idx, cur_selection, <span class="hljs-literal">true</span>);
+        plman.<span class="hljs-title class_">SetPlaylistFocusItem</span>(cur_playlist_idx, drop_idx);
+    }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">external_drop</span>(<span class="hljs-params">action</span>) {
+    <span class="hljs-keyword">let</span> cur_playlist_idx = plman.<span class="hljs-property">ActivePlaylist</span>;
+    
+    plman.<span class="hljs-title class_">ClearPlaylistSelection</span>(cur_playlist_idx);
+
+    <span class="hljs-keyword">let</span> playlist_idx;
+    <span class="hljs-keyword">if</span> (!plman.<span class="hljs-property">PlaylistCount</span>) {
+        playlist_idx = plman.<span class="hljs-title class_">CreatePlaylist</span>(<span class="hljs-number">0</span>, <span class="hljs-string">&#x27;Default&#x27;</span>);
+        plman.<span class="hljs-property">ActivePlaylist</span> = playlist_idx;
+    }
+    <span class="hljs-keyword">else</span> {
+        playlist_idx = cur_playlist_idx;
+        plman.<span class="hljs-title class_">UndoBackup</span>(cur_playlist_idx);
+    }
+
+    action.<span class="hljs-property">Playlist</span> = playlist_idx;
+    action.<span class="hljs-property">ToSelect</span> = <span class="hljs-literal">true</span>;
+    action.<span class="hljs-property">Base</span> = plman.<span class="hljs-title class_">PlaylistItemCount</span>(cur_playlist_idx);
+
+    is_dragging = <span class="hljs-literal">false</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">filter_effect_by_modifiers</span>(<span class="hljs-params">effect</span>) {
+    <span class="hljs-keyword">let</span> ctrl_pressed = utils.<span class="hljs-title class_">IsKeyPressed</span>(<span class="hljs-variable constant_">VK_CONTROL</span>);
+    <span class="hljs-keyword">let</span> shift_pressed = utils.<span class="hljs-title class_">IsKeyPressed</span>(<span class="hljs-variable constant_">VK_SHIFT</span>);
+    <span class="hljs-keyword">let</span> alt_pressed = utils.<span class="hljs-title class_">IsKeyPressed</span>(<span class="hljs-variable constant_">VK_ALT</span>);
+
+    <span class="hljs-keyword">if</span> (ctrl_pressed &amp;&amp; shift_pressed &amp;&amp; !alt_pressed
+        || alt_pressed &amp;&amp; !ctrl_pressed &amp;&amp; !shift_pressed) {
+        <span class="hljs-comment">// Link only</span>
+        <span class="hljs-keyword">return</span> (effect &amp; g_drop_effect.<span class="hljs-property">link</span>);
+    }
+
+    <span class="hljs-keyword">if</span> (ctrl_pressed &amp;&amp; !shift_pressed &amp;&amp; !alt_pressed) {
+        <span class="hljs-comment">// Copy (also via link)        </span>
+        <span class="hljs-keyword">return</span> (effect &amp; g_drop_effect.<span class="hljs-property">copy</span>) || (effect &amp; g_drop_effect.<span class="hljs-property">link</span>);
+    }
+
+    <span class="hljs-keyword">if</span> (shift_pressed) {
+        <span class="hljs-comment">// Move only</span>
+        <span class="hljs-keyword">return</span> (effect &amp; g_drop_effect.<span class="hljs-property">move</span>);
+    }
+
+    <span class="hljs-comment">// Move &gt; Copy &gt; Link    </span>
+    <span class="hljs-keyword">return</span> (effect &amp; g_drop_effect.<span class="hljs-property">move</span>) || (effect &amp; g_drop_effect.<span class="hljs-property">copy</span>) || (effect &amp; g_drop_effect.<span class="hljs-property">link</span>);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">get_text_from_effect</span>(<span class="hljs-params">effect, is_internal</span>) {
+    <span class="hljs-keyword">switch</span> (effect) {
+        <span class="hljs-keyword">case</span> g_drop_effect.<span class="hljs-property">move</span>:
+        {
+            <span class="hljs-keyword">if</span> (is_internal) {
+                <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Moving from inside&#x27;</span>;
+            }
+            <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Moving from outside&#x27;</span>;
+        }
+        <span class="hljs-keyword">case</span> g_drop_effect.<span class="hljs-property">copy</span>:
+        {
+            <span class="hljs-keyword">if</span> (is_internal) {
+                <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Copying from inside&#x27;</span>;
+            }
+            <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Copying from outside&#x27;</span>;
+        }
+        <span class="hljs-keyword">case</span> g_drop_effect.<span class="hljs-property">link</span>:
+        {
+            <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Linking from outside&#x27;</span>;
+        }
+        <span class="hljs-attr">default</span>:
+            <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;&#x27;</span>;
+    }
+}</code></pre>
+      </body>
+    </html>
+  

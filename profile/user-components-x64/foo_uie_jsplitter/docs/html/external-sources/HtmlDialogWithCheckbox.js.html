@@ -1,0 +1,81 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: HtmlDialogWithCheckbox.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;Html window with checkbox&#x27;</span>, {<span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;TheQwertiest&#x27;</span>});
+
+<span class="hljs-title function_">include</span>(<span class="hljs-string">&#x27;docs/Flags.js&#x27;</span>);
+
+<span class="hljs-keyword">let</span> <span class="hljs-title class_">WshShell</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ActiveXObject</span>(<span class="hljs-string">&#x27;WScript.Shell&#x27;</span>);
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">get_windows_version</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">let</span> version = <span class="hljs-string">&#x27;&#x27;</span>;
+
+    <span class="hljs-keyword">try</span> {
+        version = (<span class="hljs-title class_">WshShell</span>.<span class="hljs-title class_">RegRead</span>(<span class="hljs-string">&#x27;HKLM/SOFTWARE/Microsoft/Windows NT/CurrentVersion/CurrentMajorVersionNumber&#x27;</span>)).<span class="hljs-title function_">toString</span>();
+        version += <span class="hljs-string">&#x27;.&#x27;</span>;
+        version += (<span class="hljs-title class_">WshShell</span>.<span class="hljs-title class_">RegRead</span>(<span class="hljs-string">&#x27;HKLM/SOFTWARE/Microsoft/Windows NT/CurrentVersion/CurrentMinorVersionNumber&#x27;</span>)).<span class="hljs-title function_">toString</span>();
+
+        <span class="hljs-keyword">return</span> version;
+    }
+    <span class="hljs-keyword">catch</span> (e) {
+    }
+
+    <span class="hljs-keyword">try</span> {
+        version = <span class="hljs-title class_">WshShell</span>.<span class="hljs-title class_">RegRead</span>(<span class="hljs-string">&#x27;HKLM/SOFTWARE/Microsoft/Windows NT/CurrentVersion/CurrentVersion&#x27;</span>);
+
+        <span class="hljs-keyword">return</span> version;
+    }
+    <span class="hljs-keyword">catch</span> (e) {
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;6.1&#x27;</span>;
+}
+
+<span class="hljs-keyword">const</span> htmlCode = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">let</span> htmlCode = utils.<span class="hljs-title class_">ReadTextFile</span>( <span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>samples/basic/html/PopupWithCheckBox.html`</span>);
+    
+    <span class="hljs-keyword">let</span> cssPath = <span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>samples/basic/html/`</span>;
+    <span class="hljs-keyword">if</span> ( <span class="hljs-title function_">get_windows_version</span>() === <span class="hljs-string">&#x27;6.1&#x27;</span> ) {
+        cssPath += <span class="hljs-string">&#x27;styles7.css&#x27;</span>;
+    }
+    <span class="hljs-keyword">else</span> {
+        cssPath += <span class="hljs-string">&#x27;styles10.css&#x27;</span>;
+    }
+    htmlCode = htmlCode.<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/href=&quot;styles10.css&quot;/i</span>, <span class="hljs-string">`href=&quot;<span class="hljs-subst">${cssPath}</span>&quot;`</span>);
+    <span class="hljs-keyword">return</span> htmlCode;
+}();
+
+<span class="hljs-keyword">let</span> ww = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">let</span> wh = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">let</span> text = <span class="hljs-string">&#x27;&gt;&gt; Click Me To Open Dialog &lt;&lt;&#x27;</span>;
+<span class="hljs-keyword">let</span> font = gdi.<span class="hljs-title class_">Font</span>(<span class="hljs-string">&#x27;Segoe Ui Semibold&#x27;</span>, <span class="hljs-number">11</span>);
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    gr.<span class="hljs-title class_">SetTextRenderingHint</span>(<span class="hljs-title class_">TextRenderingHint</span>.<span class="hljs-property">ClearTypeGridFit</span>);
+    gr.<span class="hljs-title class_">DrawString</span>(text, font, <span class="hljs-number">0xFF000000</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, ww, wh, <span class="hljs-number">0x11000000</span>);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_size</span>(<span class="hljs-params">w,h</span>) {
+    ww = w;
+    wh = h;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_mouse_lbtn_up</span>(<span class="hljs-params"></span>) {
+    utils.<span class="hljs-title class_">ShowHtmlDialog</span>(<span class="hljs-number">0</span>, htmlCode, {
+        <span class="hljs-attr">data</span>: [<span class="hljs-string">&#x27;Html Window&#x27;</span>, <span class="hljs-string">&#x27;This is an HTML notification window with a check box\n&#x27;</span>, <span class="hljs-string">&#x27;&lt; Click me&#x27;</span>, window_ok_callback],            
+    });
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">window_ok_callback</span>(<span class="hljs-params">status, clicked</span>) {
+    text = <span class="hljs-string">`Dialog was closed with <span class="hljs-subst">${status}</span> and checkbox <span class="hljs-subst">${clicked}</span>\n`</span>
+        + <span class="hljs-string">&#x27;&gt;&gt; Click Me To Open Dialog &lt;&lt;&#x27;</span>;
+    <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+}</code></pre>
+      </body>
+    </html>
+  

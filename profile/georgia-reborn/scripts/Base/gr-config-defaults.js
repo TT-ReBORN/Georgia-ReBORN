@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    22-05-2026                                              * //
+// * Last change:    23-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1833,6 +1833,8 @@ class ConfigDefaults {
 			customWaveformBarDir: false,
 			waveformBarAutoDelete: false,
 			themePerformance: 'balanced',
+			rendererColors: 1,
+			rendererGraphics: 0,
 			devTools: false
 		};
 
@@ -1854,6 +1856,8 @@ class ConfigDefaults {
 			customWaveformBarDir: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Use custom waveform bar directory',
 			waveformBarAutoDelete: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Auto-delete waveform bar cache on startup',
 			themePerformance: 'Values: "lowestQuality", "lowQuality", "balanced", "highQuality", "highestQuality" - Options > Settings > Theme performance',
+			themePerformance: 'Values: 0, 1, - Options > Settings > Renderer > Colors',
+			themePerformance: 'Values: 0, 1, - Options > Settings > Renderer > Graphics',
 			devTools: 'Values: true, false - Options > Settings > Developer tools'
 		};
 

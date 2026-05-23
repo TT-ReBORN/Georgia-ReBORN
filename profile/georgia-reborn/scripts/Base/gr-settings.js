@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-05-2026                                              * //
+// * Last change:    23-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -652,6 +652,8 @@ grSet.addProperties({
 	customWaveformBarDir:               ['Georgia-ReBORN - 15. Settings: Use custom waveform bar directory', false], // false: Use custom waveform bar directory
 	waveformBarAutoDelete:              ['Georgia-ReBORN - 15. Settings: Auto-delete waveform bar cache', false], // false: This will auto-delete analyzed waveform bar files on startup
 	themePerformance:                   ['Georgia-ReBORN - 15. Settings: Theme performance', 'balanced'], // 'balanced' - default: How the theme performs, either fast speed, balanced or good quality depending on CPU
+	rendererColors:                     ['Georgia-ReBORN - 15. Settings: Renderer colors', 1], // 1 - default: How the system will render its colors, either GetColourSchemeJSON 'V1 old (K-means/RGB)' or GetColourSchemeJSONV2 'V2 new (K-means++/OKLAB)' - only available with JSplitter and NOT Spider Monkey Panel!
+	rendererGraphics:                   ['Georgia-ReBORN - 15. Settings: Renderer graphics', 0], // 0 - default: How the system will render its graphics, either 'GDI+' or 'Direct2D' - only available with JSplitter and NOT Spider Monkey Panel!
 	devTools:                           ['Georgia-ReBORN - 15. Settings: Enable developer tools', false], // true: Show developer tools in options context menu
 
 	// * System
@@ -1581,6 +1583,8 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'customWaveformBarDir', grCfg.themeSettings, 'customWaveformBarDir', false);
 		this._setSetting(grSet, 'waveformBarAutoDelete', grCfg.themeSettings, 'waveformBarAutoDelete', false);
 		this._setSetting(grSet, 'themePerformance', grCfg.themeSettings, 'themePerformance', 'balanced');
+		this._setSetting(grSet, 'rendererColors', grCfg.themeSettings, 'rendererColors', 1);
+		this._setSetting(grSet, 'rendererGraphics', grCfg.themeSettings, 'rendererGraphics', 0);
 		this._setSetting(grSet, 'devTools', grCfg.themeSettings, 'devTools', false);
 	}
 

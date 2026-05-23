@@ -1,0 +1,64 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: LoadImageAsync.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code><span class="hljs-variable language_">window</span>.<span class="hljs-title class_">DefineScript</span>(<span class="hljs-string">&#x27;LoadImageAsync&#x27;</span>, { <span class="hljs-attr">author</span>: <span class="hljs-string">&#x27;T.P Wang&#x27;</span> });
+
+<span class="hljs-comment">// Get a list of jpg files from a folder</span>
+<span class="hljs-keyword">const</span> g_image_list = utils.<span class="hljs-title class_">Glob</span>(<span class="hljs-string">`<span class="hljs-subst">${fb.ComponentPath}</span>samples/basic/images/*.jpg`</span>);
+<span class="hljs-keyword">let</span> ww = <span class="hljs-number">0</span>, wh = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">let</span> g_img = <span class="hljs-literal">null</span>;
+<span class="hljs-keyword">let</span> g_valid_tid = <span class="hljs-number">0</span>;
+
+<span class="hljs-comment">// Trigger every 5 seconds.</span>
+<span class="hljs-keyword">let</span> g_timer = <span class="hljs-built_in">setInterval</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+    <span class="hljs-title function_">load_random_image_async</span>();
+}, <span class="hljs-number">5000</span>);
+
+<span class="hljs-title function_">load_random_image_async</span>();
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">load_random_image_async</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-comment">// Load a random image from the list</span>
+    <span class="hljs-keyword">let</span> path = g_image_list[<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>() * g_image_list.<span class="hljs-property">length</span>)];
+    <span class="hljs-comment">// on_load_image_done will be triggered when the image has been loaded</span>
+    g_valid_tid = gdi.<span class="hljs-title class_">LoadImageAsync</span>(<span class="hljs-number">0</span>, path);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_size</span>(<span class="hljs-params"></span>) {
+    ww = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Width</span>;
+    wh = <span class="hljs-variable language_">window</span>.<span class="hljs-property">Height</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_paint</span>(<span class="hljs-params">gr</span>) {
+    <span class="hljs-keyword">if</span> (!g_img) {
+        <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-keyword">let</span> scale_w = ww / g_img.<span class="hljs-property">Width</span>;
+    <span class="hljs-keyword">let</span> scale_h = wh / g_img.<span class="hljs-property">Height</span>;
+    <span class="hljs-keyword">let</span> scale = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(scale_w, scale_h);
+    <span class="hljs-keyword">let</span> pos_x = <span class="hljs-number">0</span>, pos_y = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">if</span> (scale_w &lt; scale_h) {
+        pos_y = (wh - g_img.<span class="hljs-property">Height</span> * scale) / <span class="hljs-number">2</span>;
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (scale_w &gt; scale_h) {
+        pos_x = (ww - g_img.<span class="hljs-property">Width</span> * scale) / <span class="hljs-number">2</span>;
+    }
+    gr.<span class="hljs-title class_">DrawImage</span>(g_img, pos_x, pos_y, g_img.<span class="hljs-property">Width</span> * scale, g_img.<span class="hljs-property">Height</span> * scale, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, g_img.<span class="hljs-property">Width</span>, g_img.<span class="hljs-property">Height</span>);
+}
+
+<span class="hljs-comment">// After loading image is done in the background, this callback will be invoked</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">on_load_image_done</span>(<span class="hljs-params">tid, image, image_path</span>) {
+    <span class="hljs-keyword">if</span> (g_valid_tid === tid) {
+        g_img = image;
+        <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">Repaint</span>();
+    }
+}
+</code></pre>
+      </body>
+    </html>
+  
