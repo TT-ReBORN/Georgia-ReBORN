@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    24-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -31,15 +31,25 @@ class Lyrics {
 		this.lyrics = [];
 		/** @private @type {Array<string>} An array to hold the sources of lyrics. */
 		this.lyricSource = [];
-		/** @private @type {string} The type of the lyrics, `.lrc` for synced and `.txt` for unsynced. */
-		this.lyricType = '';
 		/** @private @type {number} A counter to manage lyrics source loading queue. */
 		this.lyricsSourceQueue = 0;
+		/** @type {boolean} A temporary flag set when lyrics load from a local file. */
+		this.lyricsLoadedFromLocal = false;
+		/** @type {boolean} A flag indicating if a lyrics search is currently in progress. */
+		this.lyricsSearching = false;
+		/** @type {boolean} A flag to ensure the ESLyric save command is sent only once per search. */
+		this.lyricsSaveCommandSent = false;
+		/** @type {number} The maximum number of polling retries before giving up (60 seconds). */
+		this.lyricsSearchMaxRetries = 60;
+		/** @type {number} The current polling retry counter. */
+		this.lyricsSearchRetries = 0;
+		/** @private @type {string} The type of the lyrics, `.lrc` for synced and `.txt` for unsynced. */
+		this.lyricType = '';
 		/** @private @type {boolean} A boolean state value for lyric drag scrolling. */
 		this.scrollDrag = false;
 		/** @private @type {number} A y-coordinate value for the lyric drag scrolling. */
 		this.scrollDragY = 0;
-		/** @private @type {number} A offset value for the lyric drag scrolling. */
+		/** @private @type {number} An offset value for the lyric drag scrolling. */
 		this.scrollDragOffset = 0;
 		/** @private @type {number} A time step value for manual adjusting lyrics synchronization. */
 		this.stepTime = 0;
@@ -98,6 +108,7 @@ class Lyrics {
 	 * - When nothing was found a `No lyrics found` string will be displayed.
 	 */
 	initLyrics() {
+		this.abortSearch();
 		this.clear();
 
 		if (!fb.IsPlaying && grSet.panelBrowseMode) {
@@ -124,10 +135,14 @@ class Lyrics {
 
 		// * Lyrics found
 		if (rawLyrics.length) {
+			this.lyricsSearching = false;
+			this.lyricsLoadedFromLocal = true;
+			setTimeout(() => { this.lyricsLoadedFromLocal = false; }, 500);
 			this.loadLyrics(rawLyrics);
 		}
 		// * No lyrics found locally, searching...
-		else if (Component.ESLyric) {
+		else if (Component.ESLyric && !this.lyricsSearching) {
+			this.lyricsSearching = true;
 			this.searchLyrics();
 		}
 		// * Search completed, no lyrics were found
@@ -194,15 +209,21 @@ class Lyrics {
 	 */
 	searchLyrics() {
 		this.loadLyrics(this.stringSearching);
+		this.lyricsSearchRetries = 0;
+		this.lyricsSaveCommandSent = false;
 		this.saveLyrics(fb.GetNowPlaying());
+
 		clearTimeout(this.searchTimeout);
 
 		this.searchTimeout = setTimeout(() => {
+			this.lyricsSearching = false;
+			this.lyricsSaveCommandSent = false;
+			clearInterval(this.lyricsSearchTimer);
+
 			if (!this.findLyrics()) {
-				this.loadLyrics(this.stringNotFound);
+				this.loadLyrics(this.lyricSource.length ? this.lyricSource : this.stringNotFound);
 				this.on_size(this.x, this.y, this.w, this.h);
 			}
-			clearInterval(this.lyricsSearchTimer);
 		}, 60000);
 	}
 
@@ -211,20 +232,48 @@ class Lyrics {
 	 * @param {object} meta - The metadata object containing the new lyrics text.
 	 */
 	changeLyrics(meta) {
+		// * Case 1: suppress spontaneous post-load callbacks
+		if (this.lyricsLoadedFromLocal) return;
+
+		const wasSearching = this.lyricsSearching;
 		this.clear();
-		if (!meta) return;
 
-		this.lyricSource = [meta.lyricText];
-		this.lyricSource = this.lyricSource.map(line => line.split('\n')).flat();
+		if (!meta || !meta.lyricText) return;
 
+		// Preview the found lyrics immediately
+		this.lyricSource = meta.lyricText.split(Regex.BreakLine);
 		this.loadLyrics(this.lyricSource);
-		setTimeout(() => { this.initLyrics(); }, 1000);
+
+		// * Case 2: user-triggered, show lyrics and re-init to confirm the saved file
+		if (!wasSearching) {
+			setTimeout(() => { this.initLyrics(); }, 1000);
+			return;
+		}
+
+		// * Case 3: active programmatic search, send save command once, then verify the file
+		if (!this.lyricsSaveCommandSent) {
+			try {
+				fb.RunMainMenuCommand('View/ESLyric/Panels/Save lyric');
+				this.lyricsSaveCommandSent = true;
+			} catch (e) {
+				console.log('Lyrics search: Error running save command -', e);
+			}
+		}
+
+		// Give ESLyric time to write the file, then verify and finalize
+		setTimeout(() => {
+			if (!this.findLyrics()) return;
+			this.abortSearch();
+			this.initLyrics();
+		}, 1500);
 	}
 
 	/**
 	 * Cycles through the next lyric source in the search results, used only for ESLyric's "Next lyric" feature.
 	 */
 	nextLyrics() {
+		this.lyricsLoadedFromLocal = false;
+
 		const nextSrc = (meta) => {
 			this.lyricsSourceQueue++;
 
@@ -232,8 +281,7 @@ class Lyrics {
 				fb.RunMainMenuCommand('View/ESLyric/Panels/Select lyric/Next lyric');
 				if (!meta) return;
 
-				this.lyricSource = [meta.lyricText];
-				this.lyricSource = this.lyricSource.map(line => line.split('\n')).flat();
+				this.lyricSource = meta.lyricText.split(Regex.BreakLine);
 			}, this.lyricsSourceQueue);
 
 			return this.lyricsSourceQueue;
@@ -250,14 +298,22 @@ class Lyrics {
 	 */
 	saveLyrics(metadb) {
 		clearInterval(this.lyricsSearchTimer);
-		if (!Component.ESLyric && !metadb) return;
+		if (!Component.ESLyric || !metadb) return;
+
+		this.lyricsSearchRetries = 0;
 
 		this.lyricsSearchTimer = setInterval(() => {
+			this.lyricsSearchRetries++;
+
+			if (this.lyricsSearchRetries >= this.lyricsSearchMaxRetries) {
+				clearInterval(this.lyricsSearchTimer);
+				this.lyricsSearching = false;
+				this.lyricsSaveCommandSent = false;
+				return;
+			}
+
 			if (this.findLyrics()) {
 				clearInterval(this.lyricsSearchTimer);
-				this.initLyrics();
-			} else {
-				fb.RunMainMenuCommand('View/ESLyric/Panels/Save lyric');
 			}
 		}, 1000);
 	}
@@ -655,6 +711,16 @@ class Lyrics {
 	}
 
 	/**
+	 * Aborts any in-progress lyrics search and resets all related state.
+	 */
+	abortSearch() {
+		this.lyricsSearching = false;
+		this.lyricsSaveCommandSent = false;
+		clearInterval(this.lyricsSearchTimer);
+		clearTimeout(this.searchTimeout);
+	}
+
+	/**
 	 * Advances the highlighted lyric to the next timestamp group.
 	 */
 	advanceHighLighted() {
@@ -741,7 +807,7 @@ class Lyrics {
 	 */
 	clearHighlight() {
 		for (const v of this.lyrics) {
-			v.highlight = false
+			v.highlight = false;
 		}
 	}
 
@@ -804,9 +870,9 @@ class Lyrics {
 	}
 
 	/**
-	 * Gets the timestamp for a given word.
-	 * @param {string} v - The word to get the timestamp for.
-	 * @returns {number} The timestamp for the word, or undefined if the word is not found.
+	 * Gets the timestamp for a given index.
+	 * @param {number} v - The lyrics array index.
+	 * @returns {number} The timestamp in milliseconds, or undefined if out of range.
 	 */
 	getTimestamp(v) {
 		return this.lyrics[v] && this.lyrics[v].timestamp;
@@ -849,7 +915,7 @@ class Lyrics {
 			const nextTimestamp = this.lyrics[nextIndex].timestamp;
 			const actualTime = grm.ui.isStreaming ? fb.PlaybackTime - bio.txt.reader.trackStartTime : fb.PlaybackTime;
 			const curTime = Math.round(actualTime * 1000) + this.lyricsOffset + this.userOffset;
-			return curTime >= nextTimestamp; // Adjusted to start at the exact timestamp
+			return curTime >= nextTimestamp;
 		}
 
 		return false;
@@ -966,7 +1032,7 @@ class Lyrics {
 	}
 
 	/**
-	 * Releases the scroll drag operation when the left mouse button is pressed.
+	 * Releases the scroll drag operation when the left mouse button is released.
 	 * @param {number} x - The x-coordinate.
 	 * @param {number} y - The y-coordinate.
 	 * @param {number} m - The mouse mask.
