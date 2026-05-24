@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-05-2026                                              * //
+// * Last change:    24-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -731,10 +731,10 @@ class MainUI {
 
 		if (grSet.styleBevel) {
 			gr.SetSmoothingMode(SmoothingMode.None);
-			if ((grSet.layout === 'default' && (this.displayPlaylist || this.displayLibrary) && !this.displayBiography ||
+			if ((grSet.layout === 'default' && (this.displayPlaylist && !this.displayLibrary || this.displayLibrary && grSet.libraryLayout === 'normal') && !this.displayBiography ||
 				grSet.layout === 'artwork' && (!this.displayPlaylistArtwork && !this.displayLibrary && !this.displayBiography)) && fb.IsPlaying) {
 				// Fill gap when album art or player size is not proportional
-				gr.FillSolidRect(-1, this.topMenuHeight, grSet.layout === 'default' ? this.albumArtSize.w + this.albumArtSize.x + 1 : this.ww + 1, (this.displayLibrary && grSet.libraryLayout === 'full' ? 0 : this.albumArtSize.y) - this.topMenuHeight - 1, RGBtoRGBA(grCol.styleBevel, 40));
+				gr.FillSolidRect(-1, this.topMenuHeight, (grSet.layout === 'default' ? this.albumArtSize.w + this.albumArtSize.x + 1 : this.ww + 1), this.albumArtSize.y - this.topMenuHeight - 1, RGBtoRGBA(grCol.styleBevel, 40));
 			}
 			if (!['black', 'nblue', 'ngreen', 'nred', 'ngold'].includes(grSet.theme) && !grSet.styleNighttime && !grSet.styleBlackAndWhite2 && !grSet.styleRebornBlack || (grSet.styleNighttime && fb.IsPlaying)) {
 				const customTheme = grSet.theme.startsWith('custom');
