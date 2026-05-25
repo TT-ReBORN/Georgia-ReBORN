@@ -1,14 +1,22 @@
-'use strict';
-//29/10/24
+﻿'use strict';
+//14/05/26
 
-Array.prototype.srt=function(){for(var z=0,t;t=this[z];z++){this[z]=[];var x=0,y=-1,n=true,i,j;while(i=(j=t.charAt(x++)).charCodeAt(0)){var m=(i==46||(i>=48&&i<=57));if(m!==n){this[z][++y]='';n=m;}
-this[z][y]+=j;}}
-this.sort(function(a,b){for(var x=0,aa,bb;(aa=a[x])&&(bb=b[x]);x++){aa=aa.toLowerCase();bb=bb.toLowerCase();if(aa!==bb){var c=Number(aa),d=Number(bb);if(c==aa&&d==bb){return c-d;}else return(aa>bb)?1:-1;}}
-return a.length-b.length;});for(var z=0;z<this.length;z++)
-this[z]=this[z].join('');}
+Array.prototype.srt = function () {
+	for (var z = 0, t; t = this[z]; z++) {
+		this[z] = []; var x = 0, y = -1, n = true, i, j; while (i = (j = t.charAt(x++)).charCodeAt(0)) {
+			var m = (i == 46 || (i >= 48 && i <= 57)); if (m !== n) { this[z][++y] = ''; n = m; }
+			this[z][y] += j;
+		}
+	}
+	this.sort(function (a, b) {
+		for (var x = 0, aa, bb; (aa = a[x]) && (bb = b[x]); x++) { aa = aa.toLowerCase(); bb = bb.toLowerCase(); if (aa !== bb) { var c = Number(aa), d = Number(bb); if (c == aa && d == bb) { return c - d; } else return (aa > bb) ? 1 : -1; } }
+		return a.length - b.length;
+	}); for (var z = 0; z < this.length; z++)
+		this[z] = this[z].join('');
+}
 
 function on_script_unload() {
-	if (allMusicReq) {allMusicReq.abortRequest();}
+	if (allMusicReq) { allMusicReq.abortRequest(); }
 	_tt('');
 	if (_bmp) {
 		_bmp.ReleaseGraphics(_gr);
@@ -23,7 +31,7 @@ function _artistFolder(artist) {
 	if (_isFolder(folder)) {
 		return fso.GetFolder(folder) + '\\';
 	} else {
-		folder = folders.artists + _.truncate(a, { length : 64 });
+		folder = folders.artists + _.truncate(a, { length: 64 });
 		_createFolder(folder);
 		return fso.GetFolder(folder) + '\\';
 	}
@@ -161,39 +169,39 @@ function _drawImage(gr, img, src_x, src_y, src_w, src_h, aspect, border, alpha) 
 	gr.SetInterpolationMode(7);
 	let dst_x, dst_y, dst_w, dst_h;
 	switch (aspect) {
-	case image.crop:
-	case image.crop_top:
-		if (img.Width / img.Height < src_w / src_h) {
-			dst_w = img.Width;
-			dst_h = Math.round(src_h * img.Width / src_w);
+		case image.crop:
+		case image.crop_top:
+			if (img.Width / img.Height < src_w / src_h) {
+				dst_w = img.Width;
+				dst_h = Math.round(src_h * img.Width / src_w);
+				dst_x = 0;
+				dst_y = Math.round((img.Height - dst_h) / (aspect == image.crop_top ? 4 : 2));
+			} else {
+				dst_w = Math.round(src_w * img.Height / src_h);
+				dst_h = img.Height;
+				dst_x = Math.round((img.Width - dst_w) / 2);
+				dst_y = 0;
+			}
+			gr.DrawImage(img, src_x, src_y, src_w, src_h, dst_x + 3, dst_y + 3, dst_w - 6, dst_h - 6, 0, alpha || 255);
+			break;
+		case image.stretch:
+			gr.DrawImage(img, src_x, src_y, src_w, src_h, 0, 0, img.Width, img.Height, 0, alpha || 255);
+			break;
+		case image.centre:
+		default:
+			const s = Math.min(src_w / img.Width, src_h / img.Height);
+			const w = Math.floor(img.Width * s);
+			const h = Math.floor(img.Height * s);
+			src_x += Math.round((src_w - w) / 2);
+			src_y += Math.round((src_h - h) / 2);
+			src_w = w;
+			src_h = h;
 			dst_x = 0;
-			dst_y = Math.round((img.Height - dst_h) / (aspect == image.crop_top ? 4 : 2));
-		} else {
-			dst_w = Math.round(src_w * img.Height / src_h);
-			dst_h = img.Height;
-			dst_x = Math.round((img.Width - dst_w) / 2);
 			dst_y = 0;
-		}
-		gr.DrawImage(img, src_x, src_y, src_w, src_h, dst_x + 3, dst_y + 3, dst_w - 6, dst_h - 6, 0, alpha || 255);
-		break;
-	case image.stretch:
-		gr.DrawImage(img, src_x, src_y, src_w, src_h, 0, 0, img.Width, img.Height, 0, alpha || 255);
-		break;
-	case image.centre:
-	default:
-		const s = Math.min(src_w / img.Width, src_h / img.Height);
-		const w = Math.floor(img.Width * s);
-		const h = Math.floor(img.Height * s);
-		src_x += Math.round((src_w - w) / 2);
-		src_y += Math.round((src_h - h) / 2);
-		src_w = w;
-		src_h = h;
-		dst_x = 0;
-		dst_y = 0;
-		dst_w = img.Width;
-		dst_h = img.Height;
-		gr.DrawImage(img, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, 0, alpha || 255);
-		break;
+			dst_w = img.Width;
+			dst_h = img.Height;
+			gr.DrawImage(img, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, 0, alpha || 255);
+			break;
 	}
 	if (border) {
 		gr.DrawRect(src_x, src_y, src_w - 1, src_h - 1, 1, border);
@@ -237,7 +245,7 @@ function _fileExpired(file, period) {
 function _firstElement(obj, tag_name) {
 	try {
 		return _.first(obj.getElementsByTagName(tag_name));
-	} catch (e) {}
+	} catch (e) { }
 
 	return undefined;
 }
@@ -313,9 +321,9 @@ function _hacks() {
 		this.uih.SetPseudoCaption(x, y, w, h);
 	}
 
-	this.MainMenuState = { Show : 0, Hide : 1, Auto : 2 };
-	this.FrameStyle = { Default : 0, SmallCaption : 1, NoCaption : 2, NoBorder : 3 };
-	this.MoveStyle = { Default : 0, Middle : 1, Left : 2, Both : 3 };
+	this.MainMenuState = { Show: 0, Hide: 1, Auto: 2 };
+	this.FrameStyle = { Default: 0, SmallCaption: 1, NoCaption: 2, NoBorder: 3 };
+	this.MoveStyle = { Default: 0, Middle: 1, Left: 2, Both: 3 };
 
 	this.uih = new ActiveXObject('UIHacks');
 	this.uih.MoveStyle = this.MoveStyle.Default;
@@ -337,14 +345,14 @@ function _help(x, y, flags) {
 	m.AppendMenuItem(MF_STRING, 1, 'Configure...');
 	const idx = m.TrackPopupMenu(x, y, flags);
 	switch (true) {
-	case idx == 0:
-		break;
-	case idx == 1:
-		window.ShowConfigure();
-		break;
-	default:
-		_run(ha_links[idx - 100][1]);
-		break;
+		case idx == 0:
+			break;
+		case idx == 1:
+			window.ShowConfigure();
+			break;
+		default:
+			_run(ha_links[idx - 100][1]);
+			break;
 	}
 }
 
@@ -412,26 +420,26 @@ function _menu(x, y, flags) {
 
 	let idx = menu.TrackPopupMenu(x, y, flags);
 	switch (true) {
-	case idx == 0:
-		break;
-	case idx < 2000:
-		file.mm.ExecuteByID(idx - 1000);
-		break;
-	case idx < 3000:
-		edit.mm.ExecuteByID(idx - 2000);
-		break;
-	case idx < 4000:
-		view.mm.ExecuteByID(idx - 3000);
-		break;
-	case idx < 5000:
-		playback.mm.ExecuteByID(idx - 4000);
-		break;
-	case idx < 6000:
-		library.mm.ExecuteByID(idx - 5000);
-		break;
-	case idx < 7000:
-		help.mm.ExecuteByID(idx - 6000);
-		break;
+		case idx == 0:
+			break;
+		case idx < 2000:
+			file.mm.ExecuteByID(idx - 1000);
+			break;
+		case idx < 3000:
+			edit.mm.ExecuteByID(idx - 2000);
+			break;
+		case idx < 4000:
+			view.mm.ExecuteByID(idx - 3000);
+			break;
+		case idx < 5000:
+			playback.mm.ExecuteByID(idx - 4000);
+			break;
+		case idx < 6000:
+			library.mm.ExecuteByID(idx - 5000);
+			break;
+		case idx < 7000:
+			help.mm.ExecuteByID(idx - 6000);
+			break;
 	}
 }
 
@@ -563,7 +571,7 @@ function _sb(t, x, y, w, h, v, fn) {
 function _setClipboardData(value) {
 	try {
 		doc.parentWindow.clipboardData.setData('Text', value.toString());
-	} catch(e) {
+	} catch (e) {
 		console.log(N, 'Failed to set clipboard text.');
 	}
 }
@@ -598,12 +606,23 @@ function _ts() {
 	return Math.floor(_.now() / 1000);
 }
 
+// Regorxxx <- Fix TT overflow hanging foobar for huge data (like fingerprints)
 function _tt(value) {
-	if (tooltip.Text != value) {
-		tooltip.Text = value;
+	const sanitized = _cut(value, 2000, true);
+	if (tooltip.Text != sanitized) {
+		tooltip.Text = sanitized;
 		tooltip.Activate();
 	}
 }
+
+function _cut(str, c, bMultiLine) {
+	const cut = _cut;
+	if (!bMultiLine && !cut.regex.singleLine.hasOwnProperty(c)) { cut.regex.singleLine[c] = new RegExp('^([^]{' + c + '})[^]{2,}', 'g'); } // eslint-disable-line no-prototype-builtins
+	else if (bMultiLine && !cut.regex.multiLine.hasOwnProperty(c)) { cut.regex.multiLine[c] = new RegExp('^(.{' + c + '}).{2,}', 'gm'); } // eslint-disable-line no-prototype-builtins
+	return str.replace(bMultiLine ? cut.regex.multiLine[c] : cut.regex.singleLine[c], '$1\u2026'); // …
+}
+_cut.regex = { multiLine: {}, singleLine: {} };
+// Regorxxx ->
 
 let doc = new ActiveXObject('htmlfile');
 let app = new ActiveXObject('Shell.Application');
@@ -664,43 +683,43 @@ folders.lastfm = folders.data + 'lastfm\\';
 
 let fontawesome = gdi.Font('FontAwesome', 48);
 let chars = {
-	up : '\uF077',
-	down : '\uF078',
-	close : '\uF00D',
-	rating_on : '\uF005',
-	rating_off : '\uF006',
-	heart_on : '\uF004',
-	heart_off : '\uF08A',
-	prev : '\uF049',
-	next : '\uF050',
-	play : '\uF04B',
-	pause : '\uF04C',
-	stop : '\uF04D',
-	preferences : '\uF013',
-	search : '\uF002',
-	console : '\uF120',
-	info : '\uF05A',
-	audioscrobbler : '\uF202',
-	minus : '\uF068',
-	music : '\uF001',
-	menu : '\uF0C9'
+	up: '\uF077',
+	down: '\uF078',
+	close: '\uF00D',
+	rating_on: '\uF005',
+	rating_off: '\uF006',
+	heart_on: '\uF004',
+	heart_off: '\uF08A',
+	prev: '\uF049',
+	next: '\uF050',
+	play: '\uF04B',
+	pause: '\uF04C',
+	stop: '\uF04D',
+	preferences: '\uF013',
+	search: '\uF002',
+	console: '\uF120',
+	info: '\uF05A',
+	audioscrobbler: '\uF202',
+	minus: '\uF068',
+	music: '\uF001',
+	menu: '\uF0C9'
 };
 
 let popup = {
-	ok : 0,
-	yes_no : 4,
-	yes : 6,
-	no : 7,
-	stop : 16,
-	question : 32,
-	info : 64
+	ok: 0,
+	yes_no: 4,
+	yes: 6,
+	no: 7,
+	stop: 16,
+	question: 32,
+	info: 64
 };
 
 let image = {
-	crop : 0,
-	crop_top : 1,
-	stretch : 2,
-	centre : 3
+	crop: 0,
+	crop_top: 1,
+	stretch: 2,
+	centre: 3
 };
 
 let ha_links = [

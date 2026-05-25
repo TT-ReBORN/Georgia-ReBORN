@@ -48,7 +48,7 @@ function on_mouse_lbtn_down(x, y) {
 			MessageBoxButtons.YesNoCancel, 
 			MessageBoxIcon.Warning,
 			MessageBoxDefaultButton.Button3, 
-			"https://hydrogenaudio.org/index.php/topic,126743.new.html#new");
+			"https://google.com");
 		switch(result)
 		{
 		case DialogResult.Yes:
