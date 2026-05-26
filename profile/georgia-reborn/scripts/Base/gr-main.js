@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-05-2026                                              * //
+// * Last change:    26-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -374,7 +374,7 @@ class MainUI {
 
 		// * ALBUM ART BACKGROUND * //
 		if (!this.displayDetails && (fb.IsPlaying || grSet.panelBrowseMode) && grSet.albumArtBg !== 'none' &&
-			!(this.displayLyrics && grSet.lyricsLayout !== 'normal')) {
+			!(this.displayLyrics && grSet.layout === 'default' && grSet.lyricsLayout !== 'normal')) {
 			const width = (
 				grSet.albumArtBg === 'full' || grSet.layout === 'artwork' ||
 				this.displayLyrics && grSet.lyricsLayout !== 'normal'
@@ -384,7 +384,7 @@ class MainUI {
 		}
 
 		// * LYRICS BACKGROUND IMAGE * //
-		if (this.displayLyrics && grSet.lyricsLayout !== 'normal' && grSet.lyricsBgImg && grm.bgImg.lyricsBgImg) {
+		if (this.displayLyrics && grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && grSet.lyricsBgImg && grm.bgImg.lyricsBgImg) {
 			grm.bgImg.drawBgImage(gr, grm.bgImg.lyricsBgImg, grSet.lyricsBgImgScale, 0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grSet.lyricsBgImgOpacity, false, 0, 0);
 			if (this.mouseInLyricsFullLayoutEdge || grCol.imgLuminance > 0.70) {
 				gr.FillSolidRect(0, this.topMenuHeight,  this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, RGBA(0, 0, 0, 100));
@@ -642,7 +642,7 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLyricsInfoOverlay(gr) {
-		if (grSet.lyricsLayout === 'normal') return;
+		if (grSet.layout !== 'default' || grSet.lyricsLayout === 'normal') return;
 
 		// * Button handles repaint refresh and full layout right edge pause functionality
 		grm.button.btn.lyricsInfoOverlay =
@@ -4369,7 +4369,7 @@ class MainUI {
 
 		// * Album art lyrics layouts
 		if (grSet.lyricsLayout !== 'normal' && this.displayLyrics) {
-			const size = Math.round(albumArtMaxHeight - this.edgeMarginBoth);
+			const size = Math.round(albumArtMaxHeight - (grSet.layout === 'default' ? this.edgeMarginBoth : 0));
 			this.albumArtSize = { w: size, h: size };
 			return;
 		}
@@ -4399,7 +4399,8 @@ class MainUI {
 	 * Set the position of the album art based on the layout settings and window size.
 	 */
 	setAlbumArtPosition() {
-		const albumArtLyricsLayoutNotNormal = this.displayLyrics && grSet.lyricsLayout !== 'normal';
+		const albumArtLyricsLayoutNotNormal = this.displayLyrics && !this.displayDetails &&
+			grSet.layout === 'default' && grSet.lyricsLayout !== 'normal';
 
 		this.albumArtOffCenter = this.albumArtScaleFactor === (this.ww * 0.75 / this.albumArt.Width);
 

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-05-2026                                              * //
+// * Last change:    26-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3457,7 +3457,14 @@ class TopMenuOptions {
 		lyricsControlsMenu.addToggleItem('Remember lyrics panel state', grSet, 'lyricsRememberPanelState', () => {
 			grm.ui.displayLyrics = grSet.lyricsRememberPanelState;
 			grSet.savedLyricsDisplayed = grm.ui.displayLyrics && grSet.lyricsRememberPanelState;
-			if (grSet.displayLyrics) grm.lyrics.initLyrics();
+			if (grSet.displayLyrics) {
+				grm.lyrics.initLyrics();
+			} else if (!grSet.lyricsRememberPanelState) {
+				grm.ui.displayPlaylist = grSet.layout === 'default';
+				grm.ui.resizeArtwork(true);
+			}
+			grm.ui.handlePanelLayout('all', 'initLayout');
+			grm.ui.resizeArtwork(grSet.layout !== 'default');
 			grm.button.initButtonState();
 			window.Repaint();
 		});

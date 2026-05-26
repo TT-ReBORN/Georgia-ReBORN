@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    26-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -227,9 +227,18 @@ class Button {
 	_updatePanelState(initLyrics) {
 		grm.ui.resizeArtwork(false);
 		grm.ui.initPanelWidthAuto();
-		if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
-		if (grm.ui.displayDetails) grm.details.setDiscArtRotationTimer();
-		if (grSet.savedLyricsDisplayed || initLyrics) grm.lyrics.initLyrics();
+
+		if (grm.ui.displayCustomThemeMenu) {
+			grm.cthMenu.reinitCustomThemeMenu();
+		}
+		if (grm.ui.displayDetails) {
+			grm.details.initDiscArt();
+			grm.details.setDiscArtRotationTimer();
+		}
+		if (grSet.savedLyricsDisplayed || initLyrics) {
+			grm.lyrics.initLyrics();
+		}
+
 		lib.ex.color.updateFullThemeColorChange();
 		this.initButtonState();
 		window.Repaint();
@@ -262,10 +271,8 @@ class Button {
 		grm.ui.displayDetails = lyricsLayoutFull ? true : grSet.layout === 'artwork' ? grm.ui.displayPlaylist : !grm.ui.displayPlaylist;
 		grm.ui.displayLibrary = false;
 		grm.ui.displayBiography = false;
-		grm.ui.displayLyrics = grSet.savedLyricsDisplayed || lyricsLayoutFull;
+		grm.ui.displayLyrics = grSet.lyricsRememberPanelState ? (grSet.savedLyricsDisplayed || lyricsLayoutFull) : false;
 		grm.ui.displayMetadataGridMenu = grm.ui.displayDetails && grm.ui.displayMetadataGridMenu;
-
-		grm.details.initDiscArt();
 
 		if (grm.ui.displayPlaylist) {
 			if (grSet.layout === 'artwork') { // Details panel in Artwork layout
@@ -361,7 +368,7 @@ class Button {
 	 * Handles the Lyrics panel button action in the top menu.
 	 */
 	topLyrics() {
-		grm.ui.displayLyrics = !grm.ui.displayLyrics;
+		grm.ui.displayLyrics = grm.ui.displayDetails && grm.ui.displayLyrics ? true : !grm.ui.displayLyrics;
 		grm.ui.displayPlaylist = grSet.layout === 'default';
 		grm.ui.displayPlaylistArtwork = false;
 		grm.ui.displayDetails = false;

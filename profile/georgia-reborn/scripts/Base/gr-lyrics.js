@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-05-2026                                              * //
+// * Last change:    26-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -73,7 +73,8 @@ class Lyrics {
 	 * Sets the size and position of the lyrics.
 	 */
 	setLyricsPosition() {
-		const fullW = grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && grm.ui.displayLyrics;
+		const lyricsLayout = grm.ui.displayDetails ? 'normal' : grSet.lyricsLayout;
+		const fullW = grSet.layout === 'default' && lyricsLayout !== 'normal' && grm.ui.displayLyrics;
 		const noAlbumArtSize = grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight;
 		const margin = SCALE(40);
 
@@ -82,16 +83,16 @@ class Lyrics {
 				grSet.layout === 'artwork' ? grm.ui.ww :
 				grSet.panelWidthAuto ? noAlbumArtSize :
 				grm.ui.ww * 0.5 :
-			grSet.lyricsLayout === 'full' ? grm.ui.ww * 0.75 :
+			lyricsLayout === 'full' ? grm.ui.ww * 0.75 :
 			grm.ui.albumArtSize.w) - margin * 2;
 
 		this.h = (grm.ui.noAlbumArtStub ? grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight : grm.ui.albumArtSize.h) - margin * 2;
 
 		this.x =
-			(grm.ui.noAlbumArtStub || grSet.lyricsLayout !== 'normal' ?
-				fullW ? grSet.panelWidthAuto && grSet.lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 :
-				grSet.lyricsLayout === 'left'  ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + margin * 1.5 :
-				grSet.lyricsLayout === 'right' ? grm.ui.albumArtSize.x - grm.ui.albumArtSize.w - margin * 1.5 :
+			(grm.ui.noAlbumArtStub || grSet.layout === 'default' && lyricsLayout !== 'normal' ?
+				fullW ? grSet.panelWidthAuto && lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 :
+				lyricsLayout === 'left' ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + (grm.ui.ww - grm.ui.albumArtSize.x - grm.ui.albumArtSize.w - this.w) * 0.5 - margin :
+				lyricsLayout === 'right' ? (grm.ui.albumArtSize.x - this.w) * 0.5 - margin :
 				(grm.ui.ww - this.w) * 0.5 - margin :
 				grSet.panelWidthAuto ? grm.ui.albumArtSize.x : 0 :
 			grm.ui.albumArtSize.x) + margin;
@@ -1016,6 +1017,20 @@ class Lyrics {
 	tidy(n) {
 		return n.replace(Regex.LyricsTimestamp, '$1$4').replace(Regex.LyricsTimestampEnhanced, '$1$4').trim();
 	}
+
+	/**
+	 * Updates the visible bounds whenever size or position changed.
+	 */
+	updateLyricsBounds() {
+		if (!this.lineHeight) return;
+
+		const linesDrawn = Math.floor(this.h / this.lineHeight);
+		const oddNumLines = linesDrawn % 2;
+
+		this.locusOffset = this.h / 2 - (oddNumLines ? this.lineHeight / 2 : this.lineHeight);
+		this.top = this.locusOffset - this.lineHeight * (Math.floor(linesDrawn / 2) - (oddNumLines ? 1 : 2)) + this.y - this.lineHeight;
+		this.bot = this.top + this.lineHeight * (linesDrawn - 2);
+	}
 	// #endregion
 
 	// * CALLBACKS * //
@@ -1119,6 +1134,7 @@ class Lyrics {
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		this.updateLyricsBounds();
 	}
 	// #endregion
 }
