@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-05-2026                                              * //
+// * Last change:    27-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2133,7 +2133,7 @@ class MainUI {
 	 * If the playlist contains no tracks to play, the user action will be canceled.
 	 */
 	handlePlaybackStart() {
-		if (plman.PlaylistItemCount(plman.ActivePlaylist) <= 0) {
+		if (!lib.ex.main.state.visible && !this.displayLibrary && plman.PlaylistItemCount(plman.ActivePlaylist) <= 0) {
 			this.displayCustomThemeMenu = false;
 			fb.Stop();
 			this.clearPlaybackState(true);
@@ -3790,7 +3790,7 @@ class MainUI {
 			lib.ex.color.setArtworkColor();
 		}
 		// * Restore GR main primary when Library Explorer is open but other panel displayed
-		if (!grm.ui.displayLibrary && lib.ex.main.state.visible) {
+		if (lib.ex.main.state.visible && !this.displayLibrary) {
 			grm.colorManager.setPrimaryColor(undefined, undefined, true);
 		}
 
