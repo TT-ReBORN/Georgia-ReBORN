@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-05-2026                                              * //
+// * Last change:    27-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1480,6 +1480,7 @@ class ConfigDefaults {
 			explorerPlaybackKeepPlaylist: true,
 			explorerWheelOutsideClose: true,
 			explorerTreeView: true,
+			explorerCloseButtonAlways: false,
 			explorerTabIconsOnly: false,
 			explorerTabIconNowPlaying: false,
 			explorerExternalLinkIcon: true,
@@ -1589,6 +1590,7 @@ class ConfigDefaults {
 			explorerPlaybackKeepPlaylist: 'Values: true, false - Options > Library > Explorer > Controls > Keep playlist when playing',
 			explorerWheelOutsideClose: 'Values: true, false - Options > Library > Explorer > Controls > Close on outside mouse wheel',
 			explorerTreeView: 'Values: true, false - Options > Library > Explorer > Display > Display explorer in tree view',
+			explorerCloseButtonAlways: 'Values: true, false - Options > Library > Explorer > Display > Display close button always',
 			explorerTabIconsOnly: 'Values: true, false - Options > Library > Explorer > Display > Display tab icons only',
 			explorerTabIconNowPlaying: 'Values: true, false - Options > Library > Explorer > Display > Display tab icon NowPlaying',
 			explorerExternalLinkIcon: 'Values: true, false - Options > Library > Explorer > Display > Display link icon in grid',

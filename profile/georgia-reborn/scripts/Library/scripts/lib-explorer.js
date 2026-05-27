@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    20-05-2026                                              * //
+// * Last change:    27-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1703,8 +1703,9 @@ class LibExplorerMain {
 
 		// * DISPLAY * //
 		this.state.explorerTreeView = libSet.explorerTreeView;
-		lib.ex.button.tabs.showTabText = !libSet.explorerTabIconsOnly;
-		lib.ex.button.tabs.showTabIconNowPlaying = !libSet.explorerTabIconNowPlaying;
+		lib.ex.button.closeButton.display = libSet.explorerCloseButtonAlways;
+		lib.ex.button.tabs.showTabText = libSet.explorerTabIconsOnly;
+		lib.ex.button.tabs.showTabIconNowPlaying = libSet.explorerTabIconNowPlaying;
 		this.grid.externalLinkIcon = libSet.explorerExternalLinkIcon;
 		this.grid.yearType = libSet.explorerAlbumYearType;
 		lib.ex.album.showTrackRatingGrid = libSet.explorerShowTrackRatingGrid;
@@ -3472,8 +3473,8 @@ class LibExplorerButtons {
 			iconContentWidths: [],
 
 			// Text rendering
-			showTabText: !libSet.explorerTabIconsOnly,
-			showTabIconNowPlaying: !libSet.explorerTabIconNowPlaying,
+			showTabText: libSet.explorerTabIconsOnly,
+			showTabIconNowPlaying: libSet.explorerTabIconNowPlaying,
 			tabTextStartX: [],
 			tabMaxTextWs: [],
 			tabFullTextWidths: [],
@@ -3501,6 +3502,7 @@ class LibExplorerButtons {
 			y: 0,
 			w: 0,
 			h: 0,
+			display: libSet.explorerCloseButtonAlways || false,
 			show: false
 		};
 	}
@@ -3510,7 +3512,7 @@ class LibExplorerButtons {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawCloseButton(gr) {
-		if (!this.closeButton.show) return;
+		if (!this.closeButton.show && !this.closeButton.display) return;
 
 		gr.FillSolidRect(this.closeButton.x, this.closeButton.y, this.closeButton.w, this.closeButton.h, lib.ex.color.closeBtn_bg);
 		gr.DrawString(RebornSymbols.Close, lib.ex.main.font.close, lib.ex.color.closeBtn, this.closeButton.x, this.closeButton.y, this.closeButton.w, this.closeButton.h, lib.ex.main.stringFormat.center);

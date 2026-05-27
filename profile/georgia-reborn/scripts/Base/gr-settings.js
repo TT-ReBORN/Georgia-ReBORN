@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-05-2026                                              * //
+// * Last change:    27-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1450,6 +1450,7 @@ class ThemeSettingsManager {
 		this._setSetting(libSet, 'explorerPlaybackKeepPlaylist', grCfg.themeLibrary, 'explorerPlaybackKeepPlaylist', true);
 		this._setSetting(libSet, 'explorerWheelOutsideClose', grCfg.themeLibrary, 'explorerWheelOutsideClose', true);
 		this._setSetting(libSet, 'explorerTreeView', grCfg.themeLibrary, 'explorerTreeView', true);
+		this._setSetting(libSet, 'explorerCloseButtonAlways', grCfg.themeLibrary, 'explorerCloseButtonAlways', false);
 		this._setSetting(libSet, 'explorerTabIconsOnly', grCfg.themeLibrary, 'explorerTabIconsOnly', false);
 		this._setSetting(libSet, 'explorerTabIconNowPlaying', grCfg.themeLibrary, 'explorerTabIconNowPlaying', false);
 		this._setSetting(libSet, 'explorerExternalLinkIcon', grCfg.themeLibrary, 'explorerExternalLinkIcon', true);

@@ -163,6 +163,7 @@ let libProperties = [
 	['Panel Library - Explorer - Controls - Close on outside mouse wheel', true, 'explorerWheelOutsideClose'],
 
 	['Panel Library - Explorer - Display - Display explorer in tree view', true, 'explorerTreeView'],
+	['Panel Library - Explorer - Display - Display close button always', false, 'explorerCloseButtonAlways'],
 	['Panel Library - Explorer - Display - Display tab icons only', false, 'explorerTabIconsOnly'],
 	['Panel Library - Explorer - Display - Display tab icon NowPlaying', false, 'explorerTabIconNowPlaying'],
 	['Panel Library - Explorer - Display - Display link icon in grid', true, 'explorerExternalLinkIcon'],

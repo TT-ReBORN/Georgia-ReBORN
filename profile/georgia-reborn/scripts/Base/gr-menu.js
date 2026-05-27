@@ -2787,6 +2787,7 @@ class TopMenuOptions {
 			lib.panel.updateProp(1);
 			lib.ex.main.setSettings();
 			lib.ex.main.setMetrics();
+			lib.ex.color.updateFullThemeColorChange();
 			lib.ex.utils.repaintExplorer();
 		};
 
@@ -2856,6 +2857,9 @@ class TopMenuOptions {
 		// * DISPLAY * //
 		const libraryExplorerDisplayMenu = new Menu('Display');
 		libraryExplorerDisplayMenu.addToggleItem('Display explorer in tree view', libSet, 'explorerTreeView', () => {
+			updateLibraryExplorerSettings();
+		});
+		libraryExplorerDisplayMenu.addToggleItem('Display close button always', libSet, 'explorerCloseButtonAlways', () => {
 			updateLibraryExplorerSettings();
 		});
 		libraryExplorerDisplayMenu.addToggleItem('Display tab icons only', libSet, 'explorerTabIconsOnly', () => {
