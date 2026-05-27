@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-05-2026                                              * //
+// * Last change:    27-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2174,9 +2174,8 @@ class TopMenuOptions {
 			});
 			discArtMenu.createRadioSubMenu('# Rotation images (memory usage/rotational speed)', ['  36 (10 degrees)', '  45 (8 degrees)', '  60 (6 degrees)', '  72 (5 degrees) (default)', '  90 (4 degrees)', '120 (3 degrees)', '180 (2 degrees)'], grSet.spinDiscArtImageCount, [36, 45, 60, 72, 90, 120, 180], (count) => {
 				grSet.spinDiscArtImageCount = count;
-				grm.details.discArtRotationIndex = 0;
-				grm.details.discArtArray = [];
 				grm.artCache.discArtImgMaxRes = grm.artCache.setDiscArtMaxResolution(grSet.spinDiscArtImageCount);
+				grm.details.initDiscArt();
 				window.Repaint();
 			}, !grSet.spinDiscArt);
 			discArtMenu.createRadioSubMenu('Spinning disc art redraw speed', ['250ms (very slow CPU)', '200ms', '150ms', '125ms', '100ms', '  75ms (default)', '  50ms', '  40ms', '  30ms', '  20ms', '  10ms (very fast CPU)'], grSet.spinDiscArtRedrawInterval, [250, 200, 150, 125, 100, 75, 50, 40, 30, 20, 10], interval => {

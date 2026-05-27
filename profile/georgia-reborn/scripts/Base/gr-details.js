@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-05-2026                                              * //
+// * Last change:    27-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -196,6 +196,12 @@ class Details {
 		this.discArtRotation = null;
 		/** @public @type {number} The global index of current discArtArray img to draw used in Details. */
 		this.discArtRotationIndex = 0;
+		/** @public @type {GdiBitmap|null} The unrotated, resized disc art D2D source image for the transform rotation. */
+		this.discArtD2DImage = null;
+		/** @public @type {number} The current rotation angle in degrees for the D2D disc art transform rotation. */
+		this.discArtD2DRotationAngle = 0;
+		/** @public @type {number} The pre-allocated matrix buffer for the D2D disc art transform rotation. */
+		this.discArtD2DRotationMatrix = new Float32Array(6);
 		/** @private @type {GdiBitmap} The release country flag image shown in the metadata grid in Details. */
 		this.gridReleaseFlagImg = null;
 		/** @private @type {GdiBitmap} The codec logo image shown in the metadata grid in Details. */
@@ -322,6 +328,13 @@ class Details {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawDiscArtImage(gr) {
+		// * D2D path: hardware-accelerated rotation via matrix transform, no pre-computed frames needed
+		if (D2D) {
+			this.drawDiscArtD2DImage(gr);
+			return;
+		}
+
+		// * GDI+ path
 		const discArtImg = this.discArtArray[this.discArtRotationIndex] || this.discArtRotation;
 
 		if (!grSet.filterAlbumArt && grm.ui.discArtImageDisplayed || !discArtImg) {
@@ -943,6 +956,8 @@ class Details {
 				this.discArtCover = null;
 				this.discArtArray = [];
 				this.discArtRotation = null;
+				this.discArtD2DImage = null;
+				this.discArtD2DRotationAngle = 0;
 			},
 			codecLogo: () => {
 				this.gridCodecLogo = null;
@@ -2010,6 +2025,16 @@ class Details {
 		if (!grSet.rotateDiscArt || Number.isNaN(tracknum)) tracknum = 0;
 
 		const tracknumRotation = tracknum * grSet.rotationAmt % 360;
+
+		// * D2D path: store initial angle and build the unrotated source image
+		if (D2D) {
+			this.discArtD2DRotationAngle = tracknumRotation;
+			this.setDiscArtD2DImage();
+			this.discArtRotation = this.discArtD2DImage;
+			return this.discArtD2DImage;
+		}
+
+		// * GDI+ path
 		const combinedImg = this.combineDiscArtWithCover(true);
 
 		this.discArtRotation = RotateImage(combinedImg, this.discArtSize.w, this.discArtSize.h, tracknumRotation, grm.artCache.discArtImgMaxRes);
@@ -2030,6 +2055,13 @@ class Details {
 			return;
 		}
 
+		// * D2D path: lightweight timer - only increment angle, no frame precomputation
+		if (D2D) {
+			this.setDiscArtD2DRotationTimer();
+			return;
+		}
+
+		// * GDI+ path
 		grm.debug.debugLog(`Disc art => Starting lazy spin with async precompute: ${grSet.spinDiscArtImageCount} frames, every ${grSet.spinDiscArtRedrawInterval}ms`);
 
 		const rotationDegreeIncrement = 360 / grSet.spinDiscArtImageCount;
@@ -2138,8 +2170,85 @@ class Details {
 
 		if (!grSet.spinDiscArt) return;
 
-		this.discArtArray = []; // Clear last image
+		if (!D2D) {
+			this.discArtArray = []; // GDI+ only, D2D has no frame cache to clear
+		}
+
 		this.setDiscArtRotationTimer();
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - DISC ART - DIRECT2D * //
+	// #region PUBLIC METHODS - DISC ART - DIRECT2D
+	/**
+	 * Draws the disc art using a D2D Matrix3x2 rotation transform applied to a single cached source bitmap.
+	 * No pre-rotated frames, no precomputation - the GPU does the work.
+	 * @param {GdiGraphics} gr - The D2D graphics object (must be a D2D context).
+	 */
+	drawDiscArtD2DImage(gr) {
+		if (!this.discArtD2DImage || !grSet.filterAlbumArt && grm.ui.discArtImageDisplayed) {
+			return;
+		}
+
+		// Draw shadow before applying transform so it stays in place
+		if (this.discArtShadowImg.image) {
+			const shadowImg = this.discArtShadowImg.image;
+			gr.DrawImage(shadowImg, -this.discArtShadow, grm.ui.albumArtSize.y - this.discArtShadow, shadowImg.Width, shadowImg.Height, 0, 0, shadowImg.Width, shadowImg.Height);
+		}
+
+		// Rotation pivot = center of the disc art rectangle, build and apply rotation matrix (D2D handles sub-pixel interpolation)
+		const centerX = this.discArtSize.x + this.discArtSize.w * 0.5;
+		const centerY = this.discArtSize.y + this.discArtSize.h * 0.5;
+		const rotMatrix = RotationMatrix(centerX, centerY, this.discArtD2DRotationAngle, this.discArtD2DRotationMatrix);
+
+		gr.PushTransform();
+		gr.SetTransform(rotMatrix);
+		gr.DrawImage(this.discArtD2DImage, this.discArtSize.x, this.discArtSize.y, this.discArtSize.w, this.discArtSize.h, 0, 0, this.discArtD2DImage.Width, this.discArtD2DImage.Height, 0);
+		gr.PopTransform();
+	}
+
+	/**
+	 * Builds and caches a single unrotated, target-size disc art image for D2D transform rotation.
+	 * Called once per track/resize. The D2D timer then rotates this in-place via SetTransform without any per-frame bitmap allocation.
+	 * @returns {GdiBitmap|null} The cached source image, or null on failure.
+	 */
+	setDiscArtD2DImage() {
+		const combinedImg = this.combineDiscArtWithCover(true);
+
+		if (!combinedImg || this.discArtSize.w < 1) {
+			this.discArtD2DImage = null;
+			return null;
+		}
+
+		// Resize once to the exact render dimensions - no rotation baked in
+		this.discArtD2DImage = combinedImg.Resize(Math.floor(this.discArtSize.w), Math.floor(this.discArtSize.h));
+
+		grm.debug.debugLog(`Disc art D2D => Built source image (${this.discArtSize.w}x${this.discArtSize.h})`);
+
+		return this.discArtD2DImage;
+	}
+
+	/**
+	 * D2D disc art rotation timer. Advances the rotation angle by one step per interval and requests a repaint.
+	 * No bitmap allocation occurs per tick - angle is a plain float.
+	 */
+	setDiscArtD2DRotationTimer() {
+		if (grSet.layout !== 'default' || !grm.ui.displayDetails ||
+			grm.ui.albumArtCorrupt || !grm.ui.albumArt || !this.discArt || !this.discArtSize.w ||
+			!fb.IsPlaying || fb.IsPaused || !grSet.displayDiscArt || !grSet.spinDiscArt) {
+			return;
+		}
+
+		// Reuse the existing image-count setting as degrees-per-step:
+		// e.g 72 images -> 360/72 = 5° per tick, same angular spacing as GDI+ but GPU-smooth
+		const angleStep = 360 / grSet.spinDiscArtImageCount;
+
+		grm.debug.debugLog(`Disc art D2D => Starting D2D spin: ${angleStep}°/tick every ${grSet.spinDiscArtRedrawInterval}ms`);
+
+		this.discArtRotationTimer = setInterval(() => {
+			this.discArtD2DRotationAngle = (this.discArtD2DRotationAngle + angleStep) % 360;
+			this.repaintDiscArt();
+		}, grSet.spinDiscArtRedrawInterval);
 	}
 	// #endregion
 

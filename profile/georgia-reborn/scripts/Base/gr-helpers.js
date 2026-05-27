@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-05-2026                                              * //
+// * Last change:    27-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3569,6 +3569,31 @@ function RotateImage(img, w, h, degrees, imgMaxRes = w) {
 	rotatedImg.ReleaseGraphics(gotGraphics);
 
 	return rotatedImg;
+}
+
+
+/**
+ * Computes a rotation transformation matrix.
+ * @global
+ * @param {number} centerX The x-coordinate of the rotation center.
+ * @param {number} centerY The y-coordinate of the rotation center.
+ * @param {number} angle The angle in degrees.
+ * @param {Float32Array} outMatrix The target matrix to mutate.
+ * @return {Float32Array} The resulting matrix.
+ */
+function RotationMatrix(centerX, centerY, angle, outMatrix) {
+	const radians = angle * (Math.PI / 180);
+	const sinA = Math.sin(radians);
+	const cosA = Math.cos(radians);
+
+	outMatrix[0] = cosA;
+	outMatrix[1] = sinA;
+	outMatrix[2] = -sinA;
+	outMatrix[3] = cosA;
+	outMatrix[4] = centerX - centerX * cosA + centerY * sinA;
+	outMatrix[5] = centerY - centerX * sinA - centerY * cosA;
+
+	return outMatrix;
 }
 
 
