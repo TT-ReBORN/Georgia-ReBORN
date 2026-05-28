@@ -189,6 +189,11 @@ class MessageManager {
 				msg: 'The user action has been canceled.\n\n'
 					+ 'Please add some tracks to your playlist first!\n\n'
 			},
+			ratingError: {
+				msg: 'Rating could not be properly set.\n\n'
+					+ 'Please select some track/s for rating first!\n'
+					+ 'Be sure the tracks are valid and not corrupt.\n\n'
+			},
 			themeDayNightModeNotice: {
 				msg: 'Theme day/night mode is active\n'
 					+ 'and has locked the theme.\n\n'

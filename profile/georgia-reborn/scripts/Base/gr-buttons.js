@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-05-2026                                              * //
+// * Last change:    28-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -410,8 +410,8 @@ class Button {
 		}
 
 		if (!metadb) {
-			const msg = grm.msg.getMessage('main', 'playlistEmptyError');
-			fb.ShowPopupMessage(msg, 'Empty playlist');
+			const msg = grm.msg.getMessage('main', 'ratingError');
+			fb.ShowPopupMessage(msg, 'Rating error');
 			return;
 		}
 
