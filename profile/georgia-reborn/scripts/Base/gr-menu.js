@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-05-2026                                              * //
+// * Last change:    28-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3944,7 +3944,11 @@ class TopMenuOptions {
 			});
 			rendererMenu.createRadioSubMenu('Graphics', ['GDI+ (default)', 'Direct2D'], grSet.rendererGraphics, [0, 1], (mode) => {
 				grSet.rendererGraphics = mode;
-				window.Reload();
+				if (DetectWine()) { // * Wine needs foobar restart, otherwise on pure reload it will crash
+					fb.RunMainMenuCommand('File/Restart');
+				} else {
+					window.Reload();
+				}
 			});
 			rendererMenu.appendTo(settingsMenu);
 			settingsMenu.addSeparator();
