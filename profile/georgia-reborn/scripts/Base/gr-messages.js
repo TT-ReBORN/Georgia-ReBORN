@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    28-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -586,6 +586,12 @@ class MessageManager {
 					+ 'You can add, remove, reorder, or modify entries manually.\n'
 					+ 'Each entry should have "name" and optional "match"\n(a similarity score between 0 and 1).\n\n'
 					+ 'After editing and saving, close and reopen\nthe library explorer and the list will be updated.\n\n'
+			},
+			explorerLockedPlaylist: {
+				msg: 'The active playlist is locked\n'
+					+ 'and cannot be modified.\n\n'
+					+ 'Please unlock or switch to\n'
+					+ 'a different playlist first.\n\n'
 			}
 		};
 

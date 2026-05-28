@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    27-05-2026                                              * //
+// * Last change:    28-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -5472,6 +5472,11 @@ class LibExplorerControls {
 
 		const tabsButtonAction = {
 			Add: () => {
+				if (plman.IsPlaylistLocked(plman.ActivePlaylist)) {
+					const msg = grm.msg.getMessage('menu', 'explorerLockedPlaylist');
+					grm.msg.showPopup(false, false, msg, 'OK', false, (confirmed) => {});
+					return false;
+				}
 				const handlesSelected = lib.ex.data.getHandlesFromSelected();
 				const handles = handlesSelected.Count > 0 ? handlesSelected : lib.ex.data.getHandlesFromVisible();
 				if (handles.Count <= 0) return false;
