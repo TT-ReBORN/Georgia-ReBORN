@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-05-2026                                              * //
+// * Last change:    30-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1049,6 +1049,11 @@ const Unicode = {
  * @property {RegExp} UniZeroWidth - Matches zero-width spaces `/\u200b/g`.
  * @property {RegExp} UniZeroWidthPipe - Matches zero-width space followed by pipe `/\u200b\|/`.
  *
+ * @property {RegExp} JsonArraySpaceClose - Matches space followed by closing bracket `/ \]/g`.
+ * @property {RegExp} JsonArraySpaceOpen - Matches opening bracket followed by space `/\[ /g`.
+ * @property {RegExp} JsonMetricsField - Matches the `"metrics"` key with its JSON array value `/"metrics":\s*\[[^\]]*\]/g`.
+ * @property {RegExp} JsonNumericArray  - Matches brackets containing only numbers, signs, decimals, commas and whitespace `/\[([\s\d.,-]+)\]/g`. Captures: contents.
+ *
  * @property {RegExp} HtmlEntityAmp  - Matches `&amp` (with/without `;`) `/&amp(?:;|)/g`.
  * @property {RegExp} HtmlEntityGt - Matches `&gt` (with/without `;`) `/&gt(?:;|)/g`.
  * @property {RegExp} HtmlEntityLt - Matches `&lt` (with/without `;`) `/&lt(?:;|)/g`.
@@ -1491,6 +1496,12 @@ const Regex = {
 	UniParenRight: /\uFF09/g,
 	UniZeroWidth: /\u200b/g,
 	UniZeroWidthPipe: /\u200b\|/,
+
+	// * JSON * //
+	JsonArraySpaceClose: / \]/g,
+	JsonArraySpaceOpen: /\[ /g,
+	JsonMetricsField: /"metrics":\s*\[[^\]]*\]/g,
+	JsonNumericArray: /\[([\s\d.,-]+)\]/g,
 
 	// * HTML * //
 	HtmlEntityAmp: /&amp(?:;|)/g,

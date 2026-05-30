@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    30-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3588,8 +3588,7 @@ class WaveformBar {
 
 		try {
 			const handleList = (handle instanceof FbMetadbHandleList) ? handle :
-				new FbMetadbHandleList(Array.isArray(handle) ? handle : [handle]
-			);
+				new FbMetadbHandleList(Array.isArray(handle) ? handle : [handle]);
 			const startTime = Date.now();
 
 			grm.debug.debugLog(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
@@ -3611,15 +3610,20 @@ class WaveformBar {
 			for (let i = 0; i < trackCount; i++) {
 				const trackHandle = handleList[i];
 				const data = [];
-				const rawData = AudioWizard.GetWaveformData(i);
-				const channels = AudioWizard.GetWaveformTrackChannels(i);
-				const stepSize = metricsPerChannel * channels;
+				const waveformData = AudioWizard.GetWaveformData(i);
+				const channels = waveformData.length;
+				const numPoints = channels > 0 ? waveformData[0].length / metricsPerChannel : 0;
 
-				// Restructure flat array into array of arrays (one array per time step)
-				for (let j = 0; j < rawData.length; j += stepSize) {
-					const pointSlice = rawData.slice(j, j + stepSize);
-					const roundedPoint = pointSlice.map(v => Math.round(v * 1000) / 1000);
-					data.push(roundedPoint);
+				// Build data[pt] = [ch0_rms, ch0_rms_peak, ch0_sp, ch0_min, ch0_max, ch1_rms, ...]
+				for (let pt = 0; pt < numPoints; pt++) {
+					const frame = [];
+					for (let ch = 0; ch < channels; ch++) {
+						const base = pt * metricsPerChannel;
+						for (let m = 0; m < metricsPerChannel; m++) {
+							frame.push(Math.round(waveformData[ch][base + m] * 1000) / 1000);
+						}
+					}
+					data.push(frame);
 				}
 
 				if (this.saveDataAllowed(trackHandle)) {
@@ -3628,7 +3632,7 @@ class WaveformBar {
 
 				if (handleList.Count === 1) {
 					this.current = data;
-					this.currentChannels = channels; // Store for normalizePoints
+					this.currentChannels = channels;
 				}
 			}
 
