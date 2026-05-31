@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    28-05-2026                                              * //
+// * Last change:    31-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4169,17 +4169,6 @@ class TopMenuOptions {
 		debugMenu.addToggleItem('Show panel context menu', grCfg.settings, 'showPanelContextMenu');
 		debugMenu.addItem('Show panel properties', false, () => { window.ShowProperties(); });
 		debugMenu.addSeparator();
-		debugMenu.addItem('Set system first launch to true', false, () => { // Used when creating new config files
-			const msg = grm.msg.getMessage('menu', 'systemFirstLaunch');
-			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
-				if (!confirmed) return;
-				window.SetProperty('Georgia-ReBORN - 16. System: System first launch', true);
-				plSet.show_scrollbar = false;
-				grSet.showTopMenuCompact = true;
-				grSet.devTools = false;
-				console.log('\n>>> Georgia-ReBORN has been set to system first launch <<<\n\n');
-			});
-		});
 		debugMenu.addItem(`Set script preloader to ${grSet.asyncThemePreloader ? 'synchronous' : 'asynchronous'}`, false, () => {
 			const msg = grm.msg.getMessage('menu', 'asyncThemePreloader');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
@@ -4188,7 +4177,44 @@ class TopMenuOptions {
 				window.Reload();
 			});
 		});
+		if (Component.JSplitter) {
+			debugMenu.addItem('Set clean UI Columns config file', false, () => {
+				const msg = grm.msg.getMessage('menu', 'cleanUIColumnsConfig');
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+					if (!confirmed) return;
 
+					// * Set Decimal Value=96 for 100% window scale reference and center the player
+					WshShell.RegWrite('HKCU\\Control Panel\\Desktop\\WindowMetrics\\AppliedDPI', 96, 'REG_DWORD');
+					UIWizard.SetWindowPositionInGrid('center');
+
+					// * Reset the properties
+					const props = window.GetProperties();
+					for (const name in props) window.SetProperty(name, undefined);
+
+					// * Set essential properties for factory reset state
+					plSet.show_scrollbar = false;
+					grSet.showTopMenuCompact = true;
+					grSet.devTools = false;
+					grSet.systemFirstLaunch = true;
+
+					// * Save the config file
+					OpenExplorer(`explorer /open, "${GetShortPath(fb.ProfilePath)}\\configuration"`, false);
+					fb.RunMainMenuCommand('File/Save configuration');
+				});
+			});
+		} else {
+			debugMenu.addItem('Set system first launch to true', false, () => {
+				const msg = grm.msg.getMessage('menu', 'systemFirstLaunch');
+				grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
+					if (!confirmed) return;
+					plSet.show_scrollbar = false;
+					grSet.showTopMenuCompact = true;
+					grSet.devTools = false;
+					grSet.systemFirstLaunch = true;
+					console.log('\n>>> Georgia-ReBORN has been set to system first launch <<<\n\n');
+				});
+			});
+		}
 		debugMenu.appendTo(menu);
 	}
 	// #endregion
