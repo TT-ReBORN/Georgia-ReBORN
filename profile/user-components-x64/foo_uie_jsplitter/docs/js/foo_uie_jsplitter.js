@@ -455,6 +455,44 @@ let fb = {
     Exit: function () { }, // (void)
 
     /**
+     * For future development purposes (e.g. verbose console output)
+     * 
+     * @method
+     */
+    EnableAdvancedLogging: function () { }, 
+
+    /**
+     * Returns all main menu items recursivley.<br>
+     * It is a JSON array in string form so you need to use JSON.parse on the result.<br>
+     * Every item of the array is object with the following properties:<br>
+     * <b>Checked</b>: boolean<br>
+     * <b>Disabled</b>: boolean<br>
+     * <b>FullPath</b>: string, the same full path you'd supply to fb.RunMainMenuCommand<br>
+     * <b>HiddenByDefault</b>: boolean<br>
+     * <b>Radio</b>: boolean<br>
+     * <b>Type</b>: string ("Fixed" or "Dynamic")<br>
+     * <b>Visible</b>: boolean<br>
+     * 
+     * @return {string} 
+     * 
+     * @example
+     * const menuCommands = JSON.parse(fb.EnumerateMainMenuCommands());
+     * 
+     * // list all checked commands in the console
+     * menuCommands
+     *     .filter(command => command.Checked)
+     *     .forEach(({ FullPath }) => console.log(FullPath));
+     */
+    EnumerateMainMenuCommands: function () { }, 
+
+    /**
+     * Returns array of active DSPs names.
+     * 
+     * @return {Array<string>} 
+     */
+    GetActiveDSPs: function () { }, 
+    
+    /**
      * @param {number} requested_length 
      * @param {number=} [offset=0] 
      * @return {FbAudioChunk}
@@ -653,6 +691,13 @@ let fb = {
     IsLibraryEnabled: function () { }, // (boolean)
 
     /**
+     * Returns true if the library has already been initialized by this time
+     * 
+     * @return {boolean}
+     */
+    IsLibraryInitialised: function () { }, // (boolean)
+    
+    /**
      * Performance note: don't use in `on_paint`.
      *
      * @param {string} command Path to main menu item
@@ -811,6 +856,11 @@ let fb = {
     ShowPictureViewer(image_path) { }, // (void)
 
     /**
+     * Opens the "Playlist Search" window
+     */
+    ShowPlaylistSearchUI: function () { }, // (void)
+
+    /**
      * @param {string} message
      * @param {string=} [title='JSplitter']
      */
@@ -960,7 +1010,27 @@ let gdi = {
      *
      * @sourceFile ../../component/samples/basic/LoadImageAsyncV2.js
      */
-    LoadImageAsyncV2: function (window_id, path) { }
+    LoadImageAsyncV2: function (window_id, path) { },
+
+    /**
+     * Loads rasterized image from SVG file or XML string
+     *
+     * @param {string} path_or_xml string containing SVG file path or raw XML
+     * @param {number=} [max_width=0] If specified rasterizes with width = max_width and height according to the proportions, otherwise uses "width" and "height" attributes in SVG header if exist
+     * @return {GdiBitmap?} Rasterized bitmap, null in case of error
+     * 
+     * @example
+     * const svg_file = fb.ComponentPath + 'samples\\svg\\android.svg';
+     * 
+     * const original = gdi.LoadSVG(svg_file);
+     * const large = gdi.LoadSVG(svg_file, 512); // set optional max_width
+     * 
+     * function on_paint(gr) {
+     *     gr.DrawImage(original, 0, 0, original.Width, original.Height, 0, 0, original.Width, original.Height);
+     *     gr.DrawImage(large, original.Width, 0, large.Width, large.Height, 0, 0, large.Width, large.Height);
+     * }
+     */
+    LoadSVG: function (path_or_xml, max_width) { }
 };
 
 /**
@@ -1885,6 +1955,18 @@ let utils = {
     GetClipboardText: function () { },
 
     /**
+     * Gets string code for display country flag with "Twemoji Mozilla" font<br>
+     * <b>ATTENTION!</b> Country flags are displayed correctly only in Direct2D draw mode; GDI+ does not render "Twemoji Mozilla" color glyphs.
+     * @param {string} country_or_code Case is not important. You can supply the code or full name. A few examples (full list see in file below):<br>
+     * "by" "Belarus"<br>
+     * "gb" "United Kingdom"<br>
+     * "cn" "China"<br>
+     * @return {string} Country string code 
+     * @sourceFile ../../component/docs/countries.json
+     */
+    GetCountryFlag: function (country_or_code) { },
+
+    /**
      * Gets "last modified" attribute for file
      * @param {string} path
      * @return {number} UNIX-time (seconds)
@@ -2515,6 +2597,13 @@ let window = {
     Width: undefined, // (uint) (read)
 
     /**
+     * Clears all current panel properties set by {@link window.SetProperty}
+     *
+     * @param {boolean=} [reloadPanel=false] If true, reloads panel after clearing
+     */
+    ClearProperties: function (reloadPanel) { }, // (void)
+
+    /**
      * See {@link clearTimeout}.
      *
      * @param {number} timerID
@@ -2566,6 +2655,13 @@ let window = {
      * Default text editor can be changed via `Edit` button on the main tab of {@link window.ShowConfigureV2}.
      */
     EditScript: function () { },
+
+    /**
+     * Exports all current panel properties set by {@link window.SetProperty} to file
+     * @param {string} fileName
+     * @return {boolean} If false, then an error occurred during export
+     */
+    ExportProperties: function (fileName) { },
 
     /**
      * @return {MenuObject}
@@ -2635,6 +2731,13 @@ let window = {
     GetFontDUI: function (type) { }, // (GdiFont)
 
     /**
+     * Get all current panel properties set by {@link window.SetProperty} calls<br>
+     *
+     * @return {Map} Map of panel properties
+     */
+    GetProperties: function () { },
+
+    /**
      * Get value of property.<br>
      * If property does not exist and default_val is not undefined and not null,
      * it will be created with the value of default_val.<br>
@@ -2646,6 +2749,13 @@ let window = {
      * @return {*}
      */
     GetProperty: function (name, default_val) { }, // (VARIANT) [, default_val]
+
+    /**
+     * Imports panel properties from file and reloads the script
+     * @param {string} fileName
+     * @return {boolean} If false, then an error occurred during import
+     */
+    ImportProperties: function (fileName) { },
 
     /**
      * This will trigger {@link module:Callbacks.on_notify_data on_notify_data}(name, info) in other panels.<br>
@@ -2666,10 +2776,10 @@ let window = {
     NotifyOthers: function (name, info) { }, // (void)
 
     /**
-     * Reload panel.
-     * @method
+     * Reloads panel.
+     * @param {boolean=} [clearProperties=false] If true, all panel properties will be cleared before reload
      */
-    Reload: function () { }, // (void)
+    Reload: function (clearProperties) { }, // (void)
 
     /**
      * Performance note: don't force the repaint unless it's really necessary -
@@ -3150,28 +3260,62 @@ function FbMetadbHandleList(arg) {
     this.AddRange = function (handle_list) { }; // (void)
 
     /**
-     * Errors such as invalid path, corrupt image, target file type not supporting
-     * embedded art, etc should all silently fail. A progress dialog will be shown for larger file
-     * selections.<br>
-     * Any existing artwork of the specified type will be overwritten - there is no need to remove it first.
+     * Embeds covers of the specified type, loaded from the specified file, into media files<br>
+     * Any existing artwork of the specified type will be overwritten!<br>
+     * Embedding covers is an asynchronous operation, so its result is not controlled here in any way. However, all the work of the method up to this point (reading file, creating art data) will return false in case of an error.
      *
-     * @param {FbMetadbHandleList} image_path path to an existing image
-     * @param {number=} [art_id=0] See {@link module:Flags.AlbumArtId AlbumArtId}
-     *
+     * @param {string} image_path path to an existing image
+     * @param {AlbumArtId=} [art_id=AlbumArtId.front] See {@link module:Flags.AlbumArtId AlbumArtId}
+     * @return {boolean} Returns false if any error occurred before the embedding started, otherwise true
+     * 
      * @example
-     * let handle_list = plman.GetPlaylistItems(plman.ActivePlaylist);
+     * include(`${fb.ComponentPath}docs\\Flags.js`);
+     * 
+     * const handle_list = plman.GetPlaylistItems(plman.ActivePlaylist);
      * if (handle_list.Count > 0) {
-     *    let img_path = 'C:\\path\\to\\image.jpg';
-     *    handle_list.AttachImage(img_path, 0);
+     *    const img_path = 'C:\\path\\to\\image.jpg';
+     *    handle_list.AttachImage(img_path, AlbumArtId.front);
      * }
      *
      * @example
+     * include(`${fb.ComponentPath}docs\\Flags.js`);
+     * 
      * // since there is no handle method, do this for a single item
-     * let handle_list = new FbMetadbHandleList(fb.GetFocusItem());
-     * let img_path = "C:\\path\\to\\image.jpg";
-     * handle_list.AttachImage(img_path, 0);
+     * const handle_list = new FbMetadbHandleList(fb.GetFocusItem());
+     * const img_path = "C:\\path\\to\\image.jpg";
+     * handle_list.AttachImage(img_path, AlbumArtId.front);
      */
-    this.AttachImage = function (image_path, art_id) { }; //(void)
+    this.AttachImage = function (image_path, art_id) { }; //(bool)
+
+    /**
+     * Embeds covers of the specified type from exisiting GdiBitmap or D2DBitmap object. Supports JPEG, WEBP and PNG codecs for encoding image before embedding.<br>
+     * Any existing artwork of the specified type will be overwritten!<br>
+     * Embedding covers is an asynchronous operation, so its result is not controlled here in any way. However, all the work of the method up to this point (encoding, creating art data) will return false in case of an error.
+     * 
+     * @param {GdiBitmap} image image to attach (or D2DBitmap in Direct2D drawing mode)
+     * @param {AlbumArtId=} [art_id=AlbumArtId.front] See {@link module:Flags.AlbumArtId AlbumArtId}
+     * @param {AttachImage2Codec=} [codec=AttachImage2Codec.Jpeg] See {@link module:Flags.AttachImage2Codec AttachImage2Codec}
+     * @param {float=} [quality=70.0] <b>NOTE</b>: For WebP quality 100 means lossless WebP; values below 100 use lossy WebP. For PNG quality is ignored because PNG codec is always lossless. 
+     * @return {boolean} Returns false if any error occurred before the embedding started, otherwise true
+     * 
+     * @example
+     * include(`${fb.ComponentPath}docs\\Flags.js`);
+     * 
+     * const handle_list = plman.GetPlaylistItems(plman.ActivePlaylist);
+     * if (handle_list.Count > 0) {
+     *    const img = gdi.Image("C:\\path\\to\\image.jpg");
+     *    handle_list.AttachImage2(img, AlbumArtId.front, AttachImage2Codec.WebP, 60);
+     * }
+     *
+     * @example
+     * * include(`${fb.ComponentPath}docs\\Flags.js`);
+     * 
+     * // since there is no handle method, do this for a single item
+     * const handle_list = new FbMetadbHandleList(fb.GetFocusItem());
+     * const img = gdi.Image("C:\\path\\to\\image.jpg");
+     * handle_list.AttachImage2(img, AlbumArtId.front, AttachImage2Codec.WebP, 60);
+     */
+    this.AttachImage2 = function (image, art_id, codec, quality) { }; //(bool)
 
     /**
      * Faster than {@link FbMetadbHandleList#Find Find}.
@@ -3234,7 +3378,20 @@ function FbMetadbHandleList(arg) {
      * handle_list.OrderByRelativePath();
      * let relative_paths = handle_list.GetLibraryRelativePaths();
      */
-    this.GetLibraryRelativePaths = function () { }; //(Array)
+    this.GetLibraryRelativePaths = function () { }; // (Array)
+
+    /**
+     * Provides all the information viewable on the Details tab in the main Properties dialog. This can be technical/location info as well as database fields from 3rd party components if present.<br>
+     * This returns a JSON object in string form so you need to use JSON.parse on the result.<br>
+     *
+     * @return {string}
+     *
+     * @example
+     * const handle_list = plman.GetPlaylistItems(plman.ActivePlaylist);
+     * const str = handle_list.GetOtherInfo();
+     * console.log(str);
+     */
+    this.GetOtherInfo = function () { }; // (string)
 
     /**
      * @param {number} index

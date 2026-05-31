@@ -1035,6 +1035,26 @@ let d2d = {
     LoadImageAsyncV2: function (window_id, path) { },
 
     /**
+     * Loads rasterized image from SVG file or XML string
+     *
+     * @param {string} path_or_xml string containing SVG file path or raw XML
+     * @param {number=} [max_width=0] If specified rasterizes with width = max_width and height according to the proportions, otherwise uses "width" and "height" attributes in SVG header if exist
+     * @return {D2DBitmap?} Rasterized bitmap, null in case of error
+     * 
+     * @example
+     * const svg_file = fb.ComponentPath + 'samples\\svg\\android.svg';
+     * 
+     * const original = d2d.LoadSVG(svg_file);
+     * const large = d2d.LoadSVG(svg_file, 512); // set optional max_width
+     * 
+     * function on_paint(gr) {
+     *     gr.DrawImage(original, 0, 0, original.Width, original.Height, 0, 0, original.Width, original.Height);
+     *     gr.DrawImage(large, original.Width, 0, large.Width, large.Height, 0, 0, large.Width, large.Height);
+     * }
+     */
+    LoadSVG: function (path_or_xml, max_width) { },
+
+    /**
      * Creates Direct2D effect.<br>
      * Minimum system requirements: Windows 7 Platform Update (Direct2D 1.1)
      * @param {string} CLSID CLSID of Direct2D effect. See {@link module:Effects Effects} for effects' CLSID.

@@ -1411,6 +1411,20 @@ const DialogResult = {
 };
 
 /**
+ * Image codecs used in {@link FbMetadbHandleList#AttachImage2 AttachImage2}<br>
+ * <b>Jpeg</b>: lossy, maximum compatibility<br>
+ * <b>WebP</b>: WebP lossless if quality = 100, otherwise WebP lossy<br>
+ * <b>Png</b>: always lossless, compatibility-first<br>
+ * @memberof module:Flags
+ * @default
+ */
+const AttachImage2Codec = {
+    Jpeg: 0,
+    WebP: 1,
+    Png: 2
+};
+
+/**
  * SupportColourFlagCUI = {
  *     text: 0x0,
  *     selection_text: 0x2,
