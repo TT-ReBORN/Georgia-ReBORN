@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-05-2026                                              * //
+// * Last change:    31-05-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -214,9 +214,10 @@ async function AWStartFullTrackMetricsSingle(metadb, chunkDuration = 200) {
  * @global
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
  * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
+ * @param {boolean} [downmixToMono] - The optional downmix of all channels are averaged to a single mono channel.
  * @returns {Promise<{success: boolean, tracks?: Array<{index: number, path: string, duration: number, channels: number, waveformData: Array}>}>}
  */
-async function AWStartWaveformAnalysis(metadb, resolution = 1) {
+async function AWStartWaveformAnalysis(metadb, resolution = 1, downmixToMono = false) {
 	if (!AudioWizard || AudioWizard.FullTrackProcessing) {
 		return { success: false };
 	}
@@ -264,7 +265,7 @@ async function AWStartWaveformAnalysis(metadb, resolution = 1) {
 			};
 
 			AudioWizard.SetFullTrackWaveformCallback(onComplete);
-			AudioWizard.StartWaveformAnalysis(metadata, resolution);
+			AudioWizard.StartWaveformAnalysis(metadata, resolution, downmixToMono);
 		});
 	}
 	catch (e) {
@@ -282,8 +283,9 @@ async function AWStartWaveformAnalysis(metadb, resolution = 1) {
  * @param {string} cachePath - The folder where .awz.json files will be stored.
  * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
  * @param {boolean} [prettify] - The optional prettified JSON output format - increases filesize.
+ * @param {boolean} [downmixToMono] - The optional downmix of all channels are averaged to a single mono channel.
  */
-async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, resolution = 1, prettify = false) {
+async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, resolution = 1, prettify = false, downmixToMono = false) {
 	if (!AudioWizard || AudioWizard.FullTrackProcessing) return;
 
 	const handleData = metadb || plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
@@ -292,7 +294,7 @@ async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, resolution =
 
 	console.log(`Audio Wizard => Batch processing ${handleArray.length} tracks...`);
 
-	const result = await AWStartWaveformAnalysis(metadb, resolution);
+	const result = await AWStartWaveformAnalysis(metadb, resolution, downmixToMono);
 	if (!result.success) return;
 
 	const tfArtistTitle = fb.TitleFormat('%artist% - %title%');
