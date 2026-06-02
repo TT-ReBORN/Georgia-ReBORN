@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-05-2026                                              * //
+// * Last change:    02-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -693,6 +693,8 @@ class Details {
 
 		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> band logo');
 
+		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
+
 		const availableSpace = grm.ui.albumArtSize.y + grm.ui.albumArtSize.h - this.gridTop;
 		const logo = grCol.lightBgDetails || grm.ui.noAlbumArtStub ? (this.bandLogoInverted || this.bandLogo) : this.bandLogo;
 
@@ -723,6 +725,8 @@ class Details {
 		}
 
 		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> label logo');
+
+		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
 
 		if (this.labelLogo.length > 0) {
 			const lightBg = grSet.labelArtOnBg ? grCol.lightBgMain : grCol.lightBgDetails;
