@@ -4177,8 +4177,8 @@ class TopMenuOptions {
 				window.Reload();
 			});
 		});
-		debugMenu.addItem('Set clean UI Columns config file', false, () => {
-			const msg = grm.msg.getMessage('menu', 'cleanUIColumnsConfig');
+		debugMenu.addItem('Set defaults to UI Columns config file', false, () => {
+			const msg = grm.msg.getMessage('menu', 'defaultsUIColumnsConfig');
 			grm.msg.showPopup(false, false, msg, 'Yes', 'No', (confirmed) => {
 				if (!confirmed) return;
 

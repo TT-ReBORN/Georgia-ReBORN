@@ -858,12 +858,12 @@ class MessageManager {
 					+ `to ${grSet.asyncThemePreloader ? 'synchronous' : 'asynchronous'}?\n\n`
 					+ 'Continue?\n\n'
 			},
-			cleanUIColumnsConfig: {
-				msg: 'Do you want to factory reset\nUI Columns config file?\n\n'
-					+ 'This will clear all panel properties,\n'
-					+ 'apply the required default settings\n'
-					+ 'and open the configuration folder.\n\n'
-					+ 'The foo_ui_columns.dll.cfg file\nwill be cleaned.\n\n'
+			defaultsUIColumnsConfig: {
+				msg: 'Do you want to factory reset\n'
+					+ 'UI Columns config file?\n\n'
+					+ 'This will apply default settings\n'
+					+ 'to all panel properties.\n\n'
+					+ 'Be sure to clear all panel properties first.\n\n'
 					+ 'Continue?\n\n'
 			},
 		};
