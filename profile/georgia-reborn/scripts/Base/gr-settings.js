@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-05-2026                                              * //
+// * Last change:    02-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1697,6 +1697,15 @@ class ThemeSettingsManager {
 	 * Sets settings not in the config nor in the Options menu.
 	 */
 	setSettingsNotInConfig() {
+		grSet.bgImgArtistIdxPlaylist = 0;
+		grSet.bgImgAlbumIdxPlaylist = 0;
+		grSet.bgImgCustomIdxPlaylist = 0;
+		grSet.bgImgArtistIdxLibrary = 0;
+		grSet.bgImgAlbumIdxLibrary = 0;
+		grSet.bgImgCustomIdxLibrary = 0;
+		grSet.bgImgArtistIdxLyrics = 0;
+		grSet.bgImgAlbumIdxLyrics = 0;
+		grSet.bgImgCustomIdxLyrics = 0;
 		grSet.savedBiographyLayoutFull = false;
 		grSet.savedLibraryAlbumArtLabelType = libSet.albumArtLabelType;
 		grSet.savedLibraryAlbumArtShow = libSet.albumArtShow;
@@ -1706,8 +1715,19 @@ class ThemeSettingsManager {
 		grSet.savedLyricsLayoutFull = false;
 		grSet.savedPlaylistLayoutFull = false;
 		grSet.savedPlaylistHeaderCollapse = false;
+		libSet.isHtmlDialogSupported = 2;
 		libSet.albumArtDropShadow = grSet.libraryThumbnailBorder === 'shadow';
+		libSet.set('Panel Library - Image No Artist Images', null);
+		libSet.set('Panel Library - Image No Cover Images', null);
+		libSet.set('Panel Library - Image Root Images', null);
+		libSet.set('Panel Library - Library Tree Dialog Box', null);
+		libSet.set('Panel Library - Search History', null);
+		bioSet.isHtmlDialogSupported = 2;
+		libSet.set('Panel Biography - Album History', null);
+		libSet.set('Panel Biography - Artist History', null);
 		bioSet.largerSyncLyricLine = grSet.lyricsLargerCurrentSync;
+		libSet.set('Panel Biography - Scroll Position Bio', null);
+		libSet.set('Panel Biography - Scroll Position Rev', null);
 	}
 
 	/**

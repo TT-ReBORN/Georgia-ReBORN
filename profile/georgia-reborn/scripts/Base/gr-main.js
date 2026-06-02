@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-05-2026                                              * //
+// * Last change:    02-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3394,6 +3394,7 @@ class MainUI {
 					libraryLayoutSplitPreset2: false,
 					libraryLayoutSplitPreset3: false,
 					libraryLayoutSplitPreset4: false,
+					libraryMode: 'albumGrid',
 					biographyLayout: 'normal',
 					biographyLayoutFullPreset: true,
 					savedLyricsLayout: 'normal',
@@ -3424,6 +3425,7 @@ class MainUI {
 					styleProgressBarDesign: 'rounded',
 					styleVolumeBarDesign: 'rounded',
 					libraryLayout: 'full',
+					libraryMode: 'albumGrid',
 					biographyLayout: 'full',
 					biographyLayoutFullPreset: false,
 					lyricsLayout: 'full',
@@ -3437,6 +3439,7 @@ class MainUI {
 					presetSelectMode: 'harmonic',
 					presetIndicator: false,
 					libraryLayout: 'full',
+					libraryMode: 'albumGrid',
 					biographyLayout: 'full',
 					lyricsLayout: 'left',
 					savedLyricsLayout: 'left'
@@ -3459,6 +3462,7 @@ class MainUI {
 					libraryLayout: 'split',
 					libraryLayoutSplitPreset: false,
 					libraryLayoutSplitPreset2: true,
+					libraryMode: 'tree',
 					biographyLayout: 'full',
 					lyricsLayout: 'full',
 					savedLyricsLayout: 'full'
@@ -3485,6 +3489,7 @@ class MainUI {
 					styleVolumeBar: 'inner',
 					styleVolumeBarFill: 'inner',
 					libraryLayout: 'full',
+					libraryMode: 'albumGrid',
 					biographyLayout: 'full',
 					lyricsLayout: 'left',
 					savedLyricsLayout: 'left'
@@ -3506,6 +3511,7 @@ class MainUI {
 					styleVolumeBarDesign: 'rounded',
 					styleVolumeBarFill: 'bevel',
 					libraryLayout: 'full',
+					libraryMode: 'albumGrid',
 					biographyLayout: 'full',
 					lyricsLayout: 'left',
 					savedLyricsLayout: 'left'
@@ -3524,6 +3530,7 @@ class MainUI {
 					styleVolumeBar: 'inner',
 					styleVolumeBarFill: 'inner',
 					libraryLayout: 'full',
+					libraryMode: 'albumGrid',
 					biographyLayout: 'full',
 					lyricsLayout: 'left',
 					savedLyricsLayout: 'left'

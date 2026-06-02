@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    31-05-2026                                              * //
+// * Last change:    02-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -853,22 +853,17 @@ class MessageManager {
 					+ 'unattended for a longer period of time.\n\n'
 					+ 'Continue?\n\n'
 			},
-			systemFirstLaunch: {
-				msg: 'Do you really want to set system to first launch?\n\n'
-					+ 'Continue?\n\n'
-			},
 			asyncThemePreloader: {
 				msg: `Do you really want to set the script preloader\n`
 					+ `to ${grSet.asyncThemePreloader ? 'synchronous' : 'asynchronous'}?\n\n`
 					+ 'Continue?\n\n'
 			},
 			cleanUIColumnsConfig: {
-				msg: 'Do you want to create a clean UI Columns config file?\n\n'
+				msg: 'Do you want to factory reset\nUI Columns config file?\n\n'
 					+ 'This will clear all panel properties,\n'
 					+ 'apply the required default settings\n'
 					+ 'and open the configuration folder.\n\n'
-					+ 'foobar2000 will exit afterwards\n'
-					+ 'to flush the updated foo_ui_columns.dll.cfg file.\n\n'
+					+ 'The foo_ui_columns.dll.cfg file\nwill be cleaned.\n\n'
 					+ 'Continue?\n\n'
 			},
 		};
