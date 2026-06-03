@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    28-05-2026                                              * //
+// * Last change:    03-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -6084,7 +6084,7 @@ class LibExplorerData {
 	 */
 	getHandlesArtists(artistNames) {
 		const escaped = artistNames.map(name => lib.ex.utils.escapeForQuery(name));
-		const query = escaped.map(n => `${this.TF.album_artist} IS "${n}"`).join(' OR ');
+		const query = escaped.map(n => `"${this.TF.album_artist}" IS "${n}"`).join(' OR ');
 		return fb.GetQueryItems(fb.GetLibraryItems(), query);
 	}
 
