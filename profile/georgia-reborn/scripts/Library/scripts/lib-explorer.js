@@ -2146,7 +2146,7 @@ class LibExplorerAlbumView {
 
 				// Rating
 				if (track.rating > 0) {
-					lib.ex.main.drawRatingStars(g, track.rating, lib.ex.main.font.rebornSymbols, leftOffset + this.trackRatingX, relY + HD_4K(1, 3), this.trackHeight, SCALE(-2), false);
+					lib.ex.main.drawRatingStars(g, track.rating, lib.ex.main.font.rebornSymbols, leftOffset + this.trackRatingX, relY, this.trackHeight, SCALE(-2), false);
 				}
 
 				// Track title and duration
