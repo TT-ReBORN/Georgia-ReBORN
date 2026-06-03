@@ -145,6 +145,10 @@ class LibCallbacks {
 	}
 
 	on_metadb_changed(handleList, isDatabase) {
+		if (lib.ex.main.state.visible) {
+			lib.ex.calls.on_metadb_changed(handleList, isDatabase);
+		}
+
 		if (isDatabase && !lib.panel.statistics || lib.lib.list.Count != lib.lib.libNode.length) return;
 		if (libSet.fixedPlaylist || !libSet.libSource) {
 			handleList.Convert().some(h => {
@@ -156,7 +160,6 @@ class LibCallbacks {
 				return true;
 			});
 		}
-		lib.ex.calls.on_metadb_changed(handleList);
 	}
 
 	on_mouse_lbtn_dblclk(x, y) {

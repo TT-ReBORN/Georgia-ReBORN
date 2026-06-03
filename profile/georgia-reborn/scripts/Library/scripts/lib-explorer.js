@@ -9872,7 +9872,7 @@ class LibExplorerCallbacks {
 
 		if (needsUpdate) {
 			lib.ex.data.setHeaderMeta(false);
-			lib.ex.data.setAlbumMeta(handleList);
+			if (!fromhook) lib.ex.data.setAlbumMeta(lib.ex.data.getHandlesForAllTracks());
 			lib.ex.main.setMetrics();
 			lib.ex.utils.repaintColumn();
 		}

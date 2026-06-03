@@ -349,7 +349,7 @@ let libProperties = [
 	['Panel Library - Statistics Titleformat Date', '[$year(%date%)]', 'tfDate'],
 	['Panel Library - Statistics Titleformat First Played', '[$date(%first_played%)]', 'tfFirstPlayed'],
 	['Panel Library - Statistics Titleformat Last Played', '[$date(%last_played%)]', 'tfLastPlayed'],
-	['Panel Library - Statistics Titleformat Playcount DataPinningScheme|Field', '%artist%%album%%discnumber%%tracknumber%%title%|%play_count%', 'tfPc'],
+	['Panel Library - Statistics Titleformat Playcount DataPinningScheme|Field', '%path%|%play_count%', 'tfPc'],
 	['Panel Library - Statistics Titleformat Rating', '[%rating%]', 'tfRating'],
 	['Panel Library - Statistics Titleformat Popularity', '[$meta(Track Statistics Last.fm,5[score])]', 'tfPopularity'],
 	['Panel Library - Statistics Tooltips Show', true, 'tooltipStatistics'],
