@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    04-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1312,7 +1312,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			}
 
 			try { // Prevent crash if album art is corrupt, file format is not supported or has an unusual ICC profile embedded
-				this.art = image.Resize(art_w, art_h);
+				this.art = image.Resize(art_w, art_h, InterpolationMode.HighQualityBicubic);
 			} catch (e) {
 				console.log('\n>>> Error => assign_art: Album art in Playlist could not be scaled!\n>>> Maybe it is corrupt, file format is not supported or has an unusual ICC profile embedded.\n');
 			}
