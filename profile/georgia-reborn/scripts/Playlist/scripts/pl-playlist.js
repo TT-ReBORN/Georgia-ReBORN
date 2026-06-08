@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    08-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -519,7 +519,6 @@ class Playlist extends BaseList {
 
 	/**
 	 * Initializes and updates the scrollbar if it is visible.
-	 * Used to update scrollbar colors.
 	 */
 	initScrollbar() {
 		if (this.is_scrollbar_visible) {
@@ -900,6 +899,16 @@ class Playlist extends BaseList {
 			item.clearCachedHeaderImg();
 		}
 		pl.cache_header = true;
+	}
+
+	/**
+	 * Updates only the scrollbar button and thumb colors without any reinitialization.
+	 * For a full reinit (size changes, visibility changes), use initScrollbar() instead.
+	 */
+	updateScrollbarColors() {
+		if (this.is_scrollbar_visible && this.scrollbar) {
+			this.scrollbar.updateColors();
+		}
 	}
 	// #endregion
 

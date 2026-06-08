@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-06-2026                                              * //
+// * Last change:    08-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1731,7 +1731,7 @@ class MainUI {
 
 		if (playlist) {
 			pl.playlist.update_playlist_headers();
-			pl.playlist.initScrollbar();
+			pl.playlist.updateScrollbarColors();
 		}
 
 		if (library) {

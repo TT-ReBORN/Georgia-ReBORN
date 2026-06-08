@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-05-2026                                              * //
+// * Last change:    08-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1567,6 +1567,20 @@ class PlaylistScrollbar {
 		for (const part in this.sb_parts) {
 			this.sb_parts[part].x = x;
 		}
+	}
+
+	/**
+	 * Updates only the scrollbar button and thumb bitmaps.
+	 */
+	updateColors() {
+		if (!this.sb_parts || !this.sb_parts.thumb) return;
+
+		this._create_scrollbar_images();
+		this._create_dynamic_scrollbar_images(this.w, this.thumb_h);
+
+		this.sb_parts.lineUp._assign_imgs(this.scrollbar_images.lineUp);
+		this.sb_parts.lineDown._assign_imgs(this.scrollbar_images.lineDown);
+		this.sb_parts.thumb._assign_imgs(this.scrollbar_images.thumb);
 	}
 	// #endregion
 }
