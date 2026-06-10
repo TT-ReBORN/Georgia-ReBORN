@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    03-06-2026                                              * //
+// * Last change:    10-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -5905,8 +5905,8 @@ class LibExplorerData {
 			disc_header: `$ifgreater(%totaldiscs%,1,[Disc %discnumber% $if(${grTF.disc_subtitle}, ${Unicode.EmDash} ,) ],)[${grTF.disc_subtitle}]`,
 
 			// Categorical
-			genre: '[$meta_sep(genre, · )]',
-			label: '[$if($meta(label),$meta_sep(label, · ),$if3(%publisher%,%discogs_label%,))]',
+			genre: `[$meta_sep(genre, ${Unicode.MiddleDot} )]`,
+			label: `[$if($meta(label),$meta_sep(label, ${Unicode.MiddleDot} ),$if3(%publisher%,%discogs_label%,))]`,
 
 			// Playback stats
 			rating: '%rating%',
