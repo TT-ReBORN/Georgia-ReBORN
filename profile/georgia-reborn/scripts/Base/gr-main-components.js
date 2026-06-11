@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-05-2026                                              * //
+// * Last change:    11-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -290,8 +290,12 @@ class BackgroundImage {
 		// #region ARTIST IMAGES
 		/** @public @type {GdiBitmap|null} The artist background image of the biography. */
 		this.artistBgImg = null;
-		/** @public @type {GdiBitmap[]} The artist list of background images. */
-		this.artistImgList = [];
+		/** @public @type {GdiBitmap[]} The artist list of playlist background images. */
+		this.artistImgListPlaylist = [];
+		/** @public @type {GdiBitmap[]} The artist list of library background images. */
+		this.artistImgListLibrary = [];
+		/** @public @type {GdiBitmap[]} The artist list of lyrics background images. */
+		this.artistImgListLyrics = [];
 		/** @public @type {number} The artist index of the currently displayed background image for the Playlist. */
 		this.artistIdxPlaylist = 0;
 		/** @public @type {number} The artist index of the currently displayed background image for the Library. */
@@ -310,8 +314,12 @@ class BackgroundImage {
 		// #region ALBUM IMAGES
 		/** @public @type {GdiBitmap|null} The album background image. */
 		this.albumBgImg = null;
-		/** @public @type {GdiBitmap[]} The album list of background images. */
-		this.albumImgList = [];
+		/** @public @type {GdiBitmap[]} The album list of playlist background images. */
+		this.albumImgListPlaylist = [];
+		/** @public @type {GdiBitmap[]} The album list of library background images. */
+		this.albumImgListLibrary = [];
+		/** @public @type {GdiBitmap[]} The album list of lyrics background images. */
+		this.albumImgListLyrics = [];
 		/** @public @type {number[]} The album art image index: 0 for Front, 1 for Back, and 4 for Artist. */
 		this.albumArtIdx = [0, 1, 4];
 		/** @public @type {number} The album index of the currently displayed background image for the Playlist. */
@@ -332,8 +340,12 @@ class BackgroundImage {
 		// #region CUSTOM IMAGES
 		/** @public @type {GdiBitmap|null} The custom background image. */
 		this.customBgImg = null;
-		/** @public @type {GdiBitmap[]} The custom list of custom background images. */
-		this.customImgList = [];
+		/** @public @type {GdiBitmap[]} The custom list of playlist custom background images. */
+		this.customImgListPlaylist = [];
+		/** @public @type {GdiBitmap[]} The custom list of library custom background images. */
+		this.customImgListLibrary = [];
+		/** @public @type {GdiBitmap[]} The custom list of lyrics custom background images. */
+		this.customImgListLyrics = [];
 		/** @public @type {number} The custom index of the currently displayed custom background image for the Playlist. */
 		this.customIdxPlaylist = 0;
 		/** @public @type {number} The custom index of the currently displayed custom background image for the Library. */
@@ -428,9 +440,13 @@ class BackgroundImage {
 
 		for (const p of panelToProcess) {
 			this.getBgImage(p).then(img => {
-				this[`${p}BgImg`] = img;
-				this.handleBgImageIndex(p, 'setIndexes');
-				if (displayPanel[p]) window.RepaintRect(...panelSize[p]);
+				if (img && img.image) {
+					this[`${p}BgImg`] = img;
+					this.handleBgImageIndex(p, 'setIndexes');
+				}
+				if (displayPanel[p]) {
+					window.RepaintRect(...panelSize[p]);
+				}
 			});
 		}
 	}
@@ -462,18 +478,15 @@ class BackgroundImage {
 	 * @param {number} direction - The direction to cycle the images (1 for next, -1 for previous).
 	 */
 	cycleBgImage(panel, direction) {
+		if (this.imgFetching[panel]) return;
+
 		const imgKey = this.getBgImageSourceKeys(panel);
 		const imgList = Array.isArray(imgKey.imgList) ? imgKey.imgList : this[imgKey.imgList];
 
 		if (!imgList.length) {
 			this[imgKey.imgIdx] = (this[imgKey.imgIdx] + direction + this.albumArtIdx.length) % this.albumArtIdx.length;
-			const imgIdx = this.albumArtIdx[this[imgKey.imgIdx]];
 			this.handleBgImageIndex(panel, 'setIndexes');
-
-			this.fetchBgImageEmbedded(panel, imgIdx, imgKey.bgImg, imgKey.bgImgIdx).then(() => {
-				this.initBgImage(panel);
-			});
-
+			this.initBgImage(panel);
 			return;
 		}
 
@@ -517,11 +530,15 @@ class BackgroundImage {
 		this.libraryBgImg = null;
 		this.lyricsBgImg = null;
 		this.artistBgImg = null;
-		this.artistImgList = [];
 		this.albumBgImg = null;
-		this.albumImgList = [];
 		this.customBgImg = null;
-		this.customImgList = [];
+
+		for (const panel of ['Playlist', 'Library', 'Lyrics']) {
+			this[`artistImgList${panel}`] = [];
+			this[`albumImgList${panel}`] = [];
+			this[`customImgList${panel}`] = [];
+		}
+
 		grm.debug.debugLog('Main cache => Background image cache cleared');
 	}
 
@@ -573,6 +590,12 @@ class BackgroundImage {
 			return Promise.resolve({ image: null, changed: false });
 		}
 
+		const imgIdxLocal = this.albumArtIdx.includes(imgIdx) ? imgIdx : 0;
+
+		if (this[bgImgIdx] === imgIdxLocal && this[bgImg]) {
+			return Promise.resolve({ image: this[bgImg], changed: false });
+		}
+
 		this.imgFetching[panel] = true;
 
 		try {
@@ -582,7 +605,6 @@ class BackgroundImage {
 				return Promise.resolve({ image: null, changed: false });
 			}
 
-			const imgIdxLocal = this.albumArtIdx.includes(imgIdx) ? imgIdx : 0;
 			const albumArt = utils.GetAlbumArtV2(metadb, imgIdxLocal);
 
 			if (albumArt) {
@@ -651,9 +673,9 @@ class BackgroundImage {
 		const Panel =  CapitalizeString(panel);
 
 		const imgSrcKeys = {
-			artist: { imgType: 'artistArt', imgList: 'artistImgList', imgIdx: `artistIdx${Panel}`, bgImg: 'artistBgImg', bgImgIdx: `artistIdxCached${Panel}` },
-			album:  { imgType: 'albumArt',  imgList: 'albumImgList',  imgIdx: `albumIdx${Panel}`,  bgImg: 'albumBgImg',  bgImgIdx: `albumIdxCached${Panel}`  },
-			custom: { imgType: 'customArt', imgList: 'customImgList', imgIdx: `customIdx${Panel}`, bgImg: 'customBgImg', bgImgIdx: `customIdxCached${Panel}` }
+			artist: { imgType: 'artistArt', imgList: `artistImgList${Panel}`, imgIdx: `artistIdx${Panel}`, bgImg: 'artistBgImg', bgImgIdx: `artistIdxCached${Panel}` },
+			album:  { imgType: 'albumArt',  imgList: `albumImgList${Panel}`,  imgIdx: `albumIdx${Panel}`,  bgImg: 'albumBgImg',  bgImgIdx: `albumIdxCached${Panel}`  },
+			custom: { imgType: 'customArt', imgList: `customImgList${Panel}`, imgIdx: `customIdx${Panel}`, bgImg: 'customBgImg', bgImgIdx: `customIdxCached${Panel}` }
 		};
 
 		return imgSrcKeys[grSet[`${panel}BgImgSource`]];
