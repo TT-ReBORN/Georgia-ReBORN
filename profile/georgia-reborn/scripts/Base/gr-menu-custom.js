@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2145,7 +2145,8 @@ class CustomThemeMenu {
 				{ id: 'bio_text_05', label: 'bio.ui.col.text', value: grCfg.cTheme.bio_ui_col_text },
 				{ id: 'bio_text_06', label: 'bio.ui.col.lyricsNormal', value: grCfg.cTheme.bio_ui_col_lyricsNormal },
 				{ id: 'bio_text_07', label: 'bio.ui.col.lyricsHighlight', value: grCfg.cTheme.bio_ui_col_lyricsHighlight },
-				{ id: 'bio_text_08', label: 'bio.ui.col.noPhotoStubText', value: grCfg.cTheme.bio_ui_col_noPhotoStubText }
+				{ id: 'bio_text_08', label: 'bio.ui.col.lyricsShadow', value: grCfg.cTheme.bio_ui_col_lyricsShadow },
+				{ id: 'bio_text_09', label: 'bio.ui.col.noPhotoStubText', value: grCfg.cTheme.bio_ui_col_noPhotoStubText }
 			],
 			bio_misc: [
 				{ id: 'bio_misc_01', label: 'bio.ui.col.bottomLine', value: grCfg.cTheme.bio_ui_col_bottomLine },
@@ -2495,7 +2496,8 @@ class CustomThemeMenu {
 			bio_text_05: 'bio_ui_col_text',
 			bio_text_06: 'bio_ui_col_lyricsNormal',
 			bio_text_07: 'bio_ui_col_lyricsHighlight',
-			bio_text_08: 'bio_ui_col_noPhotoStubText',
+			bio_text_08: 'bio_ui_col_lyricsShadow',
+			bio_text_09: 'bio_ui_col_noPhotoStubText',
 			// * BIOGRAPHY - MISC * //
 			bio_misc_01: 'bio_ui_col_bottomLine',
 			bio_misc_02: 'bio_ui_col_centerLine',

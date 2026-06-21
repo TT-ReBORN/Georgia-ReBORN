@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    27-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -108,6 +108,7 @@ class ConfigDefaults {
 			albumArt: `!${Regex.ArtDiscArtFilename}`,
 			playlistBgAlbumArt: `!${Regex.ArtDiscArtFilename}`,
 			libraryBgAlbumArt: `!${Regex.ArtDiscArtFilename}`,
+			biographyBgAlbumArt: `!${Regex.ArtDiscArtFilename}`,
 			lyricsBgAlbumArt: `!${Regex.ArtDiscArtFilename}`
 		};
 
@@ -116,6 +117,7 @@ class ConfigDefaults {
 			albumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist)\\.(jpg|png)$/i" from album art.',
 			playlistBgAlbumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist)\\.(jpg|png)$/i" from playlist background album art.',
 			libraryBgAlbumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist|cover)\\.(jpg|png)$/i" from library background album art.',
+			biographyBgAlbumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist|cover)\\.(jpg|png)$/i" from biography background album art.',
 			lyricsBgAlbumArt: 'Artwork images will be excluded "!/(cd|disc|vinyl)([0-9]*|[a-h])\\.(png|jpg)/i" or included "/(artist|cover|folder)\\.(jpg|png)$/i" from lyrics background album art.'
 		};
 
@@ -125,7 +127,7 @@ class ConfigDefaults {
 			'* ARTWORK PATTERNS:                                                                                                                                                                                     ' +
 			'* You can use regular expression patterns to exclude specific artwork images, or use the include pattern to only show specific artwork images.                                                          ' +
 			'* The "albumArt" pattern handles the left large album art display when using Options > Player controls > Album art > Filter album art images.                                                           ' +
-			'* The "playlistBgAlbumArt", "libraryBgAlbumArt", and "lyricsBgAlbumArt" patterns handle the background image album art.                                                                                 ' +
+			'* The "playlistBgAlbumArt", "libraryBgAlbumArt","biographyBgAlbumArt", and "lyricsBgAlbumArt" patterns handle the background image album art.                                                           ' +
 			'* Adjust the patterns as needed to match the naming conventions of your artwork files.                                                                                                                  ' +
 			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file.                                                         ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
@@ -224,12 +226,12 @@ class ConfigDefaults {
 		// #region DESIGN
 		/** @public @type {object} Options > Design settings with default value. */
 		this.designDefaults = {
-			design: 'modern'
+			design: 'reborn'
 		};
 
 		/** @public @type {object} Options > Theme settings config name description. */
 		this.designComments = {
-			design: 'Values: "default", "clean", "modern",  - Options > Design'
+			design: 'Values: "default", "clean", "harmonic", "minimal", "modern_black", "modern_white", "modern_day_night", "reborn" - Options > Design'
 		};
 
 		/** @public @type {object} Options > Design settings config header description. */
@@ -237,7 +239,7 @@ class ConfigDefaults {
 			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
 			'* DESIGN:                                                                                                                                                                                               ' +
 			'* Top menu Options > Design                                                                                                                                                                             ' +
-			'* You can set and select between the 2 available pre-defined designs that will be used.                                                                                                                 ' +
+			'* You can set and select between the 7 available pre-defined designs that will be used.                                                                                                                 ' +
 			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
@@ -520,6 +522,104 @@ class ConfigDefaults {
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
 
+		// * COLOR * //
+		// #region COLOR
+		/** @public @type {object} Options > Color settings with default value. */
+		this.themeColorDefaults = {
+			albumArtColorExtraction: 1,
+			albumArtColorPalette: 'auto',
+			albumArtColorSaturation: 100,
+			albumArtColorSaturationEyeNightCor: true,
+			albumArtColorSaturationEyeSchedule: '0-24',
+			chameleon: true,
+			chameleonMode: 'full',
+			chameleonCycleColor: 'all',
+			chameleonCycleTime: 30,
+			chameleonDuration: 400,
+			chameleonEasing: 'smootherStep',
+			chameleonRefreshRate: 33,
+			chameleonBitmapUpdateRate: 15
+		};
+
+		/** @public @type {object} Options > Color settings config name description. */
+		this.themeColorComments = {
+			albumArtColorExtraction: 'Values: 0, 1 - Options > Color > Album art > Extraction',
+			albumArtColorPalette: 'Values: "auto", "monochromatic", "analogous", "splitComplementary", "complementary", "triadic", "tetradic", "distinct", "random" - Options > Color > Album art > Palette',
+			albumArtColorSaturation: 'Values: "auto", 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0 - Options > Color > Album art > Saturation > Auto (eye protection mode)',
+			albumArtColorSaturationEyeNightCor: 'Values: true, false - Options > Color > Album art > Saturation > Extra correction at night',
+			albumArtColorSaturationEyeSchedule: 'Values: "0-24" (always active), or a time range like "20-8" (active 8 PM-8 AM) - Options > Color > Album art > Saturation > Set eye protection custom time range',
+			chameleon: 'Values: true, false - Options > Color > Chameleon > Enable chameleon',
+			chameleonMode: 'Values: "full", "newAlbumOnly", - Options > Color > Chameleon > Mode',
+			chameleonCycleColor: 'Values: "all", "monochromatic", "analogous", "splitComplementary", "complementary", "triadic", "tetradic", "distinct", "random" - Options > Color > Chameleon > Cycle color',
+			chameleonCycleTime: 'Values: 5, 10, 15, 20, 30, 45, 60, 120 - Options > Color > Chameleon > Cycle time',
+			chameleonDuration: 'Values: 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Color > Chameleon > Duration',
+			chameleonEasing: 'Values: "linear", "smoothStep", "smootherStep", "easeInOutSine", "easeInOutCubic", "easeOutExpo", "easeInOutExpo", "easeOutBack", "easeInOutElastic" - Options > Color > Chameleon > Easing',
+			chameleonRefreshRate: 'Values: 50, 40, 33, 22, 20, 17 - Options > Color > Chameleon > Refresh rate',
+			chameleonBitmapUpdateRate: 'Values: 60, 30, 20, 15, 12, 10, 7 - Options > Color > Chameleon > Bitmap update rate'
+		};
+
+		/** @public @type {object} Options > Color settings config header description. */
+		this.themeColorSchema = new ConfigurationObjectSchema('themeColor', ConfigurationObjectType.Object, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* COLOR:                                                                                                                                                                                                ' +
+			'* Top menu Options > Color                                                                                                                                                                              ' +
+			'* You can set and select between various color system settings that will be used.                                                                                                                       ' +
+			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
+
+		// * DISPLAY * //
+		// #region DISPLAY
+		/** @public @type {object} Options > Display settings with default value. */
+		this.themeDisplayDefaults = {
+			resolution: 'HD',
+			scaling: 100,
+			themeBrightness: 'default',
+			themeBrightness_day: 'default',
+			themeBrightness_night: 'default'
+		};
+
+		/** @public @type {object} Options > Display settings config name description. */
+		this.themeDisplayComments = {
+			resolution: 'Values: "4K", "QHD", "HD" - Options > Display',
+			scaling: 'Values: 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 - Options > Display > Scaling',
+			themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Display > Brightness',
+			themeBrightness_day: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Display > Brightness - daytime theme',
+			themeBrightness_night: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Display > Brightness - nighttime theme'
+		};
+
+		/** @public @type {object} Options > Display settings config header description. */
+		this.themeDisplaySchema = new ConfigurationObjectSchema('themeDisplay', ConfigurationObjectType.Object, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* DISPLAY:                                                                                                                                                                                              ' +
+			'* Top menu Options > Display                                                                                                                                                                            ' +
+			'* You can set and select between the 3 available resolution, 11 available scaling and brightness settings that will be used.                                                                            ' +
+			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
+
+		// * LAYOUT * //
+		// #region LAYOUT
+		/** @public @type {object} Options > Layout settings with default value. */
+		this.themeLayoutDefaults = {
+			layout: 'default'
+		};
+
+		/** @public @type {object} Options > Layout settings config name description. */
+		this.themeLayoutComments = {
+			layout: 'Values: "default", "artwork", "compact" - Options > Layout'
+		};
+
+		/** @public @type {object} Options > Layout settings config header description. */
+		this.themeLayoutSchema = new ConfigurationObjectSchema('themeLayout', ConfigurationObjectType.Object, undefined,
+			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
+			'* LAYOUT:                                                                                                                                                                                               ' +
+			'* Top menu Options > Layout                                                                                                                                                                             ' +
+			'* You can set and select between the 3 available layouts that will be used.                                                                                                                             ' +
+			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
+			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
+
 		// * PLAYER SIZE * //
 		// #region PLAYER SIZE
 		/** @public @type {object} Options > Player size settings with default value. */
@@ -550,58 +650,6 @@ class ConfigDefaults {
 			'* PLAYER SIZE:                                                                                                                                                                                          ' +
 			'* Top menu Options > Player size                                                                                                                                                                        ' +
 			'* You can set and select between the 3 available player sizes that will be used.                                                                                                                        ' +
-			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
-			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
-		// #endregion
-
-		// * LAYOUT * //
-		// #region LAYOUT
-		/** @public @type {object} Options > Layout settings with default value. */
-		this.themeLayoutDefaults = {
-			layout: 'default'
-		};
-
-		/** @public @type {object} Options > Layout settings config name description. */
-		this.themeLayoutComments = {
-			layout: 'Values: "default", "artwork", "compact" - Options > Layout'
-		};
-
-		/** @public @type {object} Options > Layout settings config header description. */
-		this.themeLayoutSchema = new ConfigurationObjectSchema('themeLayout', ConfigurationObjectType.Object, undefined,
-			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
-			'* LAYOUT:                                                                                                                                                                                               ' +
-			'* Top menu Options > Layout                                                                                                                                                                             ' +
-			'* You can set and select between the 3 available layouts that will be used.                                                                                                                             ' +
-			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
-			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
-		// #endregion
-
-		// * DISPLAY * //
-		// #region DISPLAY
-		/** @public @type {object} Options > Display settings with default value. */
-		this.themeDisplayDefaults = {
-			resolution: 'HD',
-			scaling: 100,
-			themeBrightness: 'default',
-			themeBrightness_day: 'default',
-			themeBrightness_night: 'default'
-		};
-
-		/** @public @type {object} Options > Display settings config name description. */
-		this.themeDisplayComments = {
-			resolution: 'Values: "4K", "QHD", "HD" - Options > Display',
-			scaling: 'Values: 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 - Options > Display > Scaling',
-			themeBrightness: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness',
-			themeBrightness_day: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - daytime theme',
-			themeBrightness_night: 'Values: -50, -40, -30, -25, -20, -15, -10, -5, "default", 5, 10, 15, 20, 25, 30, 40, 50 - Options > Brightness - nighttime theme'
-		};
-
-		/** @public @type {object} Options > Display settings config header description. */
-		this.themeDisplaySchema = new ConfigurationObjectSchema('themeDisplay', ConfigurationObjectType.Object, undefined,
-			'/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   ' +
-			'* DISPLAY:                                                                                                                                                                                              ' +
-			'* Top menu Options > Display                                                                                                                                                                            ' +
-			'* You can set and select between the 3 available resolution, 11 available scaling and brightness settings that will be used.                                                                            ' +
 			'* Note: This setting will be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                              ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
 		// #endregion
@@ -647,6 +695,8 @@ class ConfigDefaults {
 			libraryFontSize_artwork: HD_QHD_4K(12, 14, 24),
 			biographyFontSize_default: HD_QHD_4K(12, 14, 24),
 			biographyFontSize_artwork: HD_QHD_4K(12, 14, 24),
+			biographyLyricsFontSize_default: HD_QHD_4K(16, 18),
+			biographyLyricsFontSize_artwork: HD_QHD_4K(16, 18),
 			lyricsFontSize_default: HD_QHD_4K(20, 22),
 			lyricsFontSize_artwork: HD_QHD_4K(20, 22),
 			lyricsInfoFontSize_default: HD_QHD_4K(20, 22)
@@ -689,8 +739,10 @@ class ConfigDefaults {
 			playlistFontSize_compact: 'Values: 10, 12, 13, 14, 15, 16, 17, 18 - Options > Font size > Playlist - when Compact layout is active',
 			libraryFontSize_default: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Library - when Default layout is active',
 			libraryFontSize_artwork: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Library - when Artwork layout is active',
-			biographyFontSize_default: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Biography - when Default layout is active',
-			biographyFontSize_artwork: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Biography - when Artwork layout is active',
+			biographyFontSize_default: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Biography > Main - when Default layout is active',
+			biographyFontSize_artwork: 'Values: 8, 10, 11, 12, 13, 14, 16, 18 - Options > Font size > Biography > Main - when Artwork layout is active',
+			biographyLyricsFontSize_default: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Biography > Lyrics - when Default layout is active',
+			biographyLyricsFontSize_artwork: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Biography > Lyrics - when Artwork layout is active',
 			lyricsFontSize_default: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Default layout is active',
 			lyricsFontSize_artwork: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Artwork layout is active',
 			lyricsInfoFontSize_default: 'Values: 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 - Options > Font size > Lyrics - when Default layout is active'
@@ -1066,7 +1118,7 @@ class ConfigDefaults {
 			playlistBgImgSource: 'artist',
 			playlistBgImgAlbumArtFilter: true,
 			playlistBgImgScale: 'filled',
-			playlistBgImgOpacity: 76,
+			playlistBgImgOpacity: 51,
 			playlistBgRowOpacity: 128,
 			playlistBgRowNowPlaying: false,
 			showPlaylistManager_default: true,
@@ -1441,7 +1493,7 @@ class ConfigDefaults {
 			libraryBgImgSource: 'artist',
 			libraryBgImgAlbumArtFilter: true,
 			libraryBgImgScale: 'filled',
-			libraryBgImgOpacity: 76,
+			libraryBgImgOpacity: 51,
 			libraryBgRowOpacity: 128,
 			actionMode: 0,
 			clickAction: 0,
@@ -1658,6 +1710,27 @@ class ConfigDefaults {
 			artistView: true,
 			focus: false,
 			lockBio: false,
+			biographyBgImg: false,
+			biographyBgImgCycle: true,
+			biographyBgImgCycleTime: 15,
+			biographyBgImgSource: 'album',
+			biographyBgImgAlbumArtFilter: true,
+			biographyBgImgScale: 'filled',
+			biographyBgImgOpacity: 51,
+			biographyBgRowOpacity: 128,
+			lyricsScrollEasing: 'easeOutQuad',
+			lyricsDropShadowLevel: 'normal',
+			lyricsFadeScroll: true,
+			lyricsTransparentMask: 0,
+			lyricsLargerCurrentSync: true,
+			lyricsLineSpacing: 24,
+			lyricsSentenceSpacing: 14,
+			lyricsScrollSpeed: 'normal',
+			lyricsScrollAdaptive: true,
+			lyricsScrollRateAvg: 750,
+			lyricsScrollRateMax: 375,
+			lyricsTranslation: true,
+			lyricsTranslationLine: 1,
 			sourceAll: false,
 			classicalMusicMode: false,
 			cycPhotoLocation: 0,
@@ -1701,6 +1774,27 @@ class ConfigDefaults {
 			artistView: 'Values: true, false - Options > Biography > Display',
 			focus: 'Values: true, false - Options > Biography > Display',
 			lockBio: 'Values: true, false - Options > Biography > Source > Text',
+			biographyBgImg: 'Values: true, false - Options > Biography > Background > Show image on background',
+			biographyBgImgCycle: 'Values: true, false - Options > Biography > Background > Cycle images',
+			biographyBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Biography > Background > Cycle time',
+			biographyBgImgSource: 'Values: "artist", "album", "custom" - Options > Biography > Background > Image source',
+			biographyBgImgAlbumArtFilter: 'Values: true, false - Options > Biography > Background > Image source > Filter album art images',
+			biographyBgImgScale: 'Values: "default", "filled", "stretched" - Options > Biography > Background > Image scaling',
+			biographyBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Biography > Background > Image opacity',
+			biographyBgRowOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Biography > Background > Row opacity',
+			lyricsScrollEasing: 'Values: "linear", "smoothStep", "smootherStep", "easeOutSine", "easeOutQuad", "easeOutCubic", "easeOutQuart", "easeInOutSine", "easeInOutQuad", "easeInOutCubic" - Options > Biography > Lyrics > Display > Animation',
+			lyricsDropShadowLevel: 'Values: "none", "small", "normal", "large" - Options > Biography > Lyrics > Display > Show drop shadow',
+			lyricsFadeScroll: 'Values: true, false - Options > Lyrics > Display > Biography > Show fade scroll',
+			lyricsTransparentMask: 'Values: 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 - Options > Biography > Lyrics > Display > Show transparent mask',
+			lyricsLargerCurrentSync: 'Values: true, false - Options > Biography > Lyrics > Display > Larger current sync',
+			lyricsLineSpacing: 'Values: 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60 - Options > Biography > Lyrics > Spacing > Line',
+			lyricsSentenceSpacing: 'Values: 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50 - Options > Biography > Lyrics > Spacing > Sentence',
+			lyricsScrollSpeed: 'Values: "fastest", "fast", "normal", "slow", "slowest" - Options > Biography > Lyrics > Scroll speed',
+			lyricsScrollAdaptive: 'Values: true, false - Options > Biography > Lyrics > Scroll speed > Adaptive scroll speed',
+			lyricsScrollRateAvg: 'Values: false, 300, 500, 750, 1000, 1500 - not in Options, set by lyricsScrollSpeed',
+			lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed',
+			lyricsTranslation: 'Values: true, false - Options > Biography > Lyrics > Translation > Show translation',
+			lyricsTranslationLine: 'Values: 1, 2 - Options > Biography > Lyrics > Translation',
 			sourceAll: 'Values: true, false - Options > Biography > Source > Text > Amalgamate',
 			classicalMusicMode: 'Values: true, false - Options > Biography > Source > Text > Prefer composition (allmusic && wikipedia review)',
 			cycPhotoLocation: 'Values: 0, 1, 2 - Options > Biography > Source > Photo',
@@ -1748,15 +1842,18 @@ class ConfigDefaults {
 			lyricsBgImgSource: 'album',
 			lyricsBgImgAlbumArtFilter: true,
 			lyricsBgImgScale: 'filled',
-			lyricsBgImgOpacity: 76,
-			lyricsDropShadowLevel: 2,
+			lyricsBgImgOpacity: 51,
+			lyricsScrollEasing: 'easeOutQuad',
+			lyricsDropShadowLevel: 'normal',
 			lyricsFadeScroll: true,
+			lyricsTransparentMask: 0,
 			lyricsLargerCurrentSync: true,
 			lyricsRememberPanelState: false,
 			lyricsAutoScrollUnsynced: true,
 			lyricsLineSpacing: 40,
 			lyricsSentenceSpacing: 30,
 			lyricsScrollSpeed: 'normal',
+			lyricsScrollAdaptive: true,
 			lyricsScrollRateAvg: 750,
 			lyricsScrollRateMax: 375,
 			lyricsTranslation: true,
@@ -1773,14 +1870,17 @@ class ConfigDefaults {
 			lyricsBgImgAlbumArtFilter: 'Values: true, false - Options > Lyrics > Background > Image source > Filter album art images',
 			lyricsBgImgScale: 'Values: "default", "filled", "stretched" - Options > Lyrics > Background > Image scaling',
 			lyricsBgImgOpacity: 'Values: 255, 230, 204, 178, 153, 128, 102, 76, 51, 25 - from 100% - 10% - Options > Lyrics > Background > Image opacity',
-			lyricsDropShadowLevel: 'Values: 0, 1, 2, 3 - Options > Lyrics > Display > Show drop shadow',
+			lyricsScrollEasing: 'Values: "linear", "smoothStep", "smootherStep", "easeOutSine", "easeOutQuad", "easeOutCubic", "easeOutQuart", "easeInOutSine", "easeInOutQuad", "easeInOutCubic" - Options > Lyrics > Display > Animation',
+			lyricsDropShadowLevel: 'Values: "none", "small", "normal", "large" - Options > Lyrics > Display > Show drop shadow',
 			lyricsFadeScroll: 'Values: true, false - Options > Lyrics > Display > Show fade scroll',
+			lyricsTransparentMask: 'Values: 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 - Options > Lyrics > Display > Show transparent mask',
 			lyricsLargerCurrentSync: 'Values: true, false - Options > Lyrics > Display > Larger current sync',
 			lyricsRememberPanelState: 'Values: true, false - Options > Lyrics > Display > Remember lyrics panel state',
 			lyricsAutoScrollUnsynced: 'Values: true, false - Options > Lyrics > Display > Auto-scroll unsynced lyrics',
 			lyricsLineSpacing: 'Values: 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60 - Options > Lyrics > Spacing > Line',
 			lyricsSentenceSpacing: 'Values: 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50 - Options > Lyrics > Spacing > Sentence',
 			lyricsScrollSpeed: 'Values: "fastest", "fast", "normal", "slow", "slowest" - Options > Lyrics > Scroll speed',
+			lyricsScrollAdaptive: 'Values: true, false - Options > Lyrics > Scroll speed > Adaptive scroll speed',
 			lyricsScrollRateAvg: 'Values: false, 300, 500, 750, 1000, 1500 - not in Options, set by lyricsScrollSpeed',
 			lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed',
 			lyricsTranslation: 'Values: true, false - Options > Lyrics > Translation > Show translation',
@@ -1799,10 +1899,10 @@ class ConfigDefaults {
 		/** @public @type {array} Lyrics filename defaults. */
 		this.lyricsFilenameDefaults = [
 			'%title%',
-			'%artist% - %title%',
-			'%artist% -%title%',
+			'%album artist% - %title%',
+			'%album artist% -%title%',
 			'%tracknumber% - %title%',
-			'%tracknumber% - %artist% - %title%'
+			'%tracknumber% - %album artist% - %title%'
 		];
 
 		/** @public @type {object} Lyrics filename config header description. */
@@ -1835,8 +1935,8 @@ class ConfigDefaults {
 			customWaveformBarDir: false,
 			waveformBarAutoDelete: false,
 			themePerformance: 'balanced',
-			rendererColors: 1,
-			rendererGraphics: 0,
+
+			rendererMode: 0,
 			devTools: false
 		};
 
@@ -1858,8 +1958,7 @@ class ConfigDefaults {
 			customWaveformBarDir: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Use custom waveform bar directory',
 			waveformBarAutoDelete: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Auto-delete waveform bar cache on startup',
 			themePerformance: 'Values: "lowestQuality", "lowQuality", "balanced", "highQuality", "highestQuality" - Options > Settings > Theme performance',
-			rendererColors: 'Values: 0, 1, - Options > Settings > Renderer > Colors',
-			rendererGraphics: 'Values: 0, 1, - Options > Settings > Renderer > Graphics',
+			rendererMode: 'Values: 0, 1, - Options > Settings > Renderer',
 			devTools: 'Values: true, false - Options > Settings > Developer tools'
 		};
 
@@ -2483,6 +2582,7 @@ class ConfigDefaults {
 			// * MISC COLORS * //
 			bio_ui_col_lyricsNormal: 'd2d2d2',
 			bio_ui_col_lyricsHighlight: 'ebc841',
+			bio_ui_col_lyricsShadow: '000000',
 			bio_ui_col_noPhotoStubBg: '372355',
 			bio_ui_col_noPhotoStubText: '3cfaa0',
 
@@ -2764,6 +2864,7 @@ class ConfigDefaults {
 			// * MISC COLORS * //
 			bio_ui_col_lyricsNormal: 'Biography lyrics normal color',
 			bio_ui_col_lyricsHighlight: 'Biography lyrics highlight color',
+			bio_ui_col_lyricsShadow: 'Biography lyrics shadow color',
 			bio_ui_col_noPhotoStubBg: 'Biography no photo stub background color',
 			bio_ui_col_noPhotoStubText: 'Biography no photo stub text color',
 

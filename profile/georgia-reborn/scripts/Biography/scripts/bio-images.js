@@ -561,10 +561,10 @@ class BioImages {
 			const bImg = !this.themed ? this.blur : this.themed;
 			if (bImg) gr.DrawImage(bImg, bio.ui.x, bio.ui.y, bio.panel.w, bio.panel.h, 0, 0, bImg.Width, bImg.Height);
 		}
-		if (this.get) return this.getImgFallback();
-		if (!bioSet.text_only && this.cur) {
+		if (!bioSet.text_only && this.cur || grm.colorChameleon && grm.colorChameleon.isRunning) {
 			gr.DrawImage(this.cur, this.x - (bioSet.img_only ? SCALE(2) : 0), bioSet.img_only ? grm.ui.topMenuHeight + bio.ui.h * 0.5 - this.cur.Height * 0.5 : grm.ui.topMenuHeight + this.y, this.cur.Width + (bioSet.img_only ? SCALE(4) : 0), this.cur.Height, 0, 0, this.cur.Width, this.cur.Height, 0, this.style.alpha);
 		}
+		else if (this.get) return this.getImgFallback();
 	}
 
 	fadeMask(image, x, y, w, h) {

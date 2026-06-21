@@ -320,7 +320,9 @@ class BioUserInterface {
 		}
 		this.font.boldAdjust = this.font.headingStyle != 1 && this.font.headingStyle != 4 && this.font.headingStyle != 5 ? 1 : 1.5;
 		this.font.main = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.main.Style);
-		this.font.lyrics = gdi.Font(this.font.main.Name, this.font.zoomSize, this.font.lyrics.Style);
+		const bioLyricsZoomSize = grSet.biographyLyricsFontSize_layout != null ? Math.max(Math.round(SCALE(grSet.biographyLyricsFontSize_layout)), 1) : this.font.zoomSize;
+		this.font.lyricsZoomSize = bioLyricsZoomSize;
+		this.font.lyrics = gdi.Font(this.font.main.Name, bioLyricsZoomSize, this.font.lyrics.Style);
 		this.font.heading = gdi.Font(this.font.heading.Name, Math.max(Math.round(this.font.headingBaseSize * bioSet.zoomFont / 100 * (100 + ((bioSet.zoomHead - 100) / this.font.boldAdjust)) / 100), 6), this.font.headingStyle);
 		this.heading.pad = $Bio.clamp(this.heading.pad, -bioSet.gap * 2, this.font.main.Size * 5);
 		this.heading.linePad = $Bio.clamp(this.heading.linePad, -bioSet.gap, this.font.main.Size * 5);
@@ -329,7 +331,8 @@ class BioUserInterface {
 
 		this.font.items.forEach(v => {
 			const style = bioSet[v[0]] < 4 ? bioSet[v[0]] : (bioSet[v[0]] - 4) * 2;
-			this.font[v[1]] = gdi.Font(bioSet[v[0]] < 4 ? this.font.main.Name : 'Segoe UI Semibold', this.font.main.Size, style);
+			const size  = v[1] === 'lyrics' ? this.font.lyricsZoomSize : this.font.main.Size;
+			this.font[v[1]] = gdi.Font(bioSet[v[0]] < 4 ? this.font.main.Name : 'Segoe UI Semibold', size, style);
 		});
 
 		this.font.message = gdi.Font(this.font.main.Name, this.font.main.Size * 1.5, 1);

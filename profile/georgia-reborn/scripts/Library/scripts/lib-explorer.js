@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    10-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4224,10 +4224,11 @@ class LibExplorerColors {
 		// * Save performance where possible
 		if (this.isArtworkPrimaryColorSame()) return;
 
-		// * Compute new primary color
-		this.setArtworkPrimaryColor();
-		this.setStyleBlend();
-		this.setColors();
+		if (!this.setArtworkPrimaryColor()) {
+			this.setStyleBlend();
+			this.setColors();
+		}
+
 		lib.ex.cache.lastArtworkColor = this.primary;
 		lib.ex.cache.lastWasFromArt = !lib.ex.main.isArtworkStub();
 	}
@@ -4255,16 +4256,21 @@ class LibExplorerColors {
 
 			this.primary = color.primary;
 			this.secondary = color.secondary;
+
+			if (grSet.chameleon && !isPlayingAlbumColorSame && color.colorScheme) {
+				grm.colorChameleon.setAlbumArtPaletteColors(color.colorScheme);
+			}
 		}
 
 		// * Save performance where possible
 		if (!this.fullThemeColorChange || this.fullThemeColorChange && !fb.IsPlaying || stub) {
-			return;
+			return false;
 		}
 
 		// * Create new primary color of current viewed artwork image and pass to Georgia-ReBORN main
 		lib.ex.cache.clearCache('color');
 		grm.colorManager.setPrimaryColor(this.primary, this.secondary);
+		return true;
 	}
 
 	/**
@@ -4273,45 +4279,48 @@ class LibExplorerColors {
 	setColors() {
 		if (this.isCustomTheme()) return;
 
+		let primary = (this.isPlayingAlbumColorSame() || grSet.chameleon) ? grCol.primary : this.primary;
 		const stub = lib.ex.main.isArtworkStub();
 
-		// * BACKGROUND * //
-		this.column_bg =
+		const getColumnBgColor = (primary) =>
 			grSet.styleBlackAndWhite ? RGB(30, 30, 30) :
 			grSet.styleBlackAndWhite2 ? RGB(255, 255, 255) :
-			grSet.styleRebornFusionAccent ? TintColor(this.primary, 10) :
+			grSet.styleRebornFusionAccent ? TintColor(primary, 10) :
 			grSet.theme === 'cream' ? RGB(247, 237, 228) :
-			grSet.styleBlend && fb.IsPlaying ? RGBtoRGBA(this.primary, 128) :
-			this.primary;
+			grSet.styleBlend && fb.IsPlaying ? RGBtoRGBA(primary, 128) :
+			primary;
 
+		// * BACKGROUND * //
+		this.column_bg = getColumnBgColor(primary);
 		this.column_bg_light = Color.LUM(this.column_bg) > LUM.Y32;
 
 		// * PRIMARY & ACCENTS * //
 		if (this.fullThemeColorChange) {
-			this.primary = TintColor(this.primary, this.column_bg_light ? 10 : 5);
+			primary = TintColor(primary, this.column_bg_light ? 10 : 5);
+			this.column_bg = getColumnBgColor(primary); // Re-apply the newly tinted primary color
 		}
 		if (grSet.theme === 'random') {
-			this.primary = pl.col.row_nowplaying_bg;
+			primary = pl.col.row_nowplaying_bg;
 		}
 
-		this.accent = this.column_bg_light ? ShadeColor(this.primary, 15) : TintColor(this.primary, 10);
-		this.darkAccent = this.column_bg_light ? ShadeColor(this.primary, 30) : ShadeColor(this.primary, 35);
-		this.darkAccent_50 = ShadeColor(this.primary, 50);
-		this.lightAccent = this.column_bg_light ? ShadeColor(this.primary, 10) : TintColor(this.primary, 20);
-		this.lightAccent_50 = TintColor(this.primary, 50);
+		this.accent = this.column_bg_light ? ShadeColor(primary, 15) : TintColor(primary, 10);
+		this.darkAccent = this.column_bg_light ? ShadeColor(primary, 30) : ShadeColor(primary, 35);
+		this.darkAccent_50 = ShadeColor(primary, 50);
+		this.lightAccent = this.column_bg_light ? ShadeColor(primary, 10) : TintColor(primary, 20);
+		this.lightAccent_50 = TintColor(primary, 50);
 
 		// * COLUMN * //
-		this.column_line = this.column_bg_light ? ShadeColor(this.primary, 20) : TintColor(this.primary, 20);
+		this.column_line = this.column_bg_light ? ShadeColor(primary, 20) : TintColor(primary, 20);
 		this.column_text_normal = this.column_bg_light ? RGB(60, 60, 60) : RGB(230, 230, 230);
 		this.column_text_hovered = this.column_bg_light ? RGB(0, 0, 0) : RGB(255, 255, 255);
 		this.column_text_playing = this.column_text_hovered;
 		this.column_text_selected = this.column_bg_light ? RGB(0, 0, 0) : RGB(255, 255, 255);
 
 		// * GRID - ARTIST VIEW * //
-		this.grid_playing_bg = stub ? TintColor(this.column_bg, 10) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10);
+		this.grid_playing_bg = stub ? TintColor(this.column_bg, 10) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(primary, 10);
 		this.grid_selection_bg = this.grid_playing_bg;
 		this.grid_selection_frame = this.column_line;
-		this.grid_sideMarker = stub ? RGB(120, 120, 120) : this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25);
+		this.grid_sideMarker = stub ? RGB(120, 120, 120) : this.column_bg_light ? TintColor(primary, 30) : TintColor(primary, 25);
 		this.grid_title_normal = this.column_text_normal;
 		this.grid_title_hovered = this.column_text_hovered;
 		this.grid_title_playing = grSet.styleBlackAndWhite ? RGB(0, 0, 0) : this.column_text_playing;
@@ -4319,10 +4328,10 @@ class LibExplorerColors {
 
 		// * TRACK ROWS - ALBUM VIEW * //
 		this.row_stripes_bg = pl.col.row_stripes_bg;
-		this.row_playing_bg = grSet.styleBlackAndWhite ? RGB(230, 230, 230) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(this.primary, 10);
+		this.row_playing_bg = grSet.styleBlackAndWhite ? RGB(230, 230, 230) : grSet.styleBlackAndWhite2 ? lib.ui.col.bg : TintColor(primary, 10);
 		this.row_selection_bg = this.row_playing_bg;
 		this.row_selection_frame = this.column_line;
-		this.row_sideMarker = stub ? RGB(120, 120, 120) : this.column_bg_light ? TintColor(this.primary, 30) : TintColor(this.primary, 25);
+		this.row_sideMarker = stub ? RGB(120, 120, 120) : this.column_bg_light ? TintColor(primary, 30) : TintColor(primary, 25);
 		this.row_title_normal = this.column_text_normal;
 		this.row_title_hovered = this.column_text_hovered;
 		this.row_title_playing = this.column_text_playing;
@@ -4339,11 +4348,11 @@ class LibExplorerColors {
 
 		// * BUTTONS * //
 		this.closeBtn = grSet.styleBlackAndWhite ? RGB(0, 0, 0) : this.column_text_hovered;
-		this.closeBtn_bg = stub ? TintColor(this.column_bg, 10) : this.column_bg_light ? ShadeColor(this.primary, 15) : TintColor(this.primary, 15);
+		this.closeBtn_bg = stub ? TintColor(this.column_bg, 10) : this.column_bg_light ? ShadeColor(primary, 15) : TintColor(primary, 15);
 
 		// * THEME & STYLES ADJUSTMENTS * //
 		if (grSet.styleAlternative || grSet.styleAlternative2) {
-			this.row_selection_bg = this.column_bg_light ? ShadeColor(this.primary, 15) : TintColor(this.primary, 15);
+			this.row_selection_bg = this.column_bg_light ? ShadeColor(primary, 15) : TintColor(primary, 15);
 			if (grSet.styleAlternative) this.column_bg = ShadeColorOKLCH(this.column_bg, 8);
 		}
 		if (grSet.styleRebornFusion || grSet.styleRebornFusion2 || grSet.styleRebornFusionAccent) {
@@ -4383,6 +4392,9 @@ class LibExplorerColors {
 			this.setArtworkColor();
 		}
 		else if (grCol.primary !== grCol.primary_saved) {
+			if (grSet.chameleon) {
+				grm.colorChameleon.restoreNowPlayingPalette();
+			}
 			grm.colorManager.setPrimaryColor(undefined, undefined, true);
 		}
 	}

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -269,7 +269,7 @@ class ArtCache {
 
 
 /**
- * A class that creates background images for the Playlist or Library.
+ * A class that creates background images for the Playlist, Library, Biography or Lyrics.
  */
 class BackgroundImage {
 	/**
@@ -282,80 +282,118 @@ class BackgroundImage {
 		this.playlistBgImg = null;
 		/** @public @type {GdiBitmap|null} The background image used for the Library. */
 		this.libraryBgImg = null;
+		/** @public @type {GdiBitmap|null} The background image used for the Biography. */
+		this.biographyBgImg = null;
 		/** @public @type {GdiBitmap|null} The background image used for the Lyrics. */
 		this.lyricsBgImg = null;
 		// #endregion
 
 		// * ARTIST IMAGES * //
 		// #region ARTIST IMAGES
-		/** @public @type {GdiBitmap|null} The artist background image of the biography. */
-		this.artistBgImg = null;
+		/** @public @type {GdiBitmap|null} The artist background image for the Playlist. */
+		this.artistBgImgPlaylist = null;
+		/** @public @type {GdiBitmap|null} The artist background image for the Library. */
+		this.artistBgImgLibrary = null;
+		/** @public @type {GdiBitmap|null} The artist background image for the Biography. */
+		this.artistBgImgBiography = null;
+		/** @public @type {GdiBitmap|null} The artist background image for the Lyrics. */
+		this.artistBgImgLyrics = null;
 		/** @public @type {GdiBitmap[]} The artist list of playlist background images. */
 		this.artistImgListPlaylist = [];
 		/** @public @type {GdiBitmap[]} The artist list of library background images. */
 		this.artistImgListLibrary = [];
+		/** @public @type {GdiBitmap[]} The artist list of biography background images. */
+		this.artistImgListBiography = [];
 		/** @public @type {GdiBitmap[]} The artist list of lyrics background images. */
 		this.artistImgListLyrics = [];
 		/** @public @type {number} The artist index of the currently displayed background image for the Playlist. */
 		this.artistIdxPlaylist = 0;
 		/** @public @type {number} The artist index of the currently displayed background image for the Library. */
 		this.artistIdxLibrary = 0;
+		/** @public @type {number} The artist index of the currently displayed background image for the Biography. */
+		this.artistIdxBiography = 0;
 		/** @public @type {number} The artist index of the currently displayed background image for the Lyrics. */
 		this.artistIdxLyrics = 0;
 		/** @public @type {number} The artist index of the cached biography artist image for the Playlist. */
 		this.artistIdxCachedPlaylist = -1;
 		/** @public @type {number} The artist index of the cached biography artist image for the Library. */
 		this.artistIdxCachedLibrary = -1;
+		/** @public @type {number} The artist index of the cached biography artist image for the Biography. */
+		this.artistIdxCachedBiography = -1;
 		/** @public @type {number} The artist index of the cached biography artist image for the Lyrics. */
 		this.artistIdxCachedLyrics = -1;
 		// #endregion
 
 		// * ALBUM IMAGES * //
 		// #region ALBUM IMAGES
-		/** @public @type {GdiBitmap|null} The album background image. */
-		this.albumBgImg = null;
+		/** @public @type {GdiBitmap|null} The album background image for the Playlist. */
+		this.albumBgImgPlaylist = null;
+		/** @public @type {GdiBitmap|null} The album background image for the Library. */
+		this.albumBgImgLibrary = null;
+		/** @public @type {GdiBitmap|null} The album background image for the Biography. */
+		this.albumBgImgBiography = null;
+		/** @public @type {GdiBitmap|null} The album background image for the Lyrics. */
+		this.albumBgImgLyrics = null;
 		/** @public @type {GdiBitmap[]} The album list of playlist background images. */
 		this.albumImgListPlaylist = [];
 		/** @public @type {GdiBitmap[]} The album list of library background images. */
 		this.albumImgListLibrary = [];
+		/** @public @type {GdiBitmap[]} The album list of biography background images. */
+		this.albumImgListBiography = [];
 		/** @public @type {GdiBitmap[]} The album list of lyrics background images. */
 		this.albumImgListLyrics = [];
 		/** @public @type {number[]} The album art image index: 0 for Front, 1 for Back, and 4 for Artist. */
-		this.albumArtIdx = [0, 1, 4];
+		this.albumArtIdx = [AlbumArtId.Front, AlbumArtId.Back, AlbumArtId.Artist];
 		/** @public @type {number} The album index of the currently displayed background image for the Playlist. */
 		this.albumIdxPlaylist = 0;
 		/** @public @type {number} The album index of the currently displayed background image for the Library. */
 		this.albumIdxLibrary = 0;
+		/** @public @type {number} The album index of the currently displayed background image for the Biography. */
+		this.albumIdxBiography = 0;
 		/** @public @type {number} The album index of the currently displayed background image for the Lyrics. */
 		this.albumIdxLyrics = 0;
 		/** @public @type {number} The album index of the cached album background image for the Playlist. */
 		this.albumIdxCachedPlaylist = -1;
 		/** @public @type {number} The album index of the cached album background image for the Library. */
 		this.albumIdxCachedLibrary = -1;
+		/** @public @type {number} The album index of the cached album background image for the Biography. */
+		this.albumIdxCachedBiography = -1;
 		/** @public @type {number} The album index of the cached album background image for the Lyrics. */
 		this.albumIdxCachedLyrics = -1;
 		// #endregion
 
 		// * CUSTOM IMAGES * //
 		// #region CUSTOM IMAGES
-		/** @public @type {GdiBitmap|null} The custom background image. */
-		this.customBgImg = null;
+		/** @public @type {GdiBitmap|null} The custom background image for the Playlist. */
+		this.customBgImgPlaylist = null;
+		/** @public @type {GdiBitmap|null} The custom background image for the Library. */
+		this.customBgImgLibrary = null;
+		/** @public @type {GdiBitmap|null} The custom background image for the Biography. */
+		this.customBgImgBiography = null;
+		/** @public @type {GdiBitmap|null} The custom background image for the Lyrics. */
+		this.customBgImgLyrics = null;
 		/** @public @type {GdiBitmap[]} The custom list of playlist custom background images. */
 		this.customImgListPlaylist = [];
 		/** @public @type {GdiBitmap[]} The custom list of library custom background images. */
 		this.customImgListLibrary = [];
+		/** @public @type {GdiBitmap[]} The custom list of biography custom background images. */
+		this.customImgListBiography = [];
 		/** @public @type {GdiBitmap[]} The custom list of lyrics custom background images. */
 		this.customImgListLyrics = [];
 		/** @public @type {number} The custom index of the currently displayed custom background image for the Playlist. */
 		this.customIdxPlaylist = 0;
 		/** @public @type {number} The custom index of the currently displayed custom background image for the Library. */
 		this.customIdxLibrary = 0;
+		/** @public @type {number} The custom index of the currently displayed custom background image for the Biography. */
+		this.customIdxBiography = 0;
 		/** @public @type {number} The custom index of the currently displayed custom background image for the Lyrics. */
 		this.customIdxLyrics = 0;
 		/** @public @type {number} The custom index of the cached custom background image for the Playlist. */
 		this.customIdxCachedPlaylist = -1;
 		/** @public @type {number} The custom index of the cached custom background image for the Library. */
 		this.customIdxCachedLibrary = -1;
+		/** @public @type {number} The custom index of the cached custom background image for the Biography. */
+		this.customIdxCachedBiography = -1;
 		/** @public @type {number} The custom index of the cached custom background image for the Lyrics. */
 		this.customIdxCachedLyrics = -1;
 		// #endregion
@@ -367,17 +405,12 @@ class BackgroundImage {
 		/** @public @type {Object} The background image cycle intervals for the Playlist, Library, and Lyrics. */
 		this.imgCycleIntervals = {};
 		// #endregion
-
-		// * INITIALIZATION * //
-		// #region INITIALIZATION
-		this.initBgImageCycle();
-		// #endregion
 	}
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
-	 * Draws an artist, album or custom image on the Playlist or Library's background.
+	 * Draws an artist, album or custom image on the Playlist, Library, Biography, or Lyrics background.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 * @param {object} img - The image object containing the image and other properties.
 	 * @param {string} scale - The scale mode ("default", "filled" or "stretched") to apply to the image.
@@ -393,23 +426,26 @@ class BackgroundImage {
 	drawBgImage(gr, img, scale, x, y, w, h, opacity, mask, maskOffsetY, maskHeight) {
 		if (!img || !img.image) return;
 
-		if (!img.scaled || img.changed) {
+		if (!img.scaled) {
 			img.scaled = ScaleImage(img.image, scale, x, y, w, h, 0, 0, img.image.Width, img.image.Height);
 		}
 
-		if (mask && (!img.masked || img.changed)) {
+		if (!img.scaled) return;
+
+		if (mask && !img.masked) {
 			img.masked = MaskImage(img.scaled, 0, maskOffsetY, img.scaled.Width, img.scaled.Height - maskHeight);
 		}
 
 		const finalImage = mask ? img.masked : img.scaled;
-		gr.DrawImage(finalImage, x, y, w, h, 0, 0, finalImage.Width, finalImage.Height, 0, opacity);
 
-		img.changed = false;
+		if (finalImage) {
+			gr.DrawImage(finalImage, x, y, w, h, 0, 0, finalImage.Width, finalImage.Height, 0, opacity);
+		}
 	}
 
 	/**
 	 * Initializes the current background image by clearing the relevant caches and fetching a new image based on the source setting.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics', or false for all)  in which the image is being requested.
+	 * @param {string|false} panel - The panel ('playlist', 'library', 'biography, 'lyrics', or false for all)  in which the image is being requested.
 	 * @param {boolean} [clearCache] - Whether to clear the background image cache.
 	 *
 	 * The background image cache should be cleared when:
@@ -418,30 +454,35 @@ class BackgroundImage {
 	 * - The player size changes, requiring a new scaling for the images.
 	 */
 	initBgImage(panel, clearCache) {
-		if (!grSet.playlistBgImg && !grSet.libraryBgImg && !grSet.lyricsBgImg) return;
+		if (clearCache) this.clearBgImageCache(panel);
 
-		if (clearCache) this.clearBgImageCache();
+		if (panel && !grSet[`${panel}BgImg`]) return;
 
 		this.handleBgImageIndex(panel, 'getIndexes');
 
 		const displayPanel = {
-			playlist: grm.ui.displayPlaylist,
-			library: grm.ui.displayLibrary,
-			lyrics: grm.ui.displayLyrics
+			playlist:  grm.ui.displayPlaylist,
+			library:   grm.ui.displayLibrary,
+			biography: grm.ui.displayBiography,
+			lyrics:    grm.ui.displayLyrics
 		};
 
 		const panelSize = {
-			playlist: [pl.playlist.x - SCALE(1), pl.playlist.y - pl.plman.h, pl.playlist.w + SCALE(2), pl.playlist.h + pl.plman.h * 2],
-			library:  [lib.ui.x, lib.ui.y, lib.ui.w, lib.ui.h],
-			lyrics:   [0, grm.ui.topMenuHeight, grm.ui.ww, grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight]
+			playlist:  [pl.playlist.x - SCALE(1), pl.playlist.y - pl.plman.h, pl.playlist.w + SCALE(2), pl.playlist.h + pl.plman.h * 2],
+			library:   [lib.ui.x, lib.ui.y, lib.ui.w, lib.ui.h],
+			biography: [bio.ui.x, bio.ui.y, bio.ui.w, bio.ui.h],
+			lyrics:    [0, grm.ui.topMenuHeight, grm.ui.ww, grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight]
 		};
 
-		const panelToProcess = panel ? [panel] : ['playlist', 'library', 'lyrics'].filter(p => grSet[`${p}BgImg`]);
+		const panelToProcess = panel ? [panel] :
+			['playlist', 'library', 'biography', 'lyrics'].filter(p => grSet[`${p}BgImg`]);
 
 		for (const p of panelToProcess) {
 			this.getBgImage(p).then(img => {
 				if (img && img.image) {
-					this[`${p}BgImg`] = img;
+					if (!this[`${p}BgImg`] || this[`${p}BgImg`].image !== img.image) {
+						this[`${p}BgImg`] = img;
+					}
 					this.handleBgImageIndex(p, 'setIndexes');
 				}
 				if (displayPanel[p]) {
@@ -455,7 +496,7 @@ class BackgroundImage {
 	 * Initializes or clears the cycling of background images.
 	 */
 	initBgImageCycle() {
-		for (const panel of ['playlist', 'library', 'lyrics']) {
+		for (const panel of ['playlist', 'library', 'biography', 'lyrics']) {
 			clearInterval(this.imgCycleIntervals[panel]);
 			this.imgCycleIntervals[panel] = null;
 
@@ -463,7 +504,7 @@ class BackgroundImage {
 			const cycle = grSet[`${panel}BgImgCycle`];
 			const cycleTime = grSet[`${panel}BgImgCycleTime`];
 
-			if (!enabled || !cycle) continue;
+			if (!enabled || !cycle || !cycleTime) continue;
 
 			grm.debug.debugLog(`\n>>> initImage => initImgCycle => Panel: ${CapitalizeString(panel)} - Cycle time: ${cycleTime} seconds <<<\n`);
 			this.imgCycleIntervals[panel] = setInterval(() => {
@@ -474,19 +515,24 @@ class BackgroundImage {
 
 	/**
 	 * Cycles the background image for the specified panel.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics') in which the image should be cycled.
+	 * @param {string} panel - The panel ('playlist', 'library', 'biography', 'lyrics') in which the image should be cycled.
 	 * @param {number} direction - The direction to cycle the images (1 for next, -1 for previous).
 	 */
 	cycleBgImage(panel, direction) {
 		if (this.imgFetching[panel]) return;
 
 		const imgKey = this.getBgImageSourceKeys(panel);
-		const imgList = Array.isArray(imgKey.imgList) ? imgKey.imgList : this[imgKey.imgList];
 
-		if (!imgList.length) {
+		if (!imgKey) return;
+
+		const imgList = this[imgKey.imgList];
+
+		if (!imgList || !imgList.length) {
+			if (imgKey.imgType !== 'albumArt') return;
+
 			this[imgKey.imgIdx] = (this[imgKey.imgIdx] + direction + this.albumArtIdx.length) % this.albumArtIdx.length;
 			this.handleBgImageIndex(panel, 'setIndexes');
-			this.initBgImage(panel);
+			this.initBgImage(panel, true);
 			return;
 		}
 
@@ -502,98 +548,140 @@ class BackgroundImage {
 
 	/**
 	 * Checks if the background image is cached, and updates the relevant properties if it is.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics') in which the image is being requested.
-	 * @param {string|string[]} imgList - The name of the property in `this` that contains the image list, or the image list array itself.
+	 * @param {string} panel - The panel ('playlist', 'library', 'biography', 'lyrics') in which the image is being requested.
+	 * @param {string} imgList - The name of the property in `this` that contains the image list.
 	 * @param {string} imgIdx - The name of the property in `this` that contains the current image index.
 	 * @param {string} bgImg - The name of the property in `this` that contains the cached image.
 	 * @param {string} bgImgIdx - The name of the property in `this` that contains the cached image index.
-	 * @returns {{image: GdiBitmap|null, changed: boolean}} The background image and a flag indicating if it has changed.
+	 * @returns {GdiBitmap|null} The cached background image, or null if not found.
 	 */
 	checkBgImageCache(panel, imgList, imgIdx, bgImg, bgImgIdx) {
-		const imgArray = Array.isArray(imgList) ? imgList : this[imgList];
-		const imgPath = imgArray[this[imgIdx]];
-		const imgCached = grm.artCache.getImage(imgPath);
+		const imgArray = this[imgList];
+		const imgArrayInvalid = !imgArray || !imgArray.length;
+
+		if (imgArrayInvalid) return null;
+
+		const currentIdx = this[imgIdx];
+		const currentIdxInvalid =  !Number.isInteger(currentIdx) || currentIdx < 0 || currentIdx >= imgArray.length;
+
+		if (currentIdxInvalid) return null;
+
+		const imgCached = grm.artCache.getImage(imgArray[currentIdx]);
 
 		if (imgCached) {
 			this[bgImg] = imgCached;
-			this[bgImgIdx] = this[imgIdx];
-			return { image: imgCached, changed: false };
+			this[bgImgIdx] = currentIdx;
+			return imgCached;
 		}
-		return { image: null, changed: true };
+
+		return null;
 	}
 
 	/**
-	 * Clears the background image cache.
+	 * Clears the background image cache. When a panel name is supplied only that panel's
+	 * data is cleared; omitting it (or passing a falsy value) performs a full clear of all panels.
+	 * @param {string} [panel] - The optional panel ('playlist', 'library', 'biography', 'lyrics') to scope the clear to.
 	 */
-	clearBgImageCache() {
-		this.playlistBgImg = null;
-		this.libraryBgImg = null;
-		this.lyricsBgImg = null;
-		this.artistBgImg = null;
-		this.albumBgImg = null;
-		this.customBgImg = null;
+	clearBgImageCache(panel) {
+		if (panel) {
+			const Panel = CapitalizeString(panel);
 
-		for (const panel of ['Playlist', 'Library', 'Lyrics']) {
-			this[`artistImgList${panel}`] = [];
-			this[`albumImgList${panel}`] = [];
-			this[`customImgList${panel}`] = [];
+			this[`${panel}BgImg`]         = null;
+			this[`artistBgImg${Panel}`]   = null;
+			this[`albumBgImg${Panel}`]    = null;
+			this[`customBgImg${Panel}`]   = null;
+			this[`artistImgList${Panel}`] = [];
+			this[`albumImgList${Panel}`]  = [];
+			this[`customImgList${Panel}`] = [];
+			this.imgFetching[panel]       = false;
+
+			this.handleBgImageIndex(panel, 'clearIndexes');
+
+			grm.debug.debugLog(`Main cache => Background image cache cleared for ${Panel}`);
+			return;
 		}
+
+		this.playlistBgImg  = null;
+		this.libraryBgImg   = null;
+		this.biographyBgImg = null;
+		this.lyricsBgImg    = null;
+
+		for (const panel of ['playlist', 'library', 'biography', 'lyrics']) {
+			const Panel = CapitalizeString(panel);
+			this[`artistBgImg${Panel}`]   = null;
+			this[`albumBgImg${Panel}`]    = null;
+			this[`customBgImg${Panel}`]   = null;
+			this[`artistImgList${Panel}`] = [];
+			this[`albumImgList${Panel}`]  = [];
+			this[`customImgList${Panel}`] = [];
+			this.imgFetching[panel]       = false;
+		}
+
+		this.handleBgImageIndex(false, 'clearIndexes');
 
 		grm.debug.debugLog('Main cache => Background image cache cleared');
 	}
 
 	/**
 	 * Fetches a background image, either from cache or asynchronously, and updates the relevant properties.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics') in which the image is being requested.
+	 * @param {string} panel - The panel ('playlist', 'library', 'biography', 'lyrics') in which the image is being requested.
 	 * @param {string|string[]} imgList - The name of the property in `this` that contains the image list, or the image list array itself.
 	 * @param {string} imgIdx - The name of the property in `this` that contains the current image index.
 	 * @param {string} bgImg - The name of the property in `this` that contains the cached image.
 	 * @param {string} bgImgIdx - The name of the property in `this` that contains the cached image index.
-	 * @returns {Promise<{image: GdiBitmap|null, changed: boolean}>} The background image and a flag indicating if it has changed.
+	 * @returns {Promise<{image: GdiBitmap|null}>} The background image object.
 	 */
 	fetchBgImage(panel, imgList, imgIdx, bgImg, bgImgIdx) {
 		if (this.imgFetching[panel]) {
-			return Promise.resolve({ image: null, changed: false });
+			return Promise.resolve({ image: null });
+		}
+
+		const imgArray = Array.isArray(imgList) ? imgList : this[imgList];
+
+		if (!imgArray || !imgArray.length) {
+			return Promise.resolve({ image: null });
 		}
 
 		this.imgFetching[panel] = true;
 
-		const imgArray = Array.isArray(imgList) ? imgList : this[imgList];
-		const imgIdxLocal = (this[imgIdx] >= imgArray.length) ? 0 : this[imgIdx];
+		this[imgIdx] = Number.isInteger(this[imgIdx]) && this[imgIdx] >= 0 && this[imgIdx] < imgArray.length ? this[imgIdx] : 0;
+		const imgIdxLocal = this[imgIdx];
 		const imgPathIdx = imgArray[imgIdxLocal];
 
-		return gdi.LoadImageAsyncV2(window.ID, imgPathIdx)
-			.then(img => {
+		return gdi.LoadImageAsyncV2(window.ID, imgPathIdx).then(img => {
+			if (img) {
 				this[bgImg] = grm.artCache.encache(img, imgPathIdx);
 				this[bgImgIdx] = imgIdxLocal;
-				return { image: img, changed: true };
-			})
-			.catch(error => {
-				console.log(`\n>>> Background Image => fetchBgImage => <Error: Image could not be properly parsed: ${panel}:>\n`, error);
-				return { image: null, changed: false };
-			})
-			.finally(() => {
-				this.imgFetching[panel] = false;
-			});
+				return { image: img };
+			}
+			return { image: null };
+		})
+		.catch(error => {
+			console.log(`\n>>> Background Image => fetchBgImage => <Error: Image could not be properly parsed: ${panel}:>\n`, error);
+			return { image: null };
+		})
+		.finally(() => {
+			this.imgFetching[panel] = false;
+		});
 	}
 
 	/**
 	 * Fetches and caches embedded album art if available.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics') in which the image is being requested.
-	 * @param {string} imgIdx - The name of the property in `this` that contains the current image index.
+	 * @param {string} panel - The panel ('playlist', 'library', 'biography', 'lyrics') in which the image is being requested.
+	 * @param {number} albumArtId - The album art id value.
 	 * @param {string} bgImg - The name of the property in `this` that contains the cached image.
 	 * @param {string} bgImgIdx - The name of the property in `this` that contains the cached image index.
-	 * @returns {Promise<{image: GdiBitmap|null, changed: boolean}>} The embedded album art image and a flag indicating if it has changed.
+	 * @returns {Promise<{image: GdiBitmap|null}>} The embedded album art image object.
 	 */
-	fetchBgImageEmbedded(panel, imgIdx, bgImg, bgImgIdx) {
+	fetchBgImageEmbedded(panel, albumArtId, bgImg, bgImgIdx) {
 		if (this.imgFetching[panel]) {
-			return Promise.resolve({ image: null, changed: false });
+			return Promise.resolve({ image: null });
 		}
 
-		const imgIdxLocal = this.albumArtIdx.includes(imgIdx) ? imgIdx : 0;
+		const imgIdxLocal = this.albumArtIdx.includes(albumArtId) ? albumArtId : AlbumArtId.Front;
 
 		if (this[bgImgIdx] === imgIdxLocal && this[bgImg]) {
-			return Promise.resolve({ image: this[bgImg], changed: false });
+			return Promise.resolve({ image: this[bgImg] });
 		}
 
 		this.imgFetching[panel] = true;
@@ -602,7 +690,7 @@ class BackgroundImage {
 			const metadb = grm.ui.initMetadb();
 
 			if (!metadb) {
-				return Promise.resolve({ image: null, changed: false });
+				return Promise.resolve({ image: null });
 			}
 
 			const albumArt = utils.GetAlbumArtV2(metadb, imgIdxLocal);
@@ -610,14 +698,14 @@ class BackgroundImage {
 			if (albumArt) {
 				this[bgImg] = grm.artCache.encache(albumArt, imgIdxLocal);
 				this[bgImgIdx] = imgIdxLocal;
-				return Promise.resolve({ image: albumArt, changed: true });
+				return Promise.resolve({ image: albumArt });
 			}
 
-			return Promise.resolve({ image: null, changed: false });
+			return Promise.resolve({ image: null });
 		}
-		catch (error) {
-			console.log(`\n>>> Background Image => fetchBgImageEmbedded => <Error: Image could not be properly parsed: ${panel}:>\n`, error);
-			return Promise.resolve({ image: null, changed: false });
+		catch (e) {
+			console.log(`\n>>> Background Image => fetchBgImageEmbedded => <Error: Image could not be properly parsed: ${panel}:>\n`, e);
+			return Promise.resolve({ image: null });
 		}
 		finally {
 			this.imgFetching[panel] = false;
@@ -626,56 +714,83 @@ class BackgroundImage {
 
 	/**
 	 * Gets the background image based on the source setting.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics') in which the image is being requested.
-	 * @returns {{image: GdiBitmap|null, changed: boolean}} The background image and a flag indicating if it has changed.
+	 * @param {string} panel - The panel ('playlist', 'library', 'biography', 'lyrics').
+	 * @returns {Promise<{image: GdiBitmap|null}|null>} The background image object, or null on failure.
 	 */
 	getBgImage(panel) {
-		const { imgType, imgList, imgIdx, bgImg, bgImgIdx } = this.getBgImageSourceKeys(panel);
-		const bgImageFormats = ParseStringToRegExp(grCfg.artworkImageFormats.bgImage);
+		if (this.imgFetching[panel]) {
+			return Promise.resolve({ image: null });
+		}
+
+		const sourceKeys = this.getBgImageSourceKeys(panel);
+
+		if (!sourceKeys) {
+			return Promise.resolve({ image: null });
+		}
+
+		const { imgType, imgList, imgIdx, bgImg, bgImgIdx } = sourceKeys;
+		const bgImageFormatStr = grCfg.artworkImageFormats && grCfg.artworkImageFormats.bgImage;
+		const bgImageFormats = bgImageFormatStr ? ParseStringToRegExp(bgImageFormatStr) : null;
 		const bgImagePattern = this.getBgImagePatterns(panel);
 
-		this[imgList] = grm.ui.getImagePathList(imgType, grm.ui.initMetadb(), bgImagePattern).filter(path => bgImageFormats.test(path));
+		this[imgList] = grm.ui.getImagePathList(
+			imgType, grm.ui.initMetadb(), bgImagePattern).filter(path => bgImageFormats ? bgImageFormats.test(path) : true
+		);
 
-		if (!this[imgList].length) {
-			const embeddedIdx = this.albumArtIdx[this[imgIdx]];
-			return this.fetchBgImageEmbedded(panel, embeddedIdx, bgImg, bgImgIdx);
+		// * No file-system images: try embedded artwork
+		if (!this[imgList].length && (['albumArt', 'artistArt'].includes(imgType))) {
+			const embeddedIdx = imgType === 'artistArt' ? AlbumArtId.Artist :
+				this.albumArtIdx[this[imgIdx] % this.albumArtIdx.length];
+
+			return this.fetchBgImageEmbedded(panel, embeddedIdx, bgImg, bgImgIdx)
+				.then(result => result.image ? result : null);
 		}
 
-		const { image, changed } = this.checkBgImageCache(panel, imgList, imgIdx, bgImg, bgImgIdx);
-		if (image) {
-			return Promise.resolve({ image, changed });
+		// * File-system images found: try cache hit
+		const imgCached = this.checkBgImageCache(panel, imgList, imgIdx, bgImg, bgImgIdx);
+		if (imgCached) {
+			return Promise.resolve({ image: imgCached });
 		}
 
-		return this.fetchBgImage(panel, imgList, imgIdx, bgImg, bgImgIdx);
+		// * Cache miss: load from disk, stub if the load fails
+		return this.fetchBgImage(panel, imgList, imgIdx, bgImg, bgImgIdx)
+			.then(result => result.image ? result : null);
 	}
 
 	/**
 	 * Gets the background image pattern for a given panel type.
-	 * @param {string} panel - The panel type, which can be 'playlist', 'library', or 'lyrics'.
-	 * @returns {RegExp} The pattern for the specified panel type.
+	 * @param {string} panel - The panel type, which can be 'playlist', 'library','biography', 'lyrics'.
+	 * @returns {RegExp|null} The pattern for the specified panel type, or null if not configured.
 	 */
 	getBgImagePatterns(panel) {
-		const bgImagePatterns = {
-			playlist: grSet.playlistBgImgAlbumArtFilter && ParseStringToRegExp(grCfg.artworkPatterns.playlistBgAlbumArt),
-			library: grSet.libraryBgImgAlbumArtFilter && ParseStringToRegExp(grCfg.artworkPatterns.libraryBgAlbumArt),
-			lyrics: grSet.lyricsBgImgAlbumArtFilter && ParseStringToRegExp(grCfg.artworkPatterns.lyricsBgAlbumArt)
+		const patternKeys = {
+			playlist:  'playlistBgAlbumArt',
+			library:   'libraryBgAlbumArt',
+			biography: 'biographyBgAlbumArt',
+			lyrics:    'lyricsBgAlbumArt'
 		};
 
-		return bgImagePatterns[panel];
+		if (!grSet[`${panel}BgImgAlbumArtFilter`] || !patternKeys[panel]) {
+			return null;
+		}
+
+		const str = grCfg.artworkPatterns && grCfg.artworkPatterns[patternKeys[panel]];
+
+		return str ? ParseStringToRegExp(str) : null;
 	}
 
 	/**
 	 * Retrieves the background image source keys based on the specified panel.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics') whose background image source keys are to be retrieved.
-	 * @returns {object} An object containing the image type, list, index, and background image keys.
+	 * @param {string} panel - The panel ('playlist', 'library', 'biography', 'lyrics') whose background image source keys are to be retrieved.
+	 * @returns {object|undefined} An object containing the image type, list, index, and background image keys.
 	 */
 	getBgImageSourceKeys(panel) {
-		const Panel =  CapitalizeString(panel);
+		const Panel = CapitalizeString(panel);
 
 		const imgSrcKeys = {
-			artist: { imgType: 'artistArt', imgList: `artistImgList${Panel}`, imgIdx: `artistIdx${Panel}`, bgImg: 'artistBgImg', bgImgIdx: `artistIdxCached${Panel}` },
-			album:  { imgType: 'albumArt',  imgList: `albumImgList${Panel}`,  imgIdx: `albumIdx${Panel}`,  bgImg: 'albumBgImg',  bgImgIdx: `albumIdxCached${Panel}`  },
-			custom: { imgType: 'customArt', imgList: `customImgList${Panel}`, imgIdx: `customIdx${Panel}`, bgImg: 'customBgImg', bgImgIdx: `customIdxCached${Panel}` }
+			artist: { imgType: 'artistArt', imgList: `artistImgList${Panel}`, imgIdx: `artistIdx${Panel}`, bgImg: `artistBgImg${Panel}`, bgImgIdx: `artistIdxCached${Panel}` },
+			album:  { imgType: 'albumArt',  imgList: `albumImgList${Panel}`,  imgIdx: `albumIdx${Panel}`,  bgImg: `albumBgImg${Panel}`,  bgImgIdx: `albumIdxCached${Panel}`  },
+			custom: { imgType: 'customArt', imgList: `customImgList${Panel}`, imgIdx: `customIdx${Panel}`, bgImg: `customBgImg${Panel}`, bgImgIdx: `customIdxCached${Panel}` }
 		};
 
 		return imgSrcKeys[grSet[`${panel}BgImgSource`]];
@@ -683,16 +798,17 @@ class BackgroundImage {
 
 	/**
 	 * Handles background image indexes for the specified panel.
-	 * @param {string} panel - The panel ('playlist', 'library', 'lyrics', or false for all) whose background image indexes are to be retrieved.
+	 * @param {string|false} panel - The panel ('playlist', 'library', 'biography', 'lyrics', or false for all) whose background image indexes are to be retrieved.
 	 * @param {string} action - The action to perform: 'getIndexes', 'setIndexes', or 'clearIndexes'.
 	 */
 	handleBgImageIndex(panel, action) {
-		const panels = panel ? [panel] : ['playlist', 'library', 'lyrics'];
+		const panels = panel ? [panel] : ['playlist', 'library', 'biography', 'lyrics'];
 
 		const indexFields = {
-			playlist: ['bgImgArtistIdxPlaylist', 'bgImgAlbumIdxPlaylist', 'bgImgCustomIdxPlaylist'],
-			library:  ['bgImgArtistIdxLibrary',  'bgImgAlbumIdxLibrary',  'bgImgCustomIdxLibrary'],
-			lyrics:   ['bgImgArtistIdxLyrics',   'bgImgAlbumIdxLyrics',   'bgImgCustomIdxLyrics']
+			playlist:  ['bgImgArtistIdxPlaylist',  'bgImgAlbumIdxPlaylist',  'bgImgCustomIdxPlaylist'],
+			library:   ['bgImgArtistIdxLibrary',   'bgImgAlbumIdxLibrary',   'bgImgCustomIdxLibrary'],
+			biography: ['bgImgArtistIdxBiography', 'bgImgAlbumIdxBiography', 'bgImgCustomIdxBiography'],
+			lyrics:    ['bgImgArtistIdxLyrics',    'bgImgAlbumIdxLyrics',    'bgImgCustomIdxLyrics']
 		};
 
 		const actions = {
@@ -706,19 +822,22 @@ class BackgroundImage {
 				grSet[albumIdx]  = this[`albumIdx${Panel}`];
 				grSet[customIdx] = this[`customIdx${Panel}`];
 			},
-			clearIndexes: (Panel) => {
-				this[`artistIdx${Panel}`] = 0;
+			clearIndexes: (Panel, artistIdx, albumIdx, customIdx) => {
+				this[`artistIdx${Panel}`]        = 0;
 				this[`artistIdxCached${Panel}`] = -1;
-				this[`albumIdx${Panel}`] = 0;
-				this[`albumIdxCached${Panel}`] = -1;
-				this[`customIdx${Panel}`] = 0;
+				this[`albumIdx${Panel}`]         = 0;
+				this[`albumIdxCached${Panel}`]  = -1;
+				this[`customIdx${Panel}`]        = 0;
 				this[`customIdxCached${Panel}`] = -1;
+				grSet[artistIdx] = 0;
+				grSet[albumIdx]  = 0;
+				grSet[customIdx] = 0;
 			}
 		};
 
-		for (const panel of panels) {
+		for (const p of panels) {
 			if (actions[action]) {
-				actions[action](CapitalizeString(panel), ...indexFields[panel]);
+				actions[action](CapitalizeString(p), ...indexFields[p]);
 			}
 		}
 	}

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -202,6 +202,7 @@ class ColorThemes {
 		// * MISC COLORS * //
 		bio.ui.col.lyricsNormal = theme.bio_ui_col_lyricsNormal;
 		bio.ui.col.lyricsHighlight = theme.bio_ui_col_lyricsHighlight;
+		bio.ui.col.lyricsShadow = theme.bio_ui_col_lyricsShadow;
 		bio.ui.col.noPhotoStubBg = theme.bio_ui_col_noPhotoStubBg;
 		bio.ui.col.noPhotoStubText = theme.bio_ui_col_noPhotoStubText;
 
@@ -550,12 +551,14 @@ class ColorThemes {
 		bio.ui.col.summary = bio.ui.col.text;
 
 		// * POPUP COLORS * //
-		bio.ui.col.popupBg = theme.pl_col_header_nowplaying_bg;
+		bio.ui.col.popupBg = RGBtoRGBA(pl.col.header_nowplaying_bg, 255);
 		bio.ui.col.popupText = getColor(theme.bio_ui_col_popupText, 'text.active');
 
 		// * MISC COLORS * //
+		const lyricsColors = grm.colorManager.getLyricsColors(primary, ctx.isLightBg, staticTheme, theme.bio_ui_col_lyricsShadow);
 		bio.ui.col.lyricsNormal = bio.ui.col.text;
-		bio.ui.col.lyricsHighlight = grCol.lightBgBiography && ColorDistance(RGB(255, 240, 150), bio.ui.col.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
+		bio.ui.col.lyricsHighlight = lyricsColors.lyricsHighlight;
+		bio.ui.col.lyricsShadow = lyricsColors.lyricsShadow;
 		bio.ui.col.noPhotoStubBg = getColor(theme.bio_ui_col_noPhotoStubBg, 'noPhotoStub.bg', 'oklch');
 		bio.ui.col.noPhotoStubText = getColor(theme.bio_ui_col_noPhotoStubText, 'noPhotoStub.text');
 
@@ -589,7 +592,7 @@ class ColorThemes {
 		const mainTheme = RW ? grm.colorPalette.whiteTheme : RB ? grm.colorPalette.blackTheme : theme;
 		const mainBgLum = THEME === 'white' || RW ? LUM.Y90 : RB ? LUM.Y0_5 : staticColor ? Color.LUM(mainTheme.grCol_bg) : colLuminance;
 		const ctxBR = BR ? { ...ctx, forceWB: true } : ctx;
-	
+
 		const getColor = this._getColor(primary, mainBgLum, isStatic, isWB, ctx);
 		const getColorPMWF = isRWOrRB ? this._getColor(primary, mainBgLum, false, false, ctx) : getColor;
 		const getContrastTextColor = (propName, lightBg = grCol.lightBgPrimary) => this._getStaticColor(mainTheme, isStatic, isWB, lightBg)(propName);
@@ -605,9 +608,13 @@ class ColorThemes {
 		grCol.lowerBarTitle  = getColor(mainTheme.grCol_lowerBarTitle,  'lowerBar.text');
 		grCol.lowerBarTime   = getColor(mainTheme.grCol_lowerBarTime,   'lowerBar.text');
 		grCol.lowerBarLength = getColor(mainTheme.grCol_lowerBarLength, 'lowerBar.text');
-		grCol.lyricsNormal = mainTheme.grCol_lyricsNormal;
-		grCol.lyricsHighlight = ctx.isLightBg && ColorDistance(RGB(255, 240, 150), grCol.bg, true) < 200 ? RGB(220, 160, 40) : RGB(255, 240, 150);
-		grCol.lyricsShadow = mainTheme.grCol_lyricsShadow;
+
+		// * LYRICS COLORS * //
+		const lyricsColors = grm.colorManager.getLyricsColors(primary, ctx.isLightBg, staticTheme, mainTheme.grCol_lyricsShadow);
+		const effectiveLyricsLayout = grSet.savedLyricsLayoutFull ? grSet.savedLyricsLayout : grSet.lyricsLayout;
+		grCol.lyricsNormal = staticTheme || grm.ui.displayPlaylist && effectiveLyricsLayout === 'normal' ? mainTheme.grCol_lyricsNormal : grCol.lowerBarTitle;
+		grCol.lyricsHighlight = lyricsColors.lyricsHighlight;
+		grCol.lyricsShadow = lyricsColors.lyricsShadow;
 
 		// * DETAILS COLORS * //
 		grCol.detailsBg = staticTheme || BR ? mainTheme.grCol_detailsBg : (RF2 ? grCol.secondary : grCol.primary);
@@ -681,6 +688,7 @@ class ColorThemes {
 		grCol.styleVolumeBar = grm.colorSystem.applyColor(RGB(0, 0, 0), colLuminance, 'rgb', 'volumeBar.styleBg', ctx);
 		grCol.styleVolumeBarFill = grm.colorSystem.applyColor(RGB(0, 0, 0), colLuminance, 'oklch', 'shadow.fill', ctx);
 
+		// * STYLE COLORS * //
 		grCol.styleBevel       = BR ? grm.colorSystem.applyColor(primary, mainBgLum, 'oklch', 'style.bevel', ctx) : getColor(staticColor ? mainTheme.grCol_styleBevel : primary, 'style.bevel', 'oklch');
 		grCol.styleGradient    = staticColorOrBR && !RB ? mainTheme.grCol_styleGradient  : getColor(primary, RB ? 'style.gradientRebornBlack' : 'style.gradient', 'oklch', true);
 		grCol.styleGradient2   = staticColorOrBR && !RB ? mainTheme.grCol_styleGradient2 : getColor(primary, RB ? 'style.gradientRebornBlack' : 'style.gradient', 'oklch', true);

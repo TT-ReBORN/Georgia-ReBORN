@@ -401,6 +401,7 @@ class BioText {
 					if (v.sectionHeading) j = 0;
 					v.align = v.property ? (bioSet.rowStripes ? this.lc : this.lp) : !(this.reader.rev.txtLyrics || this.rev.loaded.txt && this.reader.rev.nowplaying && bioSet.hCenter) || bioSet.sourceAll ? this.l : this.cc;
 					v.col = v.property && v.sectionHeading ? bio.ui.col.accent : this.rev.subHeading && !i ? bio.ui.col.source : i < this.rev.summaryEnd ? bio.ui.col.summary : bio.ui.col.text;
+					v.colKey = v.property && v.sectionHeading ? 'accent' : this.rev.subHeading && !i ? 'source' : i < this.rev.summaryEnd ? 'summary' : 'text';
 					v.dropShadowLevel = !(this.reader.rev.txtLyrics || this.rev.loaded.txt && this.reader.rev.nowplaying) || bioSet.sourceAll ? false : bioSet.dropShadowLevel;
 					v.dropNegativeShadowLevel = v.dropShadowLevel && v.dropShadowLevel > 1 ? Math.floor(v.dropShadowLevel / 2) : 0;
 					v.font = !this.rev.subHeading || i ? (i < this.rev.summaryEnd ? bio.ui.font.summary : font) : bio.ui.font.subHeadSource;
@@ -431,6 +432,7 @@ class BioText {
 					});
 					if (v.text.startsWith(`!${Unicode.BrokenBar}`)) {
 						v.col = bio.ui.col.track;
+						v.colKey = 'track';
 						v.font = bio.ui.font.subHeadTrack;
 						v.song = true;
 						const songLine = !bioSet.heading ? (bio.panel.style.inclTrackRev != 2 ? true : !ary[0].subHeading) : false;
@@ -674,6 +676,7 @@ class BioText {
 				if (v.sectionHeading) j = 0;
 				v.align = v.property ? (bioSet.rowStripes ? this.lc : this.lp) : !(this.reader.bio.txtLyrics || this.bio.loaded.txt && this.reader.bio.nowplaying && bioSet.hCenter) || bioSet.sourceAll ? this.l : this.cc;
 				v.col = v.property && v.sectionHeading ? bio.ui.col.accent : this.bio.subHeading && !i ? bio.ui.col.source : i < this.bio.summaryEnd ? bio.ui.col.summary : bio.ui.col.text;
+				v.colKey = v.property && v.sectionHeading ? 'accent' : this.bio.subHeading && !i ? 'source' : i < this.bio.summaryEnd ? 'summary' : 'text';
 				v.dropShadowLevel = !(this.reader.bio.txtLyrics || this.bio.loaded.txt && this.reader.bio.nowplaying) || bioSet.sourceAll ? false : bioSet.dropShadowLevel;
 				v.dropNegativeShadowLevel = v.dropShadowLevel && v.dropShadowLevel > 1 ? Math.floor(v.dropShadowLevel / 2) : 0;
 				v.font = !this.bio.subHeading || i ? (i < this.bio.summaryEnd ? bio.ui.font.summary : font) : bio.ui.font.subHeadSource;
@@ -1055,6 +1058,7 @@ class BioText {
 		if (!v.property) return
 		if (bioSet.rowStripes && !v.subHeading && !v.sectionHeading && v.name) {
 			v.rowStripe = j % 2 == 0 ? bio.ui.col.rowStripes /*bio.ui.col.bg3*/ : bio.ui.col.bg2;
+			v.colKeyRowStripes = j % 2 == 0 ? 'rowStripes' : 'bg2';
 			const line_h = bioSet.artistView ? this.line.h.bio : this.line.h.rev;
 			v.h3 = j % 2 == 0 ? line_h - 2 : line_h;
 			v.stripeOffset = j % 2 == 0 ? 1 : 0;
@@ -1830,7 +1834,7 @@ class BioText {
 			bio.timer.clear(bio.timer.lyrics);
 			if (bio.panel.id.lyricsSource) {
 				if (this[n].loaded.txt && this.reader[n].lyrics) {
-					if (!this.reader[n].txtLyrics) bio.lyrics.load(this[n].txt);
+					if (!this.reader[n].txtLyrics) bio.lyrics.loadLyrics(this[n].txt);
 					else this.paint();
 				} else if (fb.IsPlaying && this.artist && (!this.reader.ESLyricSaved || !this.reader.lyrics3Saved)) {
 					if (bioSet.syncTxtReaderLyrics) this.lyricsSave();

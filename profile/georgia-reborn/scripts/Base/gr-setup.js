@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -733,6 +733,7 @@ const grAlias = {
 		this.RF2       = grSet.styleRebornFusion2;
 		this.RF12      = grSet.styleRebornFusion || grSet.styleRebornFusion2;
 		this.RFA       = grSet.styleRebornFusionAccent;
+		this.RN        = grSet.styleRandomNeon;
 		this.RP        = grSet.styleRandomPastel;
 		this.RD        = grSet.styleRandomDark;
 		this.RAC       = grSet.styleRandomAutoColor;

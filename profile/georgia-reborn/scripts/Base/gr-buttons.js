@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    28-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1014,7 +1014,7 @@ class Button {
 		}
 
 		// * Transport Icons
-		g.DrawString(btn.ico, btn.font, btnColor.transportIconColor, 0, 0, w, h, StringFormat(1, 1));
+		g.DrawString(btn.ico, btn.font, btnColor.transportIconColor, btn.ico === RebornSymbols.Pause ? -0.5 : 0, 0, w, h, StringFormat(1, 1));
 	}
 
 	/**
@@ -1071,7 +1071,7 @@ class Button {
 				const g = img.GetGraphics();
 
 				g.SetSmoothingMode(SmoothingMode.AntiAlias);
-				if (stylesWithGradients) { // ! Can not use ClearTypeGridFit when main bg has gradients
+				if (stylesWithGradients || grSet.chameleon) { // ! Can not use ClearTypeGridFit when main bg has gradients or chameleon
 					g.SetTextRenderingHint(TextRenderingHint.AntiAliasGridFit);
 				} else {
 					g.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);

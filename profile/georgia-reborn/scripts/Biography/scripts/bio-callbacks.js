@@ -457,7 +457,13 @@ class BioCallbacks {
 
 	on_paint(gr) {
 		if (bio.ui.pss.checkOnSize) on_size();
+
 		bio.ui.draw(gr);
+
+		if (grSet.biographyBgImg && grm.bgImg.biographyBgImg) {
+			grm.bgImg.drawBgImage(gr, grm.bgImg.biographyBgImg, grSet.biographyBgImgScale, this.x, this.y, this.w, this.h, grSet.biographyBgImgOpacity, false, 0, 0);
+		}
+
 		if (!bioSet.panelActive) {
 			bio.panel.draw(gr);
 			return;
@@ -465,7 +471,7 @@ class BioCallbacks {
 		bio.img.draw(gr);
 		bio.seeker.draw(gr);
 		bio.txt.draw(gr);
-		if (bio.panel.id.lyricsSource) bio.lyrics.draw(gr);
+		if (bio.panel.id.lyricsSource) bio.lyrics.drawLyrics(gr);
 		bio.filmStrip.draw(gr);
 		bio.but.draw(gr);
 		// if (!grm.ui.displayCustomThemeMenu) bio.resize.drawEd(gr); // Disabled resize overlay, not needed

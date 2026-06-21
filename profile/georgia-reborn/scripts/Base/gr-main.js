@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -680,10 +680,11 @@ class MainUI {
 		}
 
 		// * Drawing
+		const colorLyricsInfoOverlay = RGB(255, 255, 255);
 		const ratingX = Math.round(textX + (textMaxWidth - starsTotalW) * 0.5);
 		for (const { str, font, rating } of textElements) {
-			textY = DrawMultilineString(gr, str, font, grCol.lyricsNormal, textX, textY, textMaxWidth, textPadding, StringFormat(1, 1));
-			this.drawRatingStars(gr, rating, grFont.lyricsStars, ratingX, textY + textPadding, starSize, textPadding);
+			textY = DrawMultilineString(gr, str, font, colorLyricsInfoOverlay, textX, textY, textMaxWidth, textPadding, StringFormat(1, 1));
+			this.drawRatingStars(gr, rating, grFont.lyricsStars, colorLyricsInfoOverlay, grCol.detailsRating, ratingX, textY + textPadding, starSize, textPadding);
 			textY += starSize * 2 + textPadding * 2;
 		}
 	}
@@ -693,12 +694,14 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object used for drawing.
 	 * @param {number} rating - The current rating (0 to 5), which can be fractional.
 	 * @param {GdiFont} font - The font object used for drawing the stars.
+	 * @param {number} colorEmptyStars - The color for empty stars.
+	 * @param {number} colorFullStars - The color for full stars.
 	 * @param {number} x - The x-coordinate where the rating starts.
 	 * @param {number} y - The y-coordinate where the rating starts.
 	 * @param {number} starSize - The size of each star.
 	 * @param {number} textPadding - The padding between stars.
 	 */
-	drawRatingStars(gr, rating, font, x, y, starSize, textPadding) {
+	drawRatingStars(gr, rating, font, colorEmptyStars, colorFullStars, x, y, starSize, textPadding) {
 		const starPadding = starSize + textPadding;
 		const starFull = Math.floor(rating);
 		const starFractional = rating % 1;
@@ -715,7 +718,7 @@ class MainUI {
 
 		for (let i = 0; i < 5; i++) {
 			const star = getStarType(i);
-			const color = (i < rating) ? grCol.detailsRating : grCol.lyricsNormal;
+			const color = (i < rating) ? colorFullStars : colorEmptyStars;
 			const calcX = x + i * starPadding;
 			gr.DrawString(star, font, RGB(0, 0, 0), calcX, y, starSize, starSize, StringFormat(1, 1));
 			gr.DrawString(star, font, color, calcX, y, starSize, starSize, StringFormat(1, 1));
@@ -1676,10 +1679,19 @@ class MainUI {
 			await WaitUntil(() => !this.discArt); // Wait until disc art loaded
 		}
 
-		// * Hide loading screen
-		grm.debug.debugLog('\n>>> initTheme => initMain <<<\n');
+		// * Init colors
 		this.initThemeFull = true;
 		this.initTheme();
+		grm.debug.debugLog('\n>>> initTheme => initMain <<<\n');
+
+		// * Init background images
+		grm.bgImg.initBgImage();
+		grm.bgImg.initBgImageCycle();
+
+		// * Init chameleon cycle
+		grm.colorChameleon.initChameleonCycle();
+
+		// * Hide loading screen
 		this.loadingThemeComplete = true;
 	}
 
@@ -1692,6 +1704,7 @@ class MainUI {
 		// * SETUP COLORS * //
 		grAlias.update();
 		grm.day.initThemeDayNightMain();
+		grm.colorChameleon.beforeColorUpdate();
 		grm.colorManager.generateRandomThemeColor();
 		grm.colorManager.setImageBrightness();
 		grm.colorManager.setImageLuminance();
@@ -1709,6 +1722,7 @@ class MainUI {
 
 		grm.colorManager.adjustThemeBrightness();
 		this.initUIComponents('all');
+		grm.colorChameleon.afterColorUpdate();
 
 		// * REFRESH * //
 		UIWizard.WindowBgColor = grCol.bg;
@@ -1775,12 +1789,18 @@ class MainUI {
 	 * @param {GdiBitmap} artwork - The artwork image.
 	 */
 	initThemeState(artwork) {
-		if (this.hasAutoRandomPresetMode()) {
+		const themeTags = this.hasThemeTags();
+
+		if (!themeTags && this.hasAutoRandomPresetMode()) {
+			if (grSet.presetSelectMode === 'harmonic' && artwork) {
+				grm.colorManager.setAlbumArtThemeColors(artwork, this.cachedAlbumArtColors);
+				grm.colorManager.setBackgroundBrightnessRules();
+				grm.colorManager.setImageLuminance(artwork, this.cachedAlbumArtColors);
+			}
 			this.setRandomThemePreset();
 			return;
 		}
 
-		const themeTags = this.hasThemeTags();
 		const noSpecialAlbumMode = !themeTags
 			&& grSet.presetAutoRandomMode !== 'album'
 			&& grSet.presetSelectMode !== 'harmonic';
@@ -1832,6 +1852,7 @@ class MainUI {
 			'rebornBlack' : () => { grSet.styleRebornBlack = true; },
 			'rebornFusion' : () => { grSet.styleRebornFusion = true; },
 			'rebornFusion2' : () => { grSet.styleRebornFusion2 = true; },
+			'randomNeon' : () => { grSet.styleRandomNeon = true; },
 			'randomPastel' : () => { grSet.styleRandomPastel = true; },
 			'randomDark' : () => { grSet.styleRandomDark = true; },
 			'rebornFusionAccent' : () => { grSet.styleRebornFusionAccent = true; },
@@ -2000,6 +2021,7 @@ class MainUI {
 			grSet.styleRebornFusion,
 			grSet.styleRebornFusion2,
 			grSet.styleRebornFusionAccent,
+			grSet.styleRandomNeon,
 			grSet.styleRandomPastel,
 			grSet.styleRandomDark,
 			grSet.styleTopMenuButtons !== 'default',
@@ -2026,7 +2048,7 @@ class MainUI {
 		await this.initMain();
 		grm.settings.setThemeSettings(false, false, true);
 		grm.display.autoDetectRes();
-		this.setDesign('modern_day_night');
+		this.setDesign('reborn');
 
 		grSet.systemFirstLaunch = false;
 	}
@@ -2317,9 +2339,9 @@ class MainUI {
 	/**
 	 * Handles GR_* theme tag evaluation for the current track.
 	 * Three cases covered:
-	 * - 'newTrack' + art cached (same album) + tags present  → apply tags via initThemeState
-	 * - 'newTrack' + art cached (same album) + no tags + restore pending → restore previous state
-	 * - 'asyncArt' + themeFromTags active → re-color dynamic themes after async art load
+	 * - 'newTrack' + art cached (same album) + tags present = apply tags via initThemeState
+	 * - 'newTrack' + art cached (same album) + no tags + restore pending = restore previous state
+	 * - 'asyncArt' + themeFromTags active = re-color dynamic themes after async art load
 	 * @param {'newTrack'|'asyncArt'} context - The calling context.
 	 */
 	handleThemeTags(context) {
@@ -2604,6 +2626,7 @@ class MainUI {
 				playlist: () => {
 					if (grSet.playlistLayout !== 'full') return;
 					grSet.savedPlaylistLayoutFull = true;
+					grSet.savedLyricsLayout = grSet.lyricsLayout;
 					grSet.playlistLayout = 'normal';
 					this.setPlaylistSize();
 				},
@@ -3188,6 +3211,7 @@ class MainUI {
 			grSet.styleRebornFusion        = false;
 			grSet.styleRebornFusion2       = false;
 			grSet.styleRebornFusionAccent  = false;
+			grSet.styleRandomNeon          = false;
 			grSet.styleRandomPastel        = false;
 			grSet.styleRandomDark          = false;
 		}
@@ -3211,6 +3235,7 @@ class MainUI {
 			grSet.styleRebornFusion        = false;
 			grSet.styleRebornFusion2       = false;
 			grSet.styleRebornFusionAccent  = false;
+			grSet.styleRandomNeon          = false;
 			grSet.styleRandomPastel        = false;
 			grSet.styleRandomDark          = false;
 			grSet.styleRandomAutoColor     = 'off';
@@ -3244,6 +3269,7 @@ class MainUI {
 			grSet[`styleRebornFusion${_day_night}`]        = false;
 			grSet[`styleRebornFusion2${_day_night}`]       = false;
 			grSet[`styleRebornFusionAccent${_day_night}`]  = false;
+			grSet[`styleRandomNeon${_day_night}`]          = false;
 			grSet[`styleRandomPastel${_day_night}`]        = false;
 			grSet[`styleRandomDark${_day_night}`]          = false;
 			grSet[`styleRandomAutoColor${_day_night}`]     = 'off';
@@ -3326,6 +3352,7 @@ class MainUI {
 		_setSetting(grSet, 'styleRebornFusion', 'savedStyleRebornFusion');
 		_setSetting(grSet, 'styleRebornFusion2', 'savedStyleRebornFusion2');
 		_setSetting(grSet, 'styleRebornFusionAccent', 'savedStyleRebornFusionAccent');
+		_setSetting(grSet, 'styleRandomNeon', 'savedStyleRandomNeon');
 		_setSetting(grSet, 'styleRandomPastel', 'savedStyleRandomPastel');
 		_setSetting(grSet, 'styleRandomDark', 'savedStyleRandomDark');
 		_setSetting(grSet, 'styleRandomAutoColor', 'savedStyleRandomAutoColor');
@@ -3348,7 +3375,8 @@ class MainUI {
 
 	/**
 	 * Gets the centralized configuration for all design presets.
-	 * @returns {object} The object containing configuration for each design preset (default, clean, modern_black, modern_white, modern_day_night).
+	 * @returns {object} The object containing configuration for each design preset:
+	 * 'default', 'clean', 'harmonic', 'minimal', 'modern_black', 'modern_white', 'modern_day_night', 'reborn'.
 	 */
 	getDesignPresetConfig() {
 		return {
@@ -3374,6 +3402,7 @@ class MainUI {
 					styleRebornFusion: false,
 					styleRebornFusion2: false,
 					styleRebornFusionAccent: false,
+					styleRandomNeon: false,
 					styleRandomPastel: false,
 					styleRandomDark: false,
 					styleRandomAutoColor: 'off',
@@ -3535,13 +3564,34 @@ class MainUI {
 					lyricsLayout: 'left',
 					savedLyricsLayout: 'left'
 				}
-			}
+			},
+			reborn: {
+				gr: {
+					theme: 'reborn',
+					chameleon: true,
+					styleDefault: false,
+					styleBevel: true,
+					styleTopMenuButtons: 'inner',
+					styleTransportButtons: 'inner',
+					styleProgressBar: 'inner',
+					styleProgressBarDesign: 'rounded',
+					styleProgressBarFill: 'bevel',
+					styleVolumeBar: 'inner',
+					styleVolumeBarDesign: 'rounded',
+					styleVolumeBarFill: 'bevel',
+					libraryLayout: 'full',
+					libraryMode: 'albumGrid',
+					biographyLayout: 'full',
+					lyricsLayout: 'left',
+					savedLyricsLayout: 'left'
+				}
+			},
 		};
 	}
 
 	/**
 	 * Checks which design preset is currently active by comparing current settings with preset configurations.
-	 * @returns {string} The active design preset: 'default', 'clean', 'modern_black', 'modern_white', 'modern_day_night', or 'custom'.
+	 * @returns {string} The active design preset: 'default', 'clean', 'harmonic', 'minimal', 'modern_black', 'modern_white', 'modern_day_night', 'reborn' or 'custom'.
 	 */
 	getDesignPresetState() {
 		if (grSet.presetSelectMode === 'harmonic') {
@@ -3549,7 +3599,7 @@ class MainUI {
 		}
 
 		const config = this.getDesignPresetConfig();
-		const order = ['clean', 'modern_black', 'modern_white', 'modern_day_night', 'harmonic', 'minimal', 'default'];
+		const order = ['default', 'clean', 'harmonic', 'minimal', 'modern_black', 'modern_white', 'modern_day_night', 'reborn'];
 
 		for (const name of order) {
 			const preset = config[name];
@@ -3706,6 +3756,7 @@ class MainUI {
 				styleRebornFusion: 'group_two',
 				styleRebornFusion2: 'group_two',
 				styleRebornFusionAccent: 'group_two',
+				styleRandomNeon: 'group_two',
 				styleRandomPastel: 'group_two',
 				styleRandomDark: 'group_two'
 			};
@@ -3882,7 +3933,7 @@ class MainUI {
 			'styleBlackAndWhite', 'styleBlackAndWhite2', 'styleBlackAndWhiteReborn',
 			'styleBlackReborn',
 			'styleRebornWhite', 'styleRebornBlack', 'styleRebornFusion', 'styleRebornFusion2', 'styleRebornFusionAccent',
-			'styleRandomPastel', 'styleRandomDark'
+			'styleRandomNeon', 'styleRandomPastel', 'styleRandomDark'
 		];
 		const activeGroupTwoStyle = groupTwoStyles.find(style => grSet[style] === true);
 		if (groupTwoStyles.filter(style => grSet[style] === true).length > 1) {
@@ -4501,6 +4552,22 @@ class MainUI {
 	}
 
 	/**
+	 * Updates the active color saturation setting to already-extracted album art colors.
+	 * Lighter than updateAlbumArtThemeColors: reuses the cached color scheme to skip re-extraction.
+	 */
+	updateAlbumArtSaturation() {
+		if (!this.albumArt || (!['reborn', 'random'].includes(grSet.theme) &&
+			!grSet.styleBlackAndWhiteReborn && !grSet.styleBlackReborn)) {
+			return;
+		}
+
+		grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
+		this.initTheme();
+
+		grm.debug.debugLog('\n>>> initTheme => updateAlbumArtSaturation <<<\n');
+	}
+
+	/**
 	 * Updates theme colors when cycling through album art images for dynamic themes.
 	 */
 	updateAlbumArtThemeColors() {
@@ -4604,7 +4671,7 @@ class MainUI {
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
 		this.setPlaylistSize();
-		grm.bgImg.initBgImage(false, true);
+		grm.bgImg.initBgImage('playlist', true);
 		grm.jSearch.on_size();
 		grm.button.initButtonState();
 		window.Repaint();
@@ -4806,7 +4873,7 @@ class MainUI {
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
 		this.initLibraryLayout();
-		grm.bgImg.initBgImage(false, true);
+		grm.bgImg.initBgImage('library', true);
 		grm.button.initButtonState();
 		window.Repaint();
 	}
@@ -5067,6 +5134,7 @@ class MainUI {
 
 		this.initPanelWidthAuto(true);
 		this.initBiographyLayout();
+		grm.bgImg.initBgImage('biography', true);
 		grm.button.initButtonState();
 		window.Repaint();
 	}

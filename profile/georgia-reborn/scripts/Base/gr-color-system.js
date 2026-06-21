@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4531,9 +4531,8 @@ class ColorSystem {
 		if (state.isBarBg && state.hasBevel && !state.hasBlend && Math.abs(state.luminance - crossover.center) < crossover.range) {
 			const distance = Math.abs(state.luminance - crossover.center);
 			const t = Math.min(distance / crossover.range, 1);
-			const smoothT = t * t * (3 - 2 * t);
 			const tintSide = state.luminance < crossover.center ? crossover.tintDark : crossover.tintLight;
-			const factor = tintSide + (crossover.shade - tintSide) * smoothT;
+			const factor = tintSide + (crossover.shade - tintSide) * Easing('smoothStep', t);
 			result *= factor;
 
 			if (grCfg.settings.showDebugThemeLog) {

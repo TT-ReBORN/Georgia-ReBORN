@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -435,7 +435,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 	draw_normal_header(gr, top, bottom) {
 		let cache_header =  pl.cache_header;
 
-		if (!this.hyperlinks_initialized || !cache_header) {
+		if (!this.hyperlinks_initialized || !cache_header || grm.colorChameleon.isRunning) {
 			this.initialize_hyperlinks(gr);
 			this.clearCachedHeaderImg();
 		}
@@ -490,7 +490,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			}
 
 			// * Need to apply text rendering AntiAliasGridFit when using style Blend, Biography's artist image on background or when using custom theme fonts with larger font sizes
-			grClip.SetTextRenderingHint(grSet.styleBlend || grSet.playlistBgImg || grSet.libraryBgImg || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
+			grClip.SetTextRenderingHint(grSet.colorChameleon || grSet.styleBlend || grSet.playlistBgImg || grSet.libraryBgImg || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 			if (this.is_collapsed && this.is_focused() || this.is_completely_selected() && plSet.show_header && plSet.auto_collapse) {
 				grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
@@ -824,7 +824,7 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		}
 
 		// * Need to apply text rendering AntiAliasGridFit when using style Blend or when using custom theme fonts with larger font sizes
-		grClip.SetTextRenderingHint(grSet.styleBlend || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
+		grClip.SetTextRenderingHint(grSet.colorChameleon || grSet.styleBlend || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
 		if (this.is_collapsed && this.is_focused()) {
 			grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);

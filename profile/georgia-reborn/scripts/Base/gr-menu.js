@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -247,6 +247,7 @@ class TopMenu {
 
 			if (!themeDayNightSandbox) {
 				menu.addSeparator();
+				grm.options.colorOptions(menu);
 				grm.options.displayOptions(menu);
 				grm.options.layoutOptions(menu);
 				grm.options.playerSizeOptions(menu);
@@ -343,8 +344,8 @@ class TopMenuOptions {
 		const designMenu = new Menu('Design');
 		const currentDesign = grm.ui.getDesignPresetState();
 
-		designMenu.addRadioItems(['Default', 'Clean', 'Harmonic', 'Minimal', 'Modern black', 'Modern white', 'Modern day/night'], currentDesign,
-			['default', 'clean', 'harmonic', 'minimal', 'modern_black', 'modern_white', 'modern_day_night'], (design) => {
+		designMenu.addRadioItems(['Default', 'Clean', 'Harmonic', 'Minimal', 'Modern black', 'Modern white', 'Modern day/night', 'Reborn'], currentDesign,
+			['default', 'clean', 'harmonic', 'minimal', 'modern_black', 'modern_white', 'modern_day_night', 'reborn'], (design) => {
 
 			if (design === currentDesign) {
 				grm.ui.setDesign(design);
@@ -554,13 +555,33 @@ class TopMenuOptions {
 			});
 		}
 		if (grSet.theme === 'random') {
-			styleMenu.addToggleItem('Random pastel', grSet, 'styleRandomPastel', () => {
-				grm.ui.setStyle('styleRandomPastel', grSet.styleRandomPastel);
-				grm.ui.updateStyle();
+			const handleRandomStyleActivation = (styleKey) => {
+				if (grSet[styleKey]) {
+					grm.ui.setStyle(styleKey, grSet[styleKey]);
+					grm.ui.updateStyle();
+
+					if (grSet.albumArtColorSaturation === 'auto' || grSet.albumArtColorSaturation < 100) {
+						grSet.albumArtColorSaturation = 100;
+						grm.day.stopTimer();
+						grm.ui.updateAlbumArtSaturation();
+						grm.msg.showPopupNotice('themeColors', 'styleRandomColorNoticeEnabled');
+					}
+				} else {
+					grm.ui.setStyle(styleKey, grSet[styleKey]);
+					grm.ui.updateStyle();
+				}
+			};
+
+			styleMenu.addToggleItem('Random neon', grSet, 'styleRandomNeon', () => {
+				handleRandomStyleActivation('styleRandomNeon');
 			});
+
+			styleMenu.addToggleItem('Random pastel', grSet, 'styleRandomPastel', () => {
+				handleRandomStyleActivation('styleRandomPastel');
+			});
+
 			styleMenu.addToggleItem('Random dark', grSet, 'styleRandomDark', () => {
-				grm.ui.setStyle('styleRandomDark', grSet.styleRandomDark);
-				grm.ui.updateStyle();
+				handleRandomStyleActivation('styleRandomDark');
 			});
 		}
 		styleMenu.addSeparator();
@@ -902,27 +923,199 @@ class TopMenuOptions {
 	}
 
 	/**
+	 * Top menu > Options > Color.
+	 * @param {Menu} menu - Creates the Color menu via a new Menu instance.
+	 * @protected
+	 */
+	colorOptions(menu) {
+		const colorMenu = new Menu('Color');
+		const albumArtMenu = new Menu('Album art');
+
+		albumArtMenu.createRadioSubMenu('Extraction', ['V1 old (K-means/RGB)', 'V2 new (K-means++/Oklab)'], grSet.albumArtColorExtraction, [0, 1], (mode) => {
+			grSet.albumArtColorExtraction = mode;
+			window.Reload();
+		});
+		albumArtMenu.createRadioSubMenu('Palette', [
+			'Auto (algorithm picked color)',
+			'Monochromatic (same hue family)',
+			'Analogous (smooth hue drift)',
+			'Split-complementary (near-opposite hues)',
+			'Complementary (opposite hues)',
+			'Triadic (evenly spaced hues)',
+			'Tetradic (orthogonal hues)',
+			'Distinct (high perceptual contrast)',
+			'Random (No set order)'
+		], grSet.albumArtColorPalette, [
+			'auto', 'monochromatic', 'analogous', 'splitComplementary', 'complementary', 'triadic', 'tetradic', 'distinct', 'random'
+		], (mode) => {
+			grSet.albumArtColorPalette = mode;
+			grm.ui.updateAlbumArtThemeColors();
+		}, false, false, [0, 2, 6]);
+
+		const albumArtSaturationMenu = new Menu('Saturation');
+		albumArtSaturationMenu.addRadioItems([' Auto (eye protection mode)'], grSet.albumArtColorSaturation, ['auto'], (value) => {
+			const wasAuto = grSet.albumArtColorSaturation === 'auto';
+			grSet.albumArtColorSaturation = value;
+			if (grSet.styleRandomNeon || grSet.styleRandomPastel || grSet.styleRandomDark) {
+				grSet.styleRandomNeon = false;
+				grSet.styleRandomPastel = false;
+				grSet.styleRandomDark = false;
+				grm.ui.updateStyle();
+				grm.msg.showPopupNotice('themeColors', 'styleRandomColorNoticeDisabled');
+			}
+			if (!wasAuto) {
+				grm.msg.showPopupNotice('themeColors', 'albumArtColorSaturationEyeAutoEnabled');
+			}
+			grm.day.handleEyeProtectionMode(grSet.albumArtColorSaturationEyeSchedule);
+		});
+		albumArtSaturationMenu.addSeparator();
+
+		const eyeTimeDefaults = ['0-24', '8-20', '18-8', '20-8', '22-8'];
+		const eyeTimeLabels = eyeTimeDefaults.map(t => grm.day.formatEyeProtectionTimeRangeString(t));
+		const eyeTimeCurrentVal = grSet.albumArtColorSaturationEyeSchedule || '0-24';
+		const eyeTimeIsCustom = !eyeTimeDefaults.includes(eyeTimeCurrentVal);
+		const eyeTimeValues = [...eyeTimeDefaults];
+
+		if (eyeTimeIsCustom) {
+			eyeTimeLabels.push(`Custom: ${grm.day.formatEyeProtectionTimeRangeString(eyeTimeCurrentVal)}`);
+			eyeTimeValues.push(eyeTimeCurrentVal);
+		}
+		albumArtSaturationMenu.addToggleItem('Extra correction at night', grSet, 'albumArtColorSaturationEyeNightCor', () => {
+			grm.msg.showPopupNotice('themeColors', grSet.albumArtColorSaturationEyeNightCor
+				? 'albumArtColorSaturationEyeNightCorEnabled'
+				: 'albumArtColorSaturationEyeNightCorDisabled'
+			);
+			grm.ui.updateAlbumArtSaturation();
+		}, grSet.albumArtColorSaturation !== 'auto');
+		albumArtSaturationMenu.addItem('Set eye protection custom time range', false, () => {
+			grm.day.setEyeProtectionCustomTimeRange();
+		}, grSet.albumArtColorSaturation !== 'auto');
+		albumArtSaturationMenu.addSeparator();
+		albumArtSaturationMenu.addRadioItems(eyeTimeLabels, eyeTimeCurrentVal, eyeTimeValues, (timeValue) => {
+			grm.day.handleEyeProtectionMode(timeValue);
+		}, grSet.albumArtColorSaturation !== 'auto');
+		albumArtSaturationMenu.addSeparator();
+
+		albumArtSaturationMenu.addRadioItems([
+			'100% (fully saturated)',
+			'  90% (very subtle)',
+			'  80% (subtle)',
+			'  70% (light)',
+			'  60% (moderate)',
+			'  50% (medium)',
+			'  40% (noticeable)',
+			'  30% (strong)',
+			'  20% (very strong)',
+			'  10% (near muted)',
+			'    0% (fully muted)'
+		], grSet.albumArtColorSaturation, [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0], (value) => {
+			grSet.albumArtColorSaturation = value;
+			if (value < 100 && (grSet.styleRandomNeon || grSet.styleRandomPastel || grSet.styleRandomDark)) {
+				grSet.styleRandomNeon = false;
+				grSet.styleRandomPastel = false;
+				grSet.styleRandomDark = false;
+				grm.ui.updateStyle();
+				grm.msg.showPopupNotice('themeColors', 'styleRandomColorNoticeDisabled');
+			}
+			if (!grSet.themeDayNightEnabled && grSet.design !== 'modern_day_night') {
+				grm.day.stopTimer();
+			}
+			grm.ui.updateAlbumArtSaturation();
+		});
+		albumArtSaturationMenu.appendTo(albumArtMenu);
+		albumArtMenu.appendTo(colorMenu);
+
+		const chameleonMenu = new Menu('Chameleon');
+		chameleonMenu.addToggleItem('Enable chameleon', grSet, 'chameleon', () => {
+			if (grSet.chameleon) {
+				const msg = grm.msg.getMessage('themeColors', 'chameleon');
+				const msgFb = grm.msg.getMessage('themeColors', 'chameleon', true);
+				grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+					if (confirmed) {
+						grm.colorChameleon.initChameleonCycle();
+					} else {
+						grSet.chameleon = false;
+						grm.colorChameleon.stopAll();
+					}
+				});
+			}
+			else {
+				grm.colorChameleon.stopAll();
+			}
+		});
+		chameleonMenu.addSeparator();
+		chameleonMenu.createRadioSubMenu('Mode', ['Full', 'New album only'], grSet.chameleonMode, ['full', 'newAlbumOnly'], (mode) => {
+			grSet.chameleonMode = mode;
+			grm.colorChameleon.initChameleonCycle();
+			grm.msg.showPopupNotice('themeColors', `chameleonMode${CapitalizeString(mode)}`);
+		}, !grSet.chameleon);
+		chameleonMenu.addSeparator();
+		chameleonMenu.createRadioSubMenu('Cycle color', [
+			'All colors (step through each)',
+			'Monochromatic (step through same hue)',
+			'Analogous (drift clockwise)',
+			'Split-complementary (alternate near-opposite)',
+			'Complementary (alternate opposite hue)',
+			'Triadic (step through thirds)',
+			'Tetradic (step through quarters)',
+			'Distinct (skip to perceptually different)',
+			'Random (no set order)'
+		], grSet.chameleonCycleColor, [
+			'all', 'monochromatic', 'analogous', 'splitComplementary', 'complementary', 'triadic', 'tetradic', 'distinct', 'random'
+		], (color) => {
+			grSet.chameleonCycleColor = color;
+		}, !grSet.chameleon || grSet.chameleonMode !== 'full', false, [0, 2, 6]);
+		chameleonMenu.createRadioSubMenu('Cycle time', ['    5 sec', '  10 sec', '  15 sec', '  20 sec', '  30 sec', '  45 sec', '  60 sec', '  90 sec', '120 sec'], grSet.chameleonCycleTime, [5, 10, 15, 20, 30, 45, 60, 90, 120], (time) => {
+			grSet.chameleonCycleTime = time;
+			grm.colorChameleon.initChameleonCycle();
+		}, !grSet.chameleon || grSet.chameleonMode !== 'full');
+		chameleonMenu.addSeparator();
+		chameleonMenu.createRadioSubMenu('Duration', ['  100 ms', '  200 ms', '  300 ms', '  400 ms', '  500 ms', '  600 ms', '  700 ms', '  800 ms', '  900 ms', '1000 ms'],
+			grSet.chameleonDuration, [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
+			grSet.chameleonDuration = duration;
+		}, !grSet.chameleon);
+		chameleonMenu.createRadioSubMenu('Easing', [
+				'Linear', 'Smooth step', 'Smoother step', 'In out sine', 'In out cubic', 'Out expo', 'In out expo', 'Out back', 'In out elastic'
+			], grSet.chameleonEasing, [
+				'linear', 'smoothStep', 'smootherStep', 'easeInOutSine', 'easeInOutCubic', 'easeOutExpo', 'easeInOutExpo', 'easeOutBack', 'easeInOutElastic'
+			], (easing) => {
+			grSet.chameleonEasing = easing;
+		}, !grSet.chameleon);
+		chameleonMenu.addSeparator();
+		chameleonMenu.createRadioSubMenu('Refresh rate', ['20 fps ~ 50 ms (very slow CPU)', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'],
+			grSet.chameleonRefreshRate, [FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
+			grSet.chameleonRefreshRate = rate;
+		}, !grSet.chameleon);
+		chameleonMenu.createRadioSubMenu('Bitmap update rate', ['60 fps (very fast CPU)', '30 fps', '20 fps', '15 fps (default)', '12 fps', '10 fps', ' 7 fps (very slow CPU)'], grSet.chameleonBitmapUpdateRate, [60, 30, 20, 15, 12, 10, 7], (rate) => {
+			if (rate > 15) grm.msg.showPopupNotice('themeColors', 'chameleonBitmapHighRate');
+			grSet.chameleonBitmapUpdateRate = rate;
+		}, !grSet.chameleon);
+		chameleonMenu.appendTo(colorMenu);
+
+		colorMenu.appendTo(menu);
+	}
+
+	/**
 	 * Top menu > Options > Display.
 	 * @param {Menu} menu - Creates the Display menu via a new Menu instance.
 	 * @protected
 	 */
 	displayOptions(menu) {
 		const displayMenu = new Menu('Display');
-
-		displayMenu.addItem('Auto-detect', false, () => { grm.display.autoDetectRes(); });
-		displayMenu.addSeparator();
-		displayMenu.addRadioItems(['4K', 'QHD', 'HD'], grSet.displayRes, ['4K', 'QHD', 'HD'], (res) => {
+		const resolutionMenu = new Menu('Resolution');
+		resolutionMenu.addItem('Auto-detect', false, () => { grm.display.autoDetectRes(); });
+		resolutionMenu.addSeparator();
+		resolutionMenu.addRadioItems(['4K', 'QHD', 'HD'], grSet.displayRes, ['4K', 'QHD', 'HD'], (res) => {
 			grSet.displayRes = res;
 			grm.display.updatePlayerSize('small', true);
 		});
-		displayMenu.addSeparator();
+		resolutionMenu.appendTo(displayMenu);
 		displayMenu.createRadioSubMenu('Scaling', ['  50%', '  60%', '  70%', '  80%', '  90%', '100%', '110%', '120%', '130%', '140%', '150%'],
 			grSet.displayScale, [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150], (scale) => {
 			grSet.displayScale = scale;
 			const size = grm.display.checkPlayerSize(grm.ui.ww, grm.ui.wh, grSet.layout, grSet.displayRes);
 			grm.display.updatePlayerSize(size, true);
 		});
-		displayMenu.addSeparator();
 		displayMenu.createRadioSubMenu('Brightness', ['   -50%', '   -40%', '   -30%', '   -25%', '   -20%', '   -15%', '   -10%', '     -5%', 'Default', '     +5%', '   +10%', '   +15%', '   +20%', '   +25%', '   +30%', '   +40%', '   +50%'],
 			grSet.themeBrightness, [-50, -40, -30, -25, -20, -15, -10, -5, 'default', 5, 10, 15, 20, 25, 30, 40, 50], (percent) => {
 			this.applyThemeSetting('themeBrightness', percent);
@@ -1053,10 +1246,16 @@ class TopMenuOptions {
 		});
 
 		// * BIOGRAPHY * //
-		changeFontSizeMenu.createRadioSubMenu('Biography', ['-1', '  8px', '10px', '11px', HD_QHD_4K('12px (default)', '12px'), '13px', HD_QHD_4K('14px', '14px (default)'), '16px', '18px', '+1'], grSet.biographyFontSize_layout,
+		const biographyFontSizeMenu = new Menu('Biography');
+		biographyFontSizeMenu.createRadioSubMenu('Main', ['-1', '  8px', '10px', '11px', HD_QHD_4K('12px (default)', '12px'), '13px', HD_QHD_4K('14px', '14px (default)'), '16px', '18px', '+1'], grSet.biographyFontSize_layout,
 			[-1, 8, 10, 11, 12, 13, 14, 16, 18, 1], (size) => {
 			grm.display.setBiographyFontSize(size);
 		});
+		biographyFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', HD_QHD_4K('16px (default)', '16px'), HD_QHD_4K('18px', '18px (default)'), '20px', '22px', '24px', '26px', '28px', '30px', '+1'], grSet.biographyLyricsFontSize_layout,
+			[-1, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 1], (size) => {
+			grm.display.setBioLyricsFontSize(size);
+		});
+		biographyFontSizeMenu.appendTo(changeFontSizeMenu);
 
 		// * LYRICS * //
 		changeFontSizeMenu.createRadioSubMenu('Lyrics', ['-1', '10px', '12px', '14px', '16px', '18px', HD_QHD_4K('20px (default)', '20px'), HD_QHD_4K('22px', '22px (default)'), '24px', '26px', '28px', '30px', '+1'], grSet.lyricsFontSize_layout,
@@ -1861,7 +2060,7 @@ class TopMenuOptions {
 			if (grSet.playlistBgImg) {
 				grm.bgImg.initBgImage('playlist');
 			} else {
-				grm.bgImg.clearBgImageCache();
+				grm.bgImg.clearBgImageCache('playlist');
 			}
 			grm.bgImg.initBgImageCycle();
 			grm.ui.updatePlaylist();
@@ -2526,7 +2725,7 @@ class TopMenuOptions {
 			if (grSet.libraryBgImg) {
 				grm.bgImg.initBgImage('library');
 			} else {
-				grm.bgImg.clearBgImageCache();
+				grm.bgImg.clearBgImageCache('library');
 			}
 			grm.bgImg.initBgImageCycle();
 			window.Repaint();
@@ -3165,6 +3364,154 @@ class TopMenuOptions {
 		});
 		biographyDisplayMenu.appendTo(biographyMenu);
 
+		// * BACKGROUND * //
+		const biographyBackgroundMenu = new Menu('Background');
+		biographyBackgroundMenu.addToggleItem('Show image on background', grSet, 'biographyBgImg', () => {
+			if (grSet.biographyBgImg) {
+				grm.bgImg.initBgImage('biography');
+			} else {
+				grm.bgImg.clearBgImageCache('biography');
+			}
+			grm.bgImg.initBgImageCycle();
+			window.Repaint();
+		});
+		biographyBackgroundMenu.addSeparator();
+		biographyBackgroundMenu.addToggleItem('Cycle images', grSet, 'biographyBgImgCycle', () => {
+			grm.bgImg.initBgImageCycle();
+			window.Repaint();
+		});
+		biographyBackgroundMenu.createRadioSubMenu('Cycle time', ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'], grSet.biographyBgImgCycleTime, [5, 10, 15, 30, 60], (time) => {
+			grSet.biographyBgImgCycleTime = time;
+			grm.bgImg.initBgImageCycle();
+			window.Repaint();
+		});
+		biographyBackgroundMenu.addSeparator();
+		const biographyBackgroundImageSourceMenu = new Menu('Image source');
+		biographyBackgroundImageSourceMenu.addRadioItems(['Artist', 'Album', 'Custom'], grSet.biographyBgImgSource, ['artist', 'album', 'custom'], (source) => {
+			grSet.biographyBgImgSource = source;
+			grm.bgImg.initBgImage('biography', true);
+			window.Repaint();
+		});
+		biographyBackgroundImageSourceMenu.addSeparator();
+		biographyBackgroundImageSourceMenu.addToggleItem('Filter album art images', grSet, 'biographyBgImgAlbumArtFilter', () => {
+			window.Reload();
+		});
+		biographyBackgroundImageSourceMenu.appendTo(biographyBackgroundMenu);
+		biographyBackgroundMenu.createRadioSubMenu('Image scaling', ['Proportional', 'Filled', 'Stretched'], grSet.biographyBgImgScale, ['default', 'filled', 'stretched'], (scale) => {
+			grSet.biographyBgImgScale = scale;
+			grm.bgImg.initBgImage('biography', true);
+			window.Repaint();
+		});
+		biographyBackgroundMenu.createRadioSubMenu('Image opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.biographyBgImgOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
+			grSet.biographyBgImgOpacity = value;
+			window.Repaint();
+		});
+		biographyBackgroundMenu.addSeparator();
+		biographyBackgroundMenu.createRadioSubMenu('Row opacity', ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'], grSet.biographyBgRowOpacity, [255, 230, 204, 178, 153, 128, 102, 76, 51, 25], value => {
+			grSet.biographyBgRowOpacity = value;
+			window.Repaint();
+		});
+		biographyBackgroundMenu.appendTo(biographyMenu);
+
+		// * LYRICS * //
+		const biographyLyricsMenu = new Menu('Lyrics');
+		const biographyLyricsDisplayMenu = new Menu('Display');
+		const biographyLyricsAnimationMenu = new Menu('Animation');
+		biographyLyricsAnimationMenu.addRadioItems([
+			'Linear', 'Smooth Step', 'Smoother Step',
+			'Ease Out Sine', 'Ease Out Quad (default)', 'Ease Out Cubic', 'Ease Out Quart',
+			'Ease In Out Sine', 'Ease In Out Quad', 'Ease In Out Cubic'
+		], grSet.lyricsScrollEasing, [
+			'linear', 'smoothStep', 'smootherStep',
+			'easeOutSine', 'easeOutQuad', 'easeOutCubic', 'easeOutQuart',
+			'easeInOutSine', 'easeInOutQuad', 'easeInOutCubic'
+		], (easing) => {
+			grSet.lyricsScrollEasing = easing;
+			window.Repaint();
+		}, false, false, [2, 6]);
+		biographyLyricsAnimationMenu.appendTo(biographyLyricsDisplayMenu);
+
+		biographyLyricsDisplayMenu.createRadioSubMenu('Show drop shadow', ['None', 'Small', 'Normal', 'Large'], bioSet.lyricsDropShadowLevel, ['none', 'small', 'normal', 'large'], (size) => {
+			bioSet.lyricsDropShadowLevel = size;
+			window.Repaint();
+		});
+		biographyLyricsDisplayMenu.addSeparator();
+		biographyLyricsDisplayMenu.addToggleItem('Show fade scroll', bioSet, 'lyricsFadeScroll', () => {
+			window.Repaint();
+		});
+		biographyLyricsDisplayMenu.addSeparator();
+		biographyLyricsDisplayMenu.createRadioSubMenu('Show transparent mask', ['None', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%'], bioSet.lyricsTransparentMask, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], (percent) => {
+			bioSet.lyricsTransparentMask = percent;
+			window.Repaint();
+		});
+		biographyLyricsDisplayMenu.addSeparator();
+		biographyLyricsDisplayMenu.addToggleItem('Show larger current sync', bioSet, 'lyricsLargerCurrentSync', () => {
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+			window.Repaint();
+		});
+		biographyLyricsDisplayMenu.appendTo(biographyLyricsMenu);
+
+		const biographyLricsSpacingMenu = new Menu('Spacing');
+		biographyLricsSpacingMenu.createRadioSubMenu('Line', ['20px', '24px', '28px', '32px', '36px', '40px (default)', '44px', '48px', '52px', '56px', '60px'], bioSet.lyricsLineSpacing,
+			[20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60], (size) => {
+			bioSet.lyricsLineSpacing = size;
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+		});
+		biographyLricsSpacingMenu.createRadioSubMenu('Sentence', ['10px', '14px', '18px', '22px', '26px', '30px (default)', '34px', '38px', '42px', '46px', '50px'], bioSet.lyricsSentenceSpacing,
+			[10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50], (size) => {
+			bioSet.lyricsSentenceSpacing = size;
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+		});
+		biographyLricsSpacingMenu.appendTo(biographyLyricsMenu);
+
+		const biographyLyricsScrollSpeedMenu = new Menu('Scroll speed');
+		biographyLyricsScrollSpeedMenu.addToggleItem('Adaptive scroll speed', bioSet, 'lyricsScrollAdaptive', () => {
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+			window.Repaint();
+		});
+		biographyLyricsScrollSpeedMenu.addRadioItems(['Fastest (very slow CPU)', 'Fast', 'Normal', 'Slow', 'Slowest (very fast CPU)'], bioSet.lyricsScrollSpeed, ['fastest', 'fast', 'normal', 'slow', 'slowest'], (speed) => {
+			bioSet.lyricsScrollSpeed = speed;
+			switch (speed) {
+				case 'fastest':
+					bioSet.lyricsScrollRateAvg = 300;
+					bioSet.lyricsScrollRateMax = 150;
+					break;
+				case 'fast':
+					bioSet.lyricsScrollRateAvg = 500;
+					bioSet.lyricsScrollRateMax = 250;
+					break;
+				case 'normal':
+					bioSet.lyricsScrollRateAvg = 750;
+					bioSet.lyricsScrollRateMax = 375;
+					break;
+				case 'slow':
+					bioSet.lyricsScrollRateAvg = 1000;
+					bioSet.lyricsScrollRateMax = 500;
+					break;
+				case 'slowest':
+					bioSet.lyricsScrollRateAvg = 1500;
+					bioSet.lyricsScrollRateMax = 725;
+					break;
+			}
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+			window.Repaint();
+		});
+		biographyLyricsScrollSpeedMenu.appendTo(biographyLyricsMenu);
+
+		const biographyLyricsTranslationMenu = new Menu('Translation');
+		biographyLyricsTranslationMenu.addToggleItem('Show translation', bioSet, 'lyricsTranslation', () => {
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+			window.Repaint();
+		});
+		biographyLyricsTranslationMenu.addSeparator();
+		biographyLyricsTranslationMenu.addRadioItems(['First line', 'Second Line'], bioSet.lyricsTranslationLine, [1, 2], (line) => {
+			bioSet.lyricsTranslationLine = line;
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+			window.Repaint();
+		});
+		biographyLyricsTranslationMenu.appendTo(biographyLyricsMenu);
+		biographyLyricsMenu.appendTo(biographyMenu);
+
 		// * SOURCES * //
 		const biographySourcesMenu = new Menu('Sources');
 		const biographySourcesTextMenu = new Menu('Text');
@@ -3390,6 +3737,7 @@ class TopMenuOptions {
 				grSet.savedLyricsLayout = grSet.lyricsLayout = layout;
 				grm.ui.displayLyrics = true;
 				grm.ui.initLyricsLayoutState();
+				if (grSet.chameleon) grm.colorChameleon.updateLyricsMainColor(); // Update stale lyrics colors after chameleon transition
 			});
 			lyricsLayoutMenu.appendTo(lyricsMenu);
 		}
@@ -3398,9 +3746,8 @@ class TopMenuOptions {
 		lyricsBackgroundMenu.addToggleItem('Show image on background', grSet, 'lyricsBgImg', () => {
 			if (grSet.lyricsBgImg) {
 				grm.bgImg.initBgImage('lyrics');
-				grm.ui.updatePlaylist();
 			} else {
-				grm.bgImg.clearBgImageCache();
+				grm.bgImg.clearBgImageCache('lyrics');
 			}
 			grm.bgImg.initBgImageCycle();
 			window.Repaint();
@@ -3439,19 +3786,38 @@ class TopMenuOptions {
 		lyricsBackgroundMenu.appendTo(lyricsMenu);
 
 		const lyricsDisplayMenu = new Menu('Display');
-		lyricsDisplayMenu.createRadioSubMenu('Show drop shadow', ['None', 'Small', 'Normal', 'Large'], grSet.lyricsDropShadowLevel, [0, 1, 2, 3], (size) => {
+		const lyricsAnimationMenu = new Menu('Animation');
+		lyricsAnimationMenu.addRadioItems([
+			'Linear', 'Smooth Step', 'Smoother Step',
+			'Ease Out Sine', 'Ease Out Quad (default)', 'Ease Out Cubic', 'Ease Out Quart',
+			'Ease In Out Sine', 'Ease In Out Quad', 'Ease In Out Cubic'
+		], grSet.lyricsScrollEasing, [
+			'linear', 'smoothStep', 'smootherStep',
+			'easeOutSine', 'easeOutQuad', 'easeOutCubic', 'easeOutQuart',
+			'easeInOutSine', 'easeInOutQuad', 'easeInOutCubic'
+		], (easing) => {
+			grSet.lyricsScrollEasing = easing;
+			window.Repaint();
+		}, false, false, [2, 6]);
+		lyricsAnimationMenu.appendTo(lyricsDisplayMenu);
+
+		lyricsDisplayMenu.createRadioSubMenu('Show drop shadow', ['None', 'Small', 'Normal', 'Large'], grSet.lyricsDropShadowLevel, ['none', 'small', 'normal', 'large'], (size) => {
 			grSet.lyricsDropShadowLevel = size;
 			grm.lyrics.initLyrics();
 			window.Repaint();
 		});
+		lyricsDisplayMenu.addSeparator();
 		lyricsDisplayMenu.addToggleItem('Show fade scroll', grSet, 'lyricsFadeScroll', () => {
-			grm.lyrics.initLyrics();
 			window.Repaint();
 		});
+		lyricsDisplayMenu.addSeparator();
+		lyricsDisplayMenu.createRadioSubMenu('Show transparent mask', ['None', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%'], grSet.lyricsTransparentMask, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], (percent) => {
+			grSet.lyricsTransparentMask = percent;
+			window.Repaint();
+		});
+		lyricsDisplayMenu.addSeparator();
 		lyricsDisplayMenu.addToggleItem('Show larger current sync', grSet, 'lyricsLargerCurrentSync', () => {
-			bioSet.largerSyncLyricLine = grSet.lyricsLargerCurrentSync;
 			grm.lyrics.initLyrics();
-			bio.ui.updateProp(1);
 			window.Repaint();
 		});
 		lyricsDisplayMenu.appendTo(lyricsMenu);
@@ -3492,6 +3858,11 @@ class TopMenuOptions {
 		lyricsSpacingMenu.appendTo(lyricsMenu);
 
 		const lyricsScrollSpeedMenu = new Menu('Scroll speed');
+		lyricsScrollSpeedMenu.addToggleItem('Adaptive scroll speed', grSet, 'lyricsScrollAdaptive', () => {
+			grm.lyrics.initLyrics();
+			window.Repaint();
+		});
+		lyricsScrollSpeedMenu.addSeparator();
 		lyricsScrollSpeedMenu.addRadioItems(['Fastest (very slow CPU)', 'Fast', 'Normal', 'Slow', 'Slowest (very fast CPU)'], grSet.lyricsScrollSpeed, ['fastest', 'fast', 'normal', 'slow', 'slowest'], (speed) => {
 			grSet.lyricsScrollSpeed = speed;
 			switch (speed) {
@@ -3937,20 +4308,14 @@ class TopMenuOptions {
 
 		// * THEME RENDERER * //
 		if (Component.JSplitter) {
-			const rendererMenu = new Menu('Renderer');
-			rendererMenu.createRadioSubMenu('Colors', ['V1 old (K-means/RGB)', 'V2 new (K-means++/Oklab)'], grSet.rendererColors, [0, 1], (mode) => {
-				grSet.rendererColors = mode;
-				window.Reload();
-			});
-			rendererMenu.createRadioSubMenu('Graphics', ['GDI+ (default)', 'Direct2D'], grSet.rendererGraphics, [0, 1], (mode) => {
-				grSet.rendererGraphics = mode;
+			settingsMenu.createRadioSubMenu('Renderer', ['GDI+ (default)', 'Direct2D'], grSet.rendererMode, [0, 1], (mode) => {
+				grSet.rendererMode = mode;
 				if (DetectWine()) { // * Wine needs foobar restart, otherwise on pure reload it will crash
 					fb.RunMainMenuCommand('File/Restart');
 				} else {
 					window.Reload();
 				}
 			});
-			rendererMenu.appendTo(settingsMenu);
 			settingsMenu.addSeparator();
 		}
 
@@ -4187,7 +4552,7 @@ class TopMenuOptions {
 
 				// * Reset the properties
 				grm.settings.setThemeSettings(false, false, true);
-				grm.ui.setDesign('modern_day_night');
+				grm.ui.setDesign('reborn');
 				grm.ui.restoreThemeStylePreset(true);
 
 				// * Set essential properties for factory reset state

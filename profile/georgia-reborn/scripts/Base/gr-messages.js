@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -260,6 +260,120 @@ class MessageManager {
 		};
 
 		this.msgThemeColors = {
+			albumArtColorSaturationEyeAutoEnabled: {
+				msg: 'Auto (eye protection mode)\n'
+					+ 'has been enabled!\n\n'
+					+ 'Only perceptually "loud" colors\n'
+					+ '(neon reds, greens and yellows)\n'
+					+ 'will have their saturation reduced,\n'
+					+ 'while naturally pleasant album art\n'
+					+ 'colors are left completely untouched.\n\n'
+					+ 'Correction automatically becomes\n'
+					+ 'stronger at night and can be limited\n'
+					+ 'to a custom active time range below.\n\n'
+			},
+			albumArtColorSaturationEyeNightCorEnabled: {
+				msg: 'Extra night-time correction\n'
+					+ 'has been enabled!\n\n'
+					+ 'Eye protection (auto saturation)\n'
+					+ 'will now apply stronger correction\n'
+					+ 'during nighttime hours, gradually\n'
+					+ 'increasing the later it gets.\n\n'
+					+ 'Recommended for darker rooms\n'
+					+ 'without artificial lighting at night.\n\n'
+			},
+			albumArtColorSaturationEyeNightCorDisabled: {
+				msg: 'Extra night-time correction\n'
+					+ 'has been disabled!\n\n'
+					+ 'Eye protection (auto saturation)\n'
+					+ 'will now apply the same correction\n'
+					+ 'strength around the clock, regardless\n'
+					+ 'of the time of day.\n\n'
+					+ 'Recommended if you use lightbulbs\n'
+					+ 'or other artificial lighting at night.\n\n'
+			},
+			albumArtColorSaturationEyeSchedule: {
+				msg: 'Enter the time range during which eye protection is active.\n\n'
+					+ 'Examples:\n'
+					+ '0-24: always active (default)\n'
+					+ '20-8: active from 8 PM to 8 AM  (nighttime)\n'
+					+ '8-20: active from 8 AM to 8 PM  (daytime)\n\n'
+					+ 'Range: start 0-23, end 1-24'
+			},
+			albumArtColorSaturationEyeScheduleError: {
+				msg: `Time range is not valid: ${grm.day.inputBoxNewValue}\n\n`
+					+ 'Use "start-end" with start 0-23 and end 1-24.\n'
+					+ 'Examples:\n'
+					+ '0-24: always active\n'
+					+ '20-8: nighttime (8 PM to 8 AM)'
+			},
+			chameleon: {
+				content: 'The chameleon color system\n'
+					+ 'dynamically morphs theme colors\n'
+					+ 'based on album art.\n\n'
+					+ 'Available modes:\n\n'
+					+ `${Unicode.Bullet} New track only ${Unicode.Bullet}\n`
+					+ 'Updates theme colors only once\n'
+					+ 'when a new album starts.\n\n'
+					+ `${Unicode.Bullet} Full ${Unicode.Bullet}\n`
+					+ 'Continuously cycles through the album\n'
+					+ 'color palette during active playback.\n\n'
+					+ 'Note:\n'
+					+ 'Increase CPU usage on older hardware.',
+				msg: 'Do you want to enable chameleon?\n\n'
+					+ '{content}\n\nContinue?\n\n',
+				msgFb: 'Chameleon effect activated:\n\n'
+					+ 'Smooth dynamic color transitions are now active.'
+			},
+			chameleonModeFull: {
+				msg: 'Chameleon Mode:\n'
+					+ 'Full Cycle\n\n'
+					+ 'Theme colors will now continuously\n'
+					+ 'fade and cycle across the extracted\n'
+					+ 'album art palette during playback.\n\n'
+					+ 'This mode has increased background\n'
+					+ 'CPU usage than "New Album Only" mode\n'
+					+ 'based on set cycle interval.\n\n'
+			},
+			chameleonModeNewAlbumOnly: {
+				msg: 'Chameleon Mode:\n'
+					+ 'New album Only\n\n'
+					+ 'Theme colors will now update strictly\n'
+					+ 'when a new album starts playing.\n\n'
+					+ 'This mode is efficient and uses less\n'
+					+ 'CPU power than "Full" mode.\n\n'
+			},
+			chameleonBitmapHighRate: {
+				msg: 'You have selected a bitmap update rate\n'
+					+ 'above the default (15 fps).\n\n'
+					+ 'Higher rates force more frequent\n'
+					+ 'recreation of bitmap images and\n'
+					+ 'will noticeably increase CPU load\n'
+					+ 'during color transitions.\n\n'
+					+ 'Higher update rates display\n'
+					+ 'visually better color transitions\n'
+					+ 'on buttons (bitmaps), by reducing\n'
+					+ 'color artifacts.\n\n'
+					+ 'Recommended only\n'
+					+ 'on fast CPUs.\n\n'
+			},
+			styleRandomColorNoticeDisabled: {
+				msg: 'A "Random" theme color style\n'
+					+ 'has been deactivated!\n\n'
+					+ 'It cannot be used when\n'
+					+ 'Auto (eye protection) is active\n'
+					+ 'or when album art saturation is set\n'
+					+ 'to lower than 100%.\n\n'
+			},
+			styleRandomColorNoticeEnabled: {
+				msg: 'A "Random" theme color style\n'
+					+ 'is now enabled!\n\n'
+					+ 'Saturation has been reset\n'
+					+ 'to 100% (fully vivid) and\n'
+					+ 'Auto (eye protection) has been\n'
+					+ 'deactivated to properly display\n'
+					+ 'the random color palette.\n\n'
+			},
 			playlistColorsCustomTheme: {
 				msg: 'Error when initializing playlist custom theme colors:\n\n'
 					+ 'One or more variable color names do not exist or have wrong values in your custom config file:\n\n'

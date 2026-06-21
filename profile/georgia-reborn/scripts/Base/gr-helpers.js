@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    31-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2175,7 +2175,7 @@ function GetAlbumArtColors(image, colorCache, maxColorsToPull = 14) {
 
 	try {
 		// Extract colors
-		const colors = JSON.parse(Component.JSplitter && grSet.rendererColors === 1
+		const colors = JSON.parse(Component.JSplitter && grSet.albumArtColorExtraction === 1
 			? image.GetColourSchemeJSONV2(maxColorsToPull)
 			: image.GetColourSchemeJSON(maxColorsToPull)
 		);
@@ -2961,7 +2961,7 @@ function AdjustOKLCH(r, g, b, newL, alpha = 255) {
 
 
 /**
- * Adjusts a color's chroma (colorfulness) in OKLCH space.
+ * Adjusts a color's chroma in OKLCH space.
  * Useful for making colors more or less vibrant while preserving lightness and hue.
  * @global
  * @param {number} color - The RGB color value (packed integer).
@@ -2973,7 +2973,8 @@ function AdjustChromaOKLCH(color, factor) {
 	const oklch = RGBtoOKLCH(color);
 	const newC = Math.max(0, oklch.C * factor);
 
-	return OKLCHtoRGB(oklch.L, newC, oklch.H) | (alpha << 24);
+	// Mask out OKLCHtoRGB's baked-in 0xFF alpha before OR-ing the real channel.
+	return (OKLCHtoRGB(oklch.L, newC, oklch.H) & 0x00FFFFFF) | (alpha << 24);
 }
 
 
@@ -3012,6 +3013,34 @@ function AdjustOKLCHWithChroma(r, g, b, newL, chromaFactor, alpha = 255) {
 	const adjustedRGB = OKLCHtoRGB(newL, newC, oklch.H);
 
 	return alpha === 255 ? adjustedRGB : ((alpha << 24) | (adjustedRGB & 0x00FFFFFF));
+}
+
+
+/**
+ * Blends two ARGB colors in OKLCH space.
+ * Hue travels the short arc; alpha is interpolated in sRGB.
+ * @param {number} c1 - The ARGB start color.
+ * @param {number} c2 - The ARGB end color.
+ * @param {{L,C,H}} ok1 - The pre-baked OKLCH for c1.
+ * @param {{L,C,H}} ok2 - The pre-baked OKLCH for c2.
+ * @param {number} t - The eased progress [0..1].
+ * @returns {number} The blended ARGB.
+ */
+function LerpOKLCH(c1, c2, ok1, ok2, t) {
+	const L = ok1.L + (ok2.L - ok1.L) * t;
+	const C = ok1.C + (ok2.C - ok1.C) * t;
+
+	let dH = ok2.H - ok1.H;
+	if (dH >  180) dH -= 360;
+	if (dH < -180) dH += 360;
+
+	const H  = ((ok1.H + dH * t) + 360) % 360;
+	const a1 = (c1 >>> 24) & 0xFF;
+	const a2 = (c2 >>> 24) & 0xFF;
+
+	return (
+		((Math.round(a1 + (a2 - a1) * t) & 0xFF) << 24) | (OKLCHtoRGB(L, C, H) & 0x00FFFFFF)
+	) >>> 0;
 }
 
 
@@ -4508,31 +4537,114 @@ function ConvertVolume(volume, type) {
 
 
 /**
- * Applies a specified easing function to a value.
+ * Applies a specified easing function to a progress value.
  * @global
- * @param {string} type - The name of the easing function (e.g., 'smoothStep').
- * @param {number} t - The progress value (0 to 1).
- * @param {number} [gammaValue] - The optional gamma parameter.
+ * @param {('linear'|'smoothStep'|'smootherStep'|'easeInSine'|'easeOutSine'|'easeInOutSine'|'easeInQuad'|'easeOutQuad'|'easeInOutQuad'|'easeInCubic'|'easeOutCubic'|'easeInOutCubic'|'easeInQuart'|'easeOutQuart'|'easeInOutQuart'|'easeInQuint'|'easeOutQuint'|'easeInOutQuint'|'easeInExpo'|'easeOutExpo'|'easeInOutExpo'|'easeInCirc'|'easeOutCirc'|'easeInOutCirc'|'easeInBack'|'easeOutBack'|'easeInOutBack'|'easeInElastic'|'easeOutElastic'|'easeInOutElastic'|'gamma'|'invGamma')} type - The official name of the easing function.
+ * @param {number} t - The progress value (normalized between 0 and 1).
+ * @param {number} [gammaValue] - The optional exponent parameter used strictly for 'gamma' and 'invGamma'.
  * @returns {number} The eased value.
+ * @example
+ * // Behavior Guide:
+ * // - linear: Constant, uniform speed throughout.
+ * // - smoothStep: Hermite interpolation; elegant, balanced acceleration and deceleration.
+ * // - smootherStep: Premium soft and more elegant than smoothStep.
+ *
+ * // - easeInSine: Extremely subtle, organic acceleration.
+ * // - easeOutSine: Extremely subtle, organic deceleration.
+ * // - easeInOutSine: Highly fluid, wave-like transitions; the smoothest for color fading.
+ *
+ * // - easeInQuad: Soft parabolic acceleration.
+ * // - easeOutQuad: Soft parabolic deceleration.
+ * // - easeInOutQuad: Balanced quadratic speed ramping and cushioning.
+ *
+ * // - easeInCubic: Pronounced, assertive acceleration.
+ * // - easeOutCubic: Pronounced, assertive deceleration.
+ * // - easeInOutCubic: Distinct, highly visible speed pickup and soft landing.
+ *
+ * // - easeInQuart: Heavy, aggressive acceleration.
+ * // - easeOutQuart: Heavy, aggressive deceleration.
+ * // - easeInOutQuart: Dramatic transition, sharper and faster than cubic.
+ *
+ * // - easeInQuint: Highly intense, sweeping acceleration.
+ * // - easeOutQuint: Highly intense, sweeping deceleration.
+ * // - easeInOutQuint: Cinematic motion; long slow crawl at edges with an explosive middle burst.
+ *
+ * // - easeInExpo: Total initial stillness followed by a sudden exponential flash forward.
+ * // - easeOutExpo: Fast explosive start, melting gracefully into a dead stop.
+ * // - easeInOutExpo: Piercing, ultra-snappy shift perfectly centered at the midpoint.
+ *
+ * // - easeInCirc: Circular arc acceleration; starts slow, then takes a sharp, steep pop at the edge.
+ * // - easeOutCirc: Circular arc deceleration; sudden initial pop, cushioning heavily to a finish.
+ * // - easeInOutCirc: Hemispherical profile; stark, mechanical transitions around the center point.
+ *
+ * // - easeInBack: Pulls backward slightly past 0 before slingshotting forward.
+ * // - easeOutBack: Shoots slightly past 1 before recoiling gently back to rest.
+ * // - easeInOutBack: Combines both wind-up anticipation and landing overshoot at the bounds.
+ *
+ * // - easeInElastic: Decaying physical spring oscillation pulling taut away from the origin point.
+ * // - easeOutElastic: Decaying physical spring oscillation wobbling elastic past the finish line.
+ * // - easeInOutElastic: Double-ended rubber band snap and springy stabilization.
+ *
+ * // - gamma: Direct power-law curve accelerating based on the custom gammaValue variable.
+ * // - invGamma: Flipped power-law curve decelerating based on the custom gammaValue variable.
  */
 function Easing(type, t, gammaValue = 1.2) {
-	if (type === 'linear') {
-		return t;
-	}
+	switch (type) {
+		case 'linear': return t;
+		case 'smoothStep': return t * t * (3 - 2 * t);
+		case 'smootherStep': return t * t * t * (t * (t * 6 - 15) + 10);
 
-	if (type === 'smoothStep') {
-		return t * t * (3 - 2 * t);
-	}
+		// SINE
+		case 'easeInSine': return 1 - Math.cos((t * Math.PI) / 2);
+		case 'easeOutSine': return Math.sin((t * Math.PI) / 2);
+		case 'easeInOutSine': return -(Math.cos(Math.PI * t) - 1) / 2;
 
-	if (type === 'gamma') {
-		return t ** gammaValue;
-	}
+		// QUAD
+		case 'easeInQuad': return t * t;
+		case 'easeOutQuad': return 1 - (1 - t) * (1 - t);
+		case 'easeInOutQuad': return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
 
-	if (type === 'invGamma') {
-		return 1 - (1 - t) ** gammaValue;
-	}
+		// CUBIC
+		case 'easeInCubic': return t * t * t;
+		case 'easeOutCubic': return 1 - (1 - t) ** 3;
+		case 'easeInOutCubic': return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 
-	return t;
+		// QUART
+		case 'easeInQuart': return t ** 4;
+		case 'easeOutQuart': return 1 - (1 - t) ** 4;
+		case 'easeInOutQuart': return t < 0.5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2;
+
+		// QUINT
+		case 'easeInQuint': return t ** 5;
+		case 'easeOutQuint': return 1 - (1 - t) ** 5;
+		case 'easeInOutQuint': return t < 0.5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2;
+
+		// EXPO
+		case 'easeInExpo': return t === 0 ? 0 : 2 ** (10 * t - 10);
+		case 'easeOutExpo': return t === 1 ? 1 : 1 - 2 ** (-10 * t);
+		case 'easeInOutExpo': return t === 0 ? 0 : t === 1 ? 1 : t < 0.5 ? 2 ** (20 * t - 10) / 2 : (2 - 2 ** (-20 * t + 10)) / 2;
+
+		// CIRC
+		case 'easeInCirc': return 1 - Math.sqrt(1 - t ** 2);
+		case 'easeOutCirc': return Math.sqrt(1 - (t - 1) ** 2);
+		case 'easeInOutCirc': return t < 0.5 ? (1 - Math.sqrt(1 - (2 * t) ** 2)) / 2 : (Math.sqrt(1 - (-2 * t + 2) ** 2) + 1) / 2;
+
+		// BACK
+		case 'easeInBack': return (1.70158 + 1) * t * t * t - 1.70158 * t * t;
+		case 'easeOutBack': return 1 + (1.70158 + 1) * (t - 1) ** 3 + 1.70158 * (t - 1) ** 2;
+		case 'easeInOutBack': return t < 0.5 ? ((2 * t) ** 2 * ((1.70158 * 1.525 + 1) * 2 * t - 1.70158 * 1.525)) / 2 : ((2 * t - 2) ** 2 * ((1.70158 * 1.525 + 1) * (t * 2 - 2) + 1.70158 * 1.525) + 2) / 2;
+
+		// ELASTIC
+		case 'easeInElastic': return t === 0 ? 0 : t === 1 ? 1 : -(2 ** (10 * t - 10)) * Math.sin((t * 10 - 10.75) * ((2 * Math.PI) / 3));
+		case 'easeOutElastic': return t === 0 ? 0 : t === 1 ? 1 : 2 ** (-10 * t) * Math.sin((t * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1;
+		case 'easeInOutElastic': return t === 0 ? 0 : t === 1 ? 1 : t < 0.5 ? -(2 ** (20 * t - 10) * Math.sin((20 * t - 11.125) * ((2 * Math.PI) / 4.5))) / 2 : (2 ** (-20 * t + 10) * Math.sin((20 * t - 11.125) * ((2 * Math.PI) / 4.5))) / 2 + 1;
+
+		// CUSTOM GAMMA
+		case 'gamma': return t ** gammaValue;
+		case 'invGamma': return 1 - (1 - t) ** gammaValue;
+
+		default: return t;
+	}
 }
 
 
@@ -4615,6 +4727,35 @@ function Round(floatnum, decimals, eps = 10 ** -14) {
 function Sigmoid(x, steepness = 10, center = 0.5, outputMin = 0, outputMax = 1) {
 	const raw = 1 / (1 + Math.exp(-steepness * (x - center)));
 	return outputMin + raw * (outputMax - outputMin);
+}
+
+
+/**
+ * GLSL-style smoothstep: maps a raw value onto a clamped ramp between two edges,
+ * applying a configurable easing curve across the transition.
+ * Returns 0 at or before edge0, 1 at or after edge1, regardless of whether edge0 < edge1.
+ * @global
+ * @param {number} value - The input value to map.
+ * @param {number} edge0 - The value at which the result is 0.
+ * @param {number} edge1 - The value at which the result is 1.
+ * @param {string} [easingType] - The Easing() curve applied to the normalized progress (default: 'smoothStep').
+ * Favor monotonic, non-overshooting curves here (smoothStep, smootherStep, easeInOutSine,
+ * easeInOutQuad/Cubic/Quart/...). Curves with overshoot (easeInBack/easeOutBack/easeInOutBack,
+ * any elastic variant) will push the result briefly outside [0,1], which can extrapolate
+ * downstream Lerp() calls past their intended bounds.
+ * @param {number} [gammaValue] - Only used by the 'gamma'/'invGamma' easing types, passed through to Easing().
+ * @returns {number} The eased value in [0, 1].
+ */
+function SmoothstepRange(value, edge0, edge1, easingType = 'smoothStep', gammaValue = 1.2) {
+	if (edge0 === edge1) {
+		return value < edge0 ? 0 : 1;
+	}
+
+	const t = Math.max(
+		0, Math.min(1, (value - edge0) / (edge1 - edge0))
+	);
+
+	return Easing(easingType, t, gammaValue);
 }
 
 

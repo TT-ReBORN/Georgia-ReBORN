@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -973,11 +973,27 @@ function on_mouse_wheel(step) {
 		});
 	} else if (grm.ui.displayBiography && mouseInBiography(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		grm.debug.callLog('Biography => on_mouse_wheel');
-		KeyPressAction({
-			ctrlNoShift: () => grm.display.setBiographyFontSize(step),
-			altNoShift: () => grm.display.setBiographyFontSize(0),
-			default: () => bio.call.on_mouse_wheel(step)
-		});
+		if (bio.panel.trace.text) {
+			if (bio.txt.lyricsDisplayed()) {
+				KeyPressAction({
+					ctrlAltShift: () => grm.display.setBioLyricsSentenceSpacingSize(step),
+					ctrlShift: () => grm.display.setBioLyricsLineSpacingSize(step),
+					ctrlNoShift: () => grm.display.setBioLyricsFontSize(step),
+					altNoShift: () => { grm.display.setBioLyricsFontSize(0); grm.display.setBioLyricsLineSpacingSize(0); grm.display.setBioLyricsSentenceSpacingSize(0); },
+					shift: () => grm.bgImg.cycleBgImage('biography', step),
+					default: () => bio.call.on_mouse_wheel(step)
+				});
+			} else {
+				KeyPressAction({
+					ctrlNoShift: () => grm.display.setBiographyFontSize(step),
+					altNoShift: () => grm.display.setBiographyFontSize(0),
+					shift: () => grm.bgImg.cycleBgImage('biography', step),
+					default: () => bio.call.on_mouse_wheel(step)
+				});
+			}
+		} else {
+			bio.call.on_mouse_wheel(step);
+		}
 	} else if (grm.ui.displayLyrics && mouseInLyrics(grm.ui.state.mouse_x, grm.ui.state.mouse_y)) {
 		KeyPressAction({
 			ctrlShift: () => grm.display.setLyricsLineSpacingSize(step),

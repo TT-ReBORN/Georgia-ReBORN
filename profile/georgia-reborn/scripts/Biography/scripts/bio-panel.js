@@ -399,9 +399,9 @@ class BioPanel {
 		if (!pth.endsWith('\\')) pth += '\\';
 
 		const c_pos = pth.indexOf(':');
-		pth = type != 'lyr' ?
-			pth.replace(Regex.PunctSeparatorsExtra, '-').replace(Regex.PathWildcardAsterisk, 'x').replace(Regex.PunctQuoteDouble, "''").replace(Regex.PunctAngle, '_').replace(Regex.PunctQuestion, '').replace(Regex.PathEscapedDot, '\\_').replace(Regex.PathMultipleDotBackslash, '\\').replace(Regex.PathBackslashPadded, '\\') :
-			pth.replace(Regex.PathIllegalFilename, '_');
+		if (type != 'lyr') {
+			pth = pth.replace(Regex.PunctSeparatorsExtra, '-').replace(Regex.PathWildcardAsterisk, 'x').replace(Regex.PunctQuoteDouble, "''").replace(Regex.PunctAngle, '_').replace(Regex.PunctQuestion, '').replace(Regex.PathEscapedDot, '\\_').replace(Regex.PathMultipleDotBackslash, '\\').replace(Regex.PathBackslashPadded, '\\');
+		}
 		if (c_pos < 3 && c_pos != -1) pth = $Bio.replaceAt(pth, c_pos, ':');
 
 		Regex.PathHiddenSystem.lastIndex = 0; // Reset index

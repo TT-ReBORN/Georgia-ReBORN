@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -48,6 +48,7 @@ class ThemePreset {
 		 * @property {boolean} [styleRebornFusion] - Options > Style > Reborn fusion (Reborn theme).
 		 * @property {boolean} [styleRebornFusion2] - Options > Style > Reborn fusion 2 (Reborn theme).
 		 * @property {boolean} [styleRebornFusionAccent] - Options > Style > Reborn fusion accent (Reborn theme).
+		 * @property {boolean} [styleRandomNeon] - Options > Style > Random neon (Random theme).
 		 * @property {boolean} [styleRandomPastel] - Options > Style > Random pastel (Random theme).
 		 * @property {boolean} [styleRandomDark] - Options > Style > Random dark (Random theme).
 		 * @property {string}  [styleRandomAutoColor] - Options > Style > Auto color (Random theme). Values: 'off', 'track', 'album'.
@@ -1771,7 +1772,7 @@ class ThemePreset {
 	_buildPresetMatchArray(config) {
 		const {
 			THEME, CTHEME, NIGHTTIME, BEVEL, BLEND, BLEND2, GRAD, GRAD2, ALT, ALT2,
-			BW, BW2, BWR, BR, RW, RB, RF, RF2, RFA, RP, RD, RAC,
+			BW, BW2, BWR, BR, RW, RB, RF, RF2, RFA, RN, RP, RD, RAC,
 			TMB, TPB, PBD, PB, PBF, VBD, VB, VBF, BRT
 		} = grAlias;
 
@@ -1796,6 +1797,7 @@ class ThemePreset {
 			RF === (config.styleRebornFusion || false),
 			RF2 === (config.styleRebornFusion2 || false),
 			RFA === (config.styleRebornFusionAccent || false),
+			RN === (config.styleRandomNeon || false),
 			RP === (config.styleRandomPastel || false),
 			RD === (config.styleRandomDark || false),
 			RAC === (config.styleRandomAutoColor || 'off'),
@@ -1829,51 +1831,104 @@ class ThemePreset {
 	}
 
 	/**
-	 * Filters presets based on harmonic color matching.
-	 * @param {Array<string>} eligiblePresets - The array of preset IDs to filter.
-	 * @returns {Array<string>} - The filtered array of preset IDs that match current color harmony.
+	 * Filters eligible presets to those belonging to any of the given themes.
+	 * @param {Array<string>} themeNames - The theme names to include.
+	 * @param {Array<string>} themePresets - The eligible theme presets.
+	 * @returns {Array<string>} - The array of preset IDs for the given themes.
 	 * @private
 	 */
-	_getHarmonicPresets(eligiblePresets) {
-		const lightThemes  = ['white'];
-		const darkThemes   = ['black', 'nblue', 'ngreen', 'nred', 'ngold'];
-		const fusionThemes = ['reborn']; // Fusion presets
-		const middleThemes = ['reborn']; // Non-fusion reborn presets
+	_getHarmonicFilteredThemes(themeNames, themePresets) {
+		const themeSet = new Set(themeNames);
+		return themePresets.filter(id => themeSet.has(this.PRESET_CONFIGS[id].theme));
+	}
 
-		let targetThemes = [];
+	/**
+	 * Filters presets based on harmonic color matching with album art.
+	 * Picks themes that visually complement the image's brightness and primary hue.
+	 * @param {Array<string>} themePresets - The eligible theme presets.
+	 * @returns {Array<string>} - The array of preset IDs for the given themes.
+	 * @private
+	 */
+	_getHarmonicPresets(themePresets) {
+		const imgLum = grCol.imgLuminance || 0;
+		const colLum = grCol.colLuminance || 0;
+		const isLight = colLum > 0.55 || imgLum > 0.50;
+		const isDark = !isLight && imgLum < 0.20 && colLum < 0.10;
 
-		// Determine which theme category matches current colors
-		if (grCol.colLuminance > 0.60 || grCol.imgLuminance > 0.50) {
-			// Light colors
-			targetThemes = lightThemes;
-		}
-		else if (grCol.colLuminance < 0.02 || grCol.imgLuminance < 0.20) {
-			// Dark colors
-			targetThemes = darkThemes;
-		}
-		else if (ColorDistance(grCol.primary, grCol.secondary) > 0.60) {
-			// High color contrast - fusion presets
-			return eligiblePresets.filter(presetId => {
-				const config = this.PRESET_CONFIGS[presetId];
-				return fusionThemes.includes(config.theme) &&
-					(config.styleRebornFusion || config.styleRebornFusion2 || config.styleRebornFusionAccent);
+		const pool = (
+			isLight ? this._getHarmonicLightRangePresets(themePresets) :
+			isDark  ? this._getHarmonicDarkRangePresets(themePresets) :
+					  this._getHarmonicMidRangePresets(themePresets)
+		);
+
+		return pool.length ? pool : themePresets;
+	}
+
+	/**
+	 * Returns light-image harmonic presets: cream alongside white for chromatic green hues, white-only otherwise.
+	 * Cream's pistachio accent complements green-hued bright artwork naturally.
+	 * Requires C > 0.08 so a barely-tinted gray primary doesn't accidentally pick cream.
+	 * @param {Array<string>} themePresets - The eligible theme presets.
+	 * @returns {Array<string>} - The array of preset IDs for the given themes.
+	 * @private
+	 */
+	_getHarmonicLightRangePresets(themePresets) {
+		const { H, C } = RGBtoOKLCH(grCol.primary);
+
+		const isCreamFit = C > 0.08 && H >= 60 && H < 165;
+		const themes = isCreamFit ? ['cream', 'white'] : ['white'];
+
+		return this._getHarmonicFilteredThemes(themes, themePresets);
+	}
+
+	/**
+	 * Returns dark-image harmonic presets: neon and static themes matched by primary hue.
+	 * The color extraction pipeline already identified the perceptually best primary hue,
+	 * so we map it directly to theme names.
+	 * @param {Array<string>} themePresets - The eligible theme presets.
+	 * @returns {Array<string>} - The array of preset IDs for the given themes.
+	 * @private
+	 */
+	_getHarmonicDarkRangePresets(themePresets) {
+		const { H, C } = RGBtoOKLCH(grCol.primary);
+
+		const themesByHue = this._getPresetThemeNamesByHue(H, C);
+		const themesDark = ['black', 'nblue', 'ngreen', 'nred', 'ngold'];
+		const pool = this._getHarmonicFilteredThemes(themesByHue, themePresets);
+
+		return pool.length ? pool : this._getHarmonicFilteredThemes(themesDark, themePresets);
+	}
+
+	/**
+	 * Returns mid-range harmonic presets: reborn fusion for high color contrast, standard reborn otherwise.
+	 * Uses the raw album art color cache for a reliable contrast reading, independent of which preset type
+	 * was previously active (which determines whether grCol.secondary was extracted).
+	 * @param {Array<string>} themePresets - The eligible theme presets.
+	 * @returns {Array<string>} - The array of preset IDs for the given themes.
+	 * @private
+	 */
+	_getHarmonicMidRangePresets(themePresets) {
+		if (grm.colorManager.getAlbumArtColorContrast() > 0.28) {
+			const pool = themePresets.filter(id => {
+				const cfg = this.PRESET_CONFIGS[id];
+				return cfg.theme === 'reborn' &&
+					(cfg.styleRebornFusion || cfg.styleRebornFusion2 || cfg.styleRebornFusionAccent);
 			});
-		}
-		else {
-			// Middle range
-			targetThemes = middleThemes;
+
+			if (pool.length) return pool;
 		}
 
-		return eligiblePresets.filter(presetId => {
-			const config = this.PRESET_CONFIGS[presetId];
-			return targetThemes.includes(config.theme);
+		return themePresets.filter(id => {
+			const cfg = this.PRESET_CONFIGS[id];
+			return cfg.theme === 'reborn' &&
+				(!cfg.styleRebornFusion && !cfg.styleRebornFusion2 && !cfg.styleRebornFusionAccent);
 		});
 	}
 
 	/**
 	 * Gets all preset IDs for a given theme.
 	 * @param {string} theme - The theme name (e.g. 'white', 'black', 'reborn').
-	 * @returns {Array<string>} - The array of preset IDs for the theme.
+	 * @returns {Array<string>} - The array of preset IDs for the given themes.
 	 * @private
 	 */
 	_getPresetsForTheme(theme) {
@@ -1881,6 +1936,38 @@ class ThemePreset {
 			const config = this.PRESET_CONFIGS[presetId];
 			return config.theme === theme;
 		});
+	}
+
+	/**
+	 * Maps OKLCH hue and chroma to theme names.
+	 * Near-grayscale images get all neon options; chromatic images get hue-matched themes.
+	 * @param {number} H - The OKLCH hue angle (0-360).
+	 * @param {number} C - The OKLCH chroma.
+	 * @returns {Array<string>} The preferred theme names.
+	 * @private
+	 */
+	_getPresetThemeNamesByHue(H, C) {
+		if (C < 0.06) { // Near-grayscale: use neutral black theme
+			return ['black'];
+		}
+		if (H < 35 || H >= 330) { // Red / pink / magenta
+			return ['nred',  'red'];
+		}
+		if (H < 80) { // Gold / yellow / orange
+			return ['ngold'];
+		}
+		if (H < 160) { // Green / yellow-green
+			return ['ngreen'];
+		}
+		if (H < 225) { // Cyan / teal
+			return ['nblue', 'darkblue'];
+		}
+		if (H < 280) { // Blue / indigo
+			return ['nblue', 'blue', 'darkblue'];
+		}
+		if (H >= 280) { // Purple / violet (280-329)
+			return ['nred',  'nblue'];
+		}
 	}
 
 	/**
@@ -2006,6 +2093,7 @@ class ThemePreset {
 		grSet.styleRebornFusion = false;
 		grSet.styleRebornFusion2 = false;
 		grSet.styleRebornFusionAccent = false;
+		grSet.styleRandomNeon = false;
 		grSet.styleRandomPastel = false;
 		grSet.styleRandomDark = false;
 		grSet.styleRandomAutoColor = 'off';
@@ -2135,6 +2223,7 @@ class ThemePreset {
 		grSet.styleRebornFusion = grCfg.customStylePreset.rebornFusion;
 		grSet.styleRebornFusion2 = grCfg.customStylePreset.rebornFusion2;
 		grSet.styleRebornFusionAccent = grCfg.customStylePreset.rebornFusionAccent;
+		grSet.styleRandomNeon = grCfg.customStylePreset.randomNeon;
 		grSet.styleRandomPastel = grCfg.customStylePreset.randomPastel;
 		grSet.styleRandomDark = grCfg.customStylePreset.randomDark;
 		grSet.styleRandomAutoColor = grCfg.customStylePreset.randomAutoColor;

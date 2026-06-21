@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -156,6 +156,78 @@ class ColorManager {
 			FREQ_MIN_DOMINANT:  0.005,
 			FREQ_MIN_MODERATE:  0.008,
 			FREQ_MIN_BALANCED:  0.015
+		};
+
+		/**
+		 * The configuration constants for `applyColorSaturationAuto`.
+		 * Centralizes all tuning knobs for the perceptual loudness / eye-strain protection algorithm.
+		 * @typedef {Object} satAutoConfig
+		 * @property {number} CHROMA_BASE - The pleasant chroma baseline (0.12). Colors below this read as soft/muted and are never touched.
+		 * @property {number} CHROMA_RANGE - The normalization band above baseline (0.18), spanning the 0.12-0.30 chroma zone.
+		 * @property {number} THRESHOLD - The loudness score at which correction begins (0.38). Slightly lower than original 0.40 - the
+		 *   two-peak hue fix raises red loudness so much that this is safe without touching warm muted colors.
+		 * @property {number} FULL_CORRECT_AT - The loudness score at which 100% correction is applied (1.00).
+		 * @property {number} MAX_CUT - The maximum chroma fraction removable (0.55 = 55%). Slightly above original 0.50 for more decisive treatment of extreme neons.
+		 * @property {number} MAX_ABSOLUTE_CUT - The hard ceiling on the effective MAX_CUT after night multiplier (0.75). Prevents the night boost from ever washing a color to near-gray.
+		 *
+		 * TWO-PEAK HUE LOUDNESS MODEL
+		 * The original single photopic curve (one peak at H=128°) rated red (H≈25°) at only ~0.55 - barely enough to cross the
+		 * threshold at typical album-art chroma. Red is perceptually loud for different reasons (warning-color salience,
+		 * chromostereopsis, advancing hue) that the photopic curve cannot express. The dual-peak model fixes this:
+		 * two peaks (green H=128°, red H=25°), one trough at cyan-blue (H=255°), each peak's arc normalized by its own reach
+		 * to the trough so both hit exactly 1.0. Blue remains at ~0.26 - genuinely less straining, correctly uncorrected.
+		 *
+		 * @property {number} HUE_PEAK_GREEN - The OKLCH hue of the photopic loudness peak (128°).
+		 * @property {number} HUE_PEAK_RED - The OKLCH hue of the red loudness peak (25°).
+		 * @property {number} HUE_TROUGH - The OKLCH hue of the perceptual minimum (255°, cyan-blue).
+		 * @property {number} HUE_LOUDNESS_FLOOR - The minimum hue weight at the trough (0.25).
+		 *
+		 * NIGHT-TIME AGGRESSION (wall-clock, independent of the eye-protection schedule)
+		 * At night, ambient light drops and pupils dilate. The same chroma that reads as "pleasant" at noon is genuinely
+		 * fatiguing at midnight. The algorithm automatically becomes more aggressive inside the configurable night window
+		 * by lowering THRESHOLD, lowering FULL_CORRECT_AT, and raising MAX_CUT.
+		 * This is derived entirely from the wall clock in getNighttimeFactor() - independent of albumArtColorSaturationEyeSchedule:
+		 * - Schedule '0-24' (always on), or unset: algorithm runs 24/7; night boost still activates 20:00-07:00.
+		 * - Schedule '20-8': both schedule gate AND night boost apply; no double-counting problem.
+		 * Transitions use cubic smoothstep over TRANSITION_HOURS to prevent any visible color pop at dawn or dusk.
+		 *
+		 * @property {number} NIGHT_FLOOR_CHROMA_RATIO - The multiplier used to calculate the absolute chroma floor at night (0.50).
+		 * The night boost never reduces chroma below (CHROMA_BASE × this value), preventing extreme desaturation.
+		 * @property {number} NIGHT_THRESHOLD_MULTIPLIER - The THRESHOLD × this at deep night (0.78).
+		 * The effective threshold at peak night = 0.38 × 0.78 ≈ 0.297: catches noticeably more colors.
+		 * @property {number} NIGHT_MAXCUT_MULTIPLIER - The MAX_CUT × this at deep night (1.20).
+		 * Applied as an independent Lerp step: a fully-corrected color at peak night is blended from blendedC toward C*(1−effectiveMaxCut).
+		 * The effective night value = min(MAX_ABSOLUTE_CUT, 0.55×1.20) = 0.66.
+		 * @property {number} NIGHT_FULLCORRECT_MULTIPLIER - The FULL_CORRECT_AT × this at deep night (0.88).
+		 * The effective FULL_CORRECT_AT = 1.00 × 0.88 = 0.88: reaches 100% correction sooner.
+		 * @property {number} NIGHT_START_HOUR - The hour when the night window opens (20 = 8 PM, inclusive).
+		 * @property {number} NIGHT_END_HOUR - The hour when the night window closes (7 = 7 AM, exclusive).
+		 * The window wraps midnight (NIGHT_START_HOUR > NIGHT_END_HOUR).
+		 * @property {number} TRANSITION_HOURS - The crossfade width in hours centered on dawn/dusk (2).
+		 */
+		/** @public @type {satAutoConfig} */
+		this.satAutoConfig = {
+			CHROMA_BASE:      0.12,
+			CHROMA_RANGE:     0.18,
+			THRESHOLD:        0.38,
+			FULL_CORRECT_AT:  1.00,
+			MAX_CUT:          0.55,
+			MAX_ABSOLUTE_CUT: 0.75,
+
+			// * TWO-PEAK HUE MODEL
+			HUE_PEAK_GREEN:     128,
+			HUE_PEAK_RED:        25,
+			HUE_TROUGH:         255,
+			HUE_LOUDNESS_FLOOR: 0.25,
+
+			// * NIGHT BOOST
+			NIGHT_FLOOR_CHROMA_RATIO:     0.50,
+			NIGHT_THRESHOLD_MULTIPLIER:   0.78,
+			NIGHT_MAXCUT_MULTIPLIER:      1.20,
+			NIGHT_FULLCORRECT_MULTIPLIER: 0.88,
+			NIGHT_START_HOUR:               20,
+			NIGHT_END_HOUR:                  7,
+			TRANSITION_HOURS:                2
 		};
 
 		/**
@@ -538,6 +610,29 @@ class ColorManager {
 
 		this.colorCache.set(rgb, color);
 		return color;
+	}
+
+	/**
+	 * Computes the shared lyrics color set (highlight, shadow) from a primary color.
+	 * @param {number} primary - The primary RGB color value.
+	 * @param {boolean} isLightBg - The flag if the background is light.
+	 * @param {boolean} staticTheme - The flag if the theme is static (non-dynamic).
+	 * @param {object} themeObj - The current theme palette object.
+	 * @returns {{ lyricsHighlight: number, lyricsShadow: number }}
+	 */
+	getLyricsColors(primary, isLightBg, staticTheme, themeObj) {
+		const oklchPrimary = RGBtoOKLCH(primary);
+		const highlightH = (oklchPrimary.H + 180) % 360;
+		const highlightL = isLightBg ? 0.50 : 0.90;
+		const highLightC = this.getMaxGamutChroma(highlightL, highlightH) * 0.75;
+		const lyricsHighlight = OKLCHtoRGB(highlightL, highLightC, highlightH);
+
+		const shadedShadow = ShadeColorOKLCH(primary, 75);
+		const lyricsShadow = staticTheme ? themeObj :
+			isLightBg ? RGBtoRGBA(shadedShadow, 100) :
+			RGBtoRGBA(shadedShadow, 200);
+
+		return { lyricsHighlight, lyricsShadow };
 	}
 
 	/**
@@ -924,9 +1019,16 @@ class ColorManager {
 	 * @param {Array} [cache] - The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls.
 	 */
 	setImageBrightness(image = grm.ui.albumArt, cache = grm.ui.cachedAlbumArtColors) {
-		if (grCfg.settings.showDebugThemeOverlay && image && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 ||
-			grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn)) {
+		if (!grCfg.settings.showDebugThemeOverlay && !image) return;
+
+		const needBrightness = (
+			grSet.styleBlend || grSet.styleBlend2 || grSet.styleBlackAndWhiteReborn ||
+			grSet.presetSelectMode === 'harmonic' || libSet.theme !== 0
+		);
+
+		if (needBrightness) {
 			grCol.imgBrightness = CalcImgBrightness(image, cache);
+			grSet.styleBlackAndWhiteReborn && grm.colorStyles.initBlackAndWhiteReborn();
 		}
 	}
 
@@ -936,10 +1038,16 @@ class ColorManager {
 	 * @param {Array} [cache] - The cache array for album art color extraction to avoid repeated GetColourSchemeJSON calls.
 	 */
 	setImageLuminance(image = grm.ui.albumArt, cache = grm.ui.cachedAlbumArtColors) {
-		if (image && (libSet.theme !== 0 || grSet.styleBlend || grSet.styleBlend2 ||
-			grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn)) {
+		if (!image) return;
+
+		const needLuminance = (
+			grSet.styleBlend || grSet.styleBlend2 || grSet.styleBlackAndWhiteReborn ||
+			grSet.presetSelectMode === 'harmonic' || libSet.theme !== 0
+		);
+
+		if (needLuminance) {
 			grCol.imgLuminance = grm.colorSystem.calcImgLuminance(image, cache);
-			grm.colorStyles.initBlackAndWhiteReborn();
+			grSet.styleBlackAndWhiteReborn && grm.colorStyles.initBlackAndWhiteReborn();
 		}
 	}
 
@@ -1000,6 +1108,7 @@ class ColorManager {
 		const generateRandomColor = () => {
 			let color;
 			let luminance;
+			let attempts = 0;
 
 			do {
 				// Hue is always fully random (0-360)
@@ -1007,7 +1116,11 @@ class ColorManager {
 				let targetL;
 				let targetC;
 
-				if (grSet.styleRandomPastel) { // Pastel: soft, creamy colors
+				if (grSet.styleRandomNeon) { // Neon: electric, high-vibrancy colors
+					targetL = 0.55 + Math.random() * 0.15; // 0.55-0.70
+					targetC = 0.20 + Math.random() * 0.15; // 0.20-0.35 (electric!)
+				}
+				else if (grSet.styleRandomPastel) { // Pastel: soft, creamy colors
 					targetL = 0.75 + Math.random() * 0.15; // 0.75-0.90
 					targetC = 0.05 + Math.random() * 0.08; // 0.05-0.13 (soft colors)
 				}
@@ -1015,22 +1128,23 @@ class ColorManager {
 					targetL = 0.25 + Math.random() * 0.15; // 0.25-0.40
 					targetC = 0.08 + Math.random() * 0.12; // 0.08-0.20 (rich colors)
 				}
-				// ! TODO: my designer gut tells me, this will be cool with blending
-				// else if (grSet.styleRandomNeon) { // Neon: electric, high-vibrancy colors
-				// 	// Neon: medium-high lightness, very high chroma
-				// 	targetL = 0.55 + Math.random() * 0.15; // 0.55-0.70
-				// 	targetC = 0.20 + Math.random() * 0.15; // 0.20-0.35 (electric!)
-				// }
 				else { // General: full spectrum (covers dark, vibrant, and light)
 					targetL = 0.30 + Math.random() * 0.45; // 0.30-0.75
-					targetC = 0.05 + Math.random() * 0.20; // 0.05-0.25
+					targetC = 0.08 + Math.random() * 0.17; // 0.08-0.25
 				}
+
+				// Gamut-aware C cap: clamp to 95% of the maximum in-gamut chroma so OKLCHtoRGB
+				// never silently clips the result to a different color than intended.
+				// Most important for neon mode where targetC can reach 0.35.
+				const maxC = this.getMaxGamutChroma(targetL, h);
+				targetC = Math.min(targetC, maxC * 0.95);
 
 				const rgb = OKLCHtoRGB(targetL, targetC, h);
 				color = new Color(rgb);
 				luminance = color.luminance;
+				attempts++;
 			}
-			while (luminance > 0.8); // Repeat if too bright
+			while (luminance > 0.8 && attempts < 20); // Repeat if too bright, bounded to 20 attempts
 
 			return color;
 		};
@@ -1182,6 +1296,70 @@ class ColorManager {
 	}
 
 	/**
+	 * Calculates the perceptual loudness weight of a hue using a dual-peak model.
+	 * Two peaks: yellow-green (H≈128°) and red (H≈25°) both score 1.0; blue (H≈255°) scores the floor.
+	 *
+	 * Each peak's arc to the shared trough (H=255°) is normalized independently so both lobes
+	 * reach HUE_LOUDNESS_FLOOR at exactly HUE_TROUGH despite different arc lengths:
+	 * - reachGreen = GetCircularHueDifference(128, 255) = 127°
+	 * - reachRed   = GetCircularHueDifference( 25, 255) = 130°
+	 *
+	 * At any hue, the score is driven by whichever peak is nearer (minimum t wins).
+	 * @param {number} H - The OKLCH hue angle (0-360°).
+	 * @returns {number} The loudness weight in [HUE_LOUDNESS_FLOOR, 1.0].
+	 * @private
+	 */
+	_calcHueLoudness(H) {
+		const { HUE_PEAK_GREEN, HUE_PEAK_RED, HUE_TROUGH, HUE_LOUDNESS_FLOOR } = this.satAutoConfig;
+		H = ((H % 360) + 360) % 360;
+
+		// Angular distance from H to each peak, and each peak's reach to the shared trough
+		const distGreen  = GetCircularHueDifference(H, HUE_PEAK_GREEN);
+		const distRed    = GetCircularHueDifference(H, HUE_PEAK_RED);
+		const reachGreen = GetCircularHueDifference(HUE_PEAK_GREEN, HUE_TROUGH); // 127°
+		const reachRed   = GetCircularHueDifference(HUE_PEAK_RED,   HUE_TROUGH); // 130°
+
+		// Normalized progress toward the trough: 0 at the nearer peak, 1 at/beyond the trough.
+		// Independent normalization ensures both lobes hit HUE_LOUDNESS_FLOOR at exactly HUE_TROUGH.
+		const tGreen = Math.min(1, distGreen / reachGreen);
+		const tRed   = Math.min(1, distRed   / reachRed);
+		const t      = Math.min(tGreen, tRed); // Driven by the nearer peak
+
+		// Raised cosine: 1.0 at either peak (t=0), HUE_LOUDNESS_FLOOR at the trough (t=1)
+		return HUE_LOUDNESS_FLOOR + (1 - HUE_LOUDNESS_FLOOR) * (0.5 + 0.5 * Math.cos(t * Math.PI));
+	}
+
+	/**
+	 * Calculates the lightness-based factor for perceptual loudness scoring.
+	 * Mid-bright colors (L 0.50-0.85) are the harshest zone; very dark colors (L < 0.25)
+	 * and very light colors (L > 0.85) are naturally less eye-straining at the same chroma.
+	 * The dark zone ramps smoothly to zero - near-black colors cannot cause eye strain
+	 * regardless of saturation and should contribute nothing to the loudness score.
+	 * All zone transitions use cubic smoothstep interpolation, eliminating the C¹ slope
+	 * discontinuities (kinks) that the original piecewise-linear version had at L = 0.25
+	 * and L = 0.50. Anchor values are preserved: 0.0 at L=0, 0.30 at L=0.25, 1.0 at L=0.50-0.85, 0.30 at L=1.0.
+	 * @param {number} L - The OKLCH lightness (0-1).
+	 * @returns {number} The loudness factor (0.0-1.0).
+	 * @private
+	 */
+	_calcLoudnessLightnessFactor(L) {
+		if (L < 0.25) {
+			// Smoothstep ramp 0 to 0.30: near-black causes no strain; C¹ smooth at both ends
+			return 0.3 * SmoothstepRange(L, 0, 0.25);
+		}
+		if (L < 0.50) {
+			// Smoothstep ramp 0.30 to 1.0: C¹ smooth join to both adjacent zones
+			return 0.3 + 0.7 * SmoothstepRange(L, 0.25, 0.50);
+		}
+		if (L <= 0.85) {
+			// Harshest zone: full weight
+			return 1.0;
+		}
+		// Smoothstep decline 1.0 to 0.30: washed-out colors cause diminishing strain
+		return Math.max(0.3, 1.0 - SmoothstepRange(L, 0.85, 1.0) * 0.7);
+	}
+
+	/**
 	 * Clusters colors by hue similarity using DBSCAN-like approach.
 	 * @param {Array} colors - The sorted color array.
 	 * @param {number} hueThreshold - The max hue distance for same cluster (degrees).
@@ -1307,7 +1485,7 @@ class ColorManager {
 			console.log('_selectPrimaryColor => Ultimate fallback - using first color');
 		}
 
-		return colors[0] ? colors[0].col : new Color(0xff000000);
+		return colors[0] ? colors[0].col : this.getCachedColor(0xff000000);
 	}
 
 	/**
@@ -1434,7 +1612,8 @@ class ColorManager {
 
 		colors.sort((a, b) => b.weight - a.weight);
 
-		const primary = this._selectPrimaryColor(colors, minLuminance, maxLuminance, isTwoColor);
+		const paletteColor = this.selectAlbumArtPaletteColor(colors, grSet.albumArtColorPalette);
+		const primary = paletteColor || this._selectPrimaryColor(colors, minLuminance, maxLuminance, isTwoColor);
 		const secondary = secondaryColor ? this._selectSecondaryColor(
 			colors, primary, minDistance, minFrequency, minLuminance, maxLuminance,
 		) : null;
@@ -1444,6 +1623,10 @@ class ColorManager {
 			console.log(`Adaptive minFreq: ${minFrequency} (max color freq: ${(maxFreq * 100).toFixed(1)}%)`);
 			isTwoColor && console.log(`${Unicode.ArtistPalette} Two-color design mode active`);
 			console.log('Primary:', primary.getRGB(true), `| Lum:${primary.luminance.toFixed(3)} Sat:${primary.saturation} Hue:${primary.hue.toFixed(0)}°`);
+
+			if (paletteColor) {
+				console.log(`albumArtColorPalette (${grSet.albumArtColorPalette}) => picked ${primary.getRGB(true)} over default`);
+			}
 
 			if (secondaryColor && secondary) {
 				console.log('Secondary:', secondary.getRGB(true), `| Lum:${secondary.luminance.toFixed(3)} Sat:${secondary.saturation} Hue:${secondary.hue.toFixed(0)}°`);
@@ -1492,6 +1675,7 @@ class ColorManager {
 		// Track raw primary and secondary color
 		grCol.primary_raw = colPrimaryVal;
 		grCol.secondary_raw = colSecondaryVal !== undefined ? colSecondaryVal : undefined;
+		grm.colorChameleon.setAlbumArtPaletteColors(colorScheme, true);
 
 		const isTwoColor = this.isAlbumArtTwoColored(colorScheme);
 
@@ -1500,22 +1684,156 @@ class ColorManager {
 		const secondaryColor = rebornFusion && colSecondaryVal !== undefined ?
 			this._applyBrightnessLimits(colSecondaryVal, colorScheme, isTwoColor) : null;
 
+		// Apply saturation limiter if active
+		const finalPrimary = this.applyColorSaturation(primaryColor.val, grSet.albumArtColorSaturation);
+		const finalSecondary = secondaryColor ? this.applyColorSaturation(secondaryColor.val, grSet.albumArtColorSaturation) : null;
+
 		// Apply theme colors
-		const palette = rebornFusion && secondaryColor
-			? this.createThemeColorPalette(primaryColor.val, secondaryColor.val)
-			: this.createThemeColorPalette(primaryColor.val);
+		const palette = rebornFusion && finalSecondary
+			? this.createThemeColorPalette(finalPrimary, finalSecondary)
+			: this.createThemeColorPalette(finalPrimary);
 
 		this.setThemeColorPalette(palette);
 
 		if (grCfg.settings.showDebugThemeLog) {
-			console.log('setAlbumArtThemeColors => Final Primary luminance:', primaryColor.luminance.toFixed(3));
-			secondaryColor && console.log('setAlbumArtThemeColors => Final Secondary luminance:', secondaryColor.luminance.toFixed(3));
+			grm.debug.debugLog('setAlbumArtThemeColors => Final Primary luminance:', primaryColor.luminance.toFixed(3));
+			secondaryColor && grm.debug.debugLog('setAlbumArtThemeColors => Final Secondary luminance:', secondaryColor.luminance.toFixed(3));
+
+			if (grSet.albumArtColorSaturation === 'auto') {
+				const nightFactor = this.getNighttimeFactor();
+				const scheduleFactor = grm.day.getEyeProtectionScheduleFactor(grSet.albumArtColorSaturationEyeSchedule);
+				const primaryOKLCH = RGBtoOKLCH(primaryColor.val);
+				const finalOKLCH = RGBtoOKLCH(finalPrimary);
+				grm.debug.debugLog(`Color saturation (auto, schedule=${(scheduleFactor * 100).toFixed(0)}%, night=${(nightFactor * 100).toFixed(0)}%) => Primary C: ${primaryOKLCH.C.toFixed(3)} => ${finalOKLCH.C.toFixed(3)}`);
+			}
+			else if (grSet.albumArtColorSaturation !== 100) {
+				const primaryOKLCH = RGBtoOKLCH(primaryColor.val);
+				const finalOKLCH = RGBtoOKLCH(finalPrimary);
+				grm.debug.debugLog(`Color saturation (${grSet.albumArtColorSaturation}%) => Primary C: ${primaryOKLCH.C.toFixed(3)} => ${finalOKLCH.C.toFixed(3)}`);
+			}
 		}
 	}
 	// #endregion
 
 	// * PUBLIC METHODS - ALBUM ART UTILITIES * //
 	// #region PUBLIC METHODS - ALBUM ART UTILITIES
+	/**
+	 * Applies a color saturation scaling to a color in OKLCH space.
+	 * 'auto' = selective eye protection (only loud hues reduced, schedule factor is smoothly ramped),
+	 * 100    = full vividness (no effect),
+	 * 0-99   = uniform chroma scaling.
+	 * @param {number} color - The RGB color value.
+	 * @param {number|string} saturation - The saturation value.
+	 * @returns {number} The adjusted RGB color value.
+	 */
+	applyColorSaturation(color, saturation) {
+		if (saturation === 100) return color;
+
+		if (saturation === 'auto') {
+			const scheduleFactor = grm.day.getEyeProtectionScheduleFactor(grSet.albumArtColorSaturationEyeSchedule);
+			if (scheduleFactor <= 0) return color;
+			return this.applyColorSaturationAuto(color, scheduleFactor);
+		}
+
+		const factor = saturation / 100;
+		return AdjustChromaOKLCH(color, factor);
+	}
+
+	/**
+	 * Applies automatic selective chroma reduction to perceptually "loud" colors only.
+	 * Routine album art colors are completely untouched; only neon/electric tones that
+	 * exceed the perceptual loudness threshold receive a progressive reduction.
+	 *
+	 * The loudness score = chromaExcess × hueLoudness × lightFactor.
+	 * - chromaExcess:  how far the color's chroma exceeds CHROMA_BASE, normalized to CHROMA_RANGE.
+	 * - hueLoudness:   dual-peak model. Red (H≈25°) and yellow-green (H≈128°) both score ~1.0; blue (H≈255°) scores the floor. See _calcHueLoudness.
+	 * - lightFactor:   zero for near-black, full weight in the mid-bright zone (L 0.50-0.85). See _calcLoudnessLightnessFactor.
+	 *
+	 * NIGHT BOOST: threshold, fullCorrect, and maxCut are smoothly blended between daytime and
+	 * nighttime values based on getNighttimeFactor() - wall-clock-only, independent of
+	 * albumArtColorSaturationEyeSchedule. A '0-24' (always-on) schedule still benefits from the boost.
+	 * The night boost itself can be disabled independently via grSet.albumArtColorSaturationEyeNightCor
+	 * (default: true) - for users who keep a light on at night, where the room isn't actually dark despite
+	 * the wall-clock hour. When off, getNighttimeFactor() always returns 0.0 and the algorithm behaves
+	 * identically around the clock within its active schedule window.
+	 *
+	 * Colors with loudness ≤ threshold:   returned completely unchanged.
+	 * Colors with loudness in (threshold, fullCorrect]:  progressive smoothstep correction.
+	 * Colors with loudness > fullCorrect: full correction (blendFactor = 1).
+	 *
+	 * targetC is the exact chroma that would produce loudness = threshold at the color's current
+	 * hue/lightness. Proof that targetC < C whenever loudness > threshold:
+	 * - loudness > threshold
+	 * - (C − BASE)/RANGE × hf × lf > threshold
+	 * - C > BASE + (threshold / (hf × lf)) × RANGE = targetC  ∎
+	 *
+	 * @param {number} color - The RGB color value (packed integer).
+	 * @param {number} [scheduleFactor] - The smooth eye-protection intensity from
+	 * {@link ThemeDayNight#getEyeProtectionScheduleFactor} (0.0-1.0, default 1.0).
+	 * 1.0 = full correction (schedule window fully active or always-on).
+	 * 0 < factor < 1 = partial correction during the boundary ramp.
+	 * The caller guarantees factor > 0; the <= 0 case is short-circuited in
+	 * {@link ColorManager#applyColorSaturation} before this method is reached.
+	* @returns {number} The adjusted RGB color value, unchanged if below threshold.
+	 */
+	applyColorSaturationAuto(color, scheduleFactor = 1.0) {
+		const alpha = GetAlpha(color);
+		const oklch = RGBtoOKLCH(color);
+
+		const { L, C, H } = oklch;
+		const {
+			CHROMA_BASE, CHROMA_RANGE, THRESHOLD, FULL_CORRECT_AT, MAX_CUT, MAX_ABSOLUTE_CUT,
+			NIGHT_FLOOR_CHROMA_RATIO, NIGHT_THRESHOLD_MULTIPLIER, NIGHT_FULLCORRECT_MULTIPLIER, NIGHT_MAXCUT_MULTIPLIER
+		} = this.satAutoConfig;
+
+		// * Fast path: C at or below CHROMA_BASE always produces loudness ≤ 0, regardless of night boost.
+		if (C <= CHROMA_BASE) return color;
+
+		// * Blend daytime/nighttime parameters via wall-clock factor.
+		const nightFactor = this.getNighttimeFactor();
+		let threshold   = THRESHOLD;
+		let fullCorrect = FULL_CORRECT_AT;
+		let maxCut      = MAX_CUT;
+
+		if (nightFactor > 0) {
+			const nightThreshold   = THRESHOLD * NIGHT_THRESHOLD_MULTIPLIER;
+			const nightFullCorrect = FULL_CORRECT_AT * NIGHT_FULLCORRECT_MULTIPLIER;
+			const nightMaxCut      = Math.min(MAX_ABSOLUTE_CUT, MAX_CUT * NIGHT_MAXCUT_MULTIPLIER);
+
+			threshold   = Lerp(THRESHOLD, nightThreshold, nightFactor);
+			fullCorrect = Lerp(FULL_CORRECT_AT, nightFullCorrect, nightFactor);
+			maxCut      = Lerp(MAX_CUT, nightMaxCut, nightFactor);
+		}
+
+		const chromaExcess = (C - CHROMA_BASE) / CHROMA_RANGE;
+		const hueFactor    = this._calcHueLoudness(H);
+		const lightFactor  = this._calcLoudnessLightnessFactor(L);
+		const loudness     = chromaExcess * hueFactor * lightFactor;
+
+		if (loudness <= threshold) return color;
+
+		const denominator = hueFactor * lightFactor;
+		if (denominator <= 0) return color;
+		const targetC = CHROMA_BASE + (threshold / denominator) * CHROMA_RANGE;
+
+		// Cubic smoothstep blend: 0% correction at threshold = 100% at fullCorrect = full beyond.
+		const correctionRange = fullCorrect - threshold;
+		const blendFactor = correctionRange <= 0 ? 1 : SmoothstepRange(loudness, threshold, fullCorrect);
+		const blendedC = Lerp(C, targetC, blendFactor);
+
+		// Math.min: ensures the night step only ever reduces chroma, never raises it
+		// (rawNightC can theoretically exceed blendedC for near-gamut-limit colors at low nightFactor)
+		const rawNightC = Lerp(blendedC, C * (1 - maxCut), nightFactor * blendFactor);
+		const newC = Math.max(CHROMA_BASE * NIGHT_FLOOR_CHROMA_RATIO, Math.min(blendedC, rawNightC));
+
+		// Apply schedule factor: smoothly scales the overall correction strength.
+		// scheduleFactor=1 = full night+loudness correction; <1 = partial (ramp-in/out at boundary).
+		// The caller already gates scheduleFactor <= 0, so this lerp always has factor > 0.
+		const finalC = Lerp(C, newC, scheduleFactor);
+
+		return (OKLCHtoRGB(L, finalC, H) & 0x00FFFFFF) | (alpha << 24);
+	}
+
 	/**
 	 * Calculates an adaptive minimum frequency threshold based on color distribution.
 	 * If one color dominates >70%, lower the threshold to allow accent colors through.
@@ -1541,6 +1859,35 @@ class ColorManager {
 	}
 
 	/**
+	 * Binary-searches for the maximum in-gamut OKLCH chroma at a given lightness and hue.
+	 * OKLCHtoRGB silently clamps out-of-gamut coordinates; clamping is detected by round-tripping
+	 * through RGBtoOKLCH and comparing the recovered chroma against the probed value.
+	 * @param {number} L - The OKLCH lightness (0-1).
+	 * @param {number} H - The OKLCH hue angle (0-360°).
+	 * @param {number} [maxSearch] - The upper chroma bound for the binary search (default: 0.40).
+	 * @returns {number} The largest chroma that survives the round-trip within a 0.005 tolerance.
+	 */
+	getMaxGamutChroma(L, H, maxSearch = 0.40) {
+		let lo = 0;
+		let hi = maxSearch;
+
+		for (let i = 0; i < 8; i++) {
+			const mid = (lo + hi) / 2;
+			const rgb = OKLCHtoRGB(L, mid, H);
+			const rt  = RGBtoOKLCH(rgb);
+
+			// If the round-tripped chroma matches what we asked for, mid is in gamut
+			if (Math.abs(rt.C - mid) < 0.005) {
+				lo = mid;
+			} else {
+				hi = mid;
+			}
+		}
+
+		return lo;
+	}
+
+	/**
 	 * Gets the maximum luminance threshold based on active theme and style.
 	 * @returns {number} The maximum luminance threshold.
 	 */
@@ -1562,6 +1909,74 @@ class ColorManager {
 	getMinLuminance(colorScheme, isTwoColor = null) {
 		const twoColor = isTwoColor !== null ? isTwoColor : this.isAlbumArtTwoColored(colorScheme);
 		return twoColor ? 0.001 : 0.01;
+	}
+
+	/**
+	 * Computes a smooth night-time intensity factor [0.0 = full day, 1.0 = deep night]
+	 * derived entirely from the wall clock, completely independent of the eye-protection schedule.
+	 *
+	 * Uses an elapsed-time coordinate system re-based on NIGHT_START_HOUR so that midnight
+	 * wrapping is handled correctly for any configuration, including NIGHT_START_HOUR < TRANSITION_HOURS.
+	 * elapsed=0 is the start of deep night; elapsed increments until the next NIGHT_START_HOUR.
+	 *
+	 * Default timing (NIGHT_START_HOUR=20, NIGHT_END_HOUR=7, TRANSITION_HOURS=2):
+	 * - elapsed range  wall clock        factor
+	 * - [0,  11)       20:00-07:00       1.0  (deep night, wraps midnight)
+	 * - [11, 13)       07:00-09:00       1→0  (ramp-out)
+	 * - [13, 22)       09:00-18:00       0.0  (daytime)
+	 * - [22, 24)       18:00-20:00       0→1  (ramp-in)
+	 *
+	 * All transitions use cubic smoothstep to eliminate visible color pops at dawn and dusk.
+	 * @returns {number} The night intensity factor in [0.0, 1.0].
+	 */
+	getNighttimeFactor() {
+		if (!grSet.albumArtColorSaturationEyeNightCor) return 0.0;
+
+		const { NIGHT_START_HOUR, NIGHT_END_HOUR, TRANSITION_HOURS } = this.satAutoConfig;
+		const now = new Date();
+		const hour = now.getHours() + now.getMinutes() / 60; // Decimal hours for sub-hour smoothness
+
+		const nightDuration = (NIGHT_END_HOUR - NIGHT_START_HOUR + 24) % 24;
+		const elapsed = (hour - NIGHT_START_HOUR + 24) % 24;
+
+		// * Deep night: elapsed ∈ [0, nightDuration)
+		if (elapsed < nightDuration) return 1.0;
+
+		// * Ramp-out: gradual return to day after deep night ends
+		const rampOutEdge = Math.min(nightDuration + TRANSITION_HOURS, 24);
+		if (elapsed < rampOutEdge) {
+			return 1 - SmoothstepRange(elapsed, nightDuration, rampOutEdge);
+		}
+
+		// * Ramp-in: gradual approach to night in the window immediately before NIGHT_START_HOUR
+		const rampInStart = Math.max(nightDuration + TRANSITION_HOURS, 24 - TRANSITION_HOURS);
+		if (elapsed >= rampInStart) {
+			const effectiveTransition = 24 - rampInStart;
+			if (effectiveTransition <= 0) return 0.0;
+			return SmoothstepRange(elapsed, rampInStart, 24);
+		}
+
+		// * Pure daytime
+		return 0.0;
+	}
+
+	/**
+	 * Estimates the perceptual color contrast in the current album art.
+	 * Prefers grCol.secondary when it was actually extracted (differs from primary);
+	 * otherwise reads the top-2 frequency colors directly from the raw color cache.
+	 * This avoids the stale-secondary problem where grCol.secondary reflects the
+	 * previous track's extraction (only done when a fusion preset is active).
+	 * @returns {number} The OKLAB distance (0 = monochrome, >0.28 = two clearly distinct colors).
+	 */
+	getAlbumArtColorContrast() {
+		if (grCol.secondary !== grCol.primary) {
+			return OKLABColorDistance(grCol.primary, grCol.secondary);
+		}
+
+		const cache = grm.ui.cachedAlbumArtColors;
+		if (!cache || cache.length < 2) return 0;
+
+		return OKLABColorDistance(cache[0].col, cache[1].col);
 	}
 
 	/**
@@ -1710,6 +2125,26 @@ class ColorManager {
 	}
 
 	/**
+	 * Selects a secondary color from a pre-built weighted palette, contrasting with the given primary.
+	 * @param {Color} primaryColorObj - The primary Color object (from getCachedColor).
+	 * @param {Array} weightedCandidates - The weighted color array stored from _buildPalette.
+	 * @returns {Color|null} The selected secondary Color, or null if selection fails.
+	 */
+	getSecondaryFromPalette(primaryColorObj, weightedCandidates) {
+		if (!weightedCandidates || weightedCandidates.length < 2) {
+			return null;
+		}
+
+		const others = weightedCandidates.filter(c => c.col.val !== primaryColorObj.val);
+		if (others.length === 0) return null;
+
+		const minLum = this.getMinLuminance([]);
+		const maxLum = this.getMaxLuminance();
+
+		return this._selectSecondaryColor(others, primaryColorObj, 100, 0, minLum, maxLum);
+	}
+
+	/**
 	 * Creates a triadic color harmony (evenly spaced on wheel) using OKLCH.
 	 * Perfect for creating vibrant, balanced color schemes.
 	 * @param {number} color - The base RGB color.
@@ -1780,6 +2215,113 @@ class ColorManager {
 		}
 
 		return qualifies;
+	}
+
+	/**
+	 * Selects a primary color from the weighted palette based on a color-theory relationship mode.
+	 * Stateless single-pick operation: uses the top-weighted valid color as the hue reference,
+	 * then returns the candidate whose hue best satisfies the requested relationship.
+	 *
+	 * Unlike the ChameleonColorSystem palette-cycle selectors (which advance a persistent index),
+	 * this method makes exactly one selection per call with no side-effects.
+	 *
+	 * Available modes:
+	 * `auto`: null (fall through to the default weighted algorithm).
+	 * `monochromatic`: closest hue to the reference color.
+	 * `analogous`: smallest strictly-clockwise hue offset from the reference.
+	 * `splitComplementary`: closest hue to (H+150°) or (H+210°).
+	 * `complementary`: closest hue to (H+180°).
+	 * `triadic`: closest hue to (H+120°) or (H+240°).
+	 * `tetradic`: closest hue to (H+90°) or (H+270°).
+	 * `distinct`: first candidate exceeding OKLAB distance 0.15 from the reference.
+	 * `random`: uniformly random pick from all valid candidates.
+	 *
+	 * @param {Array} weightedColors - The weighted/sorted color objects from getAlbumArtWeightedColors.
+	 * @param {string} mode - The selection mode string (grSet.albumArtColorPalette).
+	 * @returns {Color|null} The selected Color object, or null to fall through to the default algorithm.
+	 */
+	selectAlbumArtPaletteColor(weightedColors, mode) {
+		if (!weightedColors || weightedColors.length < 2 || !mode || mode === 'auto') {
+			return null;
+		}
+
+		const valid = weightedColors.filter(c => c.isValidPrimary);
+		if (valid.length < 2) return null;
+
+		const reference = valid[0].col;
+		const refHue = RGBtoOKLCH(reference.val).H;
+		const rest = valid.slice(1);
+		const restHues  = rest.map(c => RGBtoOKLCH(c.col.val).H);
+
+		/** Returns the rest-color whose hue minimizes getDiff. */
+		const pickBest = (getDiff) => {
+			let best = 0;
+			let bestDiff = Infinity;
+
+			for (let i = 0; i < rest.length; i++) {
+				const diff = getDiff(restHues[i]);
+				if (diff < bestDiff) { bestDiff = diff; best = i; }
+			}
+
+			return rest[best].col;
+		};
+
+		switch (mode) {
+			case 'monochromatic': { // Closest hue to reference (stays in the same color family)
+				return pickBest(h => GetCircularHueDifference(h, refHue));
+			}
+
+			case 'analogous': { // Smallest strictly-clockwise offset (smooth hue drift)
+				return pickBest(h => (h - refHue + 360) % 360);
+			}
+
+			case 'splitComplementary': { // Nearest to H+150° or H+210°
+				const h150 = (refHue + 150) % 360;
+				const h210 = (refHue + 210) % 360;
+				return pickBest(h => Math.min(
+					GetCircularHueDifference(h, h150), GetCircularHueDifference(h, h210)
+				));
+			}
+
+			case 'complementary': { // Nearest to H+180°
+				const compHue = (refHue + 180) % 360;
+				return pickBest(h => GetCircularHueDifference(h, compHue));
+			}
+
+			case 'triadic': { // Nearest to H+120° or H+240°
+				const h120 = (refHue + 120) % 360;
+				const h240 = (refHue + 240) % 360;
+				return pickBest(h => Math.min(
+					GetCircularHueDifference(h, h120), GetCircularHueDifference(h, h240)
+				));
+			}
+
+			case 'tetradic': { // Nearest to H+90° or H+270°
+				const h90 = (refHue + 90) % 360;
+				const h270 = (refHue + 270) % 360;
+				return pickBest(h => Math.min(
+					GetCircularHueDifference(h, h90), GetCircularHueDifference(h, h270)
+				));
+			}
+
+			case 'distinct': { // First candidate exceeding OKLAB perceptual distance threshold
+				const MIN_OKLAB_DIST = 0.15;
+				for (const c of rest) {
+					if (OKLABColorDistance(reference.val, c.col.val) >= MIN_OKLAB_DIST) {
+						return c.col;
+					}
+				}
+				return rest.length > 0 ? rest[0].col : reference;
+			}
+
+			case 'random': { // Uniformly random from all valid candidates (including reference)
+				return valid[Math.floor(Math.random() * valid.length)].col;
+			}
+
+			default: {
+				return null;
+			}
+		}
 	}
 	// #endregion
 }

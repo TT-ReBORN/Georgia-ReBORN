@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    12-01-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -498,6 +498,7 @@ class FileManager {
 			grSet.styleRebornBlack && 'rebornBlack',
 			grSet.styleRebornFusion && 'rebornFusion',
 			grSet.styleRebornFusion2 && 'rebornFusion2',
+			grSet.styleRandomNeon && 'randomNeon',
 			grSet.styleRandomPastel && 'randomPastel',
 			grSet.styleRandomDark && 'randomDark',
 			grSet.styleRebornFusionAccent && 'rebornFusionAccent',

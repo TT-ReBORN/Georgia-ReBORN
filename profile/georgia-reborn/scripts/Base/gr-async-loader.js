@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -109,6 +109,7 @@ class FileLoader {
 			'biography\\scripts\\bio-callbacks.js',
 			'base\\gr-color.js',
 			'base\\gr-color-system.js',
+			'base\\gr-color-chameleon.js',
 			'base\\gr-color-manager.js',
 			'base\\gr-color-themes.js',
 			'base\\gr-color-styles.js',

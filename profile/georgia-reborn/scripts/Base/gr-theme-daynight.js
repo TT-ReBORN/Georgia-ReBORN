@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -23,7 +23,11 @@ class ThemeDayNight {
 	 * Creates the `ThemeDayNight` instance.
 	 */
 	constructor() {
-		/** @private @type {?number} The timer ID for periodic checks (every 10 minutes). */
+		/** @private @type {number|null} The last seen schedule factor; replaces the old Boolean eyeProtectionLastState. */
+		this.eyeScheduleFactor = null;
+		/** @private @type {number|null} The last seen night-boost factor. */
+		this.eyeNightFactor = null;
+		/** @private @type {?number} The timer ID for periodic checks. */
 		this.timer = null;
 	}
 
@@ -171,7 +175,11 @@ class ThemeDayNight {
 		// Abort if general day/night mode is off or in setup mode or custom tags are active
 		if (!grSet.themeDayNightEnabled || grSet.themeSetupDay || grSet.themeSetupNight ||
 			$('[%GR_THEME%]') || $('[%GR_STYLE%]') || $('[%GR_PRESET%]')) {
-			this.stopTimer();
+			if (grSet.albumArtColorSaturation === 'auto') {
+				if (!this.timer) this.startTimer();
+			} else {
+				this.stopTimer();
+			}
 			return;
 		}
 
@@ -290,6 +298,7 @@ class ThemeDayNight {
 		grSet[`styleRebornFusion${_day_night}`] = grSet.styleRebornFusion;
 		grSet[`styleRebornFusion2${_day_night}`] = grSet.styleRebornFusion2;
 		grSet[`styleRebornFusionAccent${_day_night}`] = grSet.styleRebornFusionAccent;
+		grSet[`styleRandomNeon${_day_night}`] = grSet.styleRandomNeon;
 		grSet[`styleRandomPastel${_day_night}`] = grSet.styleRandomPastel;
 		grSet[`styleRandomDark${_day_night}`] = grSet.styleRandomDark;
 		grSet[`styleRandomAutoColor${_day_night}`] = grSet.styleRandomAutoColor;
@@ -331,6 +340,7 @@ class ThemeDayNight {
 		grSet.styleRebornFusion = grSet[`styleRebornFusion${_day_night}`];
 		grSet.styleRebornFusion2 = grSet[`styleRebornFusion2${_day_night}`];
 		grSet.styleRebornFusionAccent = grSet[`styleRebornFusionAccent${_day_night}`];
+		grSet.styleRandomNeon = grSet[`styleRandomNeon${_day_night}`];
 		grSet.styleRandomPastel = grSet[`styleRandomPastel${_day_night}`];
 		grSet.styleRandomDark = grSet[`styleRandomDark${_day_night}`];
 		grSet.styleRandomAutoColor = grSet[`styleRandomAutoColor${_day_night}`];
@@ -347,7 +357,11 @@ class ThemeDayNight {
 	}
 
 	/**
-	 * Starts the unified 10-minute timer for both features.
+	 * Starts the unified 5-minute timer for day/night switching and eye-protection.
+	 * Two eye-protection checks run per tick:
+	 * - Schedule factor ramp: fires whenever getEyeProtectionScheduleFactor shifts by >4%,
+	 *   covering boundary crossings and the TRANSITION_HOURS ramp at both edges.
+	 * - Night-boost ramp: fires whenever getNighttimeFactor shifts by >4% within an active window.
 	 */
 	startTimer() {
 		this.stopTimer();
@@ -355,7 +369,7 @@ class ThemeDayNight {
 		this.timer = setInterval(() => {
 			const now = new Date();
 
-			// modern_day_night has priority
+			// * modern_day_night has priority
 			if (grSet.design === 'modern_day_night') {
 				const prevWhite = grSet.styleRebornWhite;
 				this.initDesignPresetModernDynamic(now);
@@ -365,19 +379,33 @@ class ThemeDayNight {
 					grm.ui.initTheme();
 					grm.debug.debugLog('\n>>> ThemeDayNight: modern_day_night auto-switched (day <-> night) <<<\n');
 				}
-				return;
+			}
+			// * General day/night mode
+			else if (grSet.themeDayNightEnabled) {
+				const stateChanged = this.applyTimeBasedTheme(now);
+				if (stateChanged) {
+					grm.ui.initThemeFull = true;
+					grm.ui.initTheme();
+					grm.debug.debugLog('\n>>> ThemeDayNight: Full theme auto-switched (day <-> night) <<<\n');
+				}
 			}
 
-			// General day/night mode
-			if (!grSet.themeDayNightEnabled) return;
+			// * Eye-protection: schedule ramp check and night-boost ramp check
+			if (grSet.albumArtColorSaturation === 'auto') {
+				const scheduleFactor = this.getEyeProtectionScheduleFactor(grSet.albumArtColorSaturationEyeSchedule);
+				const nightFactor = grm.colorManager.getNighttimeFactor();
 
-			const stateChanged = this.applyTimeBasedTheme(now);
-			if (!stateChanged) return;
+				const scheduleChanged = this.eyeScheduleFactor === null || Math.abs(scheduleFactor - this.eyeScheduleFactor) > 0.04;
+				const nightChanged = scheduleFactor > 0 && (this.eyeNightFactor === null || Math.abs(nightFactor - this.eyeNightFactor) > 0.04);
 
-			grm.ui.initThemeFull = true;
-			grm.ui.initTheme();
-			grm.debug.debugLog('\n>>> ThemeDayNight: Full theme auto-switched (day <-> night) <<<\n');
-		}, 600000); // 10 minutes
+				if (scheduleChanged || nightChanged) {
+					this.eyeScheduleFactor = scheduleFactor;
+					this.eyeNightFactor = scheduleFactor > 0 ? nightFactor : null;
+					grm.ui.updateAlbumArtSaturation();
+					grm.debug.debugLog(`\n>>> ThemeDayNight: Eye protection updated: schedule=${(scheduleFactor * 100).toFixed(0)}%, night=${(nightFactor * 100).toFixed(0)}% <<<\n`);
+				}
+			}
+		}, 300000); // 5 minutes
 	}
 
 	/**
@@ -494,7 +522,11 @@ class ThemeDayNight {
 		grSet.themeDayNightEnabled = enabled;
 
 		if (!grSet.themeDayNightEnabled) {
-			this.stopTimer();
+			if (grSet.albumArtColorSaturation === 'auto') {
+				if (!this.timer) this.startTimer();
+			} else {
+				this.stopTimer();
+			}
 			return;
 		}
 
@@ -622,6 +654,144 @@ class ThemeDayNight {
 			grm.ui.themeNotification = '';
 		}
 		grm.debug.repaintWindow();
+	}
+	// #endregion
+
+	// * PUBLIC METHODS - EYE PROTECTION * //
+	// #region PUBLIC METHODS - EYE PROTECTION
+	/**
+	 * Formats an eye protection time range for menu display.
+	 * @param {string|null} timeRange - The time range (e.g '20-8', or null/'0-24').
+	 * @returns {string} The human-readable label (e.g '08 PM - 08 AM').
+	 */
+	formatEyeProtectionTimeRangeString(timeRange) {
+		if (!timeRange || typeof timeRange !== 'string' ||
+			timeRange === '0-24' || !timeRange.includes('-')) {
+			return 'Always active (default)';
+		}
+
+		const parts = timeRange.split('-');
+
+		const format = (str) => {
+			const hour = parseInt(str, 10);
+			if (isNaN(hour)) return '??:??';
+
+			const suffix = (hour >= 12 && hour < 24) ? 'PM' : 'AM';
+			const h12 = (hour === 0 || hour === 12 || hour === 24) ? 12 : hour % 12;
+
+			return `${h12.toString().padStart(2, '0')} ${suffix}`;
+		};
+
+		return `${format(parts[0])} - ${format(parts[1])}`;
+	}
+
+	/**
+	 * Gets a smooth 0-1 intensity factor for the eye protection schedule.
+	 * @param {string|null} timeRange - The time range e.g '20-8', '22-6', or null/'0-24' for always-on.
+	 * @returns {number} The smooth factor in [0.0, 1.0].
+	 */
+	getEyeProtectionScheduleFactor(timeRange) {
+		if (!timeRange || typeof timeRange !== 'string' ||
+			timeRange === '0-24' || !timeRange.includes('-')) {
+			return 1.0;
+		}
+
+		const parts = timeRange.split('-');
+		const start = parseInt(parts[0], 10);
+		const end   = parseInt(parts[1], 10);
+
+		if (isNaN(start) || isNaN(end)) return 1.0;
+		if (start < 0 || start > 23 || end < 1 || end > 24) return 1.0;
+		if (start === end) return 1.0;
+
+		const { TRANSITION_HOURS } = grm.colorManager.satAutoConfig;
+		const now = new Date();
+		const hour = now.getHours() + now.getMinutes() / 60;
+
+		const activeDuration = (end - start + 24) % 24;
+		const elapsed = (hour - start + 24) % 24;
+
+		// Outside the active window entirely
+		if (elapsed >= activeDuration) return 0.0;
+
+		// Cap ramp width so both ramps fit even inside a very short window
+		const effectiveTransition = Math.min(TRANSITION_HOURS, activeDuration / 2);
+
+		// * Ramp-in: first effectiveTransition hours after schedule start
+		if (elapsed < effectiveTransition) {
+			return SmoothstepRange(elapsed, 0, effectiveTransition);
+		}
+
+		// * Ramp-out: last effectiveTransition hours before schedule end
+		const rampOutStart = activeDuration - effectiveTransition;
+		if (elapsed >= rampOutStart) {
+			return 1 - SmoothstepRange(elapsed, rampOutStart, activeDuration);
+		}
+
+		// * Deep inside active window
+		return 1.0;
+	}
+
+	/**
+	 * Handles and sets the eye protection time range from the menu and immediately applies it.
+	 * @param {string} timeValue - The new time range (e.g '0-24', '20-8').
+	 */
+	handleEyeProtectionMode(timeValue) {
+		grSet.albumArtColorSaturationEyeSchedule = timeValue;
+
+		// Sync both factors so the timer doesn't fire spurious updates on the next tick
+		this.eyeScheduleFactor = this.getEyeProtectionScheduleFactor(timeValue);
+		this.eyeNightFactor = this.eyeScheduleFactor > 0 ? grm.colorManager.getNighttimeFactor() : null;
+
+		if (grSet.albumArtColorSaturation === 'auto' && !this.timer) {
+			this.startTimer();
+		}
+		else if (grSet.albumArtColorSaturation !== 'auto' && !grSet.themeDayNightEnabled && grSet.design !== 'modern_day_night') {
+			this.stopTimer();
+		}
+
+		grm.ui.updateAlbumArtSaturation();
+	}
+
+	/**
+	 * Prompts the user to enter a custom eye protection active time range.
+	 */
+	setEyeProtectionCustomTimeRange() {
+		const currentValue = grSet.albumArtColorSaturationEyeSchedule || '0-24';
+		this.inputBoxNewValue = '';
+
+		try {
+			const msg = grm.msg.getMessage('themeColors', 'albumArtColorSaturationEyeSchedule');
+			this.inputBoxNewValue = utils.InputBox(window.ID, msg, 'Georgia-ReBORN', currentValue, true);
+
+			if (!this.inputBoxNewValue) return;
+
+			const match = this.inputBoxNewValue.match(Regex.TimeRange);
+			if (!match) throw new Error('Invalid format');
+
+			const startTime = Number(match[1]);
+			const endTime = Number(match[2]);
+
+			if (startTime < 0 || startTime > 23 || endTime < 1 || endTime > 24 ||
+				startTime === endTime) {
+				throw new Error('Invalid time');
+			}
+
+			// * Write to in-memory setting and config
+			const normalized = `${startTime}-${endTime}`; // strips leading zeros
+			grSet.albumArtColorSaturationEyeSchedule = normalized;
+			grCfg.themeSettings.albumArtColorSaturationEyeSchedule = normalized;
+			grCfg.config.updateConfigObjValues('themeSettings', true);
+
+			this.handleEyeProtectionMode(this.inputBoxNewValue);
+			grm.debug.debugLog(`\n>>> Eye protection time range set to: ${this.inputBoxNewValue} <<<\n`);
+		}
+		catch (e) {
+			if (e.message === 'Invalid format' || e.message === 'Invalid time') {
+				const msg = grm.msg.getMessage('themeColors', 'albumArtColorSaturationEyeScheduleError');
+				fb.ShowPopupMessage(msg, 'Eye Protection Time Range');
+			}
+		}
 	}
 	// #endregion
 }

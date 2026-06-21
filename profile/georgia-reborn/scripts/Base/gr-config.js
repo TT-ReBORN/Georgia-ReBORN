@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    20-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -426,6 +426,8 @@ class ConfigurationManager {
 		this.themePlayerSize = {};
 		/** @public @type {object} The config `Layout` settings in the main config. */
 		this.themeLayout = {};
+		/** @public @type {object} The config `Color` settings in the main config. */
+		this.themeColor = {};
 		/** @public @type {object} The config `Display` settings in the main config. */
 		this.themeDisplay = {};
 		/** @public @type {object} The config `Brightness` settings in the main config. */
@@ -691,6 +693,7 @@ class ConfigurationManager {
 		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, Object.assign({}, grDef.themeStyleDefaults, cfgSet.style), grDef.themeStyleComments);
 		this.preset          = this.config.addConfigurationObject(grDef.themePresetSchema, Object.assign({}, grDef.themePresetDefaults, cfgSet.preset), grDef.themePresetComments);
 
+		this.themeColor      = this.config.addConfigurationObject(grDef.themeColorSchema, Object.assign({}, grDef.themeColorDefaults, cfgSet.themeColor), grDef.themeColorComments);
 		this.themeDisplay    = this.config.addConfigurationObject(grDef.themeDisplaySchema, Object.assign({}, grDef.themeDisplayDefaults, cfgSet.themeDisplay), grDef.themeDisplayComments);
 		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, Object.assign({}, grDef.themeLayoutDefaults, cfgSet.themeLayout), grDef.themeLayoutComments);
 		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, Object.assign({}, grDef.themePlayerSizeDefaults, cfgSet.themePlayerSize), grDef.themePlayerSizeComments);
@@ -791,6 +794,7 @@ class ConfigurationManager {
 		this.style           = this.config.addConfigurationObject(grDef.themeStyleSchema, grDef.themeStyleDefaults, grDef.themeStyleComments);
 		this.preset          = this.config.addConfigurationObject(grDef.themePresetSchema, grDef.themePresetDefaults, grDef.themePresetComments);
 
+		this.themeColor      = this.config.addConfigurationObject(grDef.themeColorSchema, grDef.themeColorDefaults, grDef.themeColorComments);
 		this.themeDisplay    = this.config.addConfigurationObject(grDef.themeDisplaySchema, grDef.themeDisplayDefaults, grDef.themeDisplayComments);
 		this.themeLayout     = this.config.addConfigurationObject(grDef.themeLayoutSchema, grDef.themeLayoutDefaults, grDef.themeLayoutComments);
 		this.themePlayerSize = this.config.addConfigurationObject(grDef.themePlayerSizeSchema, grDef.themePlayerSizeDefaults, grDef.themePlayerSizeComments);
@@ -996,6 +1000,14 @@ class ConfigurationManager {
 		// * Check for new artworkPatterns section and write if it doesn't exist
 		if (!configFile.artworkPatterns) {
 			configFile.artworkPatterns = this.config.addConfigurationObject(grDef.artworkPatternsSchema, grDef.artworkPatternsDefaults, grDef.artworkPatternsComments);
+			this.config.writeConfiguration();
+			window.Reload(); // Reinit new config
+		}
+
+		// * Check for new biographyBgAlbumArt entry in artworkPatterns and write if it doesn't exist
+		if (configFile.artworkPatterns && !('biographyBgAlbumArt' in configFile.artworkPatterns)) {
+			configFile.artworkPatterns.biographyBgAlbumArt = grDef.artworkPatternsDefaults.biographyBgAlbumArt;
+			this.config.addConfigurationObject(grDef.artworkPatternsSchema, configFile.artworkPatterns, grDef.artworkPatternsComments);
 			this.config.writeConfiguration();
 			window.Reload(); // Reinit new config
 		}

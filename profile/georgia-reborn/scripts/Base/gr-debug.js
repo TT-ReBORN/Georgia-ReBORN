@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -746,6 +746,7 @@ class ColorDebug {
 			'Reborn fusion': grSet.styleRebornFusion,
 			'Reborn fusion 2': grSet.styleRebornFusion2,
 			'Reborn fusion accent': grSet.styleRebornFusionAccent,
+			'Random neon': grSet.styleRandomNeon,
 			'Random pastel': grSet.styleRandomPastel,
 			'Random dark': grSet.styleRandomDark
 		});

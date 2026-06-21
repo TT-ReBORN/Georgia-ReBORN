@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -202,6 +202,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(100, 100, 100),
 		bio_ui_col_lyricsHighlight: RGB(220, 160, 40),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(245, 245, 245),
 		bio_ui_col_noPhotoStubText: RGB(120, 120, 120),
 
@@ -493,6 +494,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(200, 200, 200),
 		bio_ui_col_lyricsHighlight: RGB(220, 160, 40),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(25, 25, 25),
 		bio_ui_col_noPhotoStubText: RGB(255, 255, 255),
 
@@ -724,6 +726,7 @@ class ColorPalette {
 		bio_ui_col_popupText: RGB(255, 255, 255),
 		bio_ui_col_lyricsNormal: RGB(100, 100, 100),
 		bio_ui_col_lyricsHighlight: RGB(255, 240, 150),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(245, 245, 245),
 		bio_ui_col_noPhotoStubText: RGB(120, 120, 120),
 		bio_ui_col_sbarBtns: RGB(120, 120, 120),
@@ -982,6 +985,7 @@ class ColorPalette {
 		bio_ui_col_popupText: RGB(255, 255, 255),
 		bio_ui_col_lyricsNormal: RGB(100, 100, 100),
 		bio_ui_col_lyricsHighlight: RGB(255, 240, 150),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(245, 245, 245),
 		bio_ui_col_noPhotoStubText: RGB(120, 120, 120),
 		bio_ui_col_sbarBtns: RGB(120, 120, 120),
@@ -1164,6 +1168,7 @@ class ColorPalette {
 		bio_ui_col_popupText: RGB(242, 230, 170),
 		bio_ui_col_lyricsNormal: RGB(230, 230, 230),
 		bio_ui_col_lyricsHighlight: RGB(242, 230, 170),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(10, 130, 220),
 		bio_ui_col_noPhotoStubText: RGB(242, 230, 170),
 		bio_ui_col_sbarBtns: RGB(220, 220, 220),
@@ -1346,6 +1351,7 @@ class ColorPalette {
 		bio_ui_col_popupText: RGB(255, 202, 128),
 		bio_ui_col_lyricsNormal: RGB(230, 230, 230),
 		bio_ui_col_lyricsHighlight: RGB(255, 202, 128),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(24, 50, 82),
 		bio_ui_col_noPhotoStubText: RGB(255, 202, 128),
 		bio_ui_col_sbarBtns: RGB(220, 220, 220),
@@ -1563,6 +1569,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(220, 220, 220),
 		bio_ui_col_lyricsHighlight: RGB(245, 212, 165),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(130, 25, 25),
 		bio_ui_col_noPhotoStubText: RGB(245, 212, 165),
 
@@ -1713,7 +1720,7 @@ class ColorPalette {
 		pl_col_row_sideMarker: RGB(120, 170, 130),
 		pl_col_row_title_normal: RGB(90, 90, 90),
 		pl_col_row_title_playing: RGB(245, 245, 245),
-		pl_col_row_title_playing_dark: RGB(0, 0, 0),
+		pl_col_row_title_playing_dark: RGB(245, 245, 245),
 		pl_col_row_title_playing_light: RGB(245, 245, 245),
 		pl_col_row_title_selected: RGB(0, 0, 0),
 		pl_col_row_title_hovered: RGB(0, 0, 0),
@@ -1805,6 +1812,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(90, 90, 90),
 		bio_ui_col_lyricsHighlight: RGB(100, 150, 110),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(255, 247, 240),
 		bio_ui_col_noPhotoStubText: RGB(120, 170, 130),
 
@@ -2045,6 +2053,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(200, 200, 200),
 		bio_ui_col_lyricsHighlight: RGB(0, 200, 255),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(25, 25, 25),
 		bio_ui_col_noPhotoStubText: RGB(0, 200, 255),
 
@@ -2286,6 +2295,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(200, 200, 200),
 		bio_ui_col_lyricsHighlight: RGB(0, 200, 0),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(25, 25, 25),
 		bio_ui_col_noPhotoStubText: RGB(0, 200, 0),
 
@@ -2527,6 +2537,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(200, 200, 200),
 		bio_ui_col_lyricsHighlight: RGB(240, 10, 60),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(25, 25, 25),
 		bio_ui_col_noPhotoStubText: RGB(240, 10, 60),
 
@@ -2768,6 +2779,7 @@ class ColorPalette {
 		// * MISC COLORS * //
 		bio_ui_col_lyricsNormal: RGB(200, 200, 200),
 		bio_ui_col_lyricsHighlight: RGB(255, 205, 5),
+		bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 		bio_ui_col_noPhotoStubBg: RGB(25, 25, 25),
 		bio_ui_col_noPhotoStubText: RGB(255, 205, 5),
 
@@ -3483,6 +3495,7 @@ class ColorPalette {
 			bio_ui_col_summary: HEXtoRGB(c.bio_ui_col_summary),
 			bio_ui_col_lyricsNormal: HEXtoRGB(c.bio_ui_col_lyricsNormal),
 			bio_ui_col_lyricsHighlight: HEXtoRGB(c.bio_ui_col_lyricsHighlight),
+			bio_ui_col_lyricsShadow: HEXtoRGB(c.bio_ui_col_lyricsShadow),
 			bio_ui_col_noPhotoStubBg: HEXtoRGB(c.bio_ui_col_noPhotoStubBg),
 			bio_ui_col_noPhotoStubText: HEXtoRGB(c.bio_ui_col_noPhotoStubText),
 			bio_ui_col_sbarBtns: HEXtoRGB(c.bio_ui_col_sbarBtns),
@@ -3697,6 +3710,7 @@ class ColorPalette {
 			bio_ui_col_text: RGBFtoHEX(bio.ui.col.text),
 			bio_ui_col_lyricsNormal: RGBFtoHEX(bio.ui.col.lyricsNormal),
 			bio_ui_col_lyricsHighlight: RGBFtoHEX(bio.ui.col.lyricsHighlight),
+			bio_ui_col_lyricsShadow: RGBFtoHEX(bio.ui.col.lyricsShadow),
 			bio_ui_col_noPhotoStubBg: RGBFtoHEX(bio.ui.col.noPhotoStubBg),
 			bio_ui_col_noPhotoStubText: RGBFtoHEX(bio.ui.col.noPhotoStubText),
 			bio_ui_col_sbarBtns: RGBFtoHEX(bio.ui.col.sbarBtns),

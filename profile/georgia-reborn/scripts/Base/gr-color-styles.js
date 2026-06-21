@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -119,7 +119,7 @@ class ColorStyles {
 			180;                     // 1080p and below
 
 		// * BASE BLUR FROM CONTRAST * //
-		// High contrast → higher blur (soften jarring transitions)
+		// High contrast = higher blur (soften jarring transitions)
 		const MIN_BLUR = 140;
 		const contrastBlur = MIN_BLUR + (contrast ** 0.7 * (MAX_BLUR_CAP - MIN_BLUR));
 
@@ -141,7 +141,7 @@ class ColorStyles {
 		}
 
 		// * ALPHA COORDINATION * //
-		// Lower alpha → slightly more blur for visual cohesion
+		// Lower alpha = slightly more blur for visual cohesion
 		const alphaFactor = calculatedAlpha / 255;
 		const alphaModifier = 0.95 + (0.1 * (1 - alphaFactor));
 
@@ -188,7 +188,7 @@ class ColorStyles {
 			const isExpensive = blur > 200 && pixelCount > 3000000;
 
 			if (isExpensive) {
-				// Downscale → blur → upscale for performance
+				// Downscale, blur, then upscale for performance
 				const scaleFactor = Math.max(0.5, 1 - (blur - 200) / 400);
 				const scaledW = Math.round(imageW * scaleFactor);
 				const scaledH = Math.round(imageH * scaleFactor);
@@ -228,7 +228,7 @@ class ColorStyles {
 	 * - Uses Stevens' Power Law (x^0.42) for perceptual contrast
 	 *   (empirically tuned between cube root and square root for smooth transitions)
 	 * - Sigmoid smoothing for organic zone transitions
-	 * - Inverse relationship: high contrast → lower alpha
+	 * - Inverse relationship: high contrast = lower alpha
 	 * - Coordinated with blur for visual harmony
 	 * - Saturation compensation (saturated images "pop" more at lower alpha)
 	 *
@@ -303,8 +303,8 @@ class ColorStyles {
 	 * Calculates perceptually optimal blur coordinated with alpha.
 	 *
 	 * DESIGN:
-	 * - High contrast → higher blur (soften jarring transitions)
-	 * - Low contrast → lower blur (preserve detail)
+	 * - High contrast = higher blur (soften jarring transitions)
+	 * - Low contrast = lower blur (preserve detail)
 	 * - Coordinated with alpha for visual harmony
 	 * - Resolution-aware caps to maintain performance
 	 * - Saturation-aware reduction to preserve color vibrancy

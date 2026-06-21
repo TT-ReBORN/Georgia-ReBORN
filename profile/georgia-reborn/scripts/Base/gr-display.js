@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -317,6 +317,8 @@ class Display {
 		// * Biography
 		grSet.biographyFontSize_default = HD_QHD_4K(12, 14);
 		grSet.biographyFontSize_artwork = HD_QHD_4K(12, 14);
+		grSet.biographyLyricsFontSize_default = HD_QHD_4K(16, 18);
+		grSet.biographyLyricsFontSize_artwork = HD_QHD_4K(16, 18);
 
 		// * Lyrics
 		grSet.lyricsFontSize_default = HD_QHD_4K(20, 22);
@@ -601,6 +603,59 @@ class Display {
 		bio.but.resetZoom();
 		bio.but.createImages();
 		grm.debug.repaintWindow();
+	}
+
+	/**
+	 * Sets the Bio Lyrics font size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1) or a specific size.
+	 */
+	setBioLyricsFontSize(size) {
+		const currentSize = grSet.biographyLyricsFontSize_layout;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 1, 8),
+			'1' : () => Math.min(currentSize + 1, 26),
+			'0' : () => HD_QHD_4K(16, 18)
+		};
+		const newSize = getSize[size] || (() => size);
+		grSet.biographyLyricsFontSize_layout = newSize();
+
+		const bioLyricsZoomSize = Math.max(Math.round(SCALE(grSet.biographyLyricsFontSize_layout)), 1);
+		bio.ui.font.lyricsZoomSize = bioLyricsZoomSize;
+		bio.ui.font.lyrics = gdi.Font(bio.ui.font.main.Name, bioLyricsZoomSize, bio.ui.font.lyrics.Style);
+		bio.lyrics.loadLyrics(bio.lyrics.lyr);
+		grm.debug.repaintWindow();
+	}
+
+	/**
+	 * Sets the Bio Lyrics line spacing size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1).
+	 */
+	setBioLyricsLineSpacingSize(size) {
+		const currentSize = bioSet.lyricsLineSpacing;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 4, 16),
+			'1' : () => Math.min(currentSize + 4, 60),
+			'0' : () => 24
+		};
+		const newSize = getSize[size] || (() => currentSize);
+		bioSet.lyricsLineSpacing = newSize();
+		bio.lyrics.loadLyrics(bio.lyrics.lyr);
+	}
+
+	/**
+	 * Sets the Bio Lyrics sentence spacing size based on the provided size.
+	 * @param {number} size - The size adjustment (-1, 0, 1).
+	 */
+	setBioLyricsSentenceSpacingSize(size) {
+		const currentSize = bioSet.lyricsSentenceSpacing;
+		const getSize = {
+			'-1': () => Math.max(currentSize - 4, 10),
+			'1' : () => Math.min(currentSize + 4, 50),
+			'0' : () => 14
+		};
+		const newSize = getSize[size] || (() => currentSize);
+		bioSet.lyricsSentenceSpacing = newSize();
+		bio.lyrics.loadLyrics(bio.lyrics.lyr);
 	}
 
 	/**

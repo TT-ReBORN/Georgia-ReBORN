@@ -263,6 +263,8 @@ class BioMenuItems {
 		const n = b.toLowerCase();
 		const separator = !bioSet.artistView && (bioSet.showTrackRevOptions || bio.txt.isCompositionLoaded()) || !bio.panel.stndItem();
 
+		// * RANDOM THEME - GENERATE NEW COLOR * //
+		// #region RANDOM THEME - GENERATE NEW COLOR
 		if (grSet.theme === 'random') {
 			bioMenu.newItem({
 				str: 'Generate new color',
@@ -274,7 +276,10 @@ class BioMenuItems {
 				separator: true
 			});
 		}
+		// #endregion
 
+		// * CUSTOM THEME * //
+		// #region CUSTOM THEME
 		if (grSet.layout === 'default' && grSet.theme.startsWith('custom')) {
 			bioMenu.newItem({
 				str: !grm.ui.displayCustomThemeMenu ? 'Edit custom theme' : 'Close custom theme menu',
@@ -284,8 +289,10 @@ class BioMenuItems {
 				separator: true
 			});
 		}
+		// #endregion
 
-		// * Biography layout switcher
+		// * BIOGRAPHY LAYOUT * //
+		// #region BIOGRAPHY LAYOUT
 		bioMenu.newItem({
 			str: grSet.biographyLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal',
 			func: () => {
@@ -295,8 +302,10 @@ class BioMenuItems {
 			separator: true,
 			hide: grSet.layout !== 'default'
 		});
+		// #endregion
 
-		// * Browse mode
+		// * BROWSE MODE * //
+		// #region BROWSE MODE
 		bioMenu.newItem({
 			str: 'Browse mode',
 			func: () => {
@@ -306,7 +315,10 @@ class BioMenuItems {
 			checkItem: grSet.panelBrowseMode,
 			separator: () => true
 		});
+		// #endregion
 
+		// * LOAD MENU * //
+		// #region LOAD MENU
 		bioMenu.newMenu({
 			menuName: loadName,
 			hide: bioSet.img_only
@@ -346,7 +358,10 @@ class BioMenuItems {
 		}
 
 		bioMenu.addSeparator({ separator: !bioSet.img_only });
+		// #endregion
 
+		// * DISPLAY MENU * //
+		// #region DISPLAY MENU
 		bioMenu.newMenu({
 			menuName: bioLg.Display
 		});
@@ -362,7 +377,385 @@ class BioMenuItems {
 		}); }
 
 		bioMenu.addSeparator({});
+		// #endregion
 
+		// * BACKGROUND MENU * //
+		// #region BACKGROUND MENU
+		bioMenu.newMenu({
+			menuName: 'Background'
+		});
+
+		bioMenu.newItem({
+			menuName: 'Background',
+			str: 'Show image on background',
+			func: () => {
+				grSet.biographyBgImg = !grSet.biographyBgImg;
+				if (grSet.biographyBgImg) {
+					grm.bgImg.initBgImage('biography');
+				} else {
+					grm.bgImg.clearBgImageCache('biography');
+				}
+				grm.bgImg.initBgImageCycle();
+				window.Repaint();
+			},
+			checkItem: grSet.biographyBgImg,
+			separator: true
+		});
+
+		bioMenu.newItem({
+			menuName: 'Background',
+			str: 'Cycle images',
+			func: () => {
+				grSet.biographyBgImgCycle = !grSet.biographyBgImgCycle;
+				grm.bgImg.initBgImageCycle();
+				window.Repaint();
+			},
+			checkItem: grSet.biographyBgImgCycle
+		});
+
+		bioMenu.newMenu({
+			menuName: 'Cycle time',
+			appendTo: 'Background'
+		});
+
+		const cycleTimeItems = ['  5 sec', '10 sec', '15 sec (default)', '30 sec', '60 sec'];
+		const cycleTimeValues = [5, 10, 15, 30, 60];
+		cycleTimeItems.forEach((str, i) => {
+			bioMenu.newItem({
+				menuName: 'Cycle time',
+				str,
+				func: () => {
+					grSet.biographyBgImgCycleTime = cycleTimeValues[i];
+					grm.bgImg.initBgImageCycle();
+					window.Repaint();
+				},
+				checkRadio: grSet.biographyBgImgCycleTime === cycleTimeValues[i]
+			});
+		});
+
+		bioMenu.addSeparator({ menuName: 'Background' });
+
+		bioMenu.newMenu({
+			menuName: 'Image source',
+			appendTo: 'Background'
+		});
+
+		const bgImgSourceItems = ['Artist', 'Album', 'Custom'];
+		const bgImgSourceValues = ['artist', 'album', 'custom'];
+		bgImgSourceItems.forEach((str, i) => {
+			bioMenu.newItem({
+				menuName: 'Image source',
+				str,
+				func: () => {
+					grSet.biographyBgImgSource = bgImgSourceValues[i];
+					grm.bgImg.initBgImage('biography', true);
+					window.Repaint();
+				},
+				checkRadio: grSet.biographyBgImgSource === bgImgSourceValues[i],
+				separator: i === bgImgSourceItems.length - 1
+			});
+		});
+
+		bioMenu.newItem({
+			menuName: 'Image source',
+			str: 'Filter album art images',
+			func: () => {
+				grSet.biographyBgImgAlbumArtFilter = !grSet.biographyBgImgAlbumArtFilter;
+				window.Reload();
+			},
+			checkItem: grSet.biographyBgImgAlbumArtFilter
+		});
+
+		bioMenu.newMenu({
+			menuName: 'Image scaling',
+			appendTo: 'Background'
+		});
+
+		const bgImgScaleItems = ['Proportional', 'Filled', 'Stretched'];
+		const bgImgScaleValues = ['default', 'filled', 'stretched'];
+		bgImgScaleItems.forEach((str, i) => {
+			bioMenu.newItem({
+				menuName: 'Image scaling',
+				str,
+				func: () => {
+					grSet.biographyBgImgScale = bgImgScaleValues[i];
+					grm.bgImg.initBgImage('biography', true);
+					window.Repaint();
+				},
+				checkRadio: grSet.biographyBgImgScale === bgImgScaleValues[i]
+			});
+		});
+
+		bioMenu.newMenu({
+			menuName: 'Image opacity',
+			appendTo: 'Background'
+		});
+
+		const bgOpacityItems = ['100%', '90%', '80%', '70%', '60%', '50%', '40%', '30%', '20%', '10%'];
+		const bgOpacityValues = [255, 230, 204, 178, 153, 128, 102, 76, 51, 25];
+		bgOpacityItems.forEach((str, i) => {
+			bioMenu.newItem({
+				menuName: 'Image opacity',
+				str,
+				func: () => {
+					grSet.biographyBgImgOpacity = bgOpacityValues[i];
+					window.Repaint();
+				},
+				checkRadio: grSet.biographyBgImgOpacity === bgOpacityValues[i]
+			});
+		});
+
+		bioMenu.addSeparator({ menuName: 'Background' });
+
+		bioMenu.newMenu({
+			menuName: 'Row opacity',
+			appendTo: 'Background'
+		});
+
+		bgOpacityItems.forEach((str, i) => {
+			bioMenu.newItem({
+				menuName: 'Row opacity',
+				str,
+				func: () => {
+					grSet.biographyBgRowOpacity = bgOpacityValues[i];
+					window.Repaint();
+				},
+				checkRadio: grSet.biographyBgRowOpacity === bgOpacityValues[i]
+			});
+		});
+		// #endregion
+
+		// * LYRICS MENU * //
+		// #region LYRICS MENU
+		bioMenu.newMenu({
+			menuName: 'Lyrics'
+		});
+
+		// * Lyrics > Display
+		bioMenu.newMenu({
+			menuName: 'LyricsDisplay',
+			str: 'Display',
+			appendTo: 'Lyrics'
+		});
+
+		bioMenu.newMenu({
+			menuName: 'LyricsAnimation',
+			str: 'Animation',
+			appendTo: 'LyricsDisplay'
+		});
+		const bioLyricsScrollEasingItems = [
+			['Linear',                  'linear',        false],
+			['Smooth Step',             'smoothStep',    false],
+			['Smoother Step',           'smootherStep',   true],
+			['Ease Out Sine',           'easeOutSine',   false],
+			['Ease Out Quad (default)', 'easeOutQuad',   false],
+			['Ease Out Cubic',          'easeOutCubic',  false],
+			['Ease Out Quart',          'easeOutQuart',   true],
+			['Ease In Out Sine',        'easeInOutSine', false],
+			['Ease In Out Quad',        'easeInOutQuad', false],
+			['Ease In Out Cubic',       'easeInOutCubic',false],
+		];
+		bioLyricsScrollEasingItems.forEach(([label, val, separator]) => {
+			bioMenu.newItem({
+				menuName: 'LyricsAnimation',
+				str: label,
+				func: () => {
+					bioSet.lyricsScrollEasing = val;
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsScrollEasing === val,
+				separator
+			});
+		});
+
+		bioMenu.newMenu({
+			menuName: 'LyricsDropShadow',
+			str: 'Show lyrics drop shadow',
+			appendTo: 'LyricsDisplay'
+		});
+		const lyricsDropShadowItems = [
+			['None', 'none'], ['Small', 'small'], ['Normal', 'normal'], ['Large', 'large']
+		];
+		lyricsDropShadowItems.forEach(([label, val], i, arr) => {
+			bioMenu.newItem({
+				menuName: 'LyricsDropShadow',
+				str: label,
+				func: () => {
+					bioSet.lyricsDropShadowLevel = val;
+					bio.lyrics.loadLyrics(bio.lyrics.lyr);
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsDropShadowLevel === val,
+				separator: i === arr.length - 1
+			});
+		});
+
+		bioMenu.newItem({
+			menuName: 'LyricsDisplay',
+			str: 'Show fade scroll',
+			func: () => {
+				bioSet.lyricsFadeScroll = !bioSet.lyricsFadeScroll;
+				window.Repaint();
+			},
+			checkItem: bioSet.lyricsFadeScroll,
+			separator: true
+		});
+
+		bioMenu.newMenu({
+			menuName: 'LyricsTransparentMask',
+			str: 'Show transparent mask',
+			appendTo: 'LyricsDisplay'
+		});
+		const lyricsTransparentMaskItems = [
+			[0, 'None'],  [0.1, '10%'], [0.2, '20%'], [0.3, '30%'], [0.4, '40%'],
+			[0.5, '50%'], [0.6, '60%'], [0.7, '70%'], [0.8, '80%'], [0.9, '90%']
+		];
+		lyricsTransparentMaskItems.forEach(([val, label], i, arr) => {
+			bioMenu.newItem({
+				menuName: 'LyricsTransparentMask',
+				str: label,
+				func: () => {
+					bioSet.lyricsTransparentMask = val;
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsTransparentMask === val,
+				separator: i === arr.length - 1
+			});
+		});
+
+		bioMenu.newItem({
+			menuName: 'LyricsDisplay',
+			str: 'Show larger current sync',
+			func: () => {
+				bioSet.lyricsLargerCurrentSync = !bioSet.lyricsLargerCurrentSync;
+				bio.lyrics.loadLyrics(bio.lyrics.lyr);
+				window.Repaint();
+			},
+			checkItem: bioSet.lyricsLargerCurrentSync
+		});
+
+		// * Lyrics > Spacing
+		bioMenu.newMenu({
+			menuName: 'LyricsSpacing',
+			str: 'Spacing',
+			appendTo: 'Lyrics'
+		});
+
+		bioMenu.newMenu({
+			menuName: 'LyricsSpacingLine',
+			str: 'Line',
+			appendTo: 'LyricsSpacing'
+		});
+
+		const lyricsSpacingLineItems = [16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60];
+		lyricsSpacingLineItems.forEach(size => {
+			bioMenu.newItem({
+				menuName: 'LyricsSpacingLine',
+				str: `${size}px${size === 24 ? ' (default)' : ''}`,
+				func: () => {
+					bioSet.lyricsLineSpacing = size;
+					bio.lyrics.loadLyrics(bio.lyrics.lyr);
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsLineSpacing === size
+			});
+		});
+
+		bioMenu.newMenu({
+			menuName: 'LyricsSpacingSentence',
+			str: 'Sentence',
+			appendTo: 'LyricsSpacing'
+		});
+
+		const lyricsSpacingSentenceItems = [10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50];
+		lyricsSpacingSentenceItems.forEach(size => {
+			bioMenu.newItem({
+				menuName: 'LyricsSpacingSentence',
+				str: `${size}px${size === 14 ? ' (default)' : ''}`,
+				func: () => {
+					bioSet.lyricsSentenceSpacing = size;
+					bio.lyrics.loadLyrics(bio.lyrics.lyr);
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsSentenceSpacing === size
+			});
+		});
+
+		// * Lyrics > Scroll speed
+		bioMenu.newMenu({
+			menuName: 'LyricsScrollSpeed',
+			str: 'Scroll speed',
+			appendTo: 'Lyrics'
+		});
+		bioMenu.newItem({
+			menuName: 'LyricsScrollSpeed',
+			str: 'Adaptive scroll speed',
+			func: () => {
+				bioSet.lyricsScrollAdaptive = !bioSet.lyricsScrollAdaptive;
+				bio.lyrics.loadLyrics(bio.lyrics.lyr);
+				window.Repaint();
+			},
+			checkItem: bioSet.lyricsScrollAdaptive,
+			separator: true
+		});
+		const lyricsScrollSpeedItems = [
+			['Fastest (very slow CPU)', 'fastest',  300, 150],
+			['Fast',                    'fast',     500, 250],
+			['Normal',                  'normal',   750, 375],
+			['Slow',                    'slow',    1000, 500],
+			['Slowest (very fast CPU)', 'slowest', 1500, 725]
+		];
+		lyricsScrollSpeedItems.forEach(([label, speed, avg, max]) => {
+			bioMenu.newItem({
+				menuName: 'LyricsScrollSpeed',
+				str: label,
+				func: () => {
+					bioSet.lyricsScrollSpeed = speed;
+					bioSet.lyricsScrollRateAvg = avg;
+					bioSet.lyricsScrollRateMax = max;
+					bio.lyrics.loadLyrics(bio.lyrics.lyr);
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsScrollSpeed === speed
+			});
+		});
+
+		// * Lyrics > Translation
+		bioMenu.newMenu({
+			menuName: 'LyricsTranslation',
+			str: 'Translation',
+			appendTo: 'Lyrics'
+		});
+
+		bioMenu.newItem({
+			menuName: 'LyricsTranslation',
+			str: 'Show translation',
+			func: () => {
+				bioSet.lyricsTranslation = !bioSet.lyricsTranslation;
+				bio.lyrics.loadLyrics(bio.lyrics.lyr);
+				window.Repaint();
+			},
+			checkItem: bioSet.lyricsTranslation,
+			separator: true
+		});
+
+		const lyricsScrollTranslationItems = ['First line', 'Second line'];
+		lyricsScrollTranslationItems.forEach((str, i) => {
+			bioMenu.newItem({
+				menuName: 'LyricsTranslation',
+				str,
+				func: () => {
+					bioSet.lyricsTranslationLine = i + 1;
+					bio.lyrics.loadLyrics(bio.lyrics.lyr);
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsTranslationLine === i + 1
+			});
+		});
+		// #endregion
+
+		// * SOURCES MENU * //
+		// #region SOURCES MENU
 		bioMenu.newMenu({
 			menuName: bioLg.Sources
 		});
@@ -454,7 +847,10 @@ class BioMenuItems {
 			str: bioLg['Force update'],
 			func: () => bio.panel.callServer(1, bio.panel.id.focus, 'bio_forceUpdate', 0)
 		});
+		// #endregion
 
+		// * LAYOUT MENU * //
+		// #region LAYOUT MENU
 		const style_arr = bio.panel.style.name.slice();
 		bioMenu.newMenu({
 			menuName: bioLg.Layout
@@ -509,7 +905,10 @@ class BioMenuItems {
 			str: v,
 			func: () => !i ? bio.but.resetZoom() : window.Reload()
 		}));
+		// #endregion
 
+		// * IMAGE MENU * //
+		// #region IMAGE MENU
 		bioMenu.newMenu({
 			menuName: bioLg.Image
 		});
@@ -583,7 +982,10 @@ class BioMenuItems {
 		}));
 
 		bioMenu.addSeparator({});
+		// #endregion
 
+		// * NETWORK MENU * //
+		// #region NETWORK MENU
 		// Regorxxx <- Use WinHttp.WinHttpRequest.5.1 / XMLHTTP ActiveX objects or utils.HTTPRequestAsync
 		bioMenu.newMenu({
 			menuName: bioLg.Network
@@ -638,7 +1040,10 @@ class BioMenuItems {
 
 		bioMenu.addSeparator({});
 		// Regorxxx ->
+		// #endregion
 
+		// * PLAYLISTS MENU * //
+		// #region PLAYLISTS MENU
 		if (bioSet.menuShowPlaylists == 2 || bioSet.menuShowPlaylists && this.shift) {
 			const pl_no = Math.ceil(this.playlist.menu.length / 30);
 			bioMenu.newMenu({
@@ -661,7 +1066,10 @@ class BioMenuItems {
 				}
 			}
 		}
+		// #endregion
 
+		// * TAGGER MENU * //
+		// #region TAGGER MENU
 		if (bioSet.menuShowTagger == 2 || bioSet.menuShowTagger && this.shift) {
 			bioMenu.newMenu({
 				menuName: bioLg.Tagger,
@@ -678,7 +1086,10 @@ class BioMenuItems {
 				separator: !i || i == 5 || i == 11 || i == 13
 			}); }
 		}
+		// #endregion
 
+		// * MISSING DATA MENU * //
+		// #region MISSING DATA MENU
 		if (bioSet.menuShowMissingData == 2 || bioSet.menuShowMissingData && this.shift) {
 			bioMenu.newMenu({
 				menuName: bioLg['Missing data'],
@@ -691,7 +1102,10 @@ class BioMenuItems {
 				separator: i == 2 || i == 5
 			}));
 		}
+		// #endregion
 
+		// * INACTIVE MENU * //
+		// #region INACTIVE MENU
 		if (bioSet.menuShowInactivate == 2 || bioSet.menuShowInactivate && this.shift) {
 			bioMenu.newItem({
 				str: bioSet.panelActive ? bioLg.Inactivate : bioLg['Activate biography'],
@@ -699,13 +1113,17 @@ class BioMenuItems {
 				separator: true
 			});
 		}
+		// #endregion
 
+		// * OPTIONS MENU * //
+		// #region OPTIONS MENU
 		for (let i = 0; i < 2; i++) { bioMenu.newItem({
 			str: [bio.popUpBox.ok ? bioLg['Options...'] : bioLg['Options: see console'], bioLg['Configure...']][i],
 			func: () => !i ? bioCfg.open('PanelCfg') : window.EditScript(),
 			separator: !i && this.shift,
 			hide: i && !this.shift
 		}); }
+		// #endregion
 	}
 
 	checkMissingData(i) {

@@ -1460,7 +1460,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 
 				function setLyricsScrollMethod(n) {
 					window.lyricsScrollMethod_dropdown.innerHTML = lyricsScrollMethodLabels[n];
-					bioSet['lyricsScrollMaxMethod_internal'].value = n;
+					bioSet['lyricsScrollAdaptive_internal'].value = n === 0;
 					window.lyricsScrollMethod.style.display = 'none';
 				}
 
@@ -1667,7 +1667,7 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 					i = 5; window.lyricsFadeHeight.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsFadeHeight_container'+i+'" name="textreader_input" class="input2" /><label for="lyricsFadeHeight_container'+i+'" class="inp_label2">Fade height (0 = auto)</label></div>');
 					i = 6; window.lyricsScrollTimeAvg.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsScrollTimeAvg_container'+i+'" name="textreader_input" class="input98" /></div>');
 					i = 7; window.lyricsScrollTimeMax.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="lyricsScrollTimeMax_container'+i+'" name="textreader_input" class="input98" /></div>');
-					window.lyricsScrollMethod_dropdown.innerHTML = lyricsScrollMethodLabels[bioSet['lyricsScrollMaxMethod_internal'].value];
+					window.lyricsScrollMethod_dropdown.innerHTML = lyricsScrollMethodLabels[bioSet['lyricsScrollAdaptive_internal'].value ? 0 : 1];
 					for (i = 0; i < 2; i++) {window.lyricsScrollMethod.insertAdjacentHTML('beforeend', '<a onclick="setLyricsScrollMethod(' + i + ',' + 0 + ');">'+lyricsScrollMethodLabels[i]+'</a>');}
 					i = 8; window.rowStripes.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">Row stripes</label></div>');
 					i = 9; window.lineDividers.insertAdjacentHTML('beforeend', '<div class="input_cnt2"><input id="cusTxt_checkbox'+i+'" name="textreader_checkbox" style="'+cbox+'" type="checkbox" /><label for="cusTxt_checkbox'+i+'" class="checkbox_label">Lines</label></div>');
@@ -1829,8 +1829,8 @@ Album name auto-clean shouldn't be needed if album version info is in its own ta
 				window.imgSeekerDots3.parentNode.disabled = disabled2;
 				window.seekerNA.innerHTML = bioSet['imgSeekerDisabled_internal'].value ? (bioSet['filmStripOverlay_internal'].value ? "<i>Grayed items items N/A with filmstrip overlay of image area</i>" : "<i>Seeker & counter N/A with current overlay metrics</i>") : "";
 				window.scroll_checkbox1.parentNode.disabled = bioSet['sbarType_internal'].value == 2;
-				window.lyricsScrollTimeMax.style.display = bioSet['lyricsScrollMaxMethod_internal'].value == 0 ? "none" : "block";
-				window.lyricsScrollTimeAvg.style.display = bioSet['lyricsScrollMaxMethod_internal'].value == 1 ? "none" : "block";
+				window.lyricsScrollTimeMax.style.display = bioSet['lyricsScrollAdaptive_internal'].value ? "none" : "block";
+				window.lyricsScrollTimeAvg.style.display = bioSet['lyricsScrollAdaptive_internal'].value ? "block" : "none";
 				document.getElementById('ratingTextName').style.display = bioSet['star_internal'].value ? "block" : "none";
 				window.rating3.style.display = bioSet['star_internal'].value ? "block" : "none";
 				window.theme_checkbox5.parentNode.disabled = bioSet['theme_internal'].value == 0;

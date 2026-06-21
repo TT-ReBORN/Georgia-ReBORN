@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    26-05-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -25,19 +25,19 @@ class Lyrics {
 	 * Initializes variables and settings for loading and displaying lyrics.
 	 */
 	constructor() {
-		/** @private @type {Array<string>} An array to hold individual lyrics. */
+		/** @private @type {Array<string>} The array to hold individual lyrics. */
 		this.lyr = [];
-		/** @private @type {Array<string>} An array to hold the lyrics in a structured format. */
+		/** @private @type {Array<object>} The array to hold the lyrics in a structured format. */
 		this.lyrics = [];
-		/** @private @type {Array<string>} An array to hold the sources of lyrics. */
+		/** @private @type {Array<string>} The array to hold the sources of lyrics. */
 		this.lyricSource = [];
-		/** @private @type {number} A counter to manage lyrics source loading queue. */
+		/** @private @type {number} The counter to manage lyrics source loading queue. */
 		this.lyricsSourceQueue = 0;
-		/** @type {boolean} A temporary flag set when lyrics load from a local file. */
+		/** @type {boolean} The temporary flag set when lyrics load from a local file. */
 		this.lyricsLoadedFromLocal = false;
-		/** @type {boolean} A flag indicating if a lyrics search is currently in progress. */
+		/** @type {boolean} The flag indicating if a lyrics search is currently in progress. */
 		this.lyricsSearching = false;
-		/** @type {boolean} A flag to ensure the ESLyric save command is sent only once per search. */
+		/** @type {boolean} The flag to ensure the ESLyric save command is sent only once per search. */
 		this.lyricsSaveCommandSent = false;
 		/** @type {number} The maximum number of polling retries before giving up (60 seconds). */
 		this.lyricsSearchMaxRetries = 60;
@@ -45,23 +45,35 @@ class Lyrics {
 		this.lyricsSearchRetries = 0;
 		/** @private @type {string} The type of the lyrics, `.lrc` for synced and `.txt` for unsynced. */
 		this.lyricType = '';
-		/** @private @type {boolean} A boolean state value for lyric drag scrolling. */
+		/** @private @type {boolean} The boolean state value for lyric drag scrolling. */
 		this.scrollDrag = false;
-		/** @private @type {number} A y-coordinate value for the lyric drag scrolling. */
+		/** @private @type {number} The y-coordinate value for the lyric drag scrolling. */
 		this.scrollDragY = 0;
-		/** @private @type {number} An offset value for the lyric drag scrolling. */
+		/** @private @type {number} The offset value for the lyric drag scrolling. */
 		this.scrollDragOffset = 0;
-		/** @private @type {number} A time step value for manual adjusting lyrics synchronization. */
+		/** @private @type {number} The total duration in ms for the current eased scroll animation. */
+		this.scrollEffectiveDuration = 200;
+		/** @private @type {number} The elapsed time in ms for the current eased scroll animation. */
+		this.scrollElapsed = 0;
+		/** @private @type {number} The starting scroll distance captured when a new line becomes highlighted. */
+		this.scrollStart = 0;
+		/** @private @type {Map<string, {bmp: GdiBitmap, pad: number}|null>} The pre-rendered blurred shadow bitmap cache. */
+		this.shadowBitmapCache = new Map();
+		/** @private @type {string|null} The compound key `level|lineHeight`; detects when cache must be cleared. */
+		this.shadowCacheKey = null;
+		/** @private @type {number|null} The last lyricsShadow color; triggers full cache rebuild on change. */
+		this.shadowLastColor = null;
+		/** @private @type {number} The time step value for manual adjusting lyrics synchronization. */
 		this.stepTime = 0;
-		/** @private @type {Array<string>} A message displayed when no lyrics are found. */
+		/** @private @type {Array<string>} The message displayed when no lyrics are found. */
 		this.stringNoLyrics = ['No lyrics found'];
-		/** @private @type {Array<string>} A message displayed when the search is completed but no lyrics were found. */
+		/** @private @type {Array<string>} The message displayed when the search is completed but no lyrics were found. */
 		this.stringNotFound = ['Search completed\nNo lyrics were found'];
-		/** @private @type {Array<string>} A message displayed when the lyrics search is in progress. */
+		/** @private @type {Array<string>} The message displayed when the lyrics search is in progress. */
 		this.stringSearching = ['Searching for lyrics...\nPlease wait...'];
-		/** @private @type {number} A TitleFormat object to get the track length in seconds. */
+		/** @private @type {FbTitleFormat} The titleFormat object to get the track length in seconds. */
 		this.tfLength = fb.TitleFormat('%length_seconds%');
-		/** @private @type {number} A padding value for text display. */
+		/** @private @type {number} The padding value for text display. */
 		this.textPad = SCALE(12);
 
 		this.clear();
@@ -124,7 +136,7 @@ class Lyrics {
 		esl.SetPlayingLyricChangedCallback(this.changeLyrics.bind(this));
 
 		if (foundLyrics) {
-			if (grm.ui.displayLyrics) console.log('Found Lyrics:', this.fileName);
+			if (grm.ui.displayLyrics) grm.debug.debugLog('Found Lyrics:', this.fileName);
 			rawLyrics = utils.ReadTextFile(this.fileName, 65001).split(Regex.BreakLine);
 		}
 		else if (embeddedLyrics.length) {
@@ -191,8 +203,8 @@ class Lyrics {
 	 * @returns {boolean} True if the file exists and this.fileName is set, false otherwise.
 	 */
 	checkLyrics(path, filename) {
-		this.lyricType = Regex.LyricsTimestamp.test(this.lyricSource) ? 'lrc' : 'txt';
-		const types = [this.lyricType, 'lrc', 'txt'];
+		this.lyricType = this.lyricSource.some(line => Regex.LyricsTimestamp.test(line)) ? 'lrc' : 'txt';
+		const types = [...new Set([this.lyricType, 'lrc', 'txt'])];
 
 		for (const type of types) {
 			const currentFile = `${path + filename}.${type}`;
@@ -245,9 +257,14 @@ class Lyrics {
 		this.lyricSource = meta.lyricText.split(Regex.BreakLine);
 		this.loadLyrics(this.lyricSource);
 
-		// * Case 2: user-triggered, show lyrics and re-init to confirm the saved file
+		// * Case 2: user-triggered - save the selected lyrics and keep them displayed.
 		if (!wasSearching) {
-			setTimeout(() => { this.initLyrics(); }, 1000);
+			try {
+				fb.RunMainMenuCommand('View/ESLyric/Panels/Save lyric');
+				this.lyricsSaveCommandSent = true;
+			} catch (e) {
+				console.log('Lyrics search: Error running save command -', e);
+			}
 			return;
 		}
 
@@ -261,7 +278,7 @@ class Lyrics {
 			}
 		}
 
-		// Give ESLyric time to write the file, then verify and finalize
+		// * Give ESLyric time to write the file, then verify and finalize
 		setTimeout(() => {
 			if (!this.findLyrics()) return;
 			this.abortSearch();
@@ -321,13 +338,16 @@ class Lyrics {
 
 	/**
 	 * Initializes various variables and settings for displaying lyrics and sends them to parse.
-	 * @param {string} lyr - The lyrics that will be loaded and displayed.
+	 * @param {Array<string>} lyr - The lyrics that will be loaded and displayed.
 	 */
 	loadLyrics(lyr) {
 		if (!Equal(lyr, this.lyr)) {
 			this.lyr = lyr;
 			this.userOffset = 0;
 		}
+
+		this.stop();
+		clearTimeout(this.showOffsetTimer);
 
 		// When foobar starts in `Compact` layout with the startup panel set to `Lyrics`,
 		// the lyric fonts need to be recreated first when switching back to `Normal` layout.
@@ -355,22 +375,36 @@ class Lyrics {
 		this.alignRight = StringFormat(2, 1);
 		this.init = true;
 		this.arc = SCALE(6);
-		this.lyricsScrollTimeMax = grSet.lyricsScrollRateAvg * 0.5;
-		this.lyricsScrollTimeAvg = grSet.lyricsScrollRateMax;
-		this.lyricsScrollMaxMethod = 0;
-		this.durationScroll = this.lyricsScrollMaxMethod ? this.lyricsScrollTimeMax : Math.round(this.lyricsScrollTimeAvg * 2 / 3);
-		this.factor = this.durationScroll < 1500 ? 20 : 24;
-		this.delta = this.lineHeight * this.factor / this.durationScroll;
+
 		this.locus = -1;
 		this.lyrics = [];
 		this.lyricsOffset = 0;
 		this.maxLyrWidth = 0;
-		this.minDurationScroll = Math.min(this.durationScroll, 250);
+		this.highlightedWrapGroup = -1;
 		this.newHighlighted = false;
+
+		this.durationScroll = grSet.lyricsScrollAdaptive ? Math.round(grSet.lyricsScrollRateMax * 2 / 3) : grSet.lyricsScrollRateAvg * 0.5;
+		this.factor = this.durationScroll < 1500 ? 20 : 24;
+		this.delta = this.lineHeight * this.factor / this.durationScroll;
+		this.minDurationScroll = Math.min(this.durationScroll, 250);
 		this.scroll = 0;
-		this.dropShadowLevel = grSet.lyricsDropShadowLevel;
-		this.dropNegativeShadowLevel = this.dropShadowLevel > 1 ? Math.floor(this.dropShadowLevel / 2) : 0;
+		this.scrollStart = 0;
+		this.scrollElapsed = 0;
+		this.scrollEffectiveDuration = this.durationScroll * 16 / this.factor;
+
+		// Map the string-based menu value to a numeric level.
+		const shadowLevelMap = { none: 0, small: 1, normal: 2, large: 3 };
+		const rawLevel = grSet.lyricsDropShadowLevel;
+		this.dropShadowLevel = typeof rawLevel === 'string' ? shadowLevelMap[rawLevel] : rawLevel;
 		this.shadowEffect = this.dropShadowLevel > 0;
+
+		// Invalidate shadow bitmap cache when the level or line height changes
+		const newShadowCacheKey = `${this.dropShadowLevel}|${Math.round(this.lineHeight)}|${grSet.lyricsFontSize_layout}`;
+		if (this.shadowCacheKey !== newShadowCacheKey) {
+			this.shadowBitmapCache.clear();
+			this.shadowCacheKey = newShadowCacheKey;
+		}
+
 		this.showOffsetTimer = null;
 		this.timer = null;
 		this.trackLength = parseInt(this.tfLength.Eval(true));
@@ -426,11 +460,25 @@ class Lyrics {
 		}
 
 		this.lyrics = filteredLyrics;
+
+		// Recompute yOffset for the post-filter line set
+		const isBilingual = grSet.lyricsTranslation && this.lyrics.some((l, i) =>
+			i > 0 && l.group !== undefined && l.group !== this.lyrics[i - 1].group && l.timestamp === this.lyrics[i - 1].timestamp
+		);
+
+		let cumulativeY = 0;
+		for (let i = 0; i < this.lyrics.length; i++) {
+			if (i > 0 && this.lyrics[i].sentenceGroup !== this.lyrics[i - 1].sentenceGroup) {
+				cumulativeY += isBilingual ? this.sentenceSpacing : this.sentenceSpacing * 0.5;
+			}
+			this.lyrics[i].yOffset = cumulativeY;
+			cumulativeY += this.lineHeight;
+		}
 	}
 
 	/**
 	 * Determines if the lyrics are synced or unsynced, formats and parses them accordingly.
-	 * @param {string} lyr - The lyrics that need to be parsed.
+	 * @param {Array<string>} lyr - The lyrics that need to be parsed.
 	 */
 	parseLyrics(lyr) {
 		if (!lyr.length) {
@@ -457,10 +505,19 @@ class Lyrics {
 			this.filterAndHighlightLyrics();
 		}
 		else if (this.type.unsynced) {
-			this.formatLyrics(this.parseUnsyncedLyrics(lyr, this.type.none));
-			const ratio = grm.ui.isStreaming ? 2000 : (this.trackLength / this.lyrics.length) * 1000;
-			for (const [i, line] of this.lyrics.entries()) {
-				line.timestamp = ratio * i;
+			const parsedLines = this.parseUnsyncedLyrics(lyr, this.type.none);
+			this.formatLyrics(parsedLines);
+			const ratio = grm.ui.isStreaming ? 2000 : (this.trackLength / parsedLines.length) * 1000;
+
+			let groupIndex = -1;
+			let groupTimestamp = 0;
+
+			for (const line of this.lyrics) {
+				if (!line.multiLine) {
+					groupIndex++;
+					groupTimestamp = ratio * groupIndex;
+				}
+				line.timestamp = groupTimestamp;
 			}
 		}
 
@@ -470,7 +527,7 @@ class Lyrics {
 
 	/**
 	 * Parses synced lyrics that contain timestamps and content of each line, sorted by timestamp.
-	 * @param {string} lyr - The lyrics of the song. Each string in the array represents a line of lyric.
+	 * @param {Array<string>} lyr - The lyrics of the song. Each string in the array represents a line of lyric.
 	 * @param {boolean} isNone - Indicates if the lyrics array starts with a timestamp or not.
 	 * @returns {Array} An array of objects with properties `timestamp`, `content`, `group`, and `sentenceGroup`.
 	 */
@@ -481,7 +538,12 @@ class Lyrics {
 		let prevTimestamp = null;
 
 		if (isNone) {
-			lyrics.push({ timestamp: 0, content: lyr[0], group: 0, sentenceGroup: 0 });
+			lyrics.push({
+				timestamp: 0,
+				content: lyr[0],
+				group: 0,
+				sentenceGroup: 0
+			});
 		}
 
 		for (const line of lyr) {
@@ -489,7 +551,9 @@ class Lyrics {
 				this.lyricsOffset = parseInt(line.match(Regex.LyricsOffset)[1]) || 0;
 				continue;
 			}
+
 			const matches = line.match(Regex.LyricsTimestampLeading);
+
 			if (matches) {
 				const content = this.tidy(line);
 				const timestamps = matches[0].match(Regex.PunctBracketed);
@@ -513,14 +577,16 @@ class Lyrics {
 			}
 		}
 
-		return lyrics.sort((a, b) => a.timestamp - b.timestamp || a.sentenceGroup - b.sentenceGroup);
+		return lyrics.sort((a, b) =>
+			a.timestamp - b.timestamp || a.sentenceGroup - b.sentenceGroup
+		);
 	}
 
 	/**
 	 * Parses unsynced lyrics when there are no timestamps included.
-	 * @param {string} lyr - The lyrics of the song.
+	 * @param {Array<string>} lyr - The lyrics of the song.
 	 * @param {boolean} isNone - The first line of lyrics should be treated as a timestamp or not.
-	 * @returns {object} An array of objects with "timestamp", "content", and "sentenceGroup" properties for each line of the lyric.
+	 * @returns {Array<object>} An array of objects with "timestamp", "content", and "sentenceGroup" properties for each line of the lyric.
 	 */
 	parseUnsyncedLyrics(lyr, isNone) {
 		const lyrics = [];
@@ -586,6 +652,7 @@ class Lyrics {
 				}
 			});
 
+			// Compute cumulative vertical offsets, adding sentence spacing at group boundaries
 			let cumulativeY = 0;
 			for (let i = 0; i < this.lyrics.length; i++) {
 				if (i > 0 && this.lyrics[i].sentenceGroup !== this.lyrics[i - 1].sentenceGroup) {
@@ -617,28 +684,60 @@ class Lyrics {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 * @param {object} lyric - The lyric object.
 	 * @param {number} line_y - The y-coordinate of the line.
-	 * @param {object} bounds - The object containing bounds information.
+	 * @param {number} blendIn - The pre-computed highlight blend colour for this render pass.
 	 */
-	drawLyric(gr, lyric, line_y, bounds) {
-		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
-		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
-		const blendIn = this.type.synced ? BlendColors(grCol.lyricsNormal, grCol.lyricsHighlight, transition_factor_in) : grCol.lyricsNormal;
+	drawLyric(gr, lyric, line_y, blendIn) {
+		const isHighlighted = lyric.wrapGroup === this.highlightedWrapGroup;
 
-		const fadeFactor =
-			grSet.lyricsFadeScroll && bounds.outsideVisibleBounds ? (bounds.aboveTop ? (this.top - line_y) / this.lineHeight :
-			(line_y - this.bot) / this.lineHeight) : 0;
-
-		const isHighlighted = this.lyrics.some(l => l.wrapGroup === lyric.wrapGroup && l.highlight);
 		const font = this.type.unsynced ? grFont.lyrics :
 			isHighlighted && grSet.lyricsLargerCurrentSync ? grFont.lyricsHighlight : grFont.lyrics;
 
-		const color =
-			bounds.outsideVisibleBounds ? RGBtoRGBA(grCol.lyricsNormal, 255 * (1 - Clamp(fadeFactor, 0, 1))) :
-			(isHighlighted ? blendIn : grCol.lyricsNormal);
+		const aboveTop = line_y < this.top;
+		const visibleBounds = !aboveTop && line_y <= this.bot;
 
-		if (bounds.visibleBounds) {
-			this.drawLyricsShadow(gr, lyric.content, font, line_y);
+		// * Build base colour
+		let color;
+		let shadowAlpha = 255;
+		const hasMask = grSet.lyricsTransparentMask !== 0;
+
+		if (!visibleBounds) {
+			if (!grSet.lyricsFadeScroll) return;
+
+			const rawFade = aboveTop
+				? (this.top - line_y) / this.lineHeight
+				: (line_y  - this.bot) / this.lineHeight;
+
+			let fadeAlpha = 1 - Clamp(rawFade, 0, 1);
+
+			if (hasMask) {
+				const boundaryY = aboveTop ? this.top : this.bot;
+				fadeAlpha *= this.calcTransparentMaskAlpha(boundaryY);
+			}
+
+			shadowAlpha = Math.round(fadeAlpha * 255);
+			color = RGBtoRGBA(grCol.lyricsNormal, shadowAlpha);
 		}
+		else {
+			color = isHighlighted ? blendIn : grCol.lyricsNormal;
+
+			// * Transparent mask (visible lines)
+			if (hasMask) {
+				const maskFactor = this.calcTransparentMaskAlpha(line_y);
+				if (maskFactor <= 0) return;
+
+				const baseAlpha = (color >>> 24) & 0xFF;
+				shadowAlpha = Math.round(baseAlpha * maskFactor);
+				color = (shadowAlpha << 24) | (color & 0x00FFFFFF);
+			}
+		}
+
+		// * Shadow (visible lines only)
+		if (shadowAlpha > 0) {
+			this.drawLyricsShadow(gr, lyric.content, font, line_y, shadowAlpha);
+		}
+
+		// * Text
+		if (((color >>> 24) & 0xFF) === 0) return; // Skip fully transparent draw calls
 
 		gr.DrawString(lyric.content, font, color, this.x, line_y - this.lineHeight * 0.1, this.w + 1, this.lineHeight * 1.2, this.alignCenter);
 	}
@@ -656,17 +755,17 @@ class Lyrics {
 		const y = this.y + this.scroll;
 
 		// DEBUG gr.DrawRect(this.x, this.top, this.w, this.bot, 3, RGBA(255, 0, 0, 255));
-		gr.SetTextRenderingHint(5);
+		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
-		for (const [i, lyric] of this.lyrics.entries()) {
-			const lyric_y = this.lyrics[i].yOffset;
-			const line_y = Math.round(y - top + lyric_y);
-			const bounds = this.checkBounds(line_y);
+		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
+		const transition_factor_in = this.lyrics[this.locus].multiLine ? 1 : transition_factor;
+		const blendIn = this.type.synced ? BlendColors(grCol.lyricsNormal, grCol.lyricsHighlight, transition_factor_in) : grCol.lyricsNormal;
 
-			if (bounds.lyricsDrawBounds) {
-				// DEBUG gr.DrawRect(this.x, line_y, this.w, this.lineHeight, 1, RGBA(0, 255, 255, 100));
-				this.drawLyric(gr, lyric, line_y, bounds);
-			}
+		for (const lyric of this.lyrics) {
+			const line_y = Math.round(y - top + lyric.yOffset);
+			if (line_y < this.top - this.lineHeight * 0.5 || line_y > this.bot + this.lineHeight) continue;
+			// DEBUG gr.DrawRect(this.x, line_y, this.w, this.lineHeight, 1, RGBA(0, 255, 255, 100));
+			this.drawLyric(gr, lyric, line_y, blendIn);
 		}
 
 		this.drawLyricsOffset(gr);
@@ -675,21 +774,27 @@ class Lyrics {
 	}
 
 	/**
-	 * Draws the shadow effect for the lyrics.
+	 * Draws the shadow effect for a lyric line using a pre-rendered blurred bitmap.
+	 * The bitmap text rect mirrors the DrawString rect in drawLyric, so alignment is a simple (offset - pad) shift.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 * @param {string} text - The lyric text to draw.
 	 * @param {GdiFont} font - The font to use for the text.
-	 * @param {number} line_y - The vertical position where the text should be drawn.
+	 * @param {number} line_y - The vertical position of the text rect top edge.
+	 * @param {number} [alpha] - The global opacity for this draw call (0-255).
 	 */
-	drawLyricsShadow(gr, text, font, line_y) {
-		if (!this.shadowEffect) return;
+	drawLyricsShadow(gr, text, font, line_y, alpha = 255) {
+		if (!this.shadowEffect || alpha === 0) return;
 
-		if (this.dropNegativeShadowLevel) {
-			gr.DrawString(text, font, grCol.lyricsShadow, this.x - this.dropNegativeShadowLevel, line_y, this.w + 1, this.lineHeight + 1, this.alignCenter);
-			gr.DrawString(text, font, grCol.lyricsShadow, this.x, line_y - this.dropNegativeShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
-		}
+		const shadow = this.getShadowBitmap(text, font);
 
-		gr.DrawString(text, font, grCol.lyricsShadow, this.x + this.dropShadowLevel, line_y + this.dropShadowLevel, this.w + 1, this.lineHeight + 1, this.alignCenter);
+		if (!shadow || !shadow.bmp) return;
+
+		// Slight directional offset: larger levels get 2 px, smaller get 1 px
+		const offset = this.dropShadowLevel >= 3 ? 2 : 1;
+		const x = Math.round(this.x + offset - shadow.pad);
+		const y = Math.round(line_y - this.lineHeight * 0.1 + offset - shadow.pad);
+
+		gr.DrawImage(shadow.bmp, x, y, shadow.bmp.Width, shadow.bmp.Height, 0, 0, shadow.bmp.Width, shadow.bmp.Height, 0, alpha);
 	}
 
 	/**
@@ -699,16 +804,14 @@ class Lyrics {
 	drawLyricsOffset(gr) {
 		if (!this.showOffset) return;
 
-		const margin = SCALE(20);
 		this.offsetW = gr.CalcTextWidth(`Offset: ${this.userOffset / 1000}s`, grFont.notification) + this.lineHeight;
 		const offsetH = this.lineHeight + 1;
-		const offsetX = this.x + this.w - this.offsetW - margin;
-		const offsetXS = this.x - this.lineHeight * 0.5 - margin;
-		const offsetY = this.y + margin;
+		const offsetX = this.x + this.w - this.offsetW - SCALE(8);
+		const offsetY = this.y - SCALE(8);
 
 		gr.FillRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, grCol.popupBg);
 		gr.DrawRoundRect(offsetX, offsetY, this.offsetW, offsetH, this.arc, this.arc, 1, 0x64000000);
-		gr.DrawString(`Offset: ${this.userOffset / 1000}s`, grFont.notification, grCol.popupText, offsetXS, offsetY, this.w, offsetH, this.alignRight);
+		gr.DrawString(`Offset: ${this.userOffset / 1000}s`, grFont.notification, grCol.popupText, offsetX, offsetY, this.offsetW, offsetH, this.alignCenter);
 	}
 
 	/**
@@ -731,61 +834,65 @@ class Lyrics {
 		if (this.locus >= 0) {
 			this.clearHighlight();
 
+			const currentSentenceGroup = this.lyrics[this.locus].sentenceGroup;
 			let currentStart = this.locus;
-			while (currentStart > 0 && this.lyrics[currentStart - 1].sentenceGroup === this.lyrics[this.locus].sentenceGroup) currentStart--;
-
 			let currentEnd = this.locus;
-			while (currentEnd < this.lyrics.length - 1 && this.lyrics[currentEnd + 1].sentenceGroup === this.lyrics[this.locus].sentenceGroup) currentEnd++;
 
-			const previousGroupHeight = this.lyrics[currentEnd].yOffset - this.lyrics[currentStart].yOffset + this.lineHeight;
+			while (currentStart > 0 && this.lyrics[currentStart - 1].sentenceGroup === currentSentenceGroup) {
+				currentStart--;
+			}
+			while (currentEnd < this.lyrics.length - 1 && this.lyrics[currentEnd + 1].sentenceGroup === currentSentenceGroup) {
+				currentEnd++;
+			}
+
 			const nextStart = currentEnd + 1;
 
 			if (nextStart < this.lyrics.length) {
+				this.scroll = this.lyrics[nextStart].yOffset - this.lyrics[this.locus].yOffset;
 				this.locus = nextStart;
-				let end = nextStart;
-				while (end < this.lyrics.length - 1 && this.lyrics[end + 1].sentenceGroup === this.lyrics[nextStart].sentenceGroup) end++;
-				const nextGroupSize = end - nextStart + 1;
-				const highlightIndex = grSet.lyricsTranslationLine - 1;
-
-				if (highlightIndex < nextGroupSize) {
-					this.lyrics[nextStart + highlightIndex].highlight = true;
-				} else {
-					this.lyrics[end].highlight = true;
-				}
-				this.scroll = previousGroupHeight;
 			}
 			else {
 				this.locus = this.lyrics.length - 1;
 			}
 		}
 
+		this.scrollStart = this.scroll;
+		this.scrollElapsed = 0;
 		this.getScrollSpeed();
+		this.setHighlight();
 		this.repaintRect();
 	}
 
 	/**
-	 * Checks various positional bounds for a given line's y-coordinate.
-	 * @param {number} line_y - The y-coordinate of the line.
-	 * @returns {object} An object containing various bounds-related properties:
-	 * - {boolean} aboveTop - Whether the line is above the top boundary.
-	 * - {boolean} visibleBounds - Whether the line is within the visible bounds.
-	 * - {boolean} outsideVisibleBounds - Whether the line is outside the visible bounds.
-	 * - {boolean} lyricsDrawBounds - Whether the line is inside the lyrics draw bounds.
+	 * Calculates the transparent mask alpha for a lyric line based on its vertical position.
+	 * Creates dual smoothstep gradients: transparent = opaque from both edges inward.
+	 * @param {number} line_y - The y-coordinate of the lyric line's top edge.
+	 * @returns {number} The alpha factor in [0.0, 1.0].
 	 */
-	checkBounds(line_y) {
-		return {
-			aboveTop: (line_y < this.top),
-			visibleBounds: (line_y >= this.top) && (line_y <= this.bot),
-			outsideVisibleBounds: (line_y < this.top || line_y > this.bot),
-			lyricsDrawBounds: (line_y >= this.top - this.lineHeight * 0.5) && (line_y <= this.bot + this.lineHeight)
-		};
+	calcTransparentMaskAlpha(line_y) {
+		if (!grSet.lyricsTransparentMask || !this.h) return 1.0;
+
+		const visH = this.bot - this.top;
+		if (visH <= 0) return 1.0;
+
+		// Normalise line-centre to the visible range to [0, 1]
+		const relY = (line_y + this.lineHeight * 0.5 - this.top) / visH;
+		if (relY <= 0 || relY >= 1) return 0.0;
+
+		const mask = grSet.lyricsTransparentMask;
+		const topFade = relY < mask ? Easing('easeInOutSine', relY / mask) : 1.0;
+		const botFade = (1 - relY) < mask ? Easing('easeInOutSine', (1 - relY) / mask) : 1.0;
+
+		return Math.min(topFade, botFade);
 	}
 
 	/**
-	 * Decrements the lyrics scroll amount by delta.
+	 * Advances the scroll position using a time-based easing curve toward zero.
 	 */
 	checkScroll() {
-		this.scroll = Math.max(0, this.scroll - this.delta);
+		this.scrollElapsed += 16;
+		const t = Math.min(this.scrollElapsed / this.scrollEffectiveDuration, 1);
+		this.scroll = Math.max(0, this.scrollStart * (1 - Easing(grSet.lyricsScrollEasing, t)));
 
 		if (this.scroll <= 0) {
 			this.newHighlighted = false;
@@ -801,12 +908,16 @@ class Lyrics {
 		this.stop();
 		this.lyrics = [];
 		this.scrollDragOffset = 0;
+		this.highlightedWrapGroup = -1;
+		this.shadowBitmapCache.clear();
 	}
 
 	/**
 	 * Removes highlight from all lines in the lyric array.
 	 */
 	clearHighlight() {
+		this.highlightedWrapGroup = -1;
+
 		for (const v of this.lyrics) {
 			v.highlight = false;
 		}
@@ -840,21 +951,23 @@ class Lyrics {
 	 */
 	getScrollSpeed() {
 		let { durationScroll } = this;
+
 		const t1 = this.getTimestamp(this.locus - 1);
 		const t2 = this.getTimestamp(this.locus);
 		const t3 = this.getTimestamp(this.locus + 1);
-		const variSpeed = this.lyricsScrollMaxMethod ? 0 : 10 * 500;
+
+		const variSpeed = grSet.lyricsScrollAdaptive ? 10 * 500 : 0;
 
 		if (t1 && t2 && t2 - t1 > 0) {
-			durationScroll = Clamp(t2 - t1, this.minDurationScroll, this.durationScroll);
-			if (t3 && t3 - t2 > 0 && t3 - t2 < this.durationScroll) {
-				durationScroll = Clamp(t3 - t2, this.minDurationScroll, this.durationScroll);
-			}
+			const backward = t2 - t1;
+			const forward  = (t3 && t3 - t2 > 0) ? t3 - t2 : backward;
+			durationScroll = Clamp(Math.min(backward, forward), this.minDurationScroll, this.durationScroll);
 		}
 
 		if (variSpeed) {
 			let diff1 = 0;
 			let diff2 = 0;
+
 			if (t1 && t2) {
 				diff1 = t2 - t1;
 				diff1 = diff1 > this.durationScroll ? diff1 * this.durationScroll / variSpeed : 0;
@@ -863,11 +976,68 @@ class Lyrics {
 				diff2 = t3 - t2;
 				diff2 = diff2 > this.durationScroll ? diff2 * this.durationScroll / variSpeed : 0;
 			}
-			durationScroll += Math.min(diff1, diff2);
+
+			const maxExtension = this.durationScroll * 2;
+			durationScroll += Math.min(Math.min(diff1, diff2), maxExtension);
 		}
 
 		this.delta = this.scroll * this.factor / durationScroll;
+		this.scrollEffectiveDuration = durationScroll * 16 / this.factor;
 		this.transitionOffset = durationScroll / 2;
+	}
+
+	/**
+	 * Gets or creates a cached pre-rendered blurred shadow bitmap for a lyric line.
+	 * The text rect inside the bitmap mirrors the DrawString rect used in drawLyric
+	 * exactly, so DrawImage alignment is a trivial (pad, pad) to (x, y) mapping.
+	 * @param {string} text - The lyric text content.
+	 * @param {GdiFont} font - The font used to render the text.
+	 * @returns {{bmp: GdiBitmap, pad: number}|null} Cached entry, or null on failure.
+	 */
+	getShadowBitmap(text, font) {
+		// Rebuild entire cache when the shadow colour changes (theme switch, etc.)
+		if (this.shadowLastColor !== grCol.lyricsShadow) {
+			this.shadowBitmapCache.clear();
+			this.shadowLastColor = grCol.lyricsShadow;
+		}
+
+		// Separate cache slots for the highlighted (larger) font and normal font
+		const fontKey = font !== grFont.lyrics ? 'H' : 'N';
+		const cacheKey = `${text}|${this.shadowCacheKey}|${fontKey}`;
+
+		if (this.shadowBitmapCache.has(cacheKey)) {
+			return this.shadowBitmapCache.get(cacheKey);
+		}
+
+		// Bounded FIFO eviction
+		if (this.shadowBitmapCache.size >= 200) {
+			this.shadowBitmapCache.delete(this.shadowBitmapCache.keys().next().value);
+		}
+
+		// Larger blur radius = softer, more spread shadow; values tuned for each level
+		const blurRadius = this.dropShadowLevel === 1 ? 3 : this.dropShadowLevel === 2 ? 5 : 8;
+
+		// Mirror the DrawString rect used in drawLyric: (this.x, line_y - 0.1·lh, this.w + 1, 1.2·lh)
+		// Place the text at (blurRadius, blurRadius) inside the bitmap so blur has room on all sides
+		const textW = this.w + 1;
+		const textH = Math.round(this.lineHeight * 1.2);
+		const bmpW  = Math.round(textW + blurRadius * 2 + 2);
+		const bmpH  = Math.round(textH + blurRadius * 2 + 2);
+
+		if (bmpW < 2 || bmpH < 2) {
+			this.shadowBitmapCache.set(cacheKey, null);
+			return null;
+		}
+
+		const shadowBmp = GDI(bmpW, bmpH, true, (g) => {
+			g.DrawString(text, font, grCol.lyricsShadow, blurRadius, blurRadius, textW, textH, this.alignCenter);
+		});
+
+		if (shadowBmp) shadowBmp.StackBlur(blurRadius);
+
+		const entry = shadowBmp ? { bmp: shadowBmp, pad: blurRadius } : null;
+		this.shadowBitmapCache.set(cacheKey, entry);
+		return entry;
 	}
 
 	/**
@@ -899,24 +1069,21 @@ class Lyrics {
 	}
 
 	/**
-	 * Checks if the lyrics array has more than one element and if the playback time exceeds the next group's timestamp.
-	 * @returns {boolean} True if the scroll needs to be updated.
+	 * Checks if the scroll needs to advance to the next sentence group.
+	 * @returns {boolean} True if scroll needs to be updated.
 	 */
 	scrollUpdateNeeded() {
 		if (this.locus >= this.lyrics.length - 1) return false;
 
+		let nextIndex = this.locus + 1;
 		const currentSentenceGroup = this.lyrics[this.locus].sentenceGroup;
-		let nextIndex = this.locus;
 
 		while (nextIndex < this.lyrics.length && this.lyrics[nextIndex].sentenceGroup === currentSentenceGroup) {
 			nextIndex++;
 		}
 
 		if (nextIndex < this.lyrics.length) {
-			const nextTimestamp = this.lyrics[nextIndex].timestamp;
-			const actualTime = grm.ui.isStreaming ? fb.PlaybackTime - bio.txt.reader.trackStartTime : fb.PlaybackTime;
-			const curTime = Math.round(actualTime * 1000) + this.lyricsOffset + this.userOffset;
-			return curTime >= nextTimestamp;
+			return this.playbackTime() >= this.lyrics[nextIndex].timestamp;
 		}
 
 		return false;
@@ -927,8 +1094,7 @@ class Lyrics {
 	 */
 	seek() {
 		this.clearHighlight();
-		const actualTime = grm.ui.isStreaming ? fb.PlaybackTime - bio.txt.reader.trackStartTime : fb.PlaybackTime;
-		const curTime = Math.round(actualTime * 1000) + this.lyricsOffset + this.userOffset;
+		const curTime = this.playbackTime();
 
 		let low = 0;
 		let high = this.lyrics.length - 1;
@@ -945,32 +1111,44 @@ class Lyrics {
 		}
 
 		if (currentIndex >= 0) {
-			const currentSentenceGroup = this.lyrics[currentIndex].sentenceGroup;
+			const sg = this.lyrics[currentIndex].sentenceGroup;
 			let startIndex = currentIndex;
-			let endIndex = currentIndex;
-
-			while (startIndex > 0 && this.lyrics[startIndex - 1].sentenceGroup === currentSentenceGroup) {
+			while (startIndex > 0 && this.lyrics[startIndex - 1].sentenceGroup === sg) {
 				startIndex--;
 			}
-			while (endIndex < this.lyrics.length - 1 && this.lyrics[endIndex + 1].sentenceGroup === currentSentenceGroup) {
-				endIndex++;
-			}
-
-			const groupSize = endIndex - startIndex + 1;
-			const highlightIndex = grSet.lyricsTranslationLine - 1;
-
-			if (highlightIndex < groupSize) {
-				this.lyrics[startIndex + highlightIndex].highlight = true;
-			} else {
-				this.lyrics[endIndex].highlight = true;
-			}
 			this.locus = startIndex;
-		}
-		else {
+			this.setHighlight();
+		} else {
 			this.locus = 0;
 		}
 
 		this.repaintRect();
+	}
+
+	/**
+	 * Highlights the translation line within the current sentence group.
+	 */
+	setHighlight() {
+		if (!this.type.synced || this.locus < 0) return;
+
+		const currentSentenceGroup = this.lyrics[this.locus].sentenceGroup;
+		const idxStart = this.locus;
+		let idxEnd = this.locus;
+
+		while (idxEnd < this.lyrics.length - 1 && this.lyrics[idxEnd + 1].sentenceGroup === currentSentenceGroup) {
+			idxEnd++;
+		}
+
+		const groupSize = idxEnd - idxStart + 1;
+		const highlightIdx = idxStart + Math.min(grSet.lyricsTranslationLine - 1, groupSize - 1);
+
+		if (this.lyrics[highlightIdx]) {
+			const targetWrapGroup = this.lyrics[highlightIdx].wrapGroup;
+			this.highlightedWrapGroup = targetWrapGroup;
+			for (const lyric of this.lyrics) {
+				if (lyric.wrapGroup === targetWrapGroup) lyric.highlight = true;
+			}
+		}
 	}
 
 	/**
@@ -1003,10 +1181,9 @@ class Lyrics {
 	 * Stops the timer if it is running.
 	 */
 	stop() {
-		if (this.timer) {
-			clearInterval(this.timer);
-			this.timer = null;
-		}
+		if (!this.timer) return;
+		clearInterval(this.timer);
+		this.timer = null;
 	}
 
 	/**
@@ -1084,11 +1261,11 @@ class Lyrics {
 	}
 
 	/**
-	 * Adjusts the user offset, updates the display, and seeks to the new position.
+	 * Adjusts the user offset and seeks to the new position on mouse wheel scroll.
 	 * @param {number} step - The amount of scrolling offset that should be performed.
 	 */
 	on_mouse_wheel(step) {
-		const scrollStepOffset = this.type.synced ? 500 : 1000;
+		const scrollStepOffset = utils.IsKeyPressed(VKey.SHIFT) ? 5000 : this.type.synced ? 500 : 1000;
 		step *= Clamp(Math.round(scrollStepOffset / ((Date.now() - this.stepTime) * 5)), 1, 5);
 		this.stepTime = Date.now();
 		this.userOffset += scrollStepOffset * -step;

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-06-2026                                              * //
+// * Last change:    21-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -149,7 +149,7 @@ grSet.addProperties({
 	version:                            ['Georgia-ReBORN - #Version: Do not hand edit!', '3.0-x64-DEV'],
 
 	// * Design
-	design:                             ['Georgia-ReBORN - 01. Design', 'modern_day_night'], // Default design preset
+	design:                             ['Georgia-ReBORN - 01. Design', 'reborn'], // Default design preset
 
 	// * Theme
 	theme:                              ['Georgia-ReBORN - 02. Theme:', 'reborn'], // Use reborn theme as default
@@ -176,6 +176,7 @@ grSet.addProperties({
 	styleRebornFusion:                  ['Georgia-ReBORN - 03. Style: Reborn fusion', false], // Use Reborn fusion style
 	styleRebornFusion2:                 ['Georgia-ReBORN - 03. Style: Reborn fusion 2', false], // Use Reborn fusion 2 style
 	styleRebornFusionAccent:            ['Georgia-ReBORN - 03. Style: Reborn fusion accent', false], // Use Reborn fusion accent style
+	styleRandomNeon:                    ['Georgia-ReBORN - 03. Style: Random neon', false], // Use Random neon style
 	styleRandomPastel:                  ['Georgia-ReBORN - 03. Style: Random pastel', false], // Use Random pastel style
 	styleRandomDark:                    ['Georgia-ReBORN - 03. Style: Random dark', false], // Use Random dark style
 	styleRandomAutoColor:               ['Georgia-ReBORN - 03. Style: Random auto color', 'off'], // Use auto color in Random theme
@@ -204,6 +205,7 @@ grSet.addProperties({
 	styleRebornFusion_day:              ['Georgia-ReBORN - 03. Style_daytime: Reborn fusion', false], // Daytime reborn fusion style state - used for theme day/night mode usage
 	styleRebornFusion2_day:             ['Georgia-ReBORN - 03. Style_daytime: Reborn fusion 2', false], // Daytime reborn fusion 2 style state - used for theme day/night mode usage
 	styleRebornFusionAccent_day:        ['Georgia-ReBORN - 03. Style_daytime: Reborn fusion accent', false], // Daytime reborn fusion accent style state - used for theme day/night mode usage
+	styleRandomNeon_day:                ['Georgia-ReBORN - 03. Style_daytime: Random neon', false], // Daytime random neon style state - used for theme day/night mode usage
 	styleRandomPastel_day:              ['Georgia-ReBORN - 03. Style_daytime: Random pastel', false], // Daytime random pastel style state - used for theme day/night mode usage
 	styleRandomDark_day:                ['Georgia-ReBORN - 03. Style_daytime: Random dark', false], // Daytime random dark style state - used for theme day/night mode usage
 	styleRandomAutoColor_day:           ['Georgia-ReBORN - 03. Style_daytime: Random auto color', 'off'], // Daytime random auto color style state - used for theme day/night mode usage
@@ -232,6 +234,7 @@ grSet.addProperties({
 	styleRebornFusion_night:            ['Georgia-ReBORN - 03. Style_nighttime: Reborn fusion', false], // Nighttime reborn fusion style state - used for theme day/night mode usage
 	styleRebornFusion2_night:           ['Georgia-ReBORN - 03. Style_nighttime: Reborn fusion 2', false], // Nighttime reborn fusion 2 style state - used for theme day/night mode usage
 	styleRebornFusionAccent_night:      ['Georgia-ReBORN - 03. Style_nighttime: Reborn fusion accent', false], // Nighttime reborn fusion accent style state - used for theme day/night mode usage
+	styleRandomNeon_night:              ['Georgia-ReBORN - 03. Style_nighttime: Random neon', false], // Nighttime random neon style state - used for theme day/night mode usage
 	styleRandomPastel_night:            ['Georgia-ReBORN - 03. Style_nighttime: Random pastel', false], // Nighttime random pastel style state - used for theme day/night mode usage
 	styleRandomDark_night:              ['Georgia-ReBORN - 03. Style_nighttime: Random dark', false], // Nighttime random dark style state - used for theme day/night mode usage
 	styleRandomAutoColor_night:         ['Georgia-ReBORN - 03. Style_nighttime: Random auto color', 'off'], // Nighttime random auto color style state - used for theme day/night mode usage
@@ -260,6 +263,7 @@ grSet.addProperties({
 	savedStyleRebornFusion:             ['Georgia-ReBORN - 03. Style_saved: Reborn fusion', false], // Saved active reborn fusion style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleRebornFusion2:            ['Georgia-ReBORN - 03. Style_saved: Reborn fusion 2', false], // Saved active reborn fusion 2 style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleRebornFusionAccent:       ['Georgia-ReBORN - 03. Style_saved: Reborn fusion accent', false], // Saved active reborn fusion accent style state - used to restore style state after custom [%GR_STYLE%] usage
+	savedStyleRandomNeon:               ['Georgia-ReBORN - 03. Style_saved: Random neon', false], // Saved active random neon style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleRandomPastel:             ['Georgia-ReBORN - 03. Style_saved: Random pastel', false], // Saved active random pastel style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleRandomDark:               ['Georgia-ReBORN - 03. Style_saved: Random dark', false], // Saved active random dark style state - used to restore style state after custom [%GR_STYLE%] usage
 	savedStyleRandomAutoColor:          ['Georgia-ReBORN - 03. Style_saved: Random auto color', 'off'], // Saved active random auto color style state - used to restore style state after custom [%GR_STYLE%] usage
@@ -294,16 +298,31 @@ grSet.addProperties({
 	presetIndicator:                    ['Georgia-ReBORN - 04. Preset: Indicator:', true], // Preset indicator
 	savedPreset:                        ['Georgia-ReBORN - 04. Preset_saved: Active preset:', false], // Saved active preset state - used for custom [%GR_PRESET%]
 
+	// * Color
+	albumArtColorExtraction:            ['Georgia-ReBORN - 05. Color: Album art color extraction', 1], // 1 - default: How the system will render its colors, either GetColourSchemeJSON 'V1 old (K-means/RGB)' or GetColourSchemeJSONV2 'V2 new (K-means++/OKLAB)' - only available with JSplitter and NOT Spider Monkey Panel!
+	albumArtColorPalette:               ['Georgia-ReBORN - 05. Color: Album art color palette', 'auto'], // 'auto' - which color mode from the extracted palette should be used
+	albumArtColorSaturation:            ['Georgia-ReBORN - 05. Color: Album art color saturation', 100], // 100 - off, desaturates colors from the extracted album art image
+	albumArtColorSaturationEyeNightCor: ['Georgia-ReBORN - 05. Color: Album art color saturation eye protection night correction', true], // true - the album art saturation eye protection extra correction during nighttime
+	albumArtColorSaturationEyeSchedule: ['Georgia-ReBORN - 05. Color: Album art color saturation eye protection schedule', '0-24'], // '0-24' - the album art saturation eye protection schedule
+	chameleon:                          ['Georgia-ReBORN - 05. Color: Chameleon', true], // true: The chameleon color transition effect
+	chameleonMode:                      ['Georgia-ReBORN - 05. Color: Chameleon mode', 'full'], // 'full': The chameleon color full transition effect with cycling
+	chameleonCycleColor:                ['Georgia-ReBORN - 05. Color: Chameleon cycle color', 'all'], // 'all': The chameleon palette color mode
+	chameleonCycleTime:                 ['Georgia-ReBORN - 05. Color: Chameleon cycle time', 30], // 30: The chameleon color transition cycle when chameleon mode is 'full'
+	chameleonDuration:                  ['Georgia-ReBORN - 05. Color: Chameleon duration', 400], // 400: The chameleon color transition effect duration
+	chameleonEasing:                    ['Georgia-ReBORN - 05. Color: Chameleon easing', 'smootherStep'], // 'smootherStep': The chameleon color transition easing effect
+	chameleonRefreshRate:               ['Georgia-ReBORN - 05. Color: Chameleon refresh rate', 33], // 33: The chameleon color transition refresh rate
+	chameleonBitmapUpdateRate:          ['Georgia-ReBORN - 05. Color: Chameleon bitmap update rate', 15], // 15: The chameleon color transition bitmap update rate
+
 	// * Display
-	displayRes:                         ['Georgia-ReBORN - 05. Display', '<not_set>'], // 4K: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
-	displayScale:                       ['Georgia-ReBORN - 05. Display scaling', 100], // 100: Default 100% scale
-	themeBrightness:                    ['Georgia-ReBORN - 05. Display brightness', 'default'], // default: Theme brightness
-	themeBrightness_day:                ['Georgia-ReBORN - 05. Display brightness_daytime', 'default'], // default: Daytime theme brightness
-	themeBrightness_night:              ['Georgia-ReBORN - 05. Display brightness_nighttime', 'default'], // default: Nighttime theme brightness
-	savedThemeBrightness:               ['Georgia-ReBORN - 05. Display brightness_saved', 'default'], // Saved active theme brightness state - used to restore brightness after custom [%GR_PRESET%] usage
+	displayRes:                         ['Georgia-ReBORN - 05. Display:', '<not_set>'], // 4K: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
+	displayScale:                       ['Georgia-ReBORN - 05. Display: Scaling', 100], // 100: Default 100% scale
+	themeBrightness:                    ['Georgia-ReBORN - 05. Display: Brightness', 'default'], // default: Theme brightness
+	themeBrightness_day:                ['Georgia-ReBORN - 05. Display: Brightness daytime', 'default'], // default: Daytime theme brightness
+	themeBrightness_night:              ['Georgia-ReBORN - 05. Display: Brightness nighttime', 'default'], // default: Nighttime theme brightness
+	savedThemeBrightness:               ['Georgia-ReBORN - 05. Display: Brightness saved', 'default'], // Saved active theme brightness state - used to restore brightness after custom [%GR_PRESET%] usage
 
 	// * Layout
-	layout:                             ['Georgia-ReBORN - 06. Layout', 'default'], // Default layout
+	layout:                             ['Georgia-ReBORN - 06. Layout:', 'default'], // Default layout
 
 	// * Player size
 	playerSize:                         ['Georgia-ReBORN - 07. Player size:', 'small'], // Default player size
@@ -346,6 +365,8 @@ grSet.addProperties({
 	libraryFontSize_artwork:            ['Georgia-ReBORN - 08. Font size: Library (Artwork)', 12], // Library font size in Artwork layout
 	biographyFontSize_default:          ['Georgia-ReBORN - 08. Font size: Biography (Default)', 12], // Biography font size in Default layout
 	biographyFontSize_artwork:          ['Georgia-ReBORN - 08. Font size: Biography (Artwork)', 12], // Biography font size in Artwork layout
+	biographyLyricsFontSize_default:    ['Georgia-ReBORN - 08. Font size: Biography lyrics (Default)', 16], // Biography lyrics font size in Default layout
+	biographyLyricsFontSize_artwork:    ['Georgia-ReBORN - 08. Font size: Biography lyrics (Artwork)', 16], // Biography lyrics font size in Artwork layout
 	lyricsFontSize_default:             ['Georgia-ReBORN - 08. Font size: Lyrics (Default)', 20], // Lyrics font size in Default layout
 	lyricsFontSize_artwork:             ['Georgia-ReBORN - 08. Font size: Lyrics (Artwork)', 20], // Lyrics font size in Artwork layout
 	lyricsInfoFontSize_default:         ['Georgia-ReBORN - 08. Font size: Lyrics info (Default)', 20], // Lyrics info font size in Default layout
@@ -519,7 +540,7 @@ grSet.addProperties({
 	playlistBgImgSource:                ['Georgia-ReBORN - 10. Playlist: Background: Image source', 'artist'], // 'artist', 'album', 'custom' - Image source
 	playlistBgImgAlbumArtFilter:        ['Georgia-ReBORN - 10. Playlist: Background: Image source album art filter', true], // Filters album art images based on playlistBgAlbumArt pattern
 	playlistBgImgScale:                 ['Georgia-ReBORN - 10. Playlist: Background: Image scale', 'filled'], // Image on background scale
-	playlistBgImgOpacity:               ['Georgia-ReBORN - 10. Playlist: Background: Image opacity', 76], // Image on background opacity
+	playlistBgImgOpacity:               ['Georgia-ReBORN - 10. Playlist: Background: Image opacity', 51], // Image on background opacity
 	playlistBgRowOpacity:               ['Georgia-ReBORN - 10. Playlist: Background: Row opacity', 128], // Playlist rows now playing rows only
 	playlistBgRowNowPlaying:            ['Georgia-ReBORN - 10. Playlist: Background: Row now playing only', false], // Playlist row now playing
 	showPlaylistManager_default:        ['Georgia-ReBORN - 10. Playlist: Show playlist manager (Default)',  true], // Show Playlist manager in Default layout
@@ -598,7 +619,7 @@ grSet.addProperties({
 	libraryBgImgSource:                 ['Georgia-ReBORN - 12. Library: Background: Image source', 'artist'], // 'artist', 'album', 'custom' - Image source
 	libraryBgImgAlbumArtFilter:         ['Georgia-ReBORN - 12. Library: Background: Image source album art filter', true], // Filters album art images based on libraryBgAlbumArt pattern
 	libraryBgImgScale:                  ['Georgia-ReBORN - 12. Library: Background: Image scale', 'filled'], // Image on background scale
-	libraryBgImgOpacity:                ['Georgia-ReBORN - 12. Library: Background: Image opacity', 76], // Image on background opacity
+	libraryBgImgOpacity:                ['Georgia-ReBORN - 12. Library: Background: Image opacity', 51], // Image on background opacity
 	libraryBgRowOpacity:                ['Georgia-ReBORN - 12. Library: Background: Row opacity', 128], // Library row opacity
 	libraryRowHover:                    ['Georgia-ReBORN - 12. Library: Row mouse hover', true], // Enable library row mouse hover effect
 	librarySource:                      ['Georgia-ReBORN - 12. Library: Source', 1], // Library source, 0 - Active playlist, 1 - Library (default)
@@ -610,24 +631,35 @@ grSet.addProperties({
 	biographyLayoutFullPreset:          ['Georgia-ReBORN - 13. Biography: Use full preset', true], // Always use full preset when changing Biography layout to full and normal
 	biographyTheme:                     ['Georgia-ReBORN - 13. Biography: Theme', 0], // 0 (default)
 	biographyDisplay:                   ['Georgia-ReBORN - 13. Biography: Display', 'Image+text'], // Image+text (default)
+	biographyBgImg:                     ['Georgia-ReBORN - 13. Biography: Background: Image',  false], // Show Image on Biography background
+	biographyBgImgCycle:                ['Georgia-ReBORN - 13. Biography: Background: Image cycle', true], // Image cycle
+	biographyBgImgCycleTime:            ['Georgia-ReBORN - 13. Biography: Background: Image cycle time', 15], // Image cycle time
+	biographyBgImgSource:               ['Georgia-ReBORN - 13. Biography: Background: Image source', 'album'], // 'artist', 'album', 'custom' - Image source
+	biographyBgImgAlbumArtFilter:       ['Georgia-ReBORN - 13. Biography: Background: Image source album art filter', true], // Filters album art images based on biographyBgAlbumArt pattern
+	biographyBgImgScale:                ['Georgia-ReBORN - 13. Biography: Background: Image scale', 'filled'], // Image on background scale
+	biographyBgImgOpacity:              ['Georgia-ReBORN - 13. Biography: Background: Image opacity', 51], // Image on background opacity
+	biographyBgRowOpacity:              ['Georgia-ReBORN - 13. Biography: Background: Row opacity', 128], // Biography row opacity
 
 	// * Lyrics
 	lyricsLayout:                       ['Georgia-ReBORN - 14. Lyrics: Layout', 'normal'], // Lyrics layout - normal (default) or full
-	lyricsBgImg:                        ['Georgia-ReBORN - 14. Lyrics: Background: Image',  false], // Show Image on Library background
+	lyricsBgImg:                        ['Georgia-ReBORN - 14. Lyrics: Background: Image',  false], // Show Image on Lyrics background
 	lyricsBgImgCycle:                   ['Georgia-ReBORN - 14. Lyrics: Background: Image cycle', true], // Image cycle
 	lyricsBgImgCycleTime:               ['Georgia-ReBORN - 14. Lyrics: Background: Image cycle time', 15], // Image cycle time
-	lyricsBgImgSource:                  ['Georgia-ReBORN - 14. Lyrics: Background: Image source', 'album'], // 'album', 'album', 'custom' - Image source
+	lyricsBgImgSource:                  ['Georgia-ReBORN - 14. Lyrics: Background: Image source', 'album'], // 'artist', 'album', 'custom' - Image source
 	lyricsBgImgAlbumArtFilter:          ['Georgia-ReBORN - 14. Lyrics: Background: Image source album art filter', true], // Filters album art images based on lyricsBgAlbumArt pattern
 	lyricsBgImgScale:                   ['Georgia-ReBORN - 14. Lyrics: Background: Image scale', 'filled'], // Image on background scale
-	lyricsBgImgOpacity:                 ['Georgia-ReBORN - 14. Lyrics: Background: Image opacity', 76], // Image on background opacity
-	lyricsDropShadowLevel:              ['Georgia-ReBORN - 14. Lyrics: Show drop shadow', 2], // 0 - 3 - Show drop shadow on lyrics text
+	lyricsBgImgOpacity:                 ['Georgia-ReBORN - 14. Lyrics: Background: Image opacity', 51], // Image on background opacity
+	lyricsScrollEasing:                 ['Georgia-ReBORN - 14. Lyrics: Scroll easing', 'easeOutQuad'], // 'easeOutQuad' - the lyrics scroll animation easing curve
+	lyricsDropShadowLevel:              ['Georgia-ReBORN - 14. Lyrics: Show drop shadow', 'normal'], // 'normal' - Show drop shadow on lyrics text
 	lyricsFadeScroll:                   ['Georgia-ReBORN - 14. Lyrics: Show fade scroll', true], // true: Show lyrics fade scroll
+	lyricsTransparentMask:              ['Georgia-ReBORN - 14. Lyrics: Show transparent mask', 0], // 0: Show lyrics up and bottom transparent gradient mask
 	lyricsLargerCurrentSync:            ['Georgia-ReBORN - 14. Lyrics: Show larger current sync', true], // true: Displays larger font on current synced lyric
 	lyricsRememberPanelState:           ['Georgia-ReBORN - 14. Lyrics: Remember lyrics panel state', false], // true: Displays lyrics panel state on startup and when switching through panels
 	lyricsAutoScrollUnsynced:           ['Georgia-ReBORN - 14. Lyrics: Auto-scroll unsynced lyrics', true], // true: Automatically scroll unsynced lyrics
 	lyricsLineSpacing:                  ['Georgia-ReBORN - 14. Lyrics: Line spacing', 40], // 20 - 60 - the line spacing between each lyric line
 	lyricsSentenceSpacing:              ['Georgia-ReBORN - 14. Lyrics: Sentence spacing', 30], // 10 - 50 - the sentence spacing between each lyric group
 	lyricsScrollSpeed:                  ['Georgia-ReBORN - 14. Lyrics: Scroll speed', 'normal'], // 'fastest', 'fast', 'normal', 'slow', 'slowest' - lyrics scroll speed based on scroll average and maximum
+	lyricsScrollAdaptive:               ['Georgia-ReBORN - 14. Lyrics: Scroll speed adaptive', true], // true - slows the scroll animation adaptively when lyric lines are far apart
 	lyricsScrollRateAvg:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed avg rate', 750], // 300, 500, 750, 1000, 1500 - average lyrics scroll in ms
 	lyricsScrollRateMax:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed max rate', 375], // average lyrics scroll / 2 = maximum lyrics scroll in ms
 	lyricsTranslation:                  ['Georgia-ReBORN - 14. Lyrics: Show lyrics translation', true], // true - show translation in bilingual lyrics
@@ -652,8 +684,7 @@ grSet.addProperties({
 	customWaveformBarDir:               ['Georgia-ReBORN - 15. Settings: Use custom waveform bar directory', false], // false: Use custom waveform bar directory
 	waveformBarAutoDelete:              ['Georgia-ReBORN - 15. Settings: Auto-delete waveform bar cache', false], // false: This will auto-delete analyzed waveform bar files on startup
 	themePerformance:                   ['Georgia-ReBORN - 15. Settings: Theme performance', 'balanced'], // 'balanced' - default: How the theme performs, either fast speed, balanced or good quality depending on CPU
-	rendererColors:                     ['Georgia-ReBORN - 15. Settings: Renderer colors', 1], // 1 - default: How the system will render its colors, either GetColourSchemeJSON 'V1 old (K-means/RGB)' or GetColourSchemeJSONV2 'V2 new (K-means++/OKLAB)' - only available with JSplitter and NOT Spider Monkey Panel!
-	rendererGraphics:                   ['Georgia-ReBORN - 15. Settings: Renderer graphics', 0], // 0 - default: How the system will render its graphics, either 'GDI+' or 'Direct2D' - only available with JSplitter and NOT Spider Monkey Panel!
+	rendererMode:                       ['Georgia-ReBORN - 15. Settings: Renderer mode', 0], // 0 - default: How the system will render its graphics, either 'GDI+' or 'Direct2D' - only available with JSplitter and NOT Spider Monkey Panel!
 	devTools:                           ['Georgia-ReBORN - 15. Settings: Enable developer tools', false], // true: Show developer tools in options context menu
 
 	// * System
@@ -664,6 +695,9 @@ grSet.addProperties({
 	bgImgArtistIdxLibrary:              ['Georgia-ReBORN - 16. System: Saved background image library artist index', 0], // The saved background image library artist index
 	bgImgAlbumIdxLibrary:               ['Georgia-ReBORN - 16. System: Saved background image library album index', 0], // The saved background image library album index
 	bgImgCustomIdxLibrary:              ['Georgia-ReBORN - 16. System: Saved background image library custom index', 0], // The saved background image library custom index
+	bgImgArtistIdxBiography:            ['Georgia-ReBORN - 16. System: Saved background image biography artist index', 0], // The saved background image biography artist index
+	bgImgAlbumIdxBiography:             ['Georgia-ReBORN - 16. System: Saved background image biography album index', 0], // The saved background image biography album index
+	bgImgCustomIdxBiography:            ['Georgia-ReBORN - 16. System: Saved background image biography custom index', 0], // The saved background image biography custom index
 	bgImgArtistIdxLyrics:               ['Georgia-ReBORN - 16. System: Saved background image lyrics artist index', 0], // The saved background image lyrics artist index
 	bgImgAlbumIdxLyrics:                ['Georgia-ReBORN - 16. System: Saved background image lyrics album index', 0], // The saved background image lyrics album index
 	bgImgCustomIdxLyrics:               ['Georgia-ReBORN - 16. System: Saved background image lyrics custom index', 0], // The saved background image lyrics custom index
@@ -810,10 +844,10 @@ class ThemeSettingsManager {
 		this.setTheme();
 		this.setStyle();
 		this.setPreset();
-		this.setPlayerSize();
-		this.setLayout();
+		this.setColor();
 		this.setDisplay();
-		this.setBrightness();
+		this.setLayout();
+		this.setPlayerSize();
 		this.setFontSize();
 		this.setPlayerControls();
 		this.setPlaylist();
@@ -840,7 +874,7 @@ class ThemeSettingsManager {
 	 * Sets design settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
 	setDesign() {
-		this._setSetting(grSet, 'design', grCfg.design, 'design', 'modern_day_night');
+		this._setSetting(grSet, 'design', grCfg.design, 'design', 'reborn');
 	}
 
 	/**
@@ -874,6 +908,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'styleRebornFusion', grCfg.style, 'rebornFusion', false);
 		this._setSetting(grSet, 'styleRebornFusion2', grCfg.style, 'rebornFusion2', false);
 		this._setSetting(grSet, 'styleRebornFusionAccent', grCfg.style, 'rebornFusionAccent', false);
+		this._setSetting(grSet, 'styleRandomNeon', grCfg.style, 'randomNeon', false);
 		this._setSetting(grSet, 'styleRandomPastel', grCfg.style, 'randomPastel', false);
 		this._setSetting(grSet, 'styleRandomDark', grCfg.style, 'randomDark', false);
 		this._setSetting(grSet, 'styleRandomAutoColor', grCfg.style, 'randomAutoColor', 'off');
@@ -902,6 +937,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'styleRebornFusion_day', grCfg.style, 'rebornFusion_day', false);
 		this._setSetting(grSet, 'styleRebornFusion2_day', grCfg.style, 'rebornFusion2_day', false);
 		this._setSetting(grSet, 'styleRebornFusionAccent_day', grCfg.style, 'rebornFusionAccent_day', false);
+		this._setSetting(grSet, 'styleRandomNeon_day', grCfg.style, 'randomNeon_day', false);
 		this._setSetting(grSet, 'styleRandomPastel_day', grCfg.style, 'randomPastel_day', false);
 		this._setSetting(grSet, 'styleRandomDark_day', grCfg.style, 'randomDark_day', false);
 		this._setSetting(grSet, 'styleRandomAutoColor_day', grCfg.style, 'randomAutoColor_day', 'off');
@@ -930,6 +966,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'styleRebornFusion_night', grCfg.style, 'rebornFusion_night', false);
 		this._setSetting(grSet, 'styleRebornFusion2_night', grCfg.style, 'rebornFusion2_night', false);
 		this._setSetting(grSet, 'styleRebornFusionAccent_night', grCfg.style, 'rebornFusionAccent_night', false);
+		this._setSetting(grSet, 'styleRandomNeon_night', grCfg.style, 'randomNeon_night', false);
 		this._setSetting(grSet, 'styleRandomPastel_night', grCfg.style, 'randomPastel_night', false);
 		this._setSetting(grSet, 'styleRandomDark_night', grCfg.style, 'randomDark_night', false);
 		this._setSetting(grSet, 'styleRandomAutoColor_night', grCfg.style, 'randomAutoColor_night', 'off');
@@ -966,16 +1003,33 @@ class ThemeSettingsManager {
 	}
 
 	/**
-	 * Sets player size settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 * Sets color settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
-	setPlayerSize() {
-		this._setSetting(grSet, 'playerSize', grCfg.themePlayerSize, 'playerSize', 'small');
-		this._setSetting(grSet, 'savedWidth_default', grCfg.themePlayerSize, 'savedWidth_default', 1140);
-		this._setSetting(grSet, 'savedHeight_default', grCfg.themePlayerSize, 'savedHeight_default', 730);
-		this._setSetting(grSet, 'savedWidth_artwork', grCfg.themePlayerSize, 'savedWidth_artwork', 526);
-		this._setSetting(grSet, 'savedHeight_artwork', grCfg.themePlayerSize, 'savedHeight_artwork', 686);
-		this._setSetting(grSet, 'savedWidth_compact', grCfg.themePlayerSize, 'savedWidth_compact', 484);
-		this._setSetting(grSet, 'savedHeight_compact', grCfg.themePlayerSize, 'savedHeight_compact', 730);
+	setColor() {
+		this._setSetting(grSet, 'albumArtColorExtraction', grCfg.themeColor, 'albumArtColorExtraction', 1);
+		this._setSetting(grSet, 'albumArtColorPalette', grCfg.themeColor, 'albumArtColorPalette', 'auto');
+		this._setSetting(grSet, 'albumArtColorSaturation', grCfg.themeColor, 'albumArtColorSaturation', 100);
+		this._setSetting(grSet, 'albumArtColorSaturationEyeNightCor', grCfg.themeColor, 'albumArtColorSaturationEyeNightCor', true);
+		this._setSetting(grSet, 'albumArtColorSaturationEyeSchedule', grCfg.themeColor, 'albumArtColorSaturationEyeSchedule', '0-24');
+		this._setSetting(grSet, 'chameleon', grCfg.themeColor, 'chameleon', true);
+		this._setSetting(grSet, 'chameleonMode', grCfg.themeColor, 'chameleonMode', 'full');
+		this._setSetting(grSet, 'chameleonCycleColor', grCfg.themeColor, 'chameleonCycleColor', 'all');
+		this._setSetting(grSet, 'chameleonCycleTime', grCfg.themeColor, 'chameleonCycleTime', 30);
+		this._setSetting(grSet, 'chameleonDuration', grCfg.themeColor, 'chameleonDuration', 400);
+		this._setSetting(grSet, 'chameleonEasing', grCfg.themeColor, 'chameleonEasing', 'smootherStep');
+		this._setSetting(grSet, 'chameleonRefreshRate', grCfg.themeColor, 'chameleonRefreshRate', 33);
+		this._setSetting(grSet, 'chameleonBitmapUpdateRate', grCfg.themeColor, 'chameleonBitmapUpdateRate', 15);
+	}
+
+	/**
+	 * Sets display settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 */
+	setDisplay() {
+		this._setSetting(grSet, 'displayRes', grCfg.themeDisplay, 'resolution', 'HD');
+		this._setSetting(grSet, 'displayScale', grCfg.themeDisplay, 'scaling', 100);
+		this._setSetting(grSet, 'themeBrightness', grCfg.themeDisplay, 'themeBrightness', 'default');
+		this._setSetting(grSet, 'themeBrightness_day', grCfg.themeDisplay, 'themeBrightness_day', 'default');
+		this._setSetting(grSet, 'themeBrightness_night', grCfg.themeDisplay, 'themeBrightness_night', 'default');
 	}
 
 	/**
@@ -986,20 +1040,16 @@ class ThemeSettingsManager {
 	}
 
 	/**
-	 * Sets display settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
+	 * Sets player size settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
 	 */
-	setDisplay() {
-		this._setSetting(grSet, 'displayRes', grCfg.themeDisplay, 'resolution', 'HD');
-		this._setSetting(grSet, 'displayScale', grCfg.themeDisplay, 'scaling', 100);
-	}
-
-	/**
-	 * Sets brightness settings based on the state of `this.saveCfg`, `this.loadCfg`, `this.defaultCfg`.
-	 */
-	setBrightness() {
-		this._setSetting(grSet, 'themeBrightness', grCfg.themeBrightness, 'themeBrightness', 'default');
-		this._setSetting(grSet, 'themeBrightness_day', grCfg.themeBrightness, 'themeBrightness_day', 'default');
-		this._setSetting(grSet, 'themeBrightness_night', grCfg.themeBrightness, 'themeBrightness_night', 'default');
+	setPlayerSize() {
+		this._setSetting(grSet, 'playerSize', grCfg.themePlayerSize, 'playerSize', 'small');
+		this._setSetting(grSet, 'savedWidth_default', grCfg.themePlayerSize, 'savedWidth_default', 1140);
+		this._setSetting(grSet, 'savedHeight_default', grCfg.themePlayerSize, 'savedHeight_default', 730);
+		this._setSetting(grSet, 'savedWidth_artwork', grCfg.themePlayerSize, 'savedWidth_artwork', 526);
+		this._setSetting(grSet, 'savedHeight_artwork', grCfg.themePlayerSize, 'savedHeight_artwork', 686);
+		this._setSetting(grSet, 'savedWidth_compact', grCfg.themePlayerSize, 'savedWidth_compact', 484);
+		this._setSetting(grSet, 'savedHeight_compact', grCfg.themePlayerSize, 'savedHeight_compact', 730);
 	}
 
 	/**
@@ -1043,6 +1093,8 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'libraryFontSize_artwork', grCfg.themeFontSize, 'libraryFontSize_artwork', HD_QHD_4K(12, 14));
 		this._setSetting(grSet, 'biographyFontSize_default', grCfg.themeFontSize, 'biographyFontSize_default', HD_QHD_4K(12, 14));
 		this._setSetting(grSet, 'biographyFontSize_artwork', grCfg.themeFontSize, 'biographyFontSize_artwork', HD_QHD_4K(12, 14));
+		this._setSetting(grSet, 'biographyLyricsFontSize_default', grCfg.themeFontSize, 'biographyLyricsFontSize_default', HD_QHD_4K(16, 18));
+		this._setSetting(grSet, 'biographyLyricsFontSize_artwork', grCfg.themeFontSize, 'biographyLyricsFontSize_artwork', HD_QHD_4K(16, 18));
 		this._setSetting(grSet, 'lyricsFontSize_default', grCfg.themeFontSize, 'lyricsFontSize_default', HD_QHD_4K(20, 22));
 		this._setSetting(grSet, 'lyricsFontSize_artwork', grCfg.themeFontSize, 'lyricsFontSize_artwork', HD_QHD_4K(20, 22));
 		this._setSetting(grSet, 'lyricsInfoFontSize_default', grCfg.themeFontSize, 'lyricsInfoFontSize_default', HD_QHD_4K(20, 22));
@@ -1237,7 +1289,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'playlistBgImgSource', grCfg.themePlaylist, 'playlistBgImgSource', 'artist');
 		this._setSetting(grSet, 'playlistBgImgAlbumArtFilter', grCfg.themePlaylist, 'playlistBgImgAlbumArtFilter', true);
 		this._setSetting(grSet, 'playlistBgImgScale', grCfg.themePlaylist, 'playlistBgImgScale', 'filled');
-		this._setSetting(grSet, 'playlistBgImgOpacity', grCfg.themePlaylist, 'playlistBgImgOpacity', 76);
+		this._setSetting(grSet, 'playlistBgImgOpacity', grCfg.themePlaylist, 'playlistBgImgOpacity', 51);
 		this._setSetting(grSet, 'playlistBgRowOpacity', grCfg.themePlaylist, 'playlistBgImgOpacity', 128);
 		this._setSetting(grSet, 'playlistBgRowNowPlaying', grCfg.themePlaylist, 'playlistBgRowNowPlaying', false);
 		this._setSetting(grSet, 'showPlaylistManager_default', grCfg.themePlaylist, 'showPlaylistManager_default', true);
@@ -1411,7 +1463,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'libraryBgImgSource', grCfg.themeLibrary, 'libraryBgImgSource', 'artist');
 		this._setSetting(grSet, 'libraryBgImgAlbumArtFilter', grCfg.themeLibrary, 'libraryBgImgAlbumArtFilter', true);
 		this._setSetting(grSet, 'libraryBgImgScale', grCfg.themeLibrary, 'libraryBgImgScale', 'filled');
-		this._setSetting(grSet, 'libraryBgImgOpacity', grCfg.themeLibrary, 'libraryBgImgOpacity', 76);
+		this._setSetting(grSet, 'libraryBgImgOpacity', grCfg.themeLibrary, 'libraryBgImgOpacity', 51);
 		this._setSetting(grSet, 'libraryBgRowOpacity', grCfg.themeLibrary, 'libraryBgRowOpacity', 128);
 		this._setSetting(libSet, 'actionMode', grCfg.themeLibrary, 'actionMode', 0);
 		this._setSetting(libSet, 'clickAction', grCfg.themeLibrary, 'clickAction', 0);
@@ -1511,6 +1563,27 @@ class ThemeSettingsManager {
 		this._setSetting(bioSet, 'artistView', grCfg.themeBiography, 'artistView', true);
 		this._setSetting(bioSet, 'focus', grCfg.themeBiography, 'focus', false);
 		this._setSetting(bioSet, 'lockBio', grCfg.themeBiography, 'lockBio', false);
+		this._setSetting(grSet, 'biographyBgImg', grCfg.themeBiography, 'biographyBgImg', false);
+		this._setSetting(grSet, 'biographyBgImgCycle', grCfg.themeBiography, 'biographyBgImgCycle', true);
+		this._setSetting(grSet, 'biographyBgImgCycleTime', grCfg.themeBiography, 'biographyBgImgCycleTime', 15);
+		this._setSetting(grSet, 'biographyBgImgSource', grCfg.themeBiography, 'biographyBgImgSource', 'album');
+		this._setSetting(grSet, 'biographyBgImgAlbumArtFilter', grCfg.themeBiography, 'biographyBgImgAlbumArtFilter', true);
+		this._setSetting(grSet, 'biographyBgImgScale', grCfg.themeBiography, 'biographyBgImgScale', 'filled');
+		this._setSetting(grSet, 'biographyBgImgOpacity', grCfg.themeBiography, 'biographyBgImgOpacity', 51);
+		this._setSetting(grSet, 'biographyBgRowOpacity', grCfg.themeBiography, 'biographyBgRowOpacity', 128);
+		this._setSetting(bioSet, 'lyricsScrollEasing', grCfg.themeBiography, 'lyricsScrollEasing', 'easeOutQuad');
+		this._setSetting(bioSet, 'lyricsDropShadowLevel', grCfg.themeBiography, 'lyricsDropShadowLevel', 'normal');
+		this._setSetting(bioSet, 'lyricsFadeScroll', grCfg.themeBiography, 'lyricsFadeScroll', true);
+		this._setSetting(bioSet, 'lyricsTransparentMask', grCfg.themeBiography, 'lyricsTransparentMask', 0);
+		this._setSetting(bioSet, 'lyricsLargerCurrentSync', grCfg.themeBiography, 'lyricsLargerCurrentSync', true);
+		this._setSetting(bioSet, 'lyricsLineSpacing', grCfg.themeBiography, 'lyricsLineSpacing', 24);
+		this._setSetting(bioSet, 'lyricsSentenceSpacing', grCfg.themeBiography, 'lyricsSentenceSpacing', 14);
+		this._setSetting(bioSet, 'lyricsScrollSpeed', grCfg.themeBiography, 'lyricsScrollSpeed', 'normal');
+		this._setSetting(bioSet, 'lyricsScrollAdaptive', grCfg.themeBiography, 'lyricsScrollAdaptive', true);
+		this._setSetting(bioSet, 'lyricsScrollRateAvg', grCfg.themeBiography, 'lyricsScrollRateAvg', 750);
+		this._setSetting(bioSet, 'lyricsScrollRateMax', grCfg.themeBiography, 'lyricsScrollRateMax', 375);
+		this._setSetting(bioSet, 'lyricsTranslation', grCfg.themeBiography, 'lyricsTranslation', true);
+		this._setSetting(bioSet, 'lyricsTranslationLine', grCfg.themeBiography, 'lyricsTranslationLine', 1);
 		this._setSetting(bioSet, 'sourceAll', grCfg.themeBiography, 'sourceAll', false);
 		this._setSetting(bioSet, 'classicalMusicMode', grCfg.themeBiography, 'classicalMusicMode', false);
 		this._setSetting(bioSet, 'cycPhotoLocation', grCfg.themeBiography, 'cycPhotoLocation', 0);
@@ -1548,15 +1621,18 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'lyricsBgImgSource', grCfg.themeLyrics, 'lyricsBgImgSource', 'album');
 		this._setSetting(grSet, 'lyricsBgImgAlbumArtFilter', grCfg.themeLyrics, 'lyricsBgImgAlbumArtFilter', true);
 		this._setSetting(grSet, 'lyricsBgImgScale', grCfg.themeLyrics, 'lyricsBgImgScale', 'filled');
-		this._setSetting(grSet, 'lyricsBgImgOpacity', grCfg.themeLyrics, 'lyricsBgImgOpacity', 76);
-		this._setSetting(grSet, 'lyricsDropShadowLevel', grCfg.themeLyrics, 'lyricsDropShadowLevel', 2);
+		this._setSetting(grSet, 'lyricsBgImgOpacity', grCfg.themeLyrics, 'lyricsBgImgOpacity', 51);
+		this._setSetting(grSet, 'lyricsScrollEasing', grCfg.themeLyrics, 'lyricsScrollEasing', 'easeOutQuad');
+		this._setSetting(grSet, 'lyricsDropShadowLevel', grCfg.themeLyrics, 'lyricsDropShadowLevel', 'normal');
 		this._setSetting(grSet, 'lyricsFadeScroll', grCfg.themeLyrics, 'lyricsFadeScroll', true);
+		this._setSetting(grSet, 'lyricsTransparentMask', grCfg.themeLyrics, 'lyricsTransparentMask', 0);
 		this._setSetting(grSet, 'lyricsLargerCurrentSync', grCfg.themeLyrics, 'lyricsLargerCurrentSync', true);
 		this._setSetting(grSet, 'lyricsRememberPanelState', grCfg.themeLyrics, 'lyricsRememberPanelState', false);
 		this._setSetting(grSet, 'lyricsAutoScrollUnsynced', grCfg.themeLyrics, 'lyricsAutoScrollUnsynced', true);
 		this._setSetting(grSet, 'lyricsLineSpacing', grCfg.themeLyrics, 'lyricsLineSpacing', 40);
 		this._setSetting(grSet, 'lyricsSentenceSpacing', grCfg.themeLyrics, 'lyricsSentenceSpacing', 30);
 		this._setSetting(grSet, 'lyricsScrollSpeed', grCfg.themeLyrics, 'lyricsScrollSpeed', 'normal');
+		this._setSetting(grSet, 'lyricsScrollAdaptive', grCfg.themeLyrics, 'lyricsScrollAdaptive', true);
 		this._setSetting(grSet, 'lyricsScrollRateAvg', grCfg.themeLyrics, 'lyricsScrollRateAvg', 750);
 		this._setSetting(grSet, 'lyricsScrollRateMax', grCfg.themeLyrics, 'lyricsScrollRateMax', 375);
 		this._setSetting(grSet, 'lyricsTranslation', grCfg.themeLyrics, 'lyricsTranslation', true);
@@ -1584,8 +1660,8 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'customWaveformBarDir', grCfg.themeSettings, 'customWaveformBarDir', false);
 		this._setSetting(grSet, 'waveformBarAutoDelete', grCfg.themeSettings, 'waveformBarAutoDelete', false);
 		this._setSetting(grSet, 'themePerformance', grCfg.themeSettings, 'themePerformance', 'balanced');
-		this._setSetting(grSet, 'rendererColors', grCfg.themeSettings, 'rendererColors', 1);
-		this._setSetting(grSet, 'rendererGraphics', grCfg.themeSettings, 'rendererGraphics', 0);
+		this._setSetting(grSet, 'albumArtColorExtraction', grCfg.themeSettings, 'albumArtColorExtraction', 1);
+		this._setSetting(grSet, 'rendererMode', grCfg.themeSettings, 'rendererMode', 0);
 		this._setSetting(grSet, 'devTools', grCfg.themeSettings, 'devTools', false);
 	}
 
@@ -1619,6 +1695,7 @@ class ThemeSettingsManager {
 			'playlistFontSize',
 			'libraryFontSize',
 			'biographyFontSize',
+			'biographyLyricsFontSize',
 			'lyricsFontSize',
 
 			// * Player controls
@@ -1742,6 +1819,7 @@ class ThemeSettingsManager {
 				grSet.playerSize = 'small';
 				grm.display.autoDetectRes();
 				grSet.styleDefault = true;
+				grSet.chameleon = true;
 				grSet.albumArtCycle = false;
 				grSet.albumArtCycleTime = 15;
 				grSet.playlistAutoScrollNowPlaying = false;
@@ -1801,9 +1879,11 @@ class ThemeSettingsManager {
 				grSet.lyricsAutoDelete = false;
 				bioSet.focusLoadRate = 1000;
 				bioSet.focusLoadImmediate = false;
+				grSet.biographyBgImg = false;
+				grSet.biographyBgImgCycleTime = 15;
 				grSet.lyricsBgImg = true;
 				grSet.lyricsBgImgCycleTime = 15;
-				grSet.lyricsDropShadowLevel = 2;
+				grSet.lyricsDropShadowLevel = 'normal';
 				grSet.lyricsFadeScroll = true;
 				grSet.lyricsRememberPanelState = false;
 				grSet.lyricsScrollSpeed = 'normal';
@@ -1815,6 +1895,7 @@ class ThemeSettingsManager {
 				grSet.playerSize = 'small';
 				grm.display.setPlayerSize('small');
 				grSet.styleDefault = true;
+				grSet.chameleon = false;
 				grSet.displayRes = 'HD';
 				grSet.playlistAutoScrollNowPlaying = false;
 				grSet.playlistSmoothScrolling = false;
@@ -1860,8 +1941,9 @@ class ThemeSettingsManager {
 				libSet.albumArtPreLoad = false;
 				bioSet.focusLoadRate = 3000;
 				grSet.lyricsBgImg = false;
-				grSet.lyricsDropShadowLevel = 0;
+				grSet.lyricsDropShadowLevel = 'none';
 				grSet.lyricsFadeScroll = false;
+				grSet.lyricsTransparentMask = 0;
 				grSet.lyricsRememberPanelState = false;
 				grSet.lyricsScrollSpeed = 'fastest';
 				grSet.lyricsScrollRateAvg = 300;
@@ -1871,6 +1953,7 @@ class ThemeSettingsManager {
 			case 'lowQuality':
 				grSet.playerSize = 'small';
 				grSet.styleDefault = true;
+				grSet.chameleon = false;
 				grSet.displayRes = 'HD';
 				grSet.showStyledTooltips = false;
 				grSet.seekbar = 'progressbar';
@@ -1898,7 +1981,8 @@ class ThemeSettingsManager {
 				libSet.albumArtDiskCache = true;
 				libSet.albumArtPreLoad = false;
 				bioSet.focusLoadRate = 2000;
-				grSet.lyricsDropShadowLevel = 0;
+				grSet.lyricsDropShadowLevel = 'none';
+				grSet.lyricsTransparentMask = 0;
 				grSet.lyricsScrollSpeed = 'fast';
 				grSet.lyricsScrollRateAvg = 500;
 				grSet.lyricsScrollRateMax = 250;
