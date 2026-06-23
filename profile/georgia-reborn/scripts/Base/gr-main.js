@@ -244,7 +244,7 @@ class MainUI {
 		/** @public @type {string} Displays the active playlist of the current playing track in the metadata grid in Details. */
 		this.playingPlaylist = '';
 		/** @public @type {number} Saves last playback order. */
-		this.lastPlaybackOrder = fb.PlaybackOrder;
+		this.lastPlaybackOrder = plman.PlaybackOrder;
 		/** @public @type {boolean} Is the song from a streaming source? */
 		this.isStreaming = false;
 		/** @public @type {boolean} Is the song playing from a CD? */

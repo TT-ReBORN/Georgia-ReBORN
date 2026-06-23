@@ -513,21 +513,21 @@ class Button {
 
 		switch (plman.PlaybackOrder) {
 			case PlaybackOrder.Default:
-				this.setPlaybackOrder(this.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
+				this.setPlaybackOrder(this.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist);
 				break;
 
 			case PlaybackOrder.RepeatPlaylist:
-				this.setPlaybackOrder(this.btnImg.PlaybackRepeatTrack, 'repeatTrack', PlaybackOrder.RepeatTrack, 'Repeat (track)');
+				this.setPlaybackOrder(this.btnImg.PlaybackRepeatTrack, 'repeatTrack', PlaybackOrder.RepeatTrack);
 				break;
 			case PlaybackOrder.RepeatTrack:
-				this.setPlaybackOrder(this.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
+				this.setPlaybackOrder(this.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks);
 				break;
 
 			case PlaybackOrder.Random:
 			case PlaybackOrder.ShuffleTracks:
 			case PlaybackOrder.ShuffleAlbums:
 			case PlaybackOrder.ShuffleFolders:
-				this.setPlaybackOrder(this.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
+				this.setPlaybackOrder(this.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default);
 				break;
 		}
 
@@ -1395,14 +1395,12 @@ class Button {
 	 * Sets the button image, playback order preference, and foobar2000 playback order.
 	 * @param {GdiBitmap} imgValue - The value of this.btnImg.PlaybackDefault, this.btnImg.PlaybackRepeatTrack, or this.btnImg.PlaybackShuffle.
 	 * @param {string} prefValue - The value of 'default', 'repeatPlaylist', 'repeatTrack', or 'shuffle'.
-	 * @param {string} fbValue - The value of PlaybackOrder.Default, PlaybackOrder.RepeatPlaylist, PlaybackOrder.RepeatTrack, or PlaybackOrder.ShuffleTracks.
-	 * @param {string} cmd - The value of top menu Playback > Order.
+	 * @param {number} playbackOrderValue - The value of PlaybackOrder.Default, PlaybackOrder.RepeatPlaylist, PlaybackOrder.RepeatTrack, or PlaybackOrder.ShuffleTracks.
 	 */
-	setPlaybackOrder(imgValue, prefValue, fbValue, cmd) {
+	setPlaybackOrder(imgValue, prefValue, playbackOrderValue) {
 		this.btn.playbackOrder.img = imgValue;
 		grSet.playbackOrder = prefValue;
-		fb.PlaybackOrder = fbValue;
-		fb.RunMainMenuCommand(`Playback/Order/${cmd}`);
+		plman.PlaybackOrder = playbackOrderValue;
 	}
 
 	/**
