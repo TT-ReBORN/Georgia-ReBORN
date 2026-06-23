@@ -192,28 +192,17 @@ class ContextMenus {
 			cm.separator();
 
 			const playbackOrderMenu = new ContextMenu('Playback order');
-			const playbackOrderModes = ['default', 'repeatPlaylist', 'repeatTrack', 'shuffle'];
+			const playbackOrderModes = [
+				{ id: 'default', value: PlaybackOrder.Default },
+				{ id: 'repeatPlaylist', value: PlaybackOrder.RepeatPlaylist },
+				{ id: 'repeatTrack', value: PlaybackOrder.RepeatTrack },
+				{ id: 'shuffle', value: PlaybackOrder.ShuffleTracks }
+			];
 			for (const playbackOrder of playbackOrderModes) {
-				playbackOrderMenu.appendItem(playbackOrder, () => {
-					switch (playbackOrder) {
-						case 'default':
-							grSet.playbackOrder = 'default';
-							fb.RunMainMenuCommand('Playback/Order/Default');
-							break;
-						case 'repeatPlaylist':
-							grSet.playbackOrder = 'repeatPlaylist';
-							fb.RunMainMenuCommand('Playback/Order/Repeat (playlist)');
-							break;
-						case 'repeatTrack':
-							grSet.playbackOrder = 'repeatTrack';
-							fb.RunMainMenuCommand('Playback/Order/Repeat (track)');
-							break;
-						case 'shuffle':
-							grSet.playbackOrder = 'shuffle';
-							fb.RunMainMenuCommand('Playback/Order/Shuffle (tracks)');
-							break;
-					}
-				}, { is_radio_checked: playbackOrder === grSet.playbackOrder });
+				playbackOrderMenu.appendItem(playbackOrder.id, () => {
+					plman.PlaybackOrder = playbackOrder.value;
+					grSet.playbackOrder = playbackOrder.id;
+				}, { is_radio_checked: playbackOrder.value === plman.PlaybackOrder });
 			}
 			cm.append(playbackOrderMenu);
 			cm.separator();

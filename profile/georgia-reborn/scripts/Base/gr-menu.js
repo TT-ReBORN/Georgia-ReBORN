@@ -4358,14 +4358,14 @@ class TopMenuOptions {
 
 		const clearAutoDownloadBio = () => {
 			grm.debug.autoDownloadBio = false;
-			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
+			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default);
 			grm.ui.displayBiography = false;
 			grm.ui.clearTimer('autoDownloadBio');
 		};
 
 		const clearAutoDownloadLyrics = () => {
 			grm.debug.autoDownloadLyrics = false;
-			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default, 'Default');
+			grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackDefault, 'default', PlaybackOrder.Default);
 			grm.ui.displayLyrics = false;
 			grm.ui.clearTimer('autoDownloadLyrics');
 		};
@@ -4384,7 +4384,7 @@ class TopMenuOptions {
 					}
 					clearAutoDownloadLyrics();
 					fb.Play();
-					grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks, 'Shuffle (tracks)');
+					grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackShuffle, 'shuffle', PlaybackOrder.ShuffleTracks);
 					grm.ui.displayBiography = true;
 					grm.ui.autoDownloadBioTimer = setInterval(() => { fb.Next(); }, 6000);
 				});
@@ -4405,7 +4405,7 @@ class TopMenuOptions {
 					}
 					clearAutoDownloadBio();
 					fb.Play();
-					grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist, 'Repeat (playlist)');
+					grm.button.setPlaybackOrder(grm.button.btnImg.PlaybackRepeatPlaylist, 'repeatPlaylist', PlaybackOrder.RepeatPlaylist);
 					grm.ui.displayLyrics = true;
 					grm.lyrics.initLyrics();
 					grm.ui.autoDownloadLyricsTimer = setInterval(() => { fb.Next(); }, 15000);
