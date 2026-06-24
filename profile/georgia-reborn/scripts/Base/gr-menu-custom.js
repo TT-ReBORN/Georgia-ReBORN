@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    24-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -292,7 +292,7 @@ class CustomMenu {
 	on_size() {
 		setTimeout(() => {
 			if (grm.ui.displayCustomThemeMenu) grm.cthMenu.reinitCustomThemeMenu();
-			else if (grm.ui.displayMetadataGridMenu) grm.gridMenu.initMetadataGridMenu();
+			else if (grm.ui.displayMetadataGridMenu) grm.gridMenu.initMetadataGridMenu(grm.gridMenu.currentPage);
 			window.Repaint();
 		}, 0);
 	}
@@ -705,6 +705,8 @@ class CustomMenuInputField extends CustomMenu {
 		this.inputX = this.x + (grm.ui.displayMetadataGridMenu ? SCALE(20) : this.h);
 		/** @private @type {string} */
 		this.value = value;
+		/** @private @type {string} The value snapshot taken when the field gains focus, used to detect changes on blur. */
+		this.valueOnFocus = value;
 		/** @private @type {number} */
 		this.labelW = labelWidth;
 		/** @private @type {number} */
@@ -817,14 +819,22 @@ class CustomMenuInputField extends CustomMenu {
 
 	/**
 	 * Clears the focus of the input field.
+	 * Automatically commits the metadata grid edit if the value changed, since most users
+	 * don't know they need to press ENTER (clicking another field, a button, or empty space all route here).
 	 */
 	clearFocus() {
 		clearTimeout(this.timerId);
+
 		this.focus = false;
 		this.showCursor = false;
 		this.offsetChars = 0;
 		this.selAnchor = -1; // I think we want to do this?
-		this.repaint();
+
+		if (grm.ui.displayMetadataGridMenu && this.value !== this.valueOnFocus) {
+			this.updateMetadata();
+		} else {
+			this.repaint();
+		}
 	}
 
 	/**
@@ -834,9 +844,15 @@ class CustomMenuInputField extends CustomMenu {
 	 */
 	clicked(x, y) {
 		if (!this.mouseInThis(x, y)) return;
+
+		if (!this.focus) {
+			this.valueOnFocus = this.value;
+		}
+
 		this.focus = true;
 		const oldCursor = this.cursorPos;
 		this.cursorPos = this.getCursorIndex(x);
+
 		if (utils.IsKeyPressed(VKey.SHIFT)) {
 			if (!this.hasSelection) {
 				this.selAnchor = oldCursor;
@@ -845,6 +861,7 @@ class CustomMenuInputField extends CustomMenu {
 		} else {
 			this.selAnchor = -1;
 		}
+
 		this.flashCursor(true);
 	}
 
@@ -1067,7 +1084,9 @@ class CustomMenuInputField extends CustomMenu {
 	 * Updates the state of the input field.
 	 */
 	repaint() {
-		window.RepaintRect(this.x - 1, this.y - this.padding - 1, this.x + this.labelW + this.inputW + this.padding * 2 + 2, this.h * this.padding * 2 + 2);
+		const margin = SCALE(20);
+		const width = this.inputW + (this.labelW > 0 ? margin + this.labelW : 0) + this.padding * 2;
+		window.RepaintRect(this.inputX, this.y - this.padding, width, this.h + this.padding * 2);
 	}
 
 	/**
@@ -1096,7 +1115,7 @@ class CustomMenuInputField extends CustomMenu {
 	 */
 	updateMetadata() {
 		grm.gridMenu.updateMetadataGridFromConfig(this.id, this.value, this.value2);
-		this.repaint();
+		this.valueOnFocus = this.value;
 	}
 	// #endregion
 }
@@ -1135,6 +1154,8 @@ class CustomMenuInputField2 extends CustomMenu {
 		this.inputX = this.x + this.h + SCALE(18);
 		/** @private @type {string} */
 		this.value2 = value2;
+		/** @private @type {string} The value snapshot taken when the field gains focus, used to detect changes on blur. */
+		this.valueOnFocus = value2;
 		/** @private @type {number} */
 		this.labelW = labelWidth;
 		/** @private @type {number} */
@@ -1243,14 +1264,22 @@ class CustomMenuInputField2 extends CustomMenu {
 
 	/**
 	 * Clears the focus of the input field.
+	 * Automatically commits the metadata grid edit if the value changed, since most users
+	 * don't know they need to press ENTER (clicking another field, a button, or empty space all route here).
 	 */
 	clearFocus() {
 		clearTimeout(this.timerId);
+
 		this.focus = false;
 		this.showCursor = false;
 		this.offsetChars = 0;
 		this.selAnchor = -1; // I think we want to do this?
-		this.repaint();
+
+		if (grm.ui.displayMetadataGridMenu && this.value2 !== this.valueOnFocus) {
+			this.updateMetadata();
+		} else {
+			this.repaint();
+		}
 	}
 
 	/**
@@ -1260,9 +1289,15 @@ class CustomMenuInputField2 extends CustomMenu {
 	 */
 	clicked(x, y) {
 		if (!this.mouseInThis(x, y)) return;
+
+		if (!this.focus) {
+			this.valueOnFocus = this.value2;
+		}
+
 		this.focus = true;
 		const oldCursor = this.cursorPos;
 		this.cursorPos = this.getCursorIndex(x);
+
 		if (utils.IsKeyPressed(VKey.SHIFT)) {
 			if (!this.hasSelection) {
 				this.selAnchor = oldCursor;
@@ -1271,6 +1306,7 @@ class CustomMenuInputField2 extends CustomMenu {
 		} else {
 			this.selAnchor = -1;
 		}
+
 		this.flashCursor(true);
 	}
 
@@ -1494,7 +1530,9 @@ class CustomMenuInputField2 extends CustomMenu {
 	 * Updates the state of the input field.
 	 */
 	repaint() {
-		window.RepaintRect(this.x - 1, this.y - this.padding - 1, this.x + this.labelW + this.inputW + this.padding * 2 + 2, this.h * this.padding * 2 + 2);
+		const margin = SCALE(20);
+		const width = this.inputW + margin + (this.labelW > 0 ? margin + this.labelW : 0);
+		window.RepaintRect(this.inputX, this.y - this.padding, width, this.h + this.padding * 2);
 	}
 
 	/**
@@ -1512,7 +1550,7 @@ class CustomMenuInputField2 extends CustomMenu {
 	 */
 	updateMetadata() {
 		grm.gridMenu.updateMetadataGridFromConfig(this.id, this.value, this.value2);
-		this.repaint();
+		this.valueOnFocus = this.value2;
 	}
 	// #endregion
 }
@@ -2532,6 +2570,14 @@ class CustomThemeMenu {
  * A class that creates and handles the metadata grid menu.
  */
 class MetadataGridMenu {
+	/**
+	 * Creates the `MetadataGridMenu` instance.
+	 */
+	constructor() {
+		/** @public @type {number} The current active page of the metadata grid menu. */
+		this.currentPage = 1;
+	}
+
 	// * PRIVATE METHODS * //
 	// #region PRIVATE METHODS
 	/**
@@ -2564,7 +2610,7 @@ class MetadataGridMenu {
 	 * @private
 	 */
 	_page(x, y, w, h, page) {
-		const prefs = grCfg.config.readConfiguration();
+		const { metadataGrid } = grCfg;
 		const margin = SCALE(20);
 		const inputW = SCALE(80) + grSet.popupFontSize_layout;
 		const start  = page === 1 ? 0 : page === 2 ?  8 : page === 3 ? 16 : page === 4 ? 24 : 0;
@@ -2572,11 +2618,11 @@ class MetadataGridMenu {
 
 		for (let i = start; i < end; i++) {
 			try {
-				const label = prefs.metadataGrid[i].label ? prefs.metadataGrid[i].label : '""';
-				const value = prefs.metadataGrid[i].val ? prefs.metadataGrid[i].val : '""';
-				const input = new CustomMenuInputField(label, '', label, x + 1, y, '', inputW);
+				const label = metadataGrid[i].label || '""';
+				const value = metadataGrid[i].val   || '""';
+				const input = new CustomMenuInputField(i, '', label, x + 1, y, 0, inputW);
 				CustomMenu.controlList.push(input);
-				CustomMenu.controlList.push(new CustomMenuInputField2(label, '', value, x + inputW, y, '', Math.ceil(grm.ui.ww * 0.5 + inputW - margin)));
+				CustomMenu.controlList.push(new CustomMenuInputField2(i, '', value, x + inputW, y, 0, Math.ceil(grm.ui.ww * 0.5 + inputW - margin)));
 				y += input.h + margin * 1.25;
 			}
 			catch (e) {
@@ -2590,12 +2636,15 @@ class MetadataGridMenu {
 	// #region PUBLIC METHODS
 	/**
 	 * Initializes the custom metadata grid menu.
-	 * @param {string} page - The current page number of the metadata grid.
+	 * @param {number} page - The current page number of the metadata grid.
 	 * @param {boolean} info - Displays the metadata grid info page.
 	 */
 	initMetadataGridMenu(page, info) {
-		CustomMenu.controlList = [];
+		if (page && typeof page === 'number') {
+			this.currentPage = page;
+		}
 
+		CustomMenu.controlList = [];
 		const margin = SCALE(40);
 		const baseX = grm.ui.displayBiography || grm.ui.displayLyrics && !grm.ui.displayDetails ? grm.ui.ww * 0.5 + margin : grm.ui.displayDetails ? grm.ui.albumArtSize.x + margin : margin;
 		let x = baseX;
@@ -2614,7 +2663,7 @@ class MetadataGridMenu {
 		if (info) {
 			this._info(x, y, grm.ui.ww * 0.5, grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight);
 		} else {
-			this._page(x - margin * 0.5, y, grm.ui.ww * 0.5, grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight, page);
+			this._page(x - margin * 0.5, y, grm.ui.ww * 0.5, grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight, this.currentPage);
 		}
 	}
 
@@ -2622,46 +2671,44 @@ class MetadataGridMenu {
 	 * Resets the labels and keys from the metadata grid in the georgia-reborn-config file.
 	 */
 	resetMetadataGrid() {
-		const prefs = grCfg.config.readConfiguration();
-		const metadataGrid = prefs.metadataGrid;
+		const { metadataGrid } = grCfg;
 
 		for (let i = 0; i < metadataGrid.length; i++) {
-			metadataGrid[i].label = grDef.metadataGridDefaults[i].label;
-			metadataGrid[i].val = grDef.metadataGridDefaults[i].val;
+			if (grDef.metadataGridDefaults[i]) {
+				metadataGrid[i].label = grDef.metadataGridDefaults[i].label;
+				metadataGrid[i].val = grDef.metadataGridDefaults[i].val;
+			}
 		}
 
 		grCfg.config.updateConfigObjValues('metadataGrid', metadataGrid, true);
 		grm.details.updateGrid();
+
 		window.Repaint();
 	}
 
 	/**
 	 * Updates the labels and keys from the metadata grid in the georgia-reborn-config file.
-	 * @param {string} id - The metadata gird label name.
-	 * @param {string} value1 - The metadata grid tag name.
-	 * @param {string} value2 - The metadata grid tag value.
+	 * @param {string|number} id - The metadata grid label name OR its zero-based array index.
+	 * @param {string} value1 - The metadata grid tag name (label field value).
+	 * @param {string} value2 - The metadata grid tag value (val field value).
 	 */
 	updateMetadataGridFromConfig(id, value1, value2) {
-		const prefs = grCfg.config.readConfiguration();
-		const metadataGrid = prefs.metadataGrid;
-		const index = metadataGrid.findIndex(x => x.label === id);
+		const { metadataGrid } = grCfg;
 
-		if (index > -1) {
-			if (value1) {
-				metadataGrid[index].label = SanitizeJsonString(value1);
-			} else if (value1 === '') {
-				metadataGrid[index].label = `Blank ${index}`;
+		const index = typeof id === 'number' ? id : metadataGrid.findIndex(x => x.label === id);
+
+		if (index > -1 && index < metadataGrid.length) {
+			if (value1 != null) {
+				metadataGrid[index].label = value1 ? SanitizeJsonString(value1) : `Blank ${index}`;
 			}
-
-			if (value2) {
-				metadataGrid[index].val = SanitizeJsonString(value2);
-			} else if (value2 === '') {
-				metadataGrid[index].val = '';
+			if (value2 != null) {
+				metadataGrid[index].val = value2 ? SanitizeJsonString(value2) : '';
 			}
 		}
 
 		grCfg.config.updateConfigObjValues('metadataGrid', metadataGrid, true);
 		grm.details.updateGrid();
+
 		window.Repaint();
 	}
 	// #endregion

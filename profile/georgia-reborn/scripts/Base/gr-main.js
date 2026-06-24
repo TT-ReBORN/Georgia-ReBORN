@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    24-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -347,11 +347,11 @@ class MainUI {
 		this.drawJumpSearch(gr);
 		this.drawLyrics(gr);
 		this.drawStyles(gr);
+		this.drawCustomMenu(gr);
 		this.drawThemeNotification(gr);
 		this.drawShadows(gr);
 		this.drawTopMenuBar(gr);
 		this.drawLowerBar(gr);
-		this.drawCustomMenu(gr);
 		this.drawStyledTooltips(gr);
 
 		grm.colorDebug.drawDebugAPCACalibrationOverlay(gr);
@@ -831,21 +831,21 @@ class MainUI {
 		}
 
 		if (this.displayLyrics && grSet.lyricsLayout !== 'normal') {
-			gr.DrawRect(grSet.lyricsLayout === 'full' ? this.ww + 4 : this.albumArtSize.x - 1,
-			this.albumArtSize.y - 1, this.albumArtSize.w + 1, this.albumArtSize.h + 1, 1, RGBA(0, 0, 0, 25));
+			const rectX = grSet.lyricsLayout === 'full' ? this.ww + 4 : this.albumArtSize.x - 1;
+			gr.DrawRect(rectX, this.albumArtSize.y - 1, this.albumArtSize.w + 1, this.albumArtSize.h + 1, 1, RGBA(0, 0, 0, 25));
 			return;
 		}
 
-		const middleX =
-			grSet.hideMiddlePanelShadow || this.albumArtSize.w === this.ww * 0.5 ? this.ww + 4 :
-			this.albumArtSize.x + this.albumArtSize.w - 2;
+		const hideMiddle = grSet.hideMiddlePanelShadow || this.albumArtSize.w === this.ww * 0.5;
+		const middleX = hideMiddle ? this.ww + 4 : this.albumArtSize.x + this.albumArtSize.w - 2;
+		const shadowW = this.albumArtSize.x + this.albumArtSize.w;
 
 		// Top shadow
-		FillGradRect(gr, 0, this.albumArtSize.y - HD_4K(6, 10), this.albumArtSize.x + this.albumArtSize.w, HD_4K(6, 10), 90, 0, grCol.shadow);
+		FillGradRect(gr, 0, this.albumArtSize.y - HD_4K(6, 10), shadowW, HD_4K(6, 10), 90, 0, grCol.shadow);
 		// Middle shadow
 		FillGradRect(gr, middleX, this.albumArtSize.y, 4, this.albumArtSize.h, 0, grm.colorManager.getMiddleShadowColor(), 0);
 		// Bottom shadow
-		FillGradRect(gr, 0, this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0), this.albumArtSize.x + this.albumArtSize.w, SCALE(5), 90, grCol.shadow, 0);
+		FillGradRect(gr, 0, this.albumArtSize.y + this.albumArtSize.h + HD_4K(-1, 0), shadowW, SCALE(5), 90, grCol.shadow, 0);
 	}
 
 	/**
@@ -857,25 +857,26 @@ class MainUI {
 			return;
 		}
 
-		const albumArtW =
-			this.albumArtDisplayed() && !this.displayDetails && !this.displayArtworkLayoutCover() &&
-			(grSet.lyricsLayout === 'normal' || !this.displayLyrics);
-
-		const albumArtLyricsLayoutNotNormal = this.displayLyrics && grSet.lyricsLayout !== 'normal';
+		const detailsDiscArtOverlaps = this.displayDetails && this.discArtImageDisplayed;
+		const detailsNoBg = this.displayDetails && !grm.details.discArt && !grSet.noDiscArtBg;
+		const detailsMetadataGridMenuOpen = this.displayMetadataGridMenu;
+		const lyricsLyoutNotNormal = this.displayLyrics && grSet.lyricsLayout !== 'normal';
+		const albumArtDisplayed = this.albumArtDisplayed() && !this.displayDetails && !this.displayArtworkLayoutCover() && !lyricsLyoutNotNormal;
 
 		const panelX =
 			this.displayPlaylist ? pl.playlist.x :
 			this.displayLibrary ? lib.ui.x :
 			this.displayBiography ? bio.ui.x :
-			grSet.layout !== 'default' || !this.albumArtSize.w || albumArtLyricsLayoutNotNormal ? 0 :
+			grSet.layout !== 'default' || !this.albumArtSize.w || lyricsLyoutNotNormal ? 0 :
 			this.albumArtSize.x + this.albumArtSize.w;
 
-		const discArtInAlbumArtArea = this.displayDetails && this.discArtImageDisplayed;
-		const noDiscArtAndBg = this.displayDetails && !grm.details.discArt && !grSet.noDiscArtBg;
+		const hasFixedEdge = (albumArtDisplayed && !grSet.panelWidthAuto) || this.discArtDisplayed();
+		const restrictToPanel = (hasFixedEdge && !detailsDiscArtOverlaps && !detailsMetadataGridMenuOpen) || detailsNoBg;
+		const x = albumArtDisplayed ? panelX : 0;
+		const w = restrictToPanel ? panelX : this.ww;
 
-		const middleX = grSet.discArtOnTop || grSet.hideMiddlePanelShadow || discArtInAlbumArtArea || this.displayLyrics && grSet.lyricsLayout !== 'normal' ? this.ww + 4 : panelX - 4;
-		const x = albumArtW ? panelX : 0;
-		const w = (albumArtW && !grSet.panelWidthAuto || this.discArtDisplayed()) && !discArtInAlbumArtArea || noDiscArtAndBg ? panelX : this.ww;
+		const hideMiddle = grSet.discArtOnTop || grSet.hideMiddlePanelShadow || detailsDiscArtOverlaps || lyricsLyoutNotNormal || detailsMetadataGridMenuOpen;
+		const middleX = hideMiddle ? this.ww + 4 : panelX - 4;
 
 		// Top shadow
 		FillGradRect(gr, x, this.topMenuHeight - HD_4K(6, 10), w, HD_4K(6, 10), 90, 0, grCol.shadow);

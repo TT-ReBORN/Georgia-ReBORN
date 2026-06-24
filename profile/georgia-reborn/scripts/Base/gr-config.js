@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    24-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -934,12 +934,6 @@ class ConfigurationManager {
 			this.config.addConfigurationObject(grDef.settingsSchema, configFile.settings);
 			this.config.addConfigurationObject(grDef.settingsSchema, grDef.settingsDefaults, grDef.settingsComments);
 			this.config.writeConfiguration(configFile.settings);
-		}
-		if (!this._gridCheckEntry(configFile.metadataGrid, 'Channels')) {
-			fso.CopyFile(this.configPath, fb.ProfilePath + fileName);
-			this.config.addConfigurationObject(grDef.metadataGridSchema, grDef.metadataGridDefaults);
-			this.config.writeConfiguration();
-			window.Reload(); // Reinit new config
 		}
 
 		// * Rename old color names in the custom config file with the new ones
