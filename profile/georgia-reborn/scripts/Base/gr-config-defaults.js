@@ -538,7 +538,7 @@ class ConfigDefaults {
 			chameleonDuration: 400,
 			chameleonEasing: 'smootherStep',
 			chameleonRefreshRate: 33,
-			chameleonBitmapUpdateRate: 15
+			chameleonBitmapUpdateRate: 12
 		};
 
 		/** @public @type {object} Options > Color settings config name description. */
@@ -554,8 +554,8 @@ class ConfigDefaults {
 			chameleonCycleTime: 'Values: 5, 10, 15, 20, 30, 45, 60, 120 - Options > Color > Chameleon > Cycle time',
 			chameleonDuration: 'Values: 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Color > Chameleon > Duration',
 			chameleonEasing: 'Values: "linear", "smoothStep", "smootherStep", "easeInOutSine", "easeInOutCubic", "easeOutExpo", "easeInOutExpo", "easeOutBack", "easeInOutElastic" - Options > Color > Chameleon > Easing',
-			chameleonRefreshRate: 'Values: 50, 40, 33, 22, 20, 17 - Options > Color > Chameleon > Refresh rate',
-			chameleonBitmapUpdateRate: 'Values: 60, 30, 20, 15, 12, 10, 7 - Options > Color > Chameleon > Bitmap update rate'
+			chameleonRefreshRate: 'Values: 50, 40, 33, 22, 20, 17, 13, 11, 8, 7, 6, 4, 3 - Options > Color > Chameleon > Refresh rate',
+			chameleonBitmapUpdateRate: 'Values: 60, 30, 20, 15, 12, 10, 8, 4, 2 - Options > Color > Chameleon > Bitmap update rate'
 		};
 
 		/** @public @type {object} Options > Color settings config header description. */

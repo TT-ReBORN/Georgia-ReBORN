@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    24-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -311,7 +311,7 @@ grSet.addProperties({
 	chameleonDuration:                  ['Georgia-ReBORN - 05. Color: Chameleon duration', 400], // 400: The chameleon color transition effect duration
 	chameleonEasing:                    ['Georgia-ReBORN - 05. Color: Chameleon easing', 'smootherStep'], // 'smootherStep': The chameleon color transition easing effect
 	chameleonRefreshRate:               ['Georgia-ReBORN - 05. Color: Chameleon refresh rate', 33], // 33: The chameleon color transition refresh rate
-	chameleonBitmapUpdateRate:          ['Georgia-ReBORN - 05. Color: Chameleon bitmap update rate', 15], // 15: The chameleon color transition bitmap update rate
+	chameleonBitmapUpdateRate:          ['Georgia-ReBORN - 05. Color: Chameleon bitmap update rate', 12], // 12: The chameleon color transition bitmap update rate
 
 	// * Display
 	displayRes:                         ['Georgia-ReBORN - 05. Display:', '<not_set>'], // 4K: Switch to 4K res, QHD: switch to QHD res, HD: switch to HD res
@@ -1018,7 +1018,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'chameleonDuration', grCfg.themeColor, 'chameleonDuration', 400);
 		this._setSetting(grSet, 'chameleonEasing', grCfg.themeColor, 'chameleonEasing', 'smootherStep');
 		this._setSetting(grSet, 'chameleonRefreshRate', grCfg.themeColor, 'chameleonRefreshRate', 33);
-		this._setSetting(grSet, 'chameleonBitmapUpdateRate', grCfg.themeColor, 'chameleonBitmapUpdateRate', 15);
+		this._setSetting(grSet, 'chameleonBitmapUpdateRate', grCfg.themeColor, 'chameleonBitmapUpdateRate', 12);
 	}
 
 	/**

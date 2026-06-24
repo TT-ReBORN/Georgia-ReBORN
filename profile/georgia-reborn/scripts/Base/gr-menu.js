@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    24-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1082,11 +1082,11 @@ class TopMenuOptions {
 			grSet.chameleonEasing = easing;
 		}, !grSet.chameleon);
 		chameleonMenu.addSeparator();
-		chameleonMenu.createRadioSubMenu('Refresh rate', ['20 fps ~ 50 ms (very slow CPU)', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (very fast CPU)'],
-			grSet.chameleonRefreshRate, [FPS._20, FPS._25, FPS._30, FPS._45, FPS._60], (rate) => {
+		chameleonMenu.createRadioSubMenu('Refresh rate', ['20 fps ~ 50 ms (very slow CPU)', '25 fps ~ 40 ms', '30 fps ~ 33 ms', '45 fps ~ 22 ms', '60 fps ~ 17 ms (default)', '75 fps ~ 13 ms', '90 fps ~ 11 ms', '120 fps ~ 8 ms', '144 fps ~ 7 ms', '165 fps ~ 6 ms', '240 fps ~ 4 ms', '360 fps ~ 3 ms (very fast CPU)'],
+			grSet.chameleonRefreshRate, [FPS._20, FPS._25, FPS._30, FPS._45, FPS._60, FPS._75, FPS._90, FPS._120, FPS._144, FPS._165, FPS._240, FPS._360], (rate) => {
 			grSet.chameleonRefreshRate = rate;
 		}, !grSet.chameleon);
-		chameleonMenu.createRadioSubMenu('Bitmap update rate', ['60 fps (very fast CPU)', '30 fps', '20 fps', '15 fps (default)', '12 fps', '10 fps', ' 7 fps (very slow CPU)'], grSet.chameleonBitmapUpdateRate, [60, 30, 20, 15, 12, 10, 7], (rate) => {
+		chameleonMenu.createRadioSubMenu('Bitmap update rate', ['60 fps (very fast CPU)', '30 fps', '20 fps', '15 fps', '12 fps (default)', '10 fps', ' 8 fps', ' 4 fps', ' 2 fps (very slow CPU)'], grSet.chameleonBitmapUpdateRate, [60, 30, 20, 15, 12, 10, 8, 4, 2], (rate) => {
 			if (rate > 15) grm.msg.showPopupNotice('themeColors', 'chameleonBitmapHighRate');
 			grSet.chameleonBitmapUpdateRate = rate;
 		}, !grSet.chameleon);
