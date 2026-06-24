@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    30-05-2026                                              * //
+// * Last change:    24-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -322,7 +322,7 @@ const LUM_REF = {
 ///////////////////
 /** @global @typedef {boolean} D2D The D2D renderer state, true (D2D) and false (GDI). */
 const D2D = (Component.JSplitter
-	? window.DrawMode = window.GetProperty('Georgia-ReBORN - 15. Settings: Renderer graphics')
+	? window.DrawMode = window.GetProperty('Georgia-ReBORN - 15. Settings: Renderer mode')
 	: 0
 ) === 1;
 

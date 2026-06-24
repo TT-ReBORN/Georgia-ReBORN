@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    24-06-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -961,7 +961,7 @@ class Button {
 		if (btn.type === 'compact') {
 			const space = g.CalcTextWidth(' ', grFont.topMenuCaption);
 			const icoW = g.CalcTextWidth(this.btnMap.Hamburger.ico, grFont.topMenuCaption);
-			const hamburgerW = icoW + space;
+			const hamburgerW = icoW + space - (D2D ? 3 : 0);
 			const padding = space * (RES._4K ? 1.5 : 1.0);
 			const hamburgerX = Math.round(grSet.topMenuCompactSymbolOnly ? (w - hamburgerW) / 2 : hamburgerW) - padding;
 
@@ -1171,7 +1171,7 @@ class Button {
 
 		const layoutDefault = grSet.layout === 'default';
 		const hideClose = UIWizard.FrameStyle === FrameStyle.SmallCaption && UIWizard.WindowState !== WindowState.Fullscreen;
-		const btnSize = this.btnImg.Close.Default.Height;
+		const btnSize = this.btnImg.Close.Default.Height + (D2D ? 1 : 0);
 		const btnCount = hideClose ? (layoutDefault ? 2 : 1) : layoutDefault ? 3 : 2;
 		const totalWidth = btnSize * btnCount + (btnCount - 1);
 
