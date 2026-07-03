@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    03-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3089,8 +3089,6 @@ class WaveformBar {
 		this.mouseDown = false;
 		/** @private @type {boolean} The state indicating if the file is allowed. Set at checkAllowedFile(). */
 		this.isAllowedFile = true;
-		/** @private @type {boolean} The state indicating if the file is a zipped file. Set at checkAllowedFile(). */
-		this.isZippedFile = false;
 		/** @private @type {boolean} The state indicating if there was an error. Set at verifyData() after retrying analysis. */
 		this.isError = false;
 		/** @private @type {boolean} The state indicating if fallback mode is active. For visualizerFallback, set at checkAllowedFile(). */
@@ -3183,7 +3181,7 @@ class WaveformBar {
 		 */
 		/** @private @type {waveformBarMetricsConfig} */
 		this.metrics = {
-			count: 5,
+			count: AWGetWaveformDataInfo().metricsPerChannel,
 			index: {
 				rms: 0,
 				rms_peak: 1,
@@ -3552,8 +3550,7 @@ class WaveformBar {
 		const noVisual = this.analysis.binaryMode !== 'visualizer';
 		const validExt = this.checkCompatibleFileExtension(handle);
 
-		this.isZippedFile = handle.RawPath.includes('unpack://');
-		this.isAllowedFile = noVisual && validExt && !this.isZippedFile;
+		this.isAllowedFile = noVisual && validExt;
 		this.isFallback = !this.isAllowedFile && this.analysis.visualizerFallback;
 	}
 
@@ -3735,7 +3732,7 @@ class WaveformBar {
 			grm.debug.debugLog(`Audio Wizard => Starting waveform analysis: mode=${this.preset.analysisMode}, resolution=${this.analysis.resolution}`);
 
 			const success = await new Promise((resolve) => {
-				const { metadata } = GetMetadata(handleList);
+				const { metadata } = AWGetMetadata(handleList);
 				AudioWizard.SetFullTrackWaveformCallback((res) => resolve(res));
 				AudioWizard.StartWaveformAnalysis(metadata, this.analysis.resolution);
 			});
@@ -3745,8 +3742,17 @@ class WaveformBar {
 				return;
 			}
 
-			const metricsPerChannel = 5;
 			const trackCount = AudioWizard.GetWaveformTrackCount();
+			const waveformDataInfo = AWGetWaveformDataInfo();
+			console.log(`Audio Wizard => Processing ${trackCount} track(s)`);
+
+			if (!waveformDataInfo) {
+				console.log('Audio Wizard => Waveform analysis failed: could not retrieve data schema (GetWaveformDataInfo)');
+				resolve({ success: false });
+				return;
+			}
+
+			const { metricsPerChannel } = waveformDataInfo;
 
 			for (let i = 0; i < trackCount; i++) {
 				const trackHandle = handleList[i];
@@ -4026,11 +4032,16 @@ class WaveformBar {
 	 * @returns {object} The paths to the waveform bar cache folder and file.
 	 */
 	getPaths(handle) {
-		const id = CleanFilePath(this.Tf.EvalWithMetadb(handle)); // Ensures paths are valid!
-		const fileName = id.split('\\').pop();
-		const waveformBarFolder = this.cacheDir + (this.saveDataAllowed(handle) ? id.replace(fileName, '') : '');
+		const id = CleanFilePath(this.Tf.EvalWithMetadb(handle));
+
+		const lastSlash = id.lastIndexOf('\\');
+		const folderPart = (this.saveDataAllowed(handle) && lastSlash !== -1)
+			? id.substring(0, lastSlash + 1)
+			: '';
+
+		const waveformBarFolder = this.cacheDir + folderPart;
 		const waveformBarFile = this.cacheDir + id;
-		const sourceFile = this.isZippedFile ? handle.Path.split('|')[0] : handle.Path;
+		const sourceFile = AudioWizard ? AudioWizard.GetPhysicalFilePath(handle.RawPath) : handle.Path;
 
 		return { waveformBarFolder, waveformBarFile, sourceFile };
 	}
@@ -4289,7 +4300,6 @@ class WaveformBar {
 		this.maxStep = 6;
 		this.offset = [];
 		this.isAllowedFile = true;
-		this.isZippedFile = false;
 		this.isError = false;
 		this.isFallback = false;
 		this.fallbackMode.paint = this.fallbackMode.analysis = false;

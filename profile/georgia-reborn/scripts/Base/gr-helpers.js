@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    03-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,7 +26,7 @@
  * @returns {Object} { handleList: FbMetadbHandleList, metadata: string[], artists: string[], albums: string[], titles: string[] }
  *  - metadata: Array of "path\u001Fsubsong" strings (e.g., "C:\\song.mp3\u001F0"), auto-marshaled to VT_ARRAY | VT_BSTR for COM.
  */
-function GetMetadata(metadb) {
+function AWGetMetadata(metadb) {
 	const handleData = metadb || plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 	const handleList = new FbMetadbHandleList(handleData);
 	const handleArray = handleList.Convert();
@@ -54,6 +54,59 @@ function GetMetadata(metadb) {
 
 
 /**
+ * Retrieves and parses the full-track metrics schema exposed by Audio Wizard.
+ * @global
+ * @returns {Object|null} The parsed schema object, or null if AudioWizard is unavailable or the JSON failed to parse.
+ */
+function AWGetFullTrackMetricsDataInfo() {
+	if (!AudioWizard) return null;
+
+	try {
+		const infoJson = AudioWizard.GetFullTrackMetricsDataInfo();
+		return JSON.parse(infoJson);
+	}
+	catch (e) {
+		console.log(`Audio Wizard => Error parsing GetFullTrackMetricsDataInfo: ${e.message}`);
+		return null;
+	}
+}
+
+
+/**
+ * Retrieves and parses the waveform data schema exposed by Audio Wizard.
+ * @global
+ * @param {number} [trackIndex] - The optional 0-based track index for per-track info (channels, path, duration).
+ * When omitted, only component-level schema info is returned:
+ * - componentVersion
+ * - waveformDataVersion
+ * - metricsPerChannel
+ * - metrics
+ * - pointsPerSecond
+ *
+ * NOTE: pointsPerSecond is included at the component level but is NOT fixed schema -
+ * it reflects whatever resolution the most recently *started* analysis used (default until one has run).
+ * Read it right after the analysis you care about, as AWStartWaveformAnalysis() does, not as a stand-alone
+ * "check the schema before doing anything" call.
+ * @returns {Object|null} The parsed schema object, or null if AudioWizard is unavailable or the JSON failed to parse.
+ */
+function AWGetWaveformDataInfo(trackIndex) {
+	if (!AudioWizard) return null;
+
+	try {
+		const infoJson = trackIndex == null
+			? AudioWizard.GetWaveformDataInfo()
+			: AudioWizard.GetWaveformDataInfo(trackIndex);
+
+		return JSON.parse(infoJson);
+	}
+	catch (e) {
+		console.log(`Audio Wizard => Error parsing GetWaveformDataInfo: ${e.message}`);
+		return null;
+	}
+}
+
+
+/**
  * Starts full-track metrics analysis using GetFullTrackMetrics (batch retrieval).
  * @global
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
@@ -68,7 +121,7 @@ async function AWStartFullTrackMetricsBatch(metadb, chunkDuration = 200) {
 	console.log("Audio Wizard => Starting full-track metrics batch analysis...");
 
 	try {
-		const { handleList, metadata, artists, albums, titles } = GetMetadata(metadb);
+		const { handleList, metadata, artists, albums, titles } = AWGetMetadata(metadb);
 		console.log(`Audio Wizard => Processing ${artists.length} track(s) via unified format`);
 
 		return await new Promise((resolve) => {
@@ -84,7 +137,15 @@ async function AWStartFullTrackMetricsBatch(metadb, chunkDuration = 200) {
 
 					console.log("Audio Wizard => Batch metrics analysis complete!");
 
-					const metricsPerTrack = 12;
+					const fullMetricsDataInfo = AWGetFullTrackMetricsDataInfo();
+
+					if (!fullMetricsDataInfo) {
+						console.log('Audio Wizard => Batch metrics analysis failed: could not retrieve data schema (GetFullTrackMetricsDataInfo)');
+						resolve({ success: false });
+						return;
+					}
+
+					const { metricsPerTrack, metrics: metricNames } = fullMetricsDataInfo;
 					const metrics = AudioWizard.GetFullTrackMetrics();
 
 					console.log(`Audio Wizard => Analyzed ${handleList.Count} track(s) with GetFullTrackMetrics:`);
@@ -96,22 +157,14 @@ async function AWStartFullTrackMetricsBatch(metadb, chunkDuration = 200) {
 						const offset = i * metricsPerTrack;
 
 						console.log(`Audio Wizard => GetFullTrackMetrics => Track ${i + 1}: ${artist} - ${album} - ${title}`);
-						console.log(`  M LUFS: ${metrics[offset + 0].toFixed(2)}`);
-						console.log(`  S LUFS: ${metrics[offset + 1].toFixed(2)}`);
-						console.log(`  I LUFS: ${metrics[offset + 2].toFixed(2)}`);
-						console.log(`  RMS: ${metrics[offset + 3].toFixed(2)}`);
-						console.log(`  Sample Peak: ${metrics[offset + 4].toFixed(2)}`);
-						console.log(`  True Peak: ${metrics[offset + 5].toFixed(2)}`);
-						console.log(`  PSR: ${metrics[offset + 6].toFixed(2)}`);
-						console.log(`  PLR: ${metrics[offset + 7].toFixed(2)}`);
-						console.log(`  CF: ${metrics[offset + 8].toFixed(2)}`);
-						console.log(`  LRA: ${metrics[offset + 9].toFixed(2)}`);
-						console.log(`  DR: ${metrics[offset + 10].toFixed(2)}`);
-						console.log(`  PD: ${metrics[offset + 11].toFixed(2)}`);
+
+						for (let m = 0; m < metricsPerTrack; m++) {
+							console.log(`  ${metricNames[m]}: ${metrics[offset + m].toFixed(2)}`);
+						}
 						console.log("\n");
 					}
 
-					resolve({ success: true, metrics });
+					resolve({ success: true, metrics, fullMetricsDataInfo });
 				}
 				catch (e) {
 					console.log(`Audio Wizard => Error in batch metrics callback: ${e.message}`);
@@ -145,7 +198,7 @@ async function AWStartFullTrackMetricsSingle(metadb, chunkDuration = 200) {
 	console.log("Audio Wizard => Starting full-track single metrics analysis...");
 
 	try {
-		const { handleList, metadata, artists, albums, titles } = GetMetadata(metadb);
+		const { handleList, metadata, artists, albums, titles } = AWGetMetadata(metadb);
 
 		if (!handleList || handleList.Count === 0) {
 			console.log("Audio Wizard => No tracks to analyze.");
@@ -215,7 +268,11 @@ async function AWStartFullTrackMetricsSingle(metadb, chunkDuration = 200) {
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
  * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
  * @param {boolean} [downmixToMono] - The optional downmix of all channels are averaged to a single mono channel.
- * @returns {Promise<{success: boolean, tracks?: Array<{index: number, path: string, duration: number, channels: number, waveformData: Array}>}>}
+ * @returns {Promise<{success: boolean, tracks?: Array<{
+ *    index: number, path: string, duration: number, channels: number,
+ *    metricsPerChannel: number, metrics: string[], pointsPerSecond: number, waveformData: Array}>,
+ *    waveformDataInfo?: Object
+ * }>}
  */
 async function AWStartWaveformAnalysis(metadb, resolution = 1, downmixToMono = false) {
 	if (!AudioWizard || AudioWizard.FullTrackProcessing) {
@@ -225,7 +282,7 @@ async function AWStartWaveformAnalysis(metadb, resolution = 1, downmixToMono = f
 	console.log("Audio Wizard => Starting waveform analysis...");
 
 	try {
-		const { metadata } = GetMetadata(metadb);
+		const { metadata } = AWGetMetadata(metadb);
 
 		return await new Promise((resolve) => {
 			const onComplete = (success) => {
@@ -240,22 +297,32 @@ async function AWStartWaveformAnalysis(metadb, resolution = 1, downmixToMono = f
 
 					const tracks = [];
 					const trackCount = AudioWizard.GetWaveformTrackCount();
+					const waveformDataInfo = AWGetWaveformDataInfo();
 					console.log(`Audio Wizard => Processing ${trackCount} track(s)`);
+
+					if (!waveformDataInfo) {
+						console.log('Audio Wizard => Waveform analysis failed: could not retrieve data schema (GetWaveformDataInfo)');
+						resolve({ success: false });
+						return;
+					}
+
+					const { metricsPerChannel, metrics, pointsPerSecond } = waveformDataInfo;
 
 					for (let i = 0; i < trackCount; i++) {
 						const path = AudioWizard.GetWaveformTrackPath(i);
 						const duration = AudioWizard.GetWaveformTrackDuration(i);
 						const waveformData = AudioWizard.GetWaveformData(i);
 						const channels = waveformData.length;
-						const numPoints = channels > 0 ? waveformData[0].length / 5 : 0;
+						const numPoints = channels > 0 ? waveformData[0].length / metricsPerChannel : 0;
 						const durLog = duration.toFixed(2);
-						const resLog  = duration > 0 ? (numPoints / duration).toFixed(1) : '0.0';
+						const resLog = duration > 0 ? (numPoints / duration).toFixed(1) : '0.0';
 
-						tracks.push({ index: i, path, duration, channels, waveformData });
+						tracks.push({ index: i, path, duration, channels, metricsPerChannel, metrics, pointsPerSecond, waveformData });
 						console.log(`Audio Wizard => Track ${i + 1}: ${channels}ch, ${numPoints} points over ${durLog}s, ~${resLog} pts/sec`);
+						// console.log(`Audio Wizard => Track ${i + 1}: ${waveformData.map(v => Number(v.toFixed(3))).join(',')}`);
 					}
 
-					resolve({ success: true, tracks });
+					resolve({ success: true, tracks, waveformDataInfo });
 				}
 				catch (e) {
 					AudioWizard.StopWaveformAnalysis();
@@ -282,10 +349,10 @@ async function AWStartWaveformAnalysis(metadb, resolution = 1, downmixToMono = f
  * @param {FbMetadbHandle|FbMetadbHandleList|null} metadb - The metadb handle(s).
  * @param {string} cachePath - The folder where .awz.json files will be stored.
  * @param {number} [resolution] - The optional resolution in points/sec from 1-1000.
- * @param {boolean} [prettify] - The optional prettified JSON output format - increases filesize.
  * @param {boolean} [downmixToMono] - The optional downmix of all channels are averaged to a single mono channel.
+ * @param {boolean} [prettify] - The optional prettified JSON output format - increases filesize.
  */
-async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, resolution = 1, prettify = false, downmixToMono = false) {
+async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, resolution = 1, downmixToMono = false, prettify = false) {
 	if (!AudioWizard || AudioWizard.FullTrackProcessing) return;
 
 	const handleData = metadb || plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
@@ -311,40 +378,44 @@ async function AWStartWaveformAnalysisFileSaving(metadb, cachePath, resolution =
 		fileName = fileName.replace(Regex.PathIllegalFilename, '_').substring(0, 100);
 		const targetPath = `${cachePath}\\${fileName}.awz.json`;
 		const structuredData = [];
+		const { metricsPerChannel } = track;
 
 		for (let ch = 0; ch < track.channels; ch++) {
 			const channelPoints = [];
 			const chData = track.waveformData[ch];
 
-			for (let pt = 0; pt < chData.length; pt += 5) {
-				channelPoints.push([
-					Math.round(chData[pt + 0] * 1000) / 1000, // rms
-					Math.round(chData[pt + 1] * 1000) / 1000, // rms_peak
-					Math.round(chData[pt + 2] * 1000) / 1000, // sample_peak
-					Math.round(chData[pt + 3] * 1000) / 1000, // min
-					Math.round(chData[pt + 4] * 1000) / 1000  // max
-				]);
+			for (let pt = 0; pt < chData.length; pt += metricsPerChannel) {
+				const point = new Array(metricsPerChannel);
+				for (let m = 0; m < metricsPerChannel; m++) {
+					point[m] = Math.round(chData[pt + m] * 1000) / 1000;
+				}
+				channelPoints.push(point);
 			}
 			structuredData.push(channelPoints);
 		}
 
 		const jsonObj = {
-			version: 1,
+			componentVersion: result.waveformDataInfo.componentVersion,
+			waveformDataVersion: result.waveformDataInfo.waveformDataVersion,
 			channels: track.channels,
 			duration: track.duration,
-			metricsPerChannel: 5,
-			metrics: ['rms', 'rms_peak', 'sample_peak', 'min', 'max'],
+			metricsPerChannel,
+			metrics: track.metrics,
+			pointsPerSecond: result.waveformDataInfo.pointsPerSecond,
 			data: structuredData
 		};
 
 		let jsonFile = '';
 
 		if (prettify) {
+			// 1. Generate standard tabbed JSON string first
 			jsonFile = JSON.stringify(jsonObj, null, '\t');
 
+			// 2. Collapse the "metrics" string array into a single line
 			jsonFile = jsonFile.replace(Regex.JsonMetricsField, (match) =>
 				match.replace(Regex.SpaceAll, ' ').replace(Regex.JsonArraySpaceOpen, '[').replace(Regex.JsonArraySpaceClose, ']'));
 
+			// 3. Collapse the innermost number data arrays into single lines
 			jsonFile = jsonFile.replace(Regex.JsonNumericArray, (match, contents) =>
 				`[${contents.trim().replace(Regex.SpaceAll, ' ')}]`);
 		} else {
@@ -459,6 +530,103 @@ function AWStartRealTimeMonitoring(refreshRate = 33, chunkDuration = 50) {
 	console.log('Real-time - PD:', AudioWizard.PureDynamics.toFixed(2));
 	console.log('Real-time - Phase Correlation:', AudioWizard.PhaseCorrelation.toFixed(2));
 	console.log('Real-time - Stereo Width:', AudioWizard.StereoWidth.toFixed(2), '\n');
+}
+
+
+/**
+ * A quick manual test to print Audio Wizard data structures.
+ * Run with track(s) selected: AWStartDataInfoTestDemo();
+ * Check View > Console in foobar2000 for output.
+ */
+async function AWStartDataInfoTestDemo() {
+	if (!AudioWizard) {
+		console.log('Audio Wizard => TEST ABORTED: AudioWizard is not available.');
+		return;
+	}
+
+	const check = (label, condition) => console.log(`***[${condition ? 'PASS' : 'FAIL'}]*** ${label}`);
+	const SEPARATOR = `\n${'-'.repeat(100)}\n`;
+
+	// * TEST 1: GetPhysicalFilePath * //
+	console.log('\n>>> TEST 1: GetPhysicalFilePath <<<');
+	const handleData = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+	const handleList = new FbMetadbHandleList(handleData);
+	const handle = handleList.Count > 0 ? handleList.Convert()[0] : null;
+
+	if (handle) {
+		const resolved = AudioWizard.GetPhysicalFilePath(handle.RawPath);
+		console.log(`handle.Path: ${handle.Path}`);
+		console.log(`handle.RawPath: ${handle.RawPath}`);
+		console.log(`Resolved: ${resolved}`);
+		check('resolved path has no leftover scheme/pipe characters', !/unpack:\/\/|file:\/\/|\|/.test(resolved));
+	} else {
+		console.log('No track selected - select one in the playlist and re-run.');
+	}
+
+	console.log(SEPARATOR);
+
+	// * TEST 2: AWGetFullTrackMetricsDataInfo (schema only, no analysis needed) * //
+	console.log('>>> TEST 2: AWGetFullTrackMetricsDataInfo (schema only, no analysis needed) <<<');
+	const fullInfo = AWGetFullTrackMetricsDataInfo();
+	console.log(JSON.stringify(fullInfo, null, 2));
+
+	check('metricsPerTrack === 12', fullInfo && fullInfo.metricsPerTrack === 12);
+	check('metrics.length === metricsPerTrack', fullInfo && fullInfo.metrics && fullInfo.metrics.length === fullInfo.metricsPerTrack);
+	check("metrics uses API identifiers, e.g. 'PD' is present", !!(fullInfo && fullInfo.metrics && fullInfo.metrics.includes('PD')));
+
+	console.log(SEPARATOR);
+
+	// * TEST 3: AWGetWaveformDataInfo() - component-level only, no analysis needed * //
+	console.log('>>> TEST 3: AWGetWaveformDataInfo() - component-level only, no analysis needed <<<');
+	const waveInfoComponentOnly = AWGetWaveformDataInfo();
+	console.log(JSON.stringify(waveInfoComponentOnly, null, 2));
+
+	check('metricsPerChannel === 5', waveInfoComponentOnly && waveInfoComponentOnly.metricsPerChannel === 5);
+	check('metrics.length === metricsPerChannel', waveInfoComponentOnly && waveInfoComponentOnly.metrics && waveInfoComponentOnly.metrics.length === waveInfoComponentOnly.metricsPerChannel);
+	check('no per-track fields at component level', waveInfoComponentOnly && !('channels' in waveInfoComponentOnly) && !('path' in waveInfoComponentOnly) && !('duration' in waveInfoComponentOnly));
+
+	console.log(SEPARATOR);
+
+	// * TEST 4: AWGetWaveformDataInfo(trackIndex) - the optional-argument path * //
+	console.log('>>> TEST 4: AWGetWaveformDataInfo(trackIndex) - the optional-argument path <<<');
+	const waveResult = await AWStartWaveformAnalysis(null, 5);
+
+	if (!waveResult.success) {
+		console.log('Waveform analysis failed or nothing selected - select track(s) in the playlist and re-run.');
+	}
+	else {
+		for (let i = 0; i < waveResult.tracks.length; i++) {
+			const perTrackInfo = AWGetWaveformDataInfo(i);
+			console.log(`Track ${i}:`, JSON.stringify(perTrackInfo, null, 2));
+			check(`track ${i} has channels/path/duration`, perTrackInfo && 'channels' in perTrackInfo && 'path' in perTrackInfo && 'duration' in perTrackInfo);
+			check(`track ${i} decoded (channels > 0)`, perTrackInfo && perTrackInfo.channels > 0);
+			check(`track ${i} channel count agrees between GetWaveformDataInfo and GetWaveformData`, perTrackInfo && perTrackInfo.channels === waveResult.tracks[i].channels);
+		}
+
+		console.log('=> error path: out-of-range track index <=');
+
+		try {
+			AudioWizard.GetWaveformDataInfo(waveResult.tracks.length + 5);
+			check('out-of-range index throws instead of returning', false);
+		} catch (e) {
+			check(`out-of-range index throws (caught: ${e.message})`, true);
+		}
+	}
+
+	console.log(SEPARATOR);
+
+	// * TEST 5: schema consumed live inside AWStartFullTrackMetricsBatch * //
+	console.log('>>> TEST 5: schema consumed live inside AWStartFullTrackMetricsBatch <<<');
+	const batchResult = await AWStartFullTrackMetricsBatch(null, 200);
+	console.log('success:', batchResult.success);
+
+	if (batchResult.success && fullInfo) {
+		check('batch metrics length is a multiple of metricsPerTrack', batchResult.metrics.length % fullInfo.metricsPerTrack === 0);
+		console.log('Check the per-track metric lines logged above used all 12 real metric names, not hardcoded ones.');
+	}
+
+	console.log(SEPARATOR);
+	console.log('>>> ALL TESTS COMPLETE <<<\n');
 }
 
 
@@ -3878,6 +4046,25 @@ function CalcGridMaxTextWidth(gr, gridArray, font) {
 	}
 
 	return maxWidth;
+}
+
+
+/**
+ * Calculates the widest label width among a set of labels.
+ * @param {string[]} labels - The labels to measure.
+ * @param {GdiFont} font - The font to use for the text.
+ * @returns {number} The widest label's width.
+ */
+function CalcMaxLabelWidth(labels, font) {
+	let max = 0;
+
+	GDI(1, 1, false, (g) => {
+		for (const label of labels) {
+			max = Math.max(max, g.CalcTextWidth(label, font));
+		}
+	});
+
+	return max;
 }
 
 
