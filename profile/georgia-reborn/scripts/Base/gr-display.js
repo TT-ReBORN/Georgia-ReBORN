@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    03-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -153,9 +153,7 @@ class Display {
 			grSet.playerSize = matchingSize ? matchingSize.name : 'custom';
 		}
 
-		// * Check and set display monitor resolution mode for 4K or QHD
-		RES._4K  = grSet.displayRes === '4K'  || UIWizard.DisplayResolutionMode === '4K';
-		RES._QHD = grSet.displayRes === 'QHD' || UIWizard.DisplayResolutionMode === 'QHD';
+		this.checkResolutionMode();
 
 		if (this.lastSize !== RES._4K) {
 			this.sizeInitialized = false;
@@ -163,6 +161,14 @@ class Display {
 		}
 
 		this.setWindowSizeFix();
+	}
+
+	/**
+	 * Checks and updates display monitor resolution mode for 4K or QHD.
+	 */
+	checkResolutionMode() {
+		RES._4K  = grSet.displayRes === '4K'  || UIWizard.DisplayResolutionMode === '4K';
+		RES._QHD = grSet.displayRes === 'QHD' || UIWizard.DisplayResolutionMode === 'QHD';
 	}
 
 	/**

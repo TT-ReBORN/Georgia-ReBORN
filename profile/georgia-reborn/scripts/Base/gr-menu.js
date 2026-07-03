@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-06-2026                                              * //
+// * Last change:    03-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1107,6 +1107,7 @@ class TopMenuOptions {
 		resolutionMenu.addSeparator();
 		resolutionMenu.addRadioItems(['4K', 'QHD', 'HD'], grSet.displayRes, ['4K', 'QHD', 'HD'], (res) => {
 			grSet.displayRes = res;
+			grm.display.checkResolutionMode();
 			grm.display.updatePlayerSize('small', true);
 		});
 		resolutionMenu.appendTo(displayMenu);
