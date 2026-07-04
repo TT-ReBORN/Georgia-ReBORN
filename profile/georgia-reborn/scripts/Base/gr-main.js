@@ -295,6 +295,8 @@ class MainUI {
 		this.albumArtTimeout = null;
 		/** @public @type {number} The setTimeout ID for hiding cursor. */
 		this.hideCursorTimeout = null;
+		/** @public @type {number} The timer for the delayed hiding of the lyrics full layout overlay after the mouse leaves the window. */
+		this.lyricsFullLayoutEdgeLeaveTimer = null;
 		/** @public @type {number} The time profiler of the seekbar. */
 		this.seekbarProfiler = fb.CreateProfiler('on_paint -> seekbar');
 		/** @public @type {number} The timer of the seekbar. */
@@ -2872,6 +2874,11 @@ class MainUI {
 				timer: this.hideCursorTimeout,
 				clear: clearTimeout,
 				log: 'Timer => Hide cursor timer cleared'
+			},
+			lyricsFullLayoutEdgeLeave: {
+				timer: this.lyricsFullLayoutEdgeLeaveTimer,
+				clear: clearTimeout,
+				log: 'Timer => Lyrics full layout edge leave timer cleared'
 			},
 			seekbar: {
 				timer: this.seekbarTimer,

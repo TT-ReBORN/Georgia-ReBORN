@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    04-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -913,6 +913,16 @@ class Lyrics {
 	}
 
 	/**
+	 * Clears the edge leave timer when lyrics layout is full.
+	 */
+	clearFullLayoutEdgeLeaveTimer() {
+		if (!grm.ui.lyricsFullLayoutEdgeLeaveTimer) return;
+
+		clearTimeout(grm.ui.lyricsFullLayoutEdgeLeaveTimer);
+		grm.ui.lyricsFullLayoutEdgeLeaveTimer = null;
+	}
+
+	/**
 	 * Removes highlight from all lines in the lyric array.
 	 */
 	clearHighlight() {
@@ -1238,6 +1248,20 @@ class Lyrics {
 	 */
 	on_mouse_leave() {
 		this.scrollDrag = false;
+
+		this.clearFullLayoutEdgeLeaveTimer();
+
+		if (grSet.lyricsLayout !== 'full' || !grm.ui.mouseInLyricsFullLayoutEdge) {
+			return;
+		}
+
+		grm.ui.lyricsFullLayoutEdgeLeaveTimer = setTimeout(() => {
+			grm.ui.lyricsFullLayoutEdgeLeaveTimer = null;
+			if (grSet.lyricsLayout === 'full' && grm.ui.displayLyrics) {
+				grm.ui.mouseInLyricsFullLayoutEdge = false;
+				grm.debug.repaintWindow();
+			}
+		}, 2000);
 	}
 
 	/**
@@ -1247,6 +1271,8 @@ class Lyrics {
 	 * @param {number} m - The mouse mask.
 	 */
 	on_mouse_move(x, y, m) {
+		this.clearFullLayoutEdgeLeaveTimer();
+
 		if (!this.scrollDrag) return;
 
 		if (utils.IsKeyPressed(VKey.MENU)) {
