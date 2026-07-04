@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    04-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -597,30 +597,39 @@ class ChameleonColorSystem {
 		const displayDetailsWithLogoSwap = !this._lightBgSwitched && this._pending.length > 0 && grm.ui.displayDetails;
 		const easing = grSet.chameleonEasing;
 
+		// * Captured while advancing the queue below: the eased progress of grCol.detailsText's own OKLCH transition this tick.
+		let detailsTextEasedT = null;
+
 		// * Advance every pending transition (iterate backwards for safe in-place splice)
 		for (let i = this._pending.length - 1; i >= 0; i--) {
 			const a = this._pending[i];
 
 			a.t = Math.min(1, a.t + a.step);
-			a.obj[a.prop] = LerpOKLCH(a.from, a.to, a.fromOKLCH, a.toOKLCH, Easing(easing, a.t));
+			const easedT = Easing(easing, a.t);
+			a.obj[a.prop] = LerpOKLCH(a.from, a.to, a.fromOKLCH, a.toOKLCH, easedT);
 
-			if (a.t >= 1) this._pending.splice(i, 1);
+			if (a.obj === grCol && a.prop === 'detailsText') {
+				detailsTextEasedT = easedT;
+			}
+
+			if (a.t >= 1) {
+				this._pending.splice(i, 1);
+			}
 		}
 
 		// * some UI components need unthrottled recreations to prevent ugly visible color glitches due to low grSet.chameleonBitmapUpdateRate
 		this.updateUIComponentsUnthrottled();
 
-		// * Throttled recreations (~15 fps at default grSet.chameleonBitmapUpdateRate)
+		// * Throttled recreations (~12 fps at default grSet.chameleonBitmapUpdateRate)
 		if (didThrottledUpdate) this.updateUIComponents();
 
-		// * Swap Details logos the moment the animated bg crosses the light/dark threshold
+		// * Swap Details logos the moment grCol.detailsText's own transition crosses its midpoint.
 		if (displayDetailsWithLogoSwap) {
 			const snapshotLight = this._lightBgSnapshot.lightBgDetails;
 			const targetLight = this._lightBgTarget.lightBgDetails;
 
-			if (snapshotLight !== targetLight) {
-				const nowLight = Color.LUM(grCol.detailsBg) > LUM.Y36_2;
-				if (nowLight === targetLight) this.initDetailsLightBg();
+			if (snapshotLight !== targetLight && detailsTextEasedT !== null && detailsTextEasedT >= 0.5) {
+				this.initDetailsLightBg();
 			}
 		}
 
