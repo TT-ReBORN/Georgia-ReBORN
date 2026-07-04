@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    04-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -460,6 +460,43 @@ class ColorStyles {
 	// * PUBLIC METHODS - STYLE ALTERNATIVE * //
 	// #region PUBLIC METHODS - STYLE ALTERNATIVE
 	/**
+	 * Gets the style Alternative background color.
+	 * @param {number} baseBg - The bg color to tint/shade.
+	 * @param {boolean} isBgMain - True for the Main panel (grCol.bg), false for other panels.
+	 * @returns {number} The style Alternative background color.
+	 */
+	getAlternativeBg(baseBg, isBgMain) {
+		const { THEME, CTHEME } = grAlias;
+		const THEME_NEON = ['nblue', 'ngreen', 'nred', 'ngold'].includes(THEME);
+
+		if (isBgMain) {
+			return (
+				THEME === 'white' ? RGB(255, 255, 255) :
+				THEME === 'black' ? TintColorOKLCH(baseBg, 4) :
+				THEME === 'reborn' || THEME === 'random' ? TintColorOKLCH(baseBg, 8) :
+				THEME === 'blue' ? RGB(20, 120, 205) :
+				THEME === 'darkblue' ? RGB(18, 42, 70) :
+				THEME === 'red' ? RGB(130, 25, 25) :
+				THEME === 'cream' ? RGB(255, 255, 255) :
+				THEME_NEON ? RGB(30, 30, 30) :
+				CTHEME ? TintColorOKLCH(baseBg, 8) : baseBg
+			);
+		}
+
+		return (
+			THEME === 'white' ? RGB(245, 245, 245) :
+			THEME === 'black' ? TintColorOKLCH(baseBg, 6) :
+			THEME === 'reborn' || THEME === 'random' ? ShadeColorOKLCH(baseBg, 5) :
+			THEME === 'blue' ? RGB(8, 110, 190) :
+			THEME === 'darkblue' ? RGB(17, 35, 57) :
+			THEME === 'red' ? RGB(106, 18, 18) :
+			THEME === 'cream' ? RGB(255, 247, 240) :
+			THEME_NEON ? TintColorOKLCH(baseBg, 10) :
+			CTHEME ? ShadeColorOKLCH(baseBg, 5) : baseBg
+		);
+	}
+
+	/**
 	 * Any active theme used in Options > Style > Alternative.
 	 */
 	styleAlternativeColors() {
@@ -467,16 +504,7 @@ class ColorStyles {
 		const THEME_NEON = ['nblue', 'ngreen', 'nred', 'ngold'].includes(THEME);
 
 		// * PLAYLIST * //
-		pl.col.bg =
-			THEME === 'white' ? RGB(245, 245, 245) :
-			THEME === 'black' ? TintColorOKLCH(pl.col.bg, 6) :
-			THEME === 'reborn' || THEME === 'random' ? ShadeColorOKLCH(pl.col.bg, 5) :
-			THEME === 'blue' ? RGB(8, 110, 190) :
-			THEME === 'darkblue' ? RGB(17, 35, 57) :
-			THEME === 'red' ? RGB(106, 18, 18) :
-			THEME === 'cream' ? RGB(255, 247, 240) :
-			THEME_NEON ? TintColorOKLCH(pl.col.bg, 10) :
-			CTHEME ? ShadeColorOKLCH(pl.col.bg, 5) : '';
+		pl.col.bg = this.getAlternativeBg(pl.col.bg, false);
 
 		pl.col.plman_bg = pl.col.bg;
 		pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : pl.col.plman_text_normal;
@@ -498,16 +526,7 @@ class ColorStyles {
 		bio.ui.col.bg = pl.col.bg;
 
 		// * MAIN * //
-		grCol.bg =
-			THEME === 'white' ? RGB(255, 255, 255) :
-			THEME === 'black' ? TintColorOKLCH(grCol.bg, 4) :
-			THEME === 'reborn' || THEME === 'random' ? TintColorOKLCH(grCol.bg, 8) :
-			THEME === 'blue' ? RGB(20, 120, 205) :
-			THEME === 'darkblue' ? RGB(18, 42, 70) :
-			THEME === 'red' ? RGB(130, 25, 25) :
-			THEME === 'cream' ? RGB(255, 255, 255) :
-			THEME_NEON ? RGB(30, 30, 30) :
-			CTHEME ? TintColorOKLCH(grCol.bg, 8) : '';
+		grCol.bg = this.getAlternativeBg(grCol.bg, true);
 
 		grCol.shadow =
 			THEME === 'reborn' || THEME === 'random' ? RGBA(0, 0, 0, 25) :
@@ -584,6 +603,43 @@ class ColorStyles {
 	// * PUBLIC METHODS - STYLE ALTERNATIVE 2 * //
 	// #region PUBLIC METHODS - STYLE ALTERNATIVE 2
 	/**
+	 * Gets the style Alternative 2 background color.
+	 * @param {number} baseBg - The bg color to tint/shade.
+	 * @param {boolean} isBgMain - True for the Main panel (grCol.bg), false for other panels.
+	 * @returns {number} The style Alternative 2 background color.
+	 */
+	getAlternative2Bg(baseBg, isBgMain) {
+		const { THEME, CTHEME } = grAlias;
+		const THEME_NEON = ['nblue', 'ngreen', 'nred', 'ngold'].includes(THEME);
+
+		if (isBgMain) {
+			return (
+				THEME === 'white' ? ShadeColorOKLCH(baseBg, 6) :
+				THEME === 'black' ? TintColorOKLCH(baseBg, 10) :
+				THEME === 'reborn' || THEME === 'random' ? ShadeColorOKLCH(baseBg, 8) :
+				THEME === 'blue' ? RGB(8, 102, 180) :
+				THEME === 'darkblue' ? RGB(17, 35, 57) :
+				THEME === 'red' ? RGB(95, 15, 15) :
+				THEME === 'cream' ? RGB(255, 247, 240) :
+				THEME_NEON ? RGB(25, 25, 25) :
+				CTHEME ? ShadeColorOKLCH(baseBg, 8) : baseBg
+			);
+		}
+
+		return (
+			THEME === 'white' ? TintColorOKLCH(baseBg, 4) :
+			THEME === 'black' ? TintColorOKLCH(baseBg, 3) :
+			THEME === 'reborn' || THEME === 'random' ? TintColorOKLCH(baseBg, 5) :
+			THEME === 'blue' ? RGB(20, 120, 205) :
+			THEME === 'darkblue' ? RGB(18, 42, 70) :
+			THEME === 'red' ? RGB(120, 22, 22) :
+			THEME === 'cream' ? RGB(255, 255, 255) :
+			THEME_NEON ? TintColorOKLCH(baseBg, 6) :
+			CTHEME ? TintColorOKLCH(baseBg, 5) : baseBg
+		);
+	}
+
+	/**
 	 * Any active theme used in Options > Style > Alternative 2.
 	 */
 	styleAlternative2Colors() {
@@ -591,16 +647,7 @@ class ColorStyles {
 		const THEME_NEON = ['nblue', 'ngreen', 'nred', 'ngold'].includes(THEME);
 
 		// * PLAYLIST * //
-		pl.col.bg =
-			THEME === 'white' ? TintColorOKLCH(pl.col.bg, 4) :
-			THEME === 'black' ? TintColorOKLCH(pl.col.bg, 3) :
-			THEME === 'reborn' || THEME === 'random' ? TintColorOKLCH(pl.col.bg, 5) :
-			THEME === 'blue' ? RGB(20, 120, 205) :
-			THEME === 'darkblue' ? RGB(18, 42, 70) :
-			THEME === 'red' ? RGB(120, 22, 22) :
-			THEME === 'cream' ? RGB(255, 255, 255) :
-			THEME_NEON ? TintColorOKLCH(pl.col.bg, 6) :
-			CTHEME ? TintColorOKLCH(pl.col.bg, 5) : '';
+		pl.col.bg = this.getAlternative2Bg(pl.col.bg, false);
 
 		pl.col.plman_bg = pl.col.bg;
 		pl.col.plman_text_normal = grSet.autoHidePlman ? pl.col.bg : pl.col.plman_text_normal;
@@ -623,16 +670,7 @@ class ColorStyles {
 		bio.ui.col.bg = pl.col.bg;
 
 		// * MAIN * //
-		grCol.bg =
-			THEME === 'white' ? ShadeColorOKLCH(grCol.bg, 6) :
-			THEME === 'black' ? TintColorOKLCH(grCol.bg, 10) :
-			THEME === 'reborn' || THEME === 'random' ? ShadeColorOKLCH(grCol.bg, 8) :
-			THEME === 'blue' ? RGB(8, 102, 180) :
-			THEME === 'darkblue' ? RGB(17, 35, 57) :
-			THEME === 'red' ? RGB(95, 15, 15) :
-			THEME === 'cream' ? RGB(255, 247, 240) :
-			THEME_NEON ? RGB(25, 25, 25) :
-			CTHEME ? ShadeColorOKLCH(grCol.bg, 8) : '';
+		grCol.bg = this.getAlternative2Bg(grCol.bg, true);
 
 		grCol.shadow =
 			THEME === 'black' ? grCol.shadow - RGBA(0, 0, 0, 80) :

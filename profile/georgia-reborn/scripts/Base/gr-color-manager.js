@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    04-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -917,7 +917,7 @@ class ColorManager {
 		grCol.colLuminance   = Color.LUM(grCol.primary);
 		grCol.colLuminance2  = Color.LUM(grCol.secondary);
 
-		const { THEME, DYNTHEME, CTHEME, BLEND, BLEND2, GRAD12, BR, RF, RF2 } = grAlias;
+		const { THEME, DYNTHEME, CTHEME, BLEND, BLEND2, GRAD12, ALT, ALT2, BR, RF, RF2 } = grAlias;
 
 		// * Static themes - skip ACPA bg check for performance
 		if (!CTHEME && !DYNTHEME) {
@@ -931,22 +931,42 @@ class ColorManager {
 
 		// * Dynamic themes - do ACPA bg check
 		const getBgColor = (customKey, isBgMain) => {
+			let bgColor;
+
 			// Check custom themes
 			const cThemeKey = grCfg.cTheme[customKey];
-			if (CTHEME && cThemeKey) return HEXtoRGB(cThemeKey);
+			if (CTHEME && cThemeKey) {
+				bgColor = HEXtoRGB(cThemeKey);
+			}
+			else {
+				// Check static colors of the theme palette
+				const theme = grm.colorPalette.getTheme(THEME);
+				const paletteColor = theme ? theme[customKey] : null;
 
-			// Check static colors of the theme palette
-			const theme = grm.colorPalette.getTheme(THEME);
-			const paletteColor = theme ? theme[customKey] : null;
-			if (paletteColor && !['reborn', 'random'].includes(grSet.theme) && !BR) return paletteColor;
+				if (paletteColor && !['reborn', 'random'].includes(grSet.theme) && !BR) {
+					bgColor = paletteColor;
+				}
+				// No album art: always use the palette color
+				else if (grm.ui.noAlbumArtStub && paletteColor) {
+					bgColor = paletteColor;
+				}
+				else {
+					// Check dynamic colors
+					// Reborn Fusion swap: main panel uses RF primary color, other panels use RF2 secondary color
+					const rebornFusionSecondary = isBgMain ? RF : RF2;
+					bgColor = rebornFusionSecondary ? grCol.secondary : grCol.primary;
+				}
+			}
 
-			// No album art: always use the palette color
-			if (grm.ui.noAlbumArtStub && paletteColor) return paletteColor;
+			// Check alternative backgrounds
+			if (ALT) {
+				return grm.colorStyles.getAlternativeBg(bgColor, isBgMain);
+			}
+			if (ALT2) {
+				return grm.colorStyles.getAlternative2Bg(bgColor, isBgMain);
+			}
 
-			// Check dynamic colors
-			// Reborn Fusion swap: main panel uses RF primary color, other panels use RF2 secondary color
-			const rebornFusionSecondary = isBgMain ? RF : RF2;
-			return rebornFusionSecondary ? grCol.secondary : grCol.primary;
+			return bgColor;
 		};
 
 		const getContrastOptionsACPA = (isBgMain) => {
