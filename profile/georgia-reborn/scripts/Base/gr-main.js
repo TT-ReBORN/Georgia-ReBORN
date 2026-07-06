@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-06-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -375,22 +375,18 @@ class MainUI {
 		gr.FillSolidRect(0, 0, this.ww, this.wh, grCol.bg);
 
 		// * ALBUM ART BACKGROUND * //
-		if (!this.displayDetails && (fb.IsPlaying || grSet.panelBrowseMode) && grSet.albumArtBg !== 'none' &&
-			!(this.displayLyrics && grSet.layout === 'default' && grSet.lyricsLayout !== 'normal')) {
+		if (!this.displayDetails && (fb.IsPlaying || grSet.panelBrowseMode) && grSet.albumArtBg !== 'none') {
 			const width = (
 				grSet.albumArtBg === 'full' || grSet.layout === 'artwork' ||
 				this.displayLyrics && grSet.lyricsLayout !== 'normal'
 			) ? this.ww : this.albumArtSize.x;
 
-			gr.FillSolidRect(0, this.albumArtSize.y, width, this.albumArtSize.h, grCol.detailsBg);
+			gr.FillSolidRect(0, this.topMenuHeight, width, this.wh - this.topMenuHeight - this.lowerBarHeight, this.displayDetails ? grCol.detailsBg : pl.col.bg);
 		}
 
 		// * LYRICS BACKGROUND IMAGE * //
-		if (this.displayLyrics && grSet.layout === 'default' && grSet.lyricsLayout !== 'normal' && grSet.lyricsBgImg && grm.bgImg.lyricsBgImg) {
-			grm.bgImg.drawBgImage(gr, grm.bgImg.lyricsBgImg, grSet.lyricsBgImgScale, 0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grSet.lyricsBgImgOpacity, false, 0, 0);
-			if (this.mouseInLyricsFullLayoutEdge || grCol.imgLuminance > 0.70) {
-				gr.FillSolidRect(0, this.topMenuHeight,  this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, RGBA(0, 0, 0, 100));
-			}
+		if (this.displayLyrics && grSet.layout === 'default' && grSet.lyricsLayout !== 'normal') {
+			this.drawLyricsBackground(gr, 0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, false);
 		}
 
 		// * BLENDED BACKGROUND FOR HOME PANEL IN ARTWORK LAYOUT & WHEN LYRICS LAYOUT IS FULL * //
@@ -446,10 +442,15 @@ class MainUI {
 			return;
 		}
 
+		// * Details' drawDiscArt() already draws (and opacity-composites) the album art itself when active
+		if (alpha === undefined && this.displayDetails && grm.details.discArtRenderable()) {
+			return;
+		}
+
 		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> album art');
 
 		const padding = !grSet.filterAlbumArt && this.discArtImageDisplayed && this.discArtImagePNG && this.albumArtLoaded ? Math.round(this.edgeMargin * 0.75) : 0;
-		const imgAlpha = this.displayDetails && grm.details.discArt ? alpha : 255;
+		const imgAlpha = alpha === undefined ? 255 : alpha;
 
 		gr.DrawImage(this.albumArtScaled, this.albumArtSize.x + padding, this.albumArtSize.y + padding,
 					 this.albumArtSize.w - padding * 2, this.albumArtSize.h - padding * 2,
@@ -624,19 +625,59 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLyrics(gr) {
-		if (!this.displayLyrics || !fb.IsPlaying || !grm.lyrics) return;
+		if (!this.displayLyrics || !fb.IsPlaying || !grm.lyrics) {
+			return;
+		}
 
-		if (grSet.lyricsLayout === 'normal') {
-			gr.SetSmoothingMode(SmoothingMode.None);
-			if (grSet.layout === 'artwork') {
-				gr.FillSolidRect(0, this.topMenuHeight, this.ww, this.wh - this.topMenuHeight - this.lowerBarHeight, grSet.lyricsBgImg ? RGBA(0, 0, 0, 170) : pl.col.bg);
-			} else {
-				gr.FillSolidRect(this.albumArtSize.x, this.albumArtSize.y, this.albumArtSize.w, this.albumArtSize.h, grSet.lyricsBgImg ? RGBA(0, 0, 0, 170) : pl.col.bg);
-			}
+		// * Artwork layout has no side panel to hold so treat it like layout 'normal' for background purposes too.
+		if (grSet.lyricsLayout === 'normal' || grSet.layout === 'artwork') {
+			const artworkLayout = grSet.layout === 'artwork';
+			const x = artworkLayout ? 0 : this.albumArtSize.x;
+			const y = artworkLayout ? this.topMenuHeight : this.albumArtSize.y;
+			const w = artworkLayout ? this.ww : this.albumArtSize.w;
+			const h = artworkLayout ? this.wh - this.topMenuHeight - this.lowerBarHeight : this.albumArtSize.h;
+
+			// * Skip the opaque erase while Details is compositing disc art beneath the album art at a configured opacity
+			const opaqueBacking = grm.details.discArtComposited() ? false : (this.displayDetails ? grCol.detailsBg : pl.col.bg);
+
+			this.drawLyricsBackground(gr, x, y, w, h, opaqueBacking);
 		}
 
 		this.drawLyricsInfoOverlay(gr);
-		if (!this.mouseInLyricsFullLayoutEdge) grm.lyrics.drawLyrics(gr);
+
+		if (!this.mouseInLyricsFullLayoutEdge) {
+			grm.lyrics.drawLyrics(gr);
+		}
+	}
+
+	/**
+	 * Draws the shared lyrics background layer used by all lyrics layouts ('normal', 'full', 'left', 'right'):
+	 * an optional opaque backing fill, followed by the configured lyrics background image (if enabled) at its
+	 * configured scale and opacity, followed by a legibility darken pass over bright images or on full-layout edge hover.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {number} x - The x-coordinate of the area to draw the background layer.
+	 * @param {number} y - The y-coordinate of the area to draw the background layer.
+	 * @param {number} w - The width of the area to draw the background layer.
+	 * @param {number} h - The height of the area to draw the background layer.
+	 * @param {number|false} opaqueBacking - The opaque backing color to fill first, or `false` to skip it.
+	 */
+	drawLyricsBackground(gr, x, y, w, h, opaqueBacking) {
+		if (opaqueBacking !== false) {
+			gr.SetSmoothingMode(SmoothingMode.None);
+			gr.FillSolidRect(x, y, w, h, opaqueBacking);
+		}
+
+		if (!grSet.lyricsBgImg || !grm.bgImg.lyricsBgImg) return;
+
+		grm.bgImg.drawBgImage(gr, grm.bgImg.lyricsBgImg, grSet.lyricsBgImgScale, x, y, w, h, grSet.lyricsBgImgOpacity, false, 0, 0);
+
+		const hoverAlpha = this.mouseInLyricsFullLayoutEdge ? 100 : 0;
+		const brightAlpha = grm.colorManager.getLyricsOverlayAlpha(grCol.imgLuminance);
+		const overlayAlpha = Math.max(hoverAlpha, brightAlpha);
+
+		if (overlayAlpha > 0) {
+			gr.FillSolidRect(x, y, w, h, RGBA(0, 0, 0, overlayAlpha));
+		}
 	}
 
 	/**
@@ -5311,6 +5352,7 @@ class MainUI {
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
 		this.setPlaylistSize();
+		grm.bgImg.initBgImage('lyrics', true);
 		grm.lyrics.initLyrics();
 		grm.button.initButtonState();
 		window.Repaint();

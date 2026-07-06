@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -648,6 +648,7 @@ const grCol = {
  * @property {boolean} RF2        - Options > Style > Reborn fusion 2 ( Reborn theme ).
  * @property {boolean} RF12       - Options > Style > Reborn fusion and Reborn fusion 2 ( Reborn theme ).
  * @property {boolean} RFA        - Options > Style > Reborn fusion accent ( Reborn theme ).
+ * @property {boolean} RN         - Options > Style > Random neon ( Random theme ).
  * @property {boolean} RP         - Options > Style > Random pastel ( Random theme ).
  * @property {boolean} RD         - Options > Style > Random dark ( Random theme ).
  * @property {string}  RAC        - Options > Style > Auto color ( Random theme ).
@@ -667,7 +668,7 @@ const grCol = {
  * Template:
  * const {
  *	THEME, DYNTHEME, CTHEME, BEVEL, BLEND, BLEND2, BLEND12, GRAD, GRAD2, GRAD12, ALT, ALT2,
- *	BW, BW2, BWR, BR, RW, RB, RF, RF2, RF12, RFA, RP, RD, RAC,
+ *	BW, BW2, BWR, BR, RW, RB, RF, RF2, RF12, RFA, RN, RP, RD, RAC,
  *	TMB, TPB, PBD, PB, PBF, VBD, VB, VBF, LAYOUT, NIGHTTIME
  *} = grAlias;
  */
@@ -695,6 +696,7 @@ const grAlias = {
 	RF2: false,
 	RF12: false,
 	RFA: false,
+	RN: false,
 	RP: false,
 	RD: false,
 	RAC: '',

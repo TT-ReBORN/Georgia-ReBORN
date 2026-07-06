@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-07-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -136,6 +136,27 @@ class ColorManager {
 			PENALTY_LIGHT_FACTOR:  0.30,
 			PENALTY_NONE:          1.00,
 			WEIGHT_OUTPUT_SCALE:     10
+		};
+
+		/**
+		 * The configuration constants for `getLyricsColors`.
+		 * Tunes how the dynamic lyrics highlight's chroma is derived from the primary color's
+		 * own saturation for the truly dynamic themes/styles (white, black, reborn, random).
+		 * @typedef {Object} lyricsHighlightConfig
+		 * @property {number} CHROMA_FLOOR - The chroma scale (0-1) at zero primary saturation (0.40).
+		 * @property {number} CHROMA_RANGE - The scale added on top of CHROMA_FLOOR at full primary saturation (0.40).
+		 * @property {number} LOW_CHROMA_GUARD - The primary OKLCH chroma below which hue is unstable/meaningless (0.03).
+		 * @property {number} DARK_CHROMA_CUT - The chroma scale removed when Random Dark is active (0.08).
+		 * @property {number} PASTEL_CHROMA_CUT - The chroma scale removed when Random Pastel is active (0.20).
+		 * @property {number} NEON_CHROMA_BOOST - The chroma scale added when Random Neon is active (0.15).
+		 */
+		this.lyricsHighlightConfig = {
+			CHROMA_FLOOR: 0.40,
+			CHROMA_RANGE: 0.40,
+			LOW_CHROMA_GUARD: 0.03,
+			DARK_CHROMA_CUT: 0.08,
+			PASTEL_CHROMA_CUT: 0.20,
+			NEON_CHROMA_BOOST: 0.15
 		};
 
 		/**
@@ -614,25 +635,106 @@ class ColorManager {
 
 	/**
 	 * Computes the shared lyrics color set (highlight, shadow) from a primary color.
+	 * Dynamic APCA/OKLCH-derived colors are only used for the truly dynamic themes (white, black, reborn, random).
+	 * Static themes, custom themes, and the white theme's Black & White styles always use the theme palette's hardcoded lyrics colors instead.
 	 * @param {number} primary - The primary RGB color value.
-	 * @param {boolean} isLightBg - The flag if the background is light.
-	 * @param {boolean} staticTheme - The flag if the theme is static (non-dynamic).
-	 * @param {object} themeObj - The current theme palette object.
+	 * @param {boolean} isLightBg - The fallback polarity used only when refLuminance is unavailable.
+	 * @param {boolean} staticTheme - The flag if the theme is static/custom or in a Black & White style.
+	 * @param {number} staticHighlight - The theme palette's hardcoded lyrics highlight color.
+	 * @param {number} staticShadow - The theme palette's hardcoded lyrics shadow color.
+	 * @param {number} [refLuminance] - The effective luminance of the actual surface the lyrics render on (0.0-1.0).
+	 * Authoritative for polarity whenever available, since it reflects the real rendering surface (Details vs Main,
+	 * plus any lyricsBgImg + overlay compositing), which `isLightBg` cannot capture on its own.
 	 * @returns {{ lyricsHighlight: number, lyricsShadow: number }}
 	 */
-	getLyricsColors(primary, isLightBg, staticTheme, themeObj) {
-		const oklchPrimary = RGBtoOKLCH(primary);
-		const highlightH = (oklchPrimary.H + 180) % 360;
-		const highlightL = isLightBg ? 0.50 : 0.90;
-		const highLightC = this.getMaxGamutChroma(highlightL, highlightH) * 0.75;
-		const lyricsHighlight = OKLCHtoRGB(highlightL, highLightC, highlightH);
+	getLyricsColors(primary, isLightBg, staticTheme, staticHighlight, staticShadow, refLuminance = null) {
+		if (staticTheme) {
+			return { lyricsHighlight: staticHighlight, lyricsShadow: staticShadow };
+		}
 
-		const shadedShadow = ShadeColorOKLCH(primary, 75);
-		const lyricsShadow = staticTheme ? themeObj :
-			isLightBg ? RGBtoRGBA(shadedShadow, 100) :
-			RGBtoRGBA(shadedShadow, 200);
+		const W = this.lyricsHighlightConfig;
+		const oklchPrimary = RGBtoOKLCH(primary);
+		const primaryIsNearGray = oklchPrimary.C < W.LOW_CHROMA_GUARD;
+
+		// Near-gray guard: OKLCH hue is numerically unstable below very low chroma, so anchor
+		// to the theme's OWN static highlight hue instead of an arbitrary, unstable complement.
+		const highlightH = primaryIsNearGray ? RGBtoOKLCH(staticHighlight).H : (oklchPrimary.H + 180) % 360;
+
+		// Polarity comes from refLuminance whenever it's available, since that's the luminance of what's actually
+		// behind the text right now. isLightBg is only a fallback for callers with no luminance to hand.
+		const effectiveIsLightBg = refLuminance !== null ? refLuminance > 0.40 : isLightBg;
+		const highlightL = effectiveIsLightBg ? 0.50 : 0.90;
+
+		// Scale chroma to primary's OWN saturation, so vivid primaries still get a punchy contrasting highlight
+		// and muted/pastel primaries get a softer, more cohesive one.
+		const primaryMaxChroma = primaryIsNearGray ? 0 : this.getMaxGamutChroma(oklchPrimary.L, oklchPrimary.H);
+		const primaryChromaRatio = primaryMaxChroma > 0 ? Math.min(1, oklchPrimary.C / primaryMaxChroma) : 0;
+
+		let chromaScale = W.CHROMA_FLOOR + primaryChromaRatio * W.CHROMA_RANGE;
+
+		// Random theme sub-styles carry an explicit vividness intent the highlight should match rather than ignore.
+		// Guarded to the 'random' theme since these flags aren't guaranteed to be cleared when switching themes.
+		if (grSet.theme === 'random') {
+			if      (grAlias.RN) chromaScale += W.NEON_CHROMA_BOOST;
+			else if (grAlias.RP) chromaScale -= W.PASTEL_CHROMA_CUT;
+			else if (grAlias.RD) chromaScale -= W.DARK_CHROMA_CUT;
+		}
+
+		chromaScale = Clamp(chromaScale, 0.20, 0.95);
+
+		const highLightC = this.getMaxGamutChroma(highlightL, highlightH) * chromaScale;
+		let lyricsHighlight = OKLCHtoRGB(highlightL, highLightC, highlightH);
+
+		if (refLuminance !== null) {
+			lyricsHighlight = this._enforceTextContrastFloor(lyricsHighlight, refLuminance, effectiveIsLightBg);
+
+			// Chroma rescue: the contrast floor search only walks L; OKLCHtoRGB silently gamut-clips C at the new
+			// L. Rebuild C around the safe L using the same chromaScale so a rescued color doesn't read as washed
+			// out compared to the one the primary's own saturation actually called for.
+			const postOklch = RGBtoOKLCH(lyricsHighlight);
+			if (!primaryIsNearGray && postOklch.C < highLightC * 0.7) {
+				const rescuedC = this.getMaxGamutChroma(postOklch.L, postOklch.H) * chromaScale;
+				lyricsHighlight = OKLCHtoRGB(postOklch.L, rescuedC, postOklch.H);
+			}
+		}
+
+		const shadow = GetRichBlack(primary);
+		const shadowAlpha = effectiveIsLightBg ? 100 : (refLuminance !== null && refLuminance < 0.10 ? 230 : 200);
+		const lyricsShadow = RGBtoRGBA(shadow, shadowAlpha);
 
 		return { lyricsHighlight, lyricsShadow };
+	}
+
+	/**
+	 * Calculates the effective luminance of the surface lyrics text actually renders against: the underlying
+	 * panel canvas, blended with the lyrics background image at its configured opacity, then further attenuated
+	 * by the dynamic dark overlay drawn on top of bright images for legibility.
+	 * @param {number} imgLuminance - The relative luminance of the raw lyrics background image (0.0-1.0).
+	 * @param {number} [bgLuminance] - The relative luminance of the solid panel canvas behind the image (0.0-1.0). Defaults to 0 (black) when omitted.
+	 * @returns {number} The final effective luminance of the combined lyrics text backdrop (0.0-1.0).
+	 */
+	getLyricsEffectiveLuminance(imgLuminance, bgLuminance = 0) {
+		const imgOpacity = Clamp(grSet.lyricsBgImgOpacity / 100, 0, 1);
+		const blended = CalcPerceptualBlendLuminance(bgLuminance, imgLuminance, imgOpacity);
+		const overlayAlpha = Clamp(this.getLyricsOverlayAlpha(imgLuminance) / 255, 0, 1);
+
+		return blended * (1 - overlayAlpha);
+	}
+
+	/**
+	 * Calculates the dynamic alpha for the lyrics background overlay based on image luminance.
+	 * Uses a smoothstep ramp to avoid visual pops across tracks.
+	 * @param {number} imgLuminance - The calculated luminance of the album art.
+	 * @returns {number} The alpha value (0-190) for the overlay.
+	 */
+	getLyricsOverlayAlpha(imgLuminance) {
+		const START = 0.70;
+		const MAX_ALPHA = 190;
+
+		if (imgLuminance <= START) return 0;
+
+		const t = SmoothstepRange(imgLuminance, START, 1.0);
+		return Math.round(Lerp(0, MAX_ALPHA, t));
 	}
 
 	/**
@@ -917,7 +1019,8 @@ class ColorManager {
 		grCol.colLuminance   = Color.LUM(grCol.primary);
 		grCol.colLuminance2  = Color.LUM(grCol.secondary);
 
-		const { THEME, DYNTHEME, CTHEME, BLEND, BLEND2, GRAD12, ALT, ALT2, BR, RF, RF2 } = grAlias;
+		const { THEME, DYNTHEME, CTHEME, BLEND, BLEND2, GRAD12, ALT, ALT2, BW, BW2, BWR, BR, RF, RF2 } = grAlias;
+		const isBWMode = BW || BW2 || BWR;
 
 		// * Static themes - skip ACPA bg check for performance
 		if (!CTHEME && !DYNTHEME) {
@@ -931,19 +1034,20 @@ class ColorManager {
 
 		// * Dynamic themes - do ACPA bg check
 		const getBgColor = (customKey, isBgMain) => {
+			const cThemeKey = grCfg.cTheme[customKey];
 			let bgColor;
 
 			// Check custom themes
-			const cThemeKey = grCfg.cTheme[customKey];
 			if (CTHEME && cThemeKey) {
 				bgColor = HEXtoRGB(cThemeKey);
 			}
 			else {
 				// Check static colors of the theme palette
 				const theme = grm.colorPalette.getTheme(THEME);
+				const staticTheme = customKey === 'grCol_detailsBg' ? (!DYNTHEME || isBWMode) : !['reborn', 'random'].includes(THEME);
 				const paletteColor = theme ? theme[customKey] : null;
 
-				if (paletteColor && !['reborn', 'random'].includes(grSet.theme) && !BR) {
+				if (staticTheme && !BR && paletteColor) {
 					bgColor = paletteColor;
 				}
 				// No album art: always use the palette color
@@ -1062,7 +1166,7 @@ class ColorManager {
 
 		const needLuminance = (
 			grSet.styleBlend || grSet.styleBlend2 || grSet.styleBlackAndWhiteReborn ||
-			grSet.presetSelectMode === 'harmonic' || libSet.theme !== 0
+			grSet.lyricsBgImg || grSet.presetSelectMode === 'harmonic' || libSet.theme !== 0
 		);
 
 		if (needLuminance) {
@@ -1377,6 +1481,51 @@ class ColorManager {
 		}
 		// Smoothstep decline 1.0 to 0.30: washed-out colors cause diminishing strain
 		return Math.max(0.3, 1.0 - SmoothstepRange(L, 0.85, 1.0) * 0.7);
+	}
+
+	/**
+	 * Nudges the highlight's OKLCH lightness (hue/chroma held constant) toward the readable extreme
+	 * until it clears a minimum contrast against the real surface it renders on.
+	 * @param {number} color - The base RGB color.
+	 * @param {number} refLuminance - The effective luminance of the background.
+	 * @param {boolean} isLightBg - Whether the background is categorized as light.
+	 * @returns {number} The contrast-adjusted RGB color.
+	 */
+	_enforceTextContrastFloor(color, refLuminance, isLightBg) {
+		const threshold = CalcJNDThreshold(refLuminance);
+		const cached = this.getCachedColor(color);
+
+		if (HasPerceptualContrast(cached.luminance, refLuminance, threshold)) {
+			return color;
+		}
+
+		const oklch = RGBtoOKLCH(color);
+		let low = isLightBg ? 0 : oklch.L;
+		let high = isLightBg ? oklch.L : 1;
+		let bestMatch = color;
+
+		for (let i = 0; i < 6; i++) {
+			const testL = (low + high) / 2;
+			const testRGB = OKLCHtoRGB(testL, oklch.C, oklch.H);
+			const meetsFloor = HasPerceptualContrast(this.getCachedColor(testRGB).luminance, refLuminance, threshold);
+
+			if (isLightBg) {
+				if (meetsFloor) {
+					bestMatch = testRGB;
+					low = testL;
+				} else {
+					high = testL;
+				}
+			}
+			else if (meetsFloor) {
+				bestMatch = testRGB;
+				high = testL;
+			} else {
+				low = testL;
+			}
+		}
+
+		return bestMatch;
 	}
 
 	/**

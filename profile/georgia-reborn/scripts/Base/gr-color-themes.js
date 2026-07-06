@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -322,7 +322,7 @@ class ColorThemes {
 	 */
 	_createThemeContext(panel = 'main') {
 		const { primary, secondary, colLuminance, imgLuminance } = grCol;
-		const { BEVEL, BLEND, BLEND2, RW, RB, TMB, TPB, PB, VB } = grAlias;
+		const { THEME, BEVEL, BLEND, BLEND2, BW, BW2, BWR, RW, RB, TMB, TPB, PB, VB } = grAlias;
 
 		const lightBg = {
 			main: grCol.lightBgMain,
@@ -339,10 +339,10 @@ class ColorThemes {
 			else if (RB) isLightBg = false;
 		}
 
-		const isBWMode = grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn;
-		const isWhiteOrBlack = ['white', 'black'].includes(grSet.theme) || isBWMode;
-		const staticTheme = !['white', 'black', 'reborn', 'random'].includes(grSet.theme) || isBWMode;
-		const theme = grm.colorPalette.getTheme(grSet.theme);
+		const isBWMode = BW || BW2 || BWR;
+		const isWhiteOrBlack = ['white', 'black'].includes(THEME) || isBWMode;
+		const staticTheme = !['white', 'black', 'reborn', 'random'].includes(THEME) || isBWMode;
+		const theme = grm.colorPalette.getTheme(THEME);
 
 		const ctx = {
 			bevel: BEVEL,
@@ -555,8 +555,9 @@ class ColorThemes {
 		bio.ui.col.popupText = getColor(theme.bio_ui_col_popupText, 'text.active');
 
 		// * MISC COLORS * //
-		const lyricsColors = grm.colorManager.getLyricsColors(primary, ctx.isLightBg, staticTheme, theme.bio_ui_col_lyricsShadow);
-		bio.ui.col.lyricsNormal = bio.ui.col.text;
+		const lyricsRefLum = Color.LUM(pl.col.bg);
+		const lyricsColors = grm.colorManager.getLyricsColors(primary, ctx.isLightBg, staticTheme, theme.bio_ui_col_lyricsHighlight, theme.bio_ui_col_lyricsShadow, lyricsRefLum);
+		bio.ui.col.lyricsNormal = staticTheme ? theme.bio_ui_col_lyricsNormal : bio.ui.col.text;
 		bio.ui.col.lyricsHighlight = lyricsColors.lyricsHighlight;
 		bio.ui.col.lyricsShadow = lyricsColors.lyricsShadow;
 		bio.ui.col.noPhotoStubBg = getColor(theme.bio_ui_col_noPhotoStubBg, 'noPhotoStub.bg', 'oklch');
@@ -609,13 +610,6 @@ class ColorThemes {
 		grCol.lowerBarTime   = getColor(mainTheme.grCol_lowerBarTime,   'lowerBar.text');
 		grCol.lowerBarLength = getColor(mainTheme.grCol_lowerBarLength, 'lowerBar.text');
 
-		// * LYRICS COLORS * //
-		const lyricsColors = grm.colorManager.getLyricsColors(primary, ctx.isLightBg, staticTheme, mainTheme.grCol_lyricsShadow);
-		const effectiveLyricsLayout = grSet.savedLyricsLayoutFull ? grSet.savedLyricsLayout : grSet.lyricsLayout;
-		grCol.lyricsNormal = staticTheme || grm.ui.displayPlaylist && effectiveLyricsLayout === 'normal' ? mainTheme.grCol_lyricsNormal : grCol.lowerBarTitle;
-		grCol.lyricsHighlight = lyricsColors.lyricsHighlight;
-		grCol.lyricsShadow = lyricsColors.lyricsShadow;
-
 		// * DETAILS COLORS * //
 		grCol.detailsBg = staticTheme || BR ? mainTheme.grCol_detailsBg : (RF2 ? grCol.secondary : grCol.primary);
 		grCol.detailsText = getContrastTextColor('grCol_detailsText', grCol.lightBgDetails) || getColor(mainTheme.grCol_detailsText, 'details.text', 'rgb', false, { ...ctx, isLightBg: grCol.lightBgDetails });
@@ -625,6 +619,15 @@ class ColorThemes {
 		grCol.timelinePlayed = grm.ui.isStreaming ? RGB(207, 0, 5) : staticTheme ? mainTheme.grCol_timelinePlayed   : grm.colorSystem.applyColor(primary, colLuminance, 'oklch', 'details.timelinePlayed', ctx);
 		grCol.timelineUnplayed = grm.ui.isStreaming ? RGB(207, 0, 5) : staticTheme ? mainTheme.grCol_timelineUnplayed : grm.colorSystem.applyColor(primary, colLuminance, 'oklch', 'details.timelineUnplayed', ctx);
 		grCol.timelineFrame = grCol.detailsBg;
+
+		// * LYRICS COLORS * //
+		const lyricsImgLuminance = grSet.lyricsBgImg ? grCol.imgLuminance : null;
+		const lyricsBgLum = Color.LUM(grm.ui.displayDetails ? grCol.detailsBg : pl.col.bg);
+		const lyricsRefLumMain = lyricsImgLuminance !== null ? grm.colorManager.getLyricsEffectiveLuminance(lyricsImgLuminance, lyricsBgLum) : lyricsBgLum;
+		const lyricsColorsMain = grm.colorManager.getLyricsColors(primary, ctx.isLightBg, staticTheme, mainTheme.grCol_lyricsHighlight, mainTheme.grCol_lyricsShadow, lyricsRefLumMain);
+		grCol.lyricsNormal = !grSet.lyricsBgImg ? pl.col.row_title_normal : staticTheme ? mainTheme.grCol_lyricsNormal : grm.colorSystem.applyColor(primary, lyricsRefLumMain, 'rgb', 'text.normal', ctx);
+		grCol.lyricsHighlight = lyricsColorsMain.lyricsHighlight;
+		grCol.lyricsShadow = lyricsColorsMain.lyricsShadow;
 
 		// * POPUP COLORS * //
 		grCol.popupBg = RGBtoRGBA(pl.col.header_nowplaying_bg, 255);

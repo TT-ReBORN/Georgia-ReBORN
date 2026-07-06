@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-07-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -101,6 +101,7 @@ class Lyrics {
 		this.h = (grm.ui.noAlbumArtStub ? grm.ui.wh - grm.ui.topMenuHeight - grm.ui.lowerBarHeight : grm.ui.albumArtSize.h) - margin * 2;
 
 		this.x =
+			!grm.ui.noAlbumArtStub && lyricsLayout === 'full' && grm.ui.displayLyrics ? (grm.ui.ww - this.w) * 0.5 :
 			(grm.ui.noAlbumArtStub || grSet.layout === 'default' && lyricsLayout !== 'normal' ?
 				fullW ? grSet.panelWidthAuto && lyricsLayout === 'normal' ? noAlbumArtSize * 0.5 :
 				lyricsLayout === 'left' ? grm.ui.albumArtSize.x + grm.ui.albumArtSize.w + (grm.ui.ww - grm.ui.albumArtSize.x - grm.ui.albumArtSize.w - this.w) * 0.5 - margin :
@@ -684,9 +685,11 @@ class Lyrics {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 * @param {object} lyric - The lyric object.
 	 * @param {number} line_y - The y-coordinate of the line.
-	 * @param {number} blendIn - The pre-computed highlight blend colour for this render pass.
+	 * @param {number} normalColor - The panel-correct "normal" (non-highlighted) lyric text colour for this render pass.
+	 * @param {number} highlightColor - The pre-computed highlight blend colour for this render pass.
+	 * @param {number} shadowColor - The panel-correct lyrics shadow colour for this render pass.
 	 */
-	drawLyric(gr, lyric, line_y, blendIn) {
+	drawLyric(gr, lyric, line_y, normalColor, highlightColor, shadowColor) {
 		const isHighlighted = lyric.wrapGroup === this.highlightedWrapGroup;
 
 		const font = this.type.unsynced ? grFont.lyrics :
@@ -715,10 +718,10 @@ class Lyrics {
 			}
 
 			shadowAlpha = Math.round(fadeAlpha * 255);
-			color = RGBtoRGBA(grCol.lyricsNormal, shadowAlpha);
+			color = RGBtoRGBA(normalColor, shadowAlpha);
 		}
 		else {
-			color = isHighlighted ? blendIn : grCol.lyricsNormal;
+			color = isHighlighted ? highlightColor : normalColor;
 
 			// * Transparent mask (visible lines)
 			if (hasMask) {
@@ -733,7 +736,7 @@ class Lyrics {
 
 		// * Shadow (visible lines only)
 		if (shadowAlpha > 0) {
-			this.drawLyricsShadow(gr, lyric.content, font, line_y, shadowAlpha);
+			this.drawLyricsShadow(gr, lyric.content, font, line_y, shadowAlpha, shadowColor);
 		}
 
 		// * Text
@@ -747,25 +750,33 @@ class Lyrics {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawLyrics(gr) {
-		if (!grm.ui.displayLyrics || this.lyrics.length === 0 || this.locus < 0) return;
+		if (!grm.ui.displayLyrics || this.lyrics.length === 0 || this.locus < 0) {
+			return;
+		}
 
 		grm.debug.setDebugProfile(grm.debug.showDrawExtendedTiming, 'create', 'on_paint -> lyrics');
+
+		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
 		const top = this.lyrics[this.locus].yOffset - this.locusOffset + this.scrollDragOffset;
 		const y = this.y + this.scroll;
 
-		// DEBUG gr.DrawRect(this.x, this.top, this.w, this.bot, 3, RGBA(255, 0, 0, 255));
-		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+		const transitionFactor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
+		const transitionFactorIn = this.lyrics[this.locus].multiLine ? 1 : transitionFactor;
 
-		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
-		const transition_factor_in = this.lyrics[this.locus].multiLine ? 1 : transition_factor;
-		const blendIn = this.type.synced ? BlendColors(grCol.lyricsNormal, grCol.lyricsHighlight, transition_factor_in) : grCol.lyricsNormal;
+		const lyricsNormalColor = grm.ui.displayDetails ? grCol.detailsText : grCol.lyricsNormal;
+		const lyricsHighlightColor = this.type.synced ? BlendColors(lyricsNormalColor, grCol.lyricsHighlight, transitionFactorIn) : lyricsNormalColor;
+		const lyricsShadowColor = grCol.lyricsShadow;
+
+		// DEBUG gr.DrawRect(this.x, this.top, this.w, this.bot, 3, RGBA(255, 0, 0, 255));
 
 		for (const lyric of this.lyrics) {
 			const line_y = Math.round(y - top + lyric.yOffset);
-			if (line_y < this.top - this.lineHeight * 0.5 || line_y > this.bot + this.lineHeight) continue;
+			const scrollUpper  = line_y < this.top - this.lineHeight * 0.5;
+			const scrollBottom = line_y > this.bot + this.lineHeight;
+			if (scrollUpper || scrollBottom) continue;
 			// DEBUG gr.DrawRect(this.x, line_y, this.w, this.lineHeight, 1, RGBA(0, 255, 255, 100));
-			this.drawLyric(gr, lyric, line_y, blendIn);
+			this.drawLyric(gr, lyric, line_y, lyricsNormalColor, lyricsHighlightColor, lyricsShadowColor);
 		}
 
 		this.drawLyricsOffset(gr);
@@ -781,11 +792,12 @@ class Lyrics {
 	 * @param {GdiFont} font - The font to use for the text.
 	 * @param {number} line_y - The vertical position of the text rect top edge.
 	 * @param {number} [alpha] - The global opacity for this draw call (0-255).
+	 * @param {number} [shadowColor] - The panel-correct lyrics shadow colour for this render pass.
 	 */
-	drawLyricsShadow(gr, text, font, line_y, alpha = 255) {
+	drawLyricsShadow(gr, text, font, line_y, alpha = 255, shadowColor = grCol.lyricsShadow) {
 		if (!this.shadowEffect || alpha === 0) return;
 
-		const shadow = this.getShadowBitmap(text, font);
+		const shadow = this.getShadowBitmap(text, font, shadowColor);
 
 		if (!shadow || !shadow.bmp) return;
 
@@ -1002,13 +1014,14 @@ class Lyrics {
 	 * exactly, so DrawImage alignment is a trivial (pad, pad) to (x, y) mapping.
 	 * @param {string} text - The lyric text content.
 	 * @param {GdiFont} font - The font used to render the text.
+	 * @param {number} [shadowColor] - The panel-correct lyrics shadow colour for this render pass.
 	 * @returns {{bmp: GdiBitmap, pad: number}|null} Cached entry, or null on failure.
 	 */
-	getShadowBitmap(text, font) {
-		// Rebuild entire cache when the shadow colour changes (theme switch, etc.)
-		if (this.shadowLastColor !== grCol.lyricsShadow) {
+	getShadowBitmap(text, font, shadowColor = grCol.lyricsShadow) {
+		// Rebuild entire cache when the shadow colour changes (theme switch, Details toggle, etc.)
+		if (this.shadowLastColor !== shadowColor) {
 			this.shadowBitmapCache.clear();
-			this.shadowLastColor = grCol.lyricsShadow;
+			this.shadowLastColor = shadowColor;
 		}
 
 		// Separate cache slots for the highlighted (larger) font and normal font
@@ -1040,7 +1053,7 @@ class Lyrics {
 		}
 
 		const shadowBmp = GDI(bmpW, bmpH, true, (g) => {
-			g.DrawString(text, font, grCol.lyricsShadow, blurRadius, blurRadius, textW, textH, this.alignCenter);
+			g.DrawString(text, font, shadowColor, blurRadius, blurRadius, textW, textH, this.alignCenter);
 		});
 
 		if (shadowBmp) shadowBmp.StackBlur(blurRadius);

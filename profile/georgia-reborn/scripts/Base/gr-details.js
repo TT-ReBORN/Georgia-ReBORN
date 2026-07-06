@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    02-06-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -304,7 +304,7 @@ class Details {
 			this.setDiscArtRotation();
 		}
 
-		const applyOpacity = !grm.ui.displayLyrics && grm.ui.albumArtSize.w < grm.ui.ww * 0.66;
+		const applyOpacity = grm.ui.albumArtSize.w < grm.ui.ww * 0.66;
 		const albumArtOpacity = applyOpacity ? grSet.detailsAlbumArtOpacity : 255;
 
 		if (!grSet.discArtOnTop || grm.ui.displayLyrics) {
@@ -1704,6 +1704,31 @@ class Details {
 			return CombineImages(this.discArt, this.discArtCover, this.discArtSize.w, this.discArtSize.h);
 		}
 		return this.discArt;
+	}
+
+	/**
+	 * Checks if `drawDiscArt()` is currently compositing disc art and album art together under a non-default
+	 * `detailsAlbumArtOpacity`/`detailsAlbumArtDiscAreaOpacity` value, meaning the album art must stay visible
+	 * beneath the Lyrics overlay instead of being erased to match the plain Lyrics panel look.
+	 * @returns {boolean} True if the disc art composite is currently being rendered at a custom opacity, false otherwise.
+	 */
+	discArtComposited() {
+		const opacityActive = grm.ui.albumArtSize.w < grm.ui.ww * 0.66 &&
+			(grSet.detailsAlbumArtOpacity !== 255 || grSet.detailsAlbumArtDiscAreaOpacity !== 255);
+
+		return opacityActive && this.discArtRenderable();
+	}
+
+	/**
+	 * Checks if `drawDiscArt()` is structurally able to render the disc art/album art composite this frame,
+	 * independent of the currently configured opacity values.
+	 * @returns {boolean} True if `drawDiscArt()` will draw the composite, false otherwise.
+	 */
+	discArtRenderable() {
+		return (
+			grSet.layout === 'default' && grSet.displayDiscArt && grm.ui.displayDetails && !grm.ui.noAlbumArtStub &&
+			this.discArtSize.y >= grm.ui.albumArtSize.y && this.discArtSize.h <= grm.ui.albumArtSize.h
+		);
 	}
 
 	/**

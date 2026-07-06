@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -741,7 +741,6 @@ class PlaylistCallbacks {
 					cmm.appendItem(grm.ui.displayLyrics && grSet.lyricsLayout === 'normal' ? 'Change layout to full' : 'Change layout to normal', () => {
 						grSet.lyricsLayout = grSet.lyricsLayout === 'normal' ? 'full' : 'normal';
 						grm.ui.initLyricsLayoutState();
-						if (grSet.chameleon) grm.colorChameleon.updateLyricsMainColor(); // Update stale lyrics colors after chameleon transition
 					});
 					cmm.separator();
 				}

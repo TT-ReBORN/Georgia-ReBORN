@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    04-07-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1190,15 +1190,6 @@ class ChameleonColorSystem {
 	updateDetailsLogos() {
 		if (!grm.ui.displayDetails) return;
 		grm.details.updateGridLogos();
-	}
-
-	/**
-	 * Updates the main Lyrics panel color during chameleon transition when changing through lyrics layouts.
-	 */
-	updateLyricsMainColor() {
-		const theme = grm.colorPalette.getTheme(grSet.theme);
-		const correctColor = grm.ui.displayPlaylist && grSet.lyricsLayout === 'normal' ? theme.grCol_lyricsNormal: grCol.lowerBarTitle;
-		this.snapProperty(grCol, 'lyricsNormal', correctColor);
 	}
 
 	/**

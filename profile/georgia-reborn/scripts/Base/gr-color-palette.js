@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    06-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -313,8 +313,14 @@ class ColorPalette {
 			blackAndWhite: {
 				lib_ui_col_text_dark: RGB(0, 0, 0),
 				lib_ui_col_text_light: RGB(255, 255, 255),
+				bio_ui_col_lyricsNormal: RGB(220, 220, 220),
+				bio_ui_col_lyricsHighlight: RGB(255, 255, 255),
+				bio_ui_col_lyricsShadow: RGB(0, 0, 0),
 				bio_ui_col_popupBg: RGB(230, 230, 230),
 				grCol_bg: RGB(230, 230, 230),
+				grCol_lyricsNormal: RGB(220, 220, 220),
+				grCol_lyricsHighlight: RGB(255, 255, 255),
+				grCol_lyricsShadow: RGB(0, 0, 0),
 				grCol_detailsBg: RGB(20, 20, 20),
 				grCol_detailsText: RGB(255, 255, 255),
 				grCol_timelineAdded: RGB(230, 230, 230),
@@ -334,8 +340,14 @@ class ColorPalette {
 				lib_ui_col_iconMinus_e: RGB(120, 120, 120),
 				lib_ui_col_iconMinus_c: RGB(120, 120, 120),
 				lib_ui_col_iconMinus_h: RGB(0, 0, 0),
+				bio_ui_col_lyricsNormal: RGB(80, 80, 80),
+				bio_ui_col_lyricsHighlight: RGB(0, 0, 0),
+				bio_ui_col_lyricsShadow: RGB(200, 200, 200),
 				bio_ui_col_popupBg: RGB(25, 25, 25),
 				grCol_bg: RGB(25, 25, 25),
+				grCol_lyricsNormal: RGB(80, 80, 80),
+				grCol_lyricsHighlight: RGB(0, 0, 0),
+				grCol_lyricsShadow: RGB(200, 200, 200),
 				grCol_detailsBg: RGB(245, 245, 245),
 				grCol_detailsText: RGB(0, 0, 0),
 				grCol_timelineAdded: RGB(40, 40, 40),
