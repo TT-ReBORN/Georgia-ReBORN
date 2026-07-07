@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-06-2026                                              * //
+// * Last change:    07-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1205,10 +1205,11 @@ class Button {
 		let buttonCount = this.initButtonCount('lowerBar');
 
 		const btnSize = SCALE(grSet.transportButtonSize_layout);
+		const btnSpacing = SCALE(grSet.transportButtonSpacing_layout);
+		const btnWidthTotal = btnSize * buttonCount + btnSpacing * (buttonCount - 1);
+		const x = (ww - btnWidthTotal) * 0.5;
 		const y = grm.ui.getLowerBarButtonsY();
-		const p = SCALE(grSet.transportButtonSpacing_layout);
-		const x = (ww - btnSize * buttonCount - p * (buttonCount - 1)) * 0.5;
-		const calcX = (index) => x + (btnSize + p) * index;
+		const calcX = (index) => x + (btnSize + btnSpacing) * index;
 
 		buttonCount = 0;
 
@@ -1871,11 +1872,11 @@ class VolumeButton {
 	setMetrics(x, y) {
 		const buttonSize = SCALE(grSet.transportButtonSize_layout);
 		const center = Math.floor(buttonSize / 2 + SCALE(4));
-		const volumeBarWidth = Math.ceil((grm.ui.ww - grm.ui.lowerBarTotalBtnW) / 2 - SCALE(40));
+		const defaultWidth = SCALE(100);
 
 		this.x = x + (grSet.transportButtonSize_layout * SCALE(1.25));
 		this.y = y + (center - this.h);
-		this.w = grm.ui.ww < SCALE(600) ? volumeBarWidth : SCALE(100);
+		this.w = grm.ui.ww < SCALE(600) ? Math.min(Math.round(grm.ui.ww - grm.ui.edgeMargin - this.x), defaultWidth) : defaultWidth;
 		this.h = Math.min(grm.ui.wh - this.y, this.h);
 	}
 
