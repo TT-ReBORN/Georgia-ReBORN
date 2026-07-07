@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    07-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1036,6 +1036,11 @@ class ColorManager {
 		const getBgColor = (customKey, isBgMain) => {
 			const cThemeKey = grCfg.cTheme[customKey];
 			let bgColor;
+
+			// Mirror alternative styles where details background is driven by playlist background.
+			if (customKey === 'grCol_detailsBg' && (ALT || ALT2)) {
+				return getBgColor('pl_col_bg', false);
+			}
 
 			// Check custom themes
 			if (CTHEME && cThemeKey) {
