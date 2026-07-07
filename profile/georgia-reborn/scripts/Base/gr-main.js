@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    07-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4266,7 +4266,7 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	displayAlbumArtEmbedded(metadb) {
-		grm.details.discArtCover = grm.artCache.encache(utils.GetAlbumArtV2(metadb), this.albumArtList[metadb.Path], 2);
+		grm.details.discArtCover = grm.artCache.encache(this.albumArt, metadb.Path, 2);
 		this.noArtwork = false;
 		this.noAlbumArtStub = false;
 
@@ -4407,7 +4407,7 @@ class MainUI {
 					if (!this.albumArt && fb.IsPlaying && metadb) {
 						this.albumArt = utils.GetAlbumArtV2(metadb);
 						if (this.albumArt) {
-							grm.details.discArtCover = grm.artCache.encache(this.albumArt, artIndex, 2);
+							grm.details.discArtCover = grm.artCache.encache(this.albumArt, metadb.Path, 2);
 							this.albumArtEmbedded = true;
 						} else {
 							this.handleArtworkError('albumArt');

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    07-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1790,11 +1790,20 @@ class Details {
 			return;
 		}
 
-		if (!this.discArtCover && grm.ui.albumArtList.length) {
-			const artIndex = grm.ui.albumArtList[grm.ui.albumArtIndex];
-			if (artIndex && grm.artCache) {
-				this.discArtCover = grm.artCache.getImage(artIndex, 2) ||
-					(grm.ui.albumArt && grm.artCache.encache(grm.ui.albumArt, artIndex, 2));
+		if (!this.discArtCover) {
+			if (grm.ui.albumArtEmbedded) {
+				const metadb = grm.ui.initMetadb();
+				if (metadb && grm.ui.albumArt && grm.artCache) {
+					this.discArtCover = grm.artCache.getImage(metadb.Path, 2) ||
+						grm.artCache.encache(grm.ui.albumArt, metadb.Path, 2);
+				}
+			}
+			else if (grm.ui.albumArtList.length) {
+				const artIndex = grm.ui.albumArtList[grm.ui.albumArtIndex];
+				if (artIndex && grm.artCache) {
+					this.discArtCover = grm.artCache.getImage(artIndex, 2) ||
+						(grm.ui.albumArt && grm.artCache.encache(grm.ui.albumArt, artIndex, 2));
+				}
 			}
 		}
 
