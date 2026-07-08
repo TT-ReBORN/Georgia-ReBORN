@@ -295,6 +295,8 @@ class MainUI {
 		this.albumArtTimeout = null;
 		/** @public @type {number} The setTimeout ID for hiding cursor. */
 		this.hideCursorTimeout = null;
+		/** @public @type {number} The timer for the delayed hiding of the Playlist scrollbar after the mouse leaves the panel. */
+		this.playlistScrollbarAutoHideLeaveTimer = null;
 		/** @public @type {number} The timer for the delayed hiding of the lyrics full layout overlay after the mouse leaves the window. */
 		this.lyricsFullLayoutEdgeLeaveTimer = null;
 		/** @public @type {number} The time profiler of the seekbar. */
@@ -2888,6 +2890,8 @@ class MainUI {
 	 * - 'autoDownloadLyrics'
 	 * - 'albumArt'
 	 * - 'hideCursor',
+	 * - 'playlistScrollbarAutoHideLeave'
+	 * - 'lyricsFullLayoutEdgeLeave'
 	 * - 'seekbar'
 	 * - 'seekbarInterval',
 	 * - 'presetAutoRandomMode'
@@ -2915,6 +2919,11 @@ class MainUI {
 				timer: this.hideCursorTimeout,
 				clear: clearTimeout,
 				log: 'Timer => Hide cursor timer cleared'
+			},
+			playlistScrollbarAutoHideLeave: {
+				timer: this.playlistScrollbarAutoHideLeaveTimer,
+				clear: clearTimeout,
+				log: 'Timer => Playlist scrollbar auto-hide leave timer cleared'
 			},
 			lyricsFullLayoutEdgeLeave: {
 				timer: this.lyricsFullLayoutEdgeLeaveTimer,

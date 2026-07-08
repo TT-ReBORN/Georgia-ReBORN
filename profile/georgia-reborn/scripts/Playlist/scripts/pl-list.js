@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-01-2026                                              * //
+// * Last change:    08-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -149,6 +149,16 @@ class BaseList {
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
+	/**
+	 * Clears the delayed auto-hide timer that hides the Playlist scrollbar after the mouse leaves the panel.
+	 */
+	clearScrollbarAutoHideLeaveTimer() {
+		if (!grm.ui.playlistScrollbarAutoHideLeaveTimer) return;
+
+		clearTimeout(grm.ui.playlistScrollbarAutoHideLeaveTimer);
+		grm.ui.playlistScrollbarAutoHideLeaveTimer = null;
+	}
+
 	/**
 	 * Updates the width size of the list.
 	 * @param {number} w - The width.
@@ -425,6 +435,26 @@ class BaseList {
 		}
 
 		this.mouse_in = false;
+
+		this.clearScrollbarAutoHideLeaveTimer();
+
+		if (!grSet.playlistAutoHideScrollbar || !plSet.show_scrollbar) {
+			return;
+		}
+
+		grm.ui.playlistScrollbarAutoHideLeaveTimer = setTimeout(() => {
+			grm.ui.playlistScrollbarAutoHideLeaveTimer = null;
+
+			if (grSet.playlistAutoHideScrollbar && plSet.show_scrollbar) {
+				pl.cache_header = true;
+				plSet.show_scrollbar = false;
+				if (this.needs_scrollbar_update) {
+					this.update_scrollbar();
+					this.needs_scrollbar_update = false;
+				}
+				this.repaint();
+			}
+		}, 2000);
 	}
 
 	/**
@@ -436,6 +466,8 @@ class BaseList {
 	 * @returns {boolean} True or false.
 	 */
 	on_mouse_move(x, y, m) {
+		this.clearScrollbarAutoHideLeaveTimer();
+
 		if (this.is_scrollbar_visible) {
 			this.scrollbar.move(x, y);
 
