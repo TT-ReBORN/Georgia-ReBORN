@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-07-2026                                              * //
+// * Last change:    08-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2035,7 +2035,7 @@ class Details {
 		};
 
 		// Start immediately but async
-		setTimeout(precomputeBatch, 0);
+		precomputeTimer = setTimeout(precomputeBatch, 0);
 
 		// Cleanup
 		this.clearTimer = (type) => {
@@ -2201,9 +2201,13 @@ class Details {
 
 	/**
 	 * Updates the disc art by resizing artwork, creating rotation, and setting the rotation timer.
+	 * @param {boolean} [skipResize] - The flag to to skip the artwork resize step.
 	 */
-	updateDiscArt() {
-		grm.ui.resizeArtwork(true);
+	updateDiscArt(skipResize) {
+		if (!skipResize) {
+			grm.ui.resizeArtwork(true);
+		}
+
 		this.setDiscArtRotation();
 
 		if (!grSet.spinDiscArt) return;

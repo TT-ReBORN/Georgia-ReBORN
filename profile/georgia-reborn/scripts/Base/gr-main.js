@@ -4413,8 +4413,11 @@ class MainUI {
 				await null; // Yield one microtask so on_playback_new_track's remaining sync work finishes first
 				this.newTrackFetchingArtwork = false;
 				this.initThemeState(this.albumArt);
-				grm.details.setDiscArtRotation();
+				grm.details.updateDiscArt(true);
 				grm.debug.repaintWindow();
+			}
+			else if (grm.details.discArt) {
+				grm.details.updateDiscArt(true);
 			}
 
 			return;
@@ -4449,8 +4452,9 @@ class MainUI {
 
 		this.resizeArtwork(true);
 		this.initPanelWidthAuto();
+
 		grm.details.clearCache('metrics');
-		grm.details.setDiscArtRotation();
+		grm.details.updateDiscArt(true);
 		grm.debug.repaintWindow();
 	}
 
