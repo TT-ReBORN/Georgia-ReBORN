@@ -281,8 +281,18 @@ class LibUserInterface {
 		if ((this.img.isBlur || this.img.bg) && this.img.cur) {
 			gr.FillSolidRect(this.x, this.y, this.w, libImg.panel.y, /* this.col.topBarUnderlay */ pl.col.bg);
 			gr.DrawImage(this.img.cur, this.x, this.y, this.w, libImg.panel.y, 0, 0, this.img.cur.Width, lib.panel.search.h);
-		} else gr.FillSolidRect(this.x, this.y, this.w, libImg.panel.y, /* this.col.topBarUnderlay */ pl.col.bg);
-		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) gr.DrawImage(grCol.imgBlended, this.x, this.y - this.h - grm.ui.lowerBarHeight + libImg.panel.y - grm.ui.topMenuHeight, grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.lowerBarHeight + libImg.panel.y - grm.ui.topMenuHeight, grCol.imgBlended.Width, grCol.imgBlended.Height);
+		} else {
+			gr.FillSolidRect(this.x, this.y, this.w, libImg.panel.y, /* this.col.topBarUnderlay */ pl.col.bg);
+			if (grSet.libraryBgImg && grm.bgImg.libraryBgImg) {
+				grm.bgImg.drawBgImage(gr, grm.bgImg.libraryBgImg, grSet.libraryBgImgScale, this.x, this.y, this.w, this.h, grSet.libraryBgImgOpacity, true, libImg.panel.y, libImg.panel.y);
+			}
+		}
+		if (grSet.styleBlend && grm.ui.albumArt && grCol.imgBlended) {
+			gr.DrawImage(
+				grCol.imgBlended, this.x, this.y - this.h - grm.ui.lowerBarHeight + libImg.panel.y - grm.ui.topMenuHeight,
+				grm.ui.ww, grm.ui.wh, this.x, this.y - this.h - grm.ui.lowerBarHeight + libImg.panel.y - grm.ui.topMenuHeight, grCol.imgBlended.Width, grCol.imgBlended.Height
+			);
+		}
 	}
 
 	formatImg(image) {
