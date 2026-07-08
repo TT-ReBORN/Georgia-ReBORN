@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    07-07-2026                                              * //
+// * Last change:    08-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4182,28 +4182,30 @@ class MainUI {
 		else if (step < 0 && this.albumArtIndex < this.albumArtList.length - 1) {
 			this.albumArtIndex++; // Cycle to the next image
 		}
-		this.loadAlbumArtFromList(this.albumArtIndex);
-		this.checkAlbumArtFromListDiscArt();
 
-		// Display embedded album art image when cycled back to the first image
-		if (grSet.loadEmbeddedAlbumArtFirst && this.albumArtIndex === 0) {
-			const embeddedAlbumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
-			if (embeddedAlbumArt) {
-				this.albumArt = embeddedAlbumArt;
-				if (typeof this.albumArt === 'string') {
-					this.albumArtList.unshift(this.albumArt);
+		this.loadAlbumArtFromList(this.albumArtIndex).then(() => {
+			this.checkAlbumArtFromListDiscArt();
+
+			// * Display embedded album art image when cycled back to the first image
+			if (grSet.loadEmbeddedAlbumArtFirst && this.albumArtIndex === 0) {
+				const embeddedAlbumArt = utils.GetAlbumArtV2(fb.GetNowPlaying());
+				if (embeddedAlbumArt) {
+					this.albumArt = embeddedAlbumArt;
+					if (typeof this.albumArt === 'string') {
+						this.albumArtList.unshift(this.albumArt);
+					}
 				}
 			}
-		}
 
-		// Update colors and positions
-		this.updateAlbumArtThemeColors();
-		this.resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
-		if (grSet.panelWidthAuto && this.albumArtSize.w !== this.albumArtSize.h) { // Re-adjust playlist if artwork size changes
-			this.setPlaylistSize();
-		}
-		grm.details.clearCache('metrics');
-		grm.debug.repaintWindow();
+			// * Update colors and positions
+			this.updateAlbumArtThemeColors();
+			this.resizeArtwork(true); // Re-adjust discArt shadow size if artwork size changes
+			if (grSet.panelWidthAuto && this.albumArtSize.w !== this.albumArtSize.h) { // Re-adjust playlist if artwork size changes
+				this.setPlaylistSize();
+			}
+			grm.details.clearCache('metrics');
+			grm.debug.repaintWindow();
+		});
 	}
 
 	/**
@@ -4224,11 +4226,12 @@ class MainUI {
 		this.albumArtIndex = (this.albumArtIndex + increment + this.albumArtList.length) % this.albumArtList.length;
 
 		setTimeout(() => {
-			this.loadAlbumArtFromList(this.albumArtIndex);
-			this.checkAlbumArtFromListDiscArt();
-			this.updateAlbumArtThemeColors();
-			this.resizeArtwork(true);
-			window.Repaint();
+			this.loadAlbumArtFromList(this.albumArtIndex).then(() => {
+				this.checkAlbumArtFromListDiscArt();
+				this.updateAlbumArtThemeColors();
+				this.resizeArtwork(true);
+				window.Repaint();
+			});
 		}, 1);
 
 		grm.details.clearCache('metrics');
@@ -4373,64 +4376,73 @@ class MainUI {
 	/**
 	 * Loads the album art image from the this.albumArtList array.
 	 * @param {number} index - The index of this.albumArtList signifying which image to load.
+	 * @returns {Promise<void>} Resolves once `this.albumArt` is guaranteed to reflect `index` -
+	 * synchronously (or after a single microtask yield) for a cache hit, or after the async decode completes for a cache miss.
+	 * Callers that need to act on the freshly-loaded artwork (e.g. extracting theme colors) must do so inside `.then()` or via `await`,
+	 * since `this.albumArt` is not synchronously guaranteed to be up to date otherwise.
 	 */
-	loadAlbumArtFromList(index) {
+	async loadAlbumArtFromList(index) {
 		const artIndex = this.albumArtList[index];
-		const tempAlbumArt = grm.artCache && grm.artCache.getImage(artIndex);
-		const tempDiscArtCover = grm.artCache && grm.artCache.getImage(artIndex, 2);
+		const cachedAlbumArt = grm.artCache && grm.artCache.getImage(artIndex);
+		const cachedDiscArtCover = grm.artCache && grm.artCache.getImage(artIndex, 2);
 		this.albumArtLoaded = false;
 
-		if (tempAlbumArt) {
-			this.albumArt = tempAlbumArt;
-			grm.details.discArtCover = tempDiscArtCover;
+		// * CACHE HIT * //
+		if (cachedAlbumArt) {
+			this.albumArt = cachedAlbumArt;
+			grm.details.discArtCover = cachedDiscArtCover;
 			this.albumArtCopy = this.albumArt;
 			this.albumArtLoaded = true;
+
 			this.initPanelWidthAuto(true);
 
-			if (index === 0 && this.newTrackFetchingArtwork) {
-				Promise.resolve().then(() => {
-					this.newTrackFetchingArtwork = false;
-					this.initThemeState(this.albumArt);
-					grm.details.setDiscArtRotation();
-					grm.debug.repaintWindow();
-				});
+			if (!this.displayLibrarySplit()) {
+				this.resizeArtwork(false);
 			}
-		}
-		else {
-			gdi.LoadImageAsyncV2(window.ID, artIndex).then(coverImage => {
-				this.albumArtCorrupt = false;
-				this.albumArt = grm.artCache.encache(coverImage, artIndex);
-				grm.details.discArtCover = grm.artCache.encache(coverImage, artIndex, 2);
 
-				if (this.newTrackFetchingArtwork) {
-					const metadb = this.initMetadb();
-					if (!this.albumArt && fb.IsPlaying && metadb) {
-						this.albumArt = utils.GetAlbumArtV2(metadb);
-						if (this.albumArt) {
-							grm.details.discArtCover = grm.artCache.encache(this.albumArt, metadb.Path, 2);
-							this.albumArtEmbedded = true;
-						} else {
-							this.handleArtworkError('albumArt');
-						}
-					}
-					this.initThemeState(this.albumArt);
-					this.newTrackFetchingArtwork = false;
-				}
-				else {
-					this.handleThemeTags('asyncArt');
-				}
-
-				this.albumArtCopy = this.albumArt;
-				this.albumArtLoaded = true;
-				this.resizeArtwork(true);
-				this.initPanelWidthAuto();
-				grm.details.clearCache('metrics');
+			if (index === 0 && this.newTrackFetchingArtwork) {
+				await null; // Yield one microtask so on_playback_new_track's remaining sync work finishes first
+				this.newTrackFetchingArtwork = false;
+				this.initThemeState(this.albumArt);
 				grm.details.setDiscArtRotation();
 				grm.debug.repaintWindow();
-			});
+			}
+
+			return;
 		}
 
-		if (!this.displayLibrarySplit()) this.resizeArtwork(false);
+		// * CACHE MISS * //
+		const coverImage = await gdi.LoadImageAsyncV2(window.ID, artIndex);
+		this.albumArtCorrupt = false;
+		this.albumArt = grm.artCache.encache(coverImage, artIndex);
+		grm.details.discArtCover = grm.artCache.encache(coverImage, artIndex, 2);
+
+		if (this.newTrackFetchingArtwork) {
+			const metadb = this.initMetadb();
+			if (!this.albumArt && fb.IsPlaying && metadb) {
+				this.albumArt = utils.GetAlbumArtV2(metadb);
+				if (this.albumArt) {
+					grm.details.discArtCover = grm.artCache.encache(this.albumArt, metadb.Path, 2);
+					this.albumArtEmbedded = true;
+				} else {
+					this.handleArtworkError('albumArt');
+				}
+			}
+			this.initThemeState(this.albumArt);
+			this.newTrackFetchingArtwork = false;
+		}
+		else {
+			this.handleThemeTags('asyncArt');
+		}
+
+		this.albumArtCopy = this.albumArt;
+		this.albumArtLoaded = true;
+
+		this.resizeArtwork(true);
+		this.initPanelWidthAuto();
+		grm.details.clearCache('metrics');
+		grm.details.setDiscArtRotation();
+		grm.debug.repaintWindow();
 	}
 
 	/**
@@ -4605,13 +4617,16 @@ class MainUI {
 	 * Lighter than updateAlbumArtThemeColors: reuses the cached color scheme to skip re-extraction.
 	 */
 	updateAlbumArtSaturation() {
-		if (!this.albumArt || (!['reborn', 'random'].includes(grSet.theme) &&
-			!grSet.styleBlackAndWhiteReborn && !grSet.styleBlackReborn)) {
+		if (!this.albumArt || !['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
 			return;
 		}
 
 		grm.colorManager.setAlbumArtThemeColors(this.albumArt, this.cachedAlbumArtColors);
+
+		const wasThemeFull = this.initThemeFull;
+		this.initThemeFull = true;
 		this.initTheme();
+		this.initThemeFull = wasThemeFull;
 
 		grm.debug.debugLog('\n>>> initTheme => updateAlbumArtSaturation <<<\n');
 	}
@@ -4620,16 +4635,20 @@ class MainUI {
 	 * Updates theme colors when cycling through album art images for dynamic themes.
 	 */
 	updateAlbumArtThemeColors() {
-		if (!['reborn', 'random'].includes(grSet.theme) &&
-			!grSet.styleBlackAndWhiteReborn && !grSet.styleBlackReborn) {
+		if (!['white', 'black', 'reborn', 'random'].includes(grSet.theme)) {
 			return;
 		}
 
-		this.newTrackFetchingArtwork = true;
 		this.clearCache('albumArtColors');
 		grm.colorManager.setAlbumArtThemeColors(this.albumArt);
 
+		// * Force the full recolor pass for this call only - White/Black need the same pass Reborn/Random always get.
+		// * Restore rather than hardcode false, so we don't clobber a persistent initThemeFull left on by e.g. updateStyle().
+		const wasThemeFull = this.initThemeFull;
+		this.initThemeFull = true;
 		this.initTheme();
+		this.initThemeFull = wasThemeFull;
+
 		grm.debug.debugLog('\n>>> initTheme => updateAlbumArtThemeColors <<<\n');
 	}
 	// #endregion
