@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-07-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -275,6 +275,8 @@ class MainUI {
 		this.mouseInLyricsFullLayoutEdge = false;
 		/** @public @type {boolean} The state when Library should not call window.Reload() from panel.set() -> panel.load(), i.e when saving theme settings or restoring theme backup. */
 		this.libraryCanReload = true;
+		/** @public @type {boolean} The guards against Playlist <-> Library selection ping-pong when auto-scrolling in split layout. */
+		this.libraryLayoutSplitAutoScrollSelectSync = false;
 		/** @public @type {boolean} The state when Library UI components need to be initialized and updated. */
 		this.initComponentsLib = false;
 		/** @public @type {boolean} The state when Biography UI components need to be initialized and updated. */
@@ -4823,6 +4825,19 @@ class MainUI {
 			plman.SortByFormat(plman.ActivePlaylist, sortOrder[grSet.playlistSortOrder] || '');
 		}
 	}
+
+	/**
+	 * Syncs the Library selection to the given Playlist track when split-layout auto-scroll is enabled.
+	 * @param {?FbMetadbHandle} metadb - The metadb of the track to reveal in the Library.
+	 */
+	syncLibraryAutoScrollFromPlaylist(metadb) {
+		if (!metadb || this.libraryLayoutSplitAutoScrollSelectSync ||
+			!grSet.libraryAutoScrollSelectPlaylist || !this.displayLibrarySplit()) {
+			return;
+		}
+
+		lib.call.setSelection(metadb);
+	}
 	// #endregion
 
 	// * LIBRARY - PUBLIC METHODS - INITIALIZATION * //
@@ -4990,11 +5005,21 @@ class MainUI {
 	 * @param {boolean} libraryLayoutSplitPreset - Whether the Library layout split preset should be set.
 	 */
 	setLibrarySplitPreset(libraryLayoutSplitPreset) {
+		const wasCollapsePreset = grSet.libraryLayoutSplitPreset;
+
 		grSet.libraryLayoutSplitPreset  = false;
 		grSet.libraryLayoutSplitPreset2 = false;
 		grSet.libraryLayoutSplitPreset3 = false;
 		grSet.libraryLayoutSplitPreset4 = false;
-		if (libraryLayoutSplitPreset) grSet[libraryLayoutSplitPreset] = true;
+
+		if (libraryLayoutSplitPreset) {
+			grSet[libraryLayoutSplitPreset] = true;
+		}
+
+		// * Expand any groups left collapsed by the "collapse" preset when switching away from it
+		if (wasCollapsePreset && !grSet.libraryLayoutSplitPreset) {
+			pl.playlist.header_expand();
+		}
 
 		// * Reset to default settings when deactivating Library layout split presets
 		if (!grSet.libraryLayoutSplitPreset  && !grSet.libraryLayoutSplitPreset2 &&

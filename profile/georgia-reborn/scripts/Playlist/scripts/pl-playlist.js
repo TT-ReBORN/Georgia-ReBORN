@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-06-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -914,6 +914,46 @@ class Playlist extends BaseList {
 
 	// * PUBLIC METHODS - SCROLLING * //
 	// #region PUBLIC METHODS - SCROLLING
+	/**
+	 * Scrolls and selects the track matching the given metadb and scrolls it into view.
+	 * Expands any collapsed parent header first so the row itself (not just its group) gets selected.
+	 * @param {FbMetadbHandle} handle - The metadb of the track to scroll to.
+	 * @param {boolean} [collapseOthers] - The flag to collapses all other groups first so only the target group ends up expanded.
+	 */
+	scroll_to_metadb(handle, collapseOthers = false) {
+		if (!handle || !this.cnt.rows.length) {
+			return;
+		}
+
+		const idx = plman.GetPlaylistItems(this.cur_playlist_idx).Find(handle);
+
+		if (idx === -1 || idx >= this.cnt.rows.length) {
+			return;
+		}
+
+		const from_row = this.focused_item;
+		const to_row = this.cnt.rows[idx];
+
+		if (this.collapse_handler) {
+			// * Collapse all other groups first so a new selection always ends up with only its own group expanded
+			if (collapseOthers && plSet.show_header) {
+				this.collapse_handler.collapse_all();
+			}
+
+			// * Reveal the row if it's hidden inside a collapsed group, so selection lands on the row itself
+			if (!this.cnt_helper.is_item_visible(to_row)) {
+				const visible_header = this.cnt_helper.get_visible_parent(to_row);
+				if (visible_header) {
+					this.collapse_handler.expand(visible_header);
+				}
+			}
+		}
+
+		this.selection_handler.update_selection(to_row);
+		this.scroll_to_row(from_row, to_row);
+		this.repaint();
+	}
+
 	/**
 	 * Scrolls the playlist to the current now playing track after some checks.
 	 */

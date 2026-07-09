@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -499,6 +499,30 @@ class MessageManager {
 				msg: 'Do you want to load embedded album art first?\n\n'
 					+ '{content}Continue?\n\n',
 				msgFb: 'Embedded album art enabled:\n\n'
+					+ '{content}'
+			},
+			playlistAutoScrollSelectLibrary: {
+				content: 'When enabled, selecting a track or album\n'
+					+ 'in the Library will automatically select\n'
+					+ 'and scroll to the matching track in the Playlist.\n\n'
+					+ 'Only takes effect while both Library and Playlist\n'
+					+ 'are visible in Split layout.\n\n',
+				msg: 'Do you want to enable\n'
+					+ 'auto-scroll Playlist on Library select?\n\n'
+					+ '{content}Continue?\n\n',
+				msgFb: 'Auto-scroll Playlist on Library select enabled:\n\n'
+					+ '{content}'
+			},
+			libraryAutoScrollSelectPlaylist: {
+				content: 'When enabled, selecting a track in the Playlist\n'
+					+ 'will automatically select and scroll to the\n'
+					+ 'matching track in the Library.\n\n'
+					+ 'Only takes effect while both Library and Playlist\n'
+					+ 'are visible in Split layout.\n\n',
+				msg: 'Do you want to enable\n'
+					+ 'auto-scroll Library on Playlist select?\n\n'
+					+ '{content}Continue?\n\n',
+				msgFb: 'Auto-scroll Library on Playlist select enabled:\n\n'
 					+ '{content}'
 			},
 			panelBrowseMode: {

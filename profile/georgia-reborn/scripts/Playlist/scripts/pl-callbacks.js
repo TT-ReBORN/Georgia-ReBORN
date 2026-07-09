@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -293,7 +293,19 @@ class PlaylistCallbacks {
 			return;
 		}
 
-		if (playlist_idx !== pl.playlist.cur_playlist_idx || pl.playlist.focused_item && pl.playlist.focused_item.idx === to_idx) {
+		const wasLibraryLayoutSplitAutoScrollSelectSync = grm.ui.libraryLayoutSplitAutoScrollSelectSync;
+		grm.ui.libraryLayoutSplitAutoScrollSelectSync = false;
+
+		if (playlist_idx !== pl.playlist.cur_playlist_idx) {
+			return;
+		}
+
+		// * Split mode: auto-scroll Library to reveal the newly focused Playlist track.
+		if (!wasLibraryLayoutSplitAutoScrollSelectSync && to_idx >= 0 && to_idx < pl.playlist.cnt.rows.length) {
+			grm.ui.syncLibraryAutoScrollFromPlaylist(pl.playlist.cnt.rows[to_idx].metadb);
+		}
+
+		if (pl.playlist.focused_item && pl.playlist.focused_item.idx === to_idx) {
 			return;
 		}
 
@@ -313,7 +325,7 @@ class PlaylistCallbacks {
 		if (pl.playlist.focused_item) {
 			const from_row = from_idx === -1 ? null : pl.playlist.cnt.rows[from_idx];
 			const playing_item_location = plman.GetPlayingItemLocation();
-			if (!playing_item_location.IsValid || pl.playlist.on_playlist_items_removed) { // * Prevent scroll jump when removing items
+			if (!playing_item_location.IsValid || pl.playlist.on_playlist_items_removed) {
 				return;
 			}
 			pl.playlist.scroll_to_row(from_row, pl.playlist.focused_item);

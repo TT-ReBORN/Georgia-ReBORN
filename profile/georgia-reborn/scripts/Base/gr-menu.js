@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -333,8 +333,8 @@ class TopMenuOptions {
 		this.audioWizard = Component.AudioWizard ? new ActiveXObject('AudioWizard') : null;
 	}
 
-	// * PUBLIC METHODS * //
-	// #region PUBLIC METHODS
+	// * DESIGN * //
+	// #region DESIGN
 	/**
 	 * Top menu > Options > Design.
 	 * @param {Menu} menu - Creates the Design menu via a new Menu instance.
@@ -373,7 +373,10 @@ class TopMenuOptions {
 		}, false, false, [0]);
 		designMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * THEME * //
+	// #region THEME
 	/**
 	 * Top menu > Options > Theme.
 	 * @param {Menu} menu - Creates the Theme menu via a new Menu instance.
@@ -439,7 +442,10 @@ class TopMenuOptions {
 		customThemeMenu.appendTo(themeMenu);
 		themeMenu.appendTo(menu, grSet.presetSelectMode === 'harmonic');
 	}
+	// #endregion
 
+	// * STYLE * //
+	// #region STYLE
 	/**
 	 * Top menu > Options > Style.
 	 * @param {Menu} menu - Creates the Style menu via a new Menu instance.
@@ -648,7 +654,10 @@ class TopMenuOptions {
 
 		styleMenu.appendTo(menu, grSet.presetSelectMode === 'harmonic');
 	}
+	// #endregion
 
+	// * PRESET * //
+	// #region PRESET
 	/**
 	 * Top menu > Options > Preset.
 	 * @param {Menu} menu - Creates the Preset menu via a new Menu instance.
@@ -921,7 +930,10 @@ class TopMenuOptions {
 
 		themePresetsMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * COLOR * //
+	// #region COLOR
 	/**
 	 * Top menu > Options > Color.
 	 * @param {Menu} menu - Creates the Color menu via a new Menu instance.
@@ -1094,7 +1106,10 @@ class TopMenuOptions {
 
 		colorMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * DISPLAY * //
+	// #region DISPLAY
 	/**
 	 * Top menu > Options > Display.
 	 * @param {Menu} menu - Creates the Display menu via a new Menu instance.
@@ -1126,7 +1141,10 @@ class TopMenuOptions {
 
 		displayMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * LAYOUT * //
+	// #region LAYOUT
 	/**
 	 * Top menu > Options > Layout.
 	 * @param {Menu} menu - Creates the Layout menu via a new Menu instance.
@@ -1145,7 +1163,10 @@ class TopMenuOptions {
 			grm.display.updatePlayerSize('small');
 		}, grSet.lockPlayerSize);
 	}
+	// #endregion
 
+	// * PLAYER SIZE * //
+	// #region PLAYER SIZE
 	/**
 	 * Top menu > Options > Player size.
 	 * @param {Menu} menu - Creates the Player size menu via a new Menu instance.
@@ -1158,7 +1179,10 @@ class TopMenuOptions {
 			grm.display.updatePlayerSize(grSet.playerSize);
 		}, grSet.lockPlayerSize);
 	}
+	// #endregion
 
+	// * FONT SIZE * //
+	// #region FONT SIZE
 	/**
 	 * Top menu > Options > Font size.
 	 * @param {Menu} menu - Creates the Font size menu via a new Menu instance.
@@ -1266,7 +1290,10 @@ class TopMenuOptions {
 
 		changeFontSizeMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * PLAYER CONTROLS * //
+	// #region PLAYER CONTROLS
 	/**
 	 * Top menu > Options > Player controls.
 	 * @param {Menu} menu - Creates the Player controls menu via a new Menu instance.
@@ -1444,6 +1471,18 @@ class TopMenuOptions {
 		playerControlsScrollbarPlaylistDurationMenu.appendTo(playerControlsScrollbarPlaylistMenu);
 		playerControlsScrollbarPlaylistMenu.addSeparator();
 		playerControlsScrollbarPlaylistMenu.addToggleItem('Auto-scroll to current playing song', grSet, 'playlistAutoScrollNowPlaying');
+		playerControlsScrollbarPlaylistMenu.addToggleItem('Auto-scroll Playlist on Library select (Library split layout only)', grSet, 'playlistAutoScrollSelectLibrary', () => {
+			if (!grSet.playlistAutoScrollSelectLibrary) {
+				window.Repaint();
+				return;
+			}
+			const msg = grm.msg.getMessage('menu', 'playlistAutoScrollSelectLibrary');
+			const msgFb = grm.msg.getMessage('menu', 'playlistAutoScrollSelectLibrary', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				grSet.playlistAutoScrollSelectLibrary = confirmed;
+				window.Repaint();
+			});
+		});
 		playerControlsScrollbarPlaylistMenu.addToggleItem('Auto-hide', grSet, 'playlistAutoHideScrollbar',  () => {
 			plSet.show_scrollbar = !grSet.playlistAutoHideScrollbar;
 			grm.ui.updatePlaylist();
@@ -1466,6 +1505,18 @@ class TopMenuOptions {
 		playerControlsScrollbarLibraryDurationMenu.appendTo(playerControlsScrollbarLibraryMenu);
 		playerControlsScrollbarLibraryMenu.addSeparator();
 		playerControlsScrollbarLibraryMenu.addToggleItem('Auto-scroll to current playing song', grSet, 'libraryAutoScrollNowPlaying');
+		playerControlsScrollbarLibraryMenu.addToggleItem('Auto-scroll Library on Playlist select (Library split layout only)', grSet, 'libraryAutoScrollSelectPlaylist', () => {
+			if (!grSet.libraryAutoScrollSelectPlaylist) {
+				window.Repaint();
+				return;
+			}
+			const msg = grm.msg.getMessage('menu', 'libraryAutoScrollSelectPlaylist');
+			const msgFb = grm.msg.getMessage('menu', 'libraryAutoScrollSelectPlaylist', true);
+			grm.msg.showPopup(true, msgFb, msg, 'Yes', 'No', (confirmed) => {
+				grSet.libraryAutoScrollSelectPlaylist = confirmed;
+				window.Repaint();
+			});
+		});
 		playerControlsScrollbarLibraryMenu.addToggleItem('Auto-hide', grSet, 'libraryAutoHideScrollbar', () => {
 			libSet.sbarShow = grSet.libraryAutoHideScrollbar ? 1 : 2;
 			grm.ui.setLibrarySize();
@@ -2032,7 +2083,10 @@ class TopMenuOptions {
 
 		playerControlsMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * PLAYLIST * //
+	// #region PLAYLIST
 	/**
 	 * Top menu > Options > Playlist.
 	 * @param {Menu} menu - Creates the Playlist panel menu via a new Menu instance.
@@ -2254,7 +2308,10 @@ class TopMenuOptions {
 
 		if (!context_menu) playlistMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * DETAILS * //
+	// #region DETAILS
 	/**
 	 * Top menu > Options > Details.
 	 * @param {Menu} menu - Creates the Details panel menu via a new Menu instance.
@@ -2577,7 +2634,10 @@ class TopMenuOptions {
 
 		if (!context_menu) detailsMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * LIBRARY * //
+	// #region LIBRARY
 	/**
 	 * Top menu > Options > Library.
 	 * @param {Menu} menu - Creates the Library panel menu via a new Menu instance.
@@ -3292,7 +3352,10 @@ class TopMenuOptions {
 
 		if (!context_menu) libraryMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * BIOGRAPHY * //
+	// #region BIOGRAPHY
 	/**
 	 * Top menu > Options > Biography.
 	 * @param {Menu} menu - Creates the Biography panel menu via a new Menu instance.
@@ -3722,7 +3785,10 @@ class TopMenuOptions {
 
 		if (!context_menu) biographyMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * LYRICS * //
+	// #region LYRICS
 	/**
 	 * Top menu > Options > Lyrics.
 	 * @param {Menu} menu - Creates the Lyrics panel menu via a new Menu instance.
@@ -3919,7 +3985,10 @@ class TopMenuOptions {
 
 		if (!context_menu) lyricsMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * SETTINGS * //
+	// #region SETTINGS
 	/**
 	 * Top menu > Options > Settings.
 	 * @param {Menu} menu - Creates the Settings menu via a new Menu instance.
@@ -4346,7 +4415,10 @@ class TopMenuOptions {
 		settingsMenu.addToggleItem('Developer tools', grSet, 'devTools');
 		settingsMenu.appendTo(menu);
 	}
+	// #endregion
 
+	// * DEVELOPER TOOLS * //
+	// #region DEVELOPER TOOLS
 	/**
 	 * Top menu > Options > Developer tools.
 	 * @param {Menu} menu - Creates Developer tools menu via a new Menu instance.

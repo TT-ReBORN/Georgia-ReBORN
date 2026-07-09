@@ -1643,6 +1643,10 @@ class LibPopulate {
 			lib.panel.treePaint();
 		}
 		this.track(this.autoFill.mouse || this.autoPlay.click);
+		if (!this.autoFill.mouse && !this.autoPlay.click && !lib.vk.k('ctrl') && !lib.vk.k('shift')
+			&& grSet.playlistAutoScrollSelectLibrary && grm.ui.displayLibrarySplit()) {
+			this.scrollPlaylistToSelection(item);
+		}
 		lib.lib.treeState(false, libSet.rememberTree);
 	}
 
@@ -1935,9 +1939,22 @@ class LibPopulate {
 
 	setPlaylist(ix, item) {
 		if (libSet.libSource) {
-			if (this.autoFill.key) this.load(this.sel_items, true, false, false, !libSet.sendToCur, false);
+			if (this.autoFill.key) {
+				this.load(this.sel_items, true, false, false, !libSet.sendToCur, false);
+			}
+			else if (grSet.playlistAutoScrollSelectLibrary && grm.ui.displayLibrarySplit()) {
+				this.scrollPlaylistToSelection(item);
+			}
 			this.track(true);
-		} else if (this.autoFill.key) this.setPlaylistSelection(ix, item);
+			return;
+		}
+
+		if (this.autoFill.key) {
+			this.setPlaylistSelection(ix, item);
+		}
+		else if (grSet.playlistAutoScrollSelectLibrary && grm.ui.displayLibrarySplit()) {
+			this.scrollPlaylistToSelection(item);
+		}
 	}
 
 	on_key_down(vkey) {
@@ -2146,6 +2163,38 @@ class LibPopulate {
 	removeDuplicateArr(arr) {
 		const t = {};
 		return arr.filter(v => !(t[v] = v in t));
+	}
+
+	/**
+	 * Scrolls the Playlist to the selected track represented by the given Library tree item.
+	 * In the split "collapse" preset (grSet.libraryLayoutSplitPreset), collapses all other
+	 * Playlist groups first so only the newly selected track's group ends up expanded.
+	 * @param {object} item - The Library tree row/branch item that was selected.
+	 */
+	scrollPlaylistToSelection(item) {
+		if (!item || item.root || !item.item || !item.item.length) {
+			return;
+		}
+
+		const trackIdx = item.item[0].start;
+
+		if (trackIdx == null || trackIdx >= lib.panel.list.Count) {
+			return;
+		}
+
+		const handle = lib.panel.list[trackIdx];
+
+		if (plman.GetPlaylistItems(pl.playlist.cur_playlist_idx).Find(handle) === -1) {
+			return;
+		}
+
+		grm.ui.libraryLayoutSplitAutoScrollSelectSync = true;
+		this.setFocus = true; // Suppress LibCallbacks.on_item_focus_change() re-syncing back via libSet.followPlaylistFocus
+
+		pl.playlist.scroll_to_metadb(handle, grSet.libraryLayoutSplitPreset);
+
+		grm.ui.libraryLayoutSplitAutoScrollSelectSync = false;
+		this.setFocus = false;
 	}
 
 	send(item, x, y) {

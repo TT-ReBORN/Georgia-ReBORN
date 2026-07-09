@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-06-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -408,9 +408,11 @@ grSet.addProperties({
 	playlistWheelScrollSteps:           ['Georgia-ReBORN - 09. Player controls: Mouse wheel scroll steps (Playlist)', 3], // Playlist mouse wheel scroll steps
 	playlistWheelScrollDuration:        ['Georgia-ReBORN - 09. Player controls: Mouse wheel scroll smooth duration (Playlist)', 300], // Playlist mouse wheel scroll smooth duration in ms
 	playlistAutoScrollNowPlaying:       ['Georgia-ReBORN - 09. Player controls: Auto-scroll to current playing song (Playlist)', false], // Auto-scroll to current playing song in playlist
+	playlistAutoScrollSelectLibrary:    ['Georgia-ReBORN - 09. Player controls: Auto-scroll Playlist on Library select', false], // Auto-Scrolls in the Playlist on Library select, only in Library split mode
 	playlistAutoHideScrollbar:          ['Georgia-ReBORN - 09. Player controls: Auto-hide scrollbar (Playlist)', true], // Auto-hide Playlist scrollbar
 	playlistSmoothScrolling:            ['Georgia-ReBORN - 09. Player controls: Smooth scrolling (Playlist)', true], // Playlist smooth scrolling
 	libraryAutoScrollNowPlaying:        ['Georgia-ReBORN - 09. Player controls: Auto-scroll to current playing song (Library)', false], // Auto-scroll to current playing song in library
+	libraryAutoScrollSelectPlaylist:    ['Georgia-ReBORN - 09. Player controls: Auto-scroll Library on Playlist select', false], // Auto-Scrolls in the Library on Playlist select, only in Library split mode
 	libraryAutoHideScrollbar:           ['Georgia-ReBORN - 09. Player controls: Auto-hide scrollbar (Library)', true], // Auto-hide Library scrollbar
 	biographyAutoHideScrollbar:         ['Georgia-ReBORN - 09. Player controls: Auto-hide scrollbar (Biography)', true], // Biography automatic scrollbar hide
 	showTooltipTruncated:               ['Georgia-ReBORN - 09. Player controls: Show tooltips only on truncated text', true], // true: Show tooltips when hovering over truncated text on lower bar, metadata grid and playlist
@@ -1146,11 +1148,13 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'playlistWheelScrollSteps', grCfg.themeControls, 'playlistWheelScrollSteps', 3);
 		this._setSetting(grSet, 'playlistWheelScrollDuration', grCfg.themeControls, 'playlistWheelScrollDuration', 300);
 		this._setSetting(grSet, 'playlistAutoScrollNowPlaying', grCfg.themeControls, 'playlistAutoScrollNowPlaying', false);
+		this._setSetting(grSet, 'playlistAutoScrollSelectLibrary', grCfg.themeControls, 'playlistAutoScrollSelectLibrary', false);
 		this._setSetting(grSet, 'playlistAutoHideScrollbar', grCfg.themeControls, 'playlistAutoHideScrollbar', true);
 		this._setSetting(grSet, 'playlistSmoothScrolling', grCfg.themeControls, 'playlistSmoothScrolling', true);
 		this._setSetting(libSet, 'scrollStep', grCfg.themeControls, 'scrollStepLib', 3);
 		this._setSetting(libSet, 'durationScroll', grCfg.themeControls, 'durationScrollLib', 500);
 		this._setSetting(grSet, 'libraryAutoScrollNowPlaying', grCfg.themeControls, 'libraryAutoScrollNowPlaying', false);
+		this._setSetting(grSet, 'libraryAutoScrollSelectPlaylist', grCfg.themeControls, 'libraryAutoScrollSelectPlaylist', false);
 		this._setSetting(grSet, 'libraryAutoHideScrollbar', grCfg.themeControls, 'libraryAutoHideScrollbar', true);
 		this._setSetting(libSet, 'sbarShow', false, false, grSet.libraryAutoHideScrollbar ? 1 : 2);
 		this._setSetting(libSet, 'smooth', grCfg.themeControls, 'smoothLib', true);

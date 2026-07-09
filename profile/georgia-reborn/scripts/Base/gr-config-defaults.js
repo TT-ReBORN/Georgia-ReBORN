@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -797,11 +797,13 @@ class ConfigDefaults {
 			playlistWheelScrollSteps: 3,
 			playlistWheelScrollDuration: 300,
 			playlistAutoScrollNowPlaying: false,
+			playlistAutoScrollSelectLibrary: false,
 			playlistAutoHideScrollbar: true,
 			playlistSmoothScrolling: true,
 			scrollStepLib: 3,
 			durationScrollLib: 500,
 			libraryAutoScrollNowPlaying: false,
+			libraryAutoScrollSelectPlaylist: false,
 			libraryAutoHideScrollbar: true,
 			smoothLib: true,
 			scrollStepBio: 3,
@@ -966,11 +968,13 @@ class ConfigDefaults {
 			playlistWheelScrollSteps: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Scrollbar > Playlist > Mouse wheel scroll steps',
 			playlistWheelScrollDuration: 'Values: 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Player controls > Scrollbar > Playlist > Mouse wheel scroll smooth duration',
 			playlistAutoScrollNowPlaying: 'Values: true, false - Options > Player controls > Scrollbar > Playlist > Auto-scroll to current playing song',
+			playlistAutoScrollSelectLibrary: 'Values: true, false - Options > Player controls > Scrollbar > Playlist > Auto-scroll Playlist on Library select (Library split layout only)',
 			playlistAutoHideScrollbar: 'Values: true, false - Options > Player controls > Scrollbar > Playlist > Auto-hide',
 			playlistSmoothScrolling: 'Values: true, false - Options > Player controls > Scrollbar > Playlist > Smooth scroll',
 			scrollStepLib: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Scrollbar > Library > Mouse wheel scroll steps',
 			durationScrollLib: 'Values: 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Player controls > Scrollbar > Library > Mouse wheel scroll smooth duration',
 			libraryAutoScrollNowPlaying: 'Values: true, false - Options > Player controls > Scrollbar > Library > Auto-scroll to current playing song',
+			libraryAutoScrollSelectPlaylist: 'Values: true, false - Options > Player controls > Scrollbar > Library > Auto-scroll Library on Playlist select (Library split layout only)',
 			libraryAutoHideScrollbar: 'Values: true, false - Options > Player controls > Scrollbar > Library > Auto-hide',
 			smoothLib: 'Values: true, false - Options > Player controls > Scrollbar > Library > Smooth scroll',
 			scrollStepBio: 'Values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 - Options > Player controls > Scrollbar > Biography > Mouse wheel scroll steps',
@@ -1935,7 +1939,6 @@ class ConfigDefaults {
 			customWaveformBarDir: false,
 			waveformBarAutoDelete: false,
 			themePerformance: 'balanced',
-
 			rendererMode: 0,
 			devTools: false
 		};
