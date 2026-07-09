@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -440,11 +440,11 @@ class ColorThemes {
 		pl.col.header_line_playing = getColor(theme.pl_col_header_line_playing, 'line.playing', 'oklch');
 
 		// * ROW COLORS * //
-		pl.col.row_nowplaying_bg = pl.col.header_nowplaying_bg;
+		pl.col.row_nowplaying_bg = getColor(theme.pl_col_row_nowplaying_bg, 'nowPlaying.bg', 'oklch', true);
 		pl.col.row_stripes_bg = getColor(theme.pl_col_row_stripes_bg, 'row.stripes', 'oklch');
 		pl.col.row_selection_bg = getColor(theme.pl_col_row_selection_bg, 'row.selectionBg', 'oklch');
 		pl.col.row_selection_frame = pl.col.header_line_normal;
-		pl.col.row_sideMarker = pl.col.header_sideMarker;
+		pl.col.row_sideMarker = getColor(theme.pl_col_row_sideMarker, 'sidemarker', 'rgb', true);
 		pl.col.row_title_normal = getColor(theme.pl_col_row_title_normal, 'text.normal');
 		pl.col.row_title_playing = getStaticColor('pl_col_row_title_playing') || getColor(theme.pl_col_row_title_playing, 'text.active');
 		pl.col.row_title_selected = getColor(theme.pl_col_row_title_selected, 'text.active');

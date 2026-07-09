@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -153,6 +153,8 @@ class ChameleonColorSystem {
 		this._frameCount = 0;
 		/** @private @type {Array<{obj: Object, prop: string, from: number, to: number, t: number, step: number, fromOKLCH: Object, toOKLCH: Object}>} The array holding active pending property updates. */
 		this._pending = [];
+		/** @public @type {boolean} The flag when color transition queuing is bypassed entirely. */
+		this.suspended = false;
 		/** @private @type {number} The ticks per bitmap update utilized for layout throttling. */
 		this._ticksPerBitmapUpdate = 0;
 		/** @private @type {ReturnType<typeof setInterval>|null} The master theme interpolation loop interval. */
@@ -798,7 +800,7 @@ class ChameleonColorSystem {
 	 * Call immediately AFTER album art / theme color computation.
 	 */
 	afterColorUpdate() {
-		if (!grSet.chameleon || !grm.ui.loadingThemeComplete ||
+		if (!grSet.chameleon || this.suspended || !grm.ui.loadingThemeComplete ||
 			grSet.styleBlackAndWhite || grSet.styleBlackAndWhite2 || grSet.styleBlackAndWhiteReborn) {
 			return;
 		}
@@ -846,7 +848,7 @@ class ChameleonColorSystem {
 	 * Call immediately BEFORE album art / theme color computation.
 	 */
 	beforeColorUpdate() {
-		if (!grSet.chameleon) return;
+		if (!grSet.chameleon || this.suspended) return;
 
 		this.initDetailsLightBgProps('snapshot');
 
@@ -855,6 +857,13 @@ class ChameleonColorSystem {
 		this._snap(this.colorLibraryProps, this._libSnapshot, lib.ui.col);
 		this._snap(this.colorLibraryExplorerProps, this._libExSnapshot, lib.ex.color);
 		this._snap(this.colorBiographyProps, this._bioSnapshot, bio.ui.col);
+	}
+
+	/**
+	 * Restores normal chameleon transition behavior after suspend().
+	 */
+	resume() {
+		this.suspended = false;
 	}
 
 	/**
@@ -911,6 +920,25 @@ class ChameleonColorSystem {
 		if (obj === grCol && this._mainSnapshot[prop] !== undefined) {
 			this._mainSnapshot[prop] = color;
 		}
+	}
+
+	/**
+	 * Temporarily disables color transition queuing so direct color writes take effect
+	 * instantly instead of being smoothed into an animated transition.
+	 * Any transition already in flight is snapped straight to its target value
+	 * so it can't keep overwriting properties while suspended.
+	 */
+	suspend() {
+		if (this.suspended) return;
+
+		this.suspended = true;
+		this.clearAnimationTimer();
+
+		for (const a of this._pending) {
+			a.obj[a.prop] = a.to;
+		}
+
+		this._pending = [];
 	}
 	// #endregion
 

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-06-2026                                              * //
+// * Last change:    09-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -167,6 +167,14 @@ class CustomMenu {
 	 * @param {number} y - The y-coordinate.
 	 */
 	mouseDown(x, y) {}
+
+	/**
+	 * A placeholder that handles double click events.
+	 * These aren't really virtually, just stubbed so that not every child needs to create one if it wants to ignore these events.
+	 * @param {number} x - The x-coordinate.
+	 * @param {number} y - The y-coordinate.
+	 */
+	doubleClicked(x, y) {}
 
 	/**
 	 * A placeholder that handles letter keystrokes events.
@@ -1679,6 +1687,17 @@ class CustomMenuColorMarker extends CustomMenu {
 		this.w = this.h;
 	}
 
+	// * STATIC PROPERTIES * //
+	// #region STATIC PROPERTIES
+	/**
+	 * @private
+	 * @type {{id: string, value: string, timers: number[], originalInitThemeFull: boolean}|null}
+	 * The currently running blink sequence, shared across all marker instances so a click on
+	 * a different marker mid-blink can't leave the previous one stuck on red.
+	 */
+	static _activeBlink = null;
+	// #endregion
+
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
@@ -1697,20 +1716,54 @@ class CustomMenuColorMarker extends CustomMenu {
 	 * @param {number} value - The value of the input field.
 	 */
 	colorMarker(id, value) {
-		const showSelColor = () => {
-			setTimeout(() => {
-				grm.cthMenu.updateCustomThemesConfig(id, RGBtoHEX(255, 0, 0));
-				grm.ui.initThemeFull = true;
-				grm.ui.initTheme();
-			}, 0);
-			setTimeout(() => {
-				grm.cthMenu.updateCustomThemesConfig(id, value);
-				grm.ui.initThemeFull = true;
-				grm.ui.initTheme();
-			}, 200);
+		const applyColor = (targetId, col) => {
+			grm.cthMenu.updateCustomThemesConfig(targetId, col);
+			grm.ui.initThemeFull = true;
+			grm.ui.initTheme();
+		};
+
+		const prev = CustomMenuColorMarker._activeBlink;
+
+		if (prev) {
+			for (const timer of prev.timers) clearTimeout(timer);
+			applyColor(prev.id, prev.value);
 		}
-		setTimeout(() => { showSelColor(); }, 100);
-		setTimeout(() => { showSelColor(); }, 400);
+
+		grm.colorChameleon.suspend();
+
+		const BLINK_ON = 400;
+		const BLINK_OFF = 200;
+		const BLINK_COUNT = 2;
+		const red = RGBtoHEX(255, 0, 0);
+
+		const state = {
+			id,
+			value,
+			timers: [],
+			originalInitThemeFull: grm.ui.initThemeFull
+		};
+
+		CustomMenuColorMarker._activeBlink = state;
+
+		let elapsed = 0;
+
+		for (let i = 0; i < BLINK_COUNT; i++) {
+			state.timers.push(setTimeout(() => applyColor(id, red), elapsed));
+			elapsed += BLINK_ON;
+
+			const isLast = i === BLINK_COUNT - 1;
+
+			state.timers.push(setTimeout(() => {
+				applyColor(id, value);
+				if (isLast && CustomMenuColorMarker._activeBlink === state) {
+					grm.colorChameleon.resume();
+					grm.ui.initThemeFull = state.originalInitThemeFull;
+					CustomMenuColorMarker._activeBlink = null;
+				}
+			}, elapsed));
+
+			elapsed += BLINK_OFF;
+		}
 	}
 
 	/**
@@ -1871,7 +1924,7 @@ class CustomThemeMenu {
 				{ id: 'main_bg_06', label: 'grCol.noAlbumArtStub', value: grCfg.cTheme.grCol_noAlbumArtStub }
 			],
 			main_bar: [
-				{ id: 'main_bar_01', label: 'grCol.timelineAdded', value: grCfg.cTheme.grCol_bg },
+				{ id: 'main_bar_01', label: 'grCol.timelineAdded', value: grCfg.cTheme.grCol_timelineAdded },
 				{ id: 'main_bar_02', label: 'grCol.timelinePlayed', value: grCfg.cTheme.grCol_timelinePlayed },
 				{ id: 'main_bar_03', label: 'grCol.timelineUnplayed', value: grCfg.cTheme.grCol_timelineUnplayed },
 				{ id: 'main_bar_04', label: 'grCol.timelineFrame', value: grCfg.cTheme.grCol_timelineFrame },
@@ -2020,7 +2073,7 @@ class CustomThemeMenu {
 				{ id: 'pl_btns_02', label: 'pl.col.sbar_btn_hovered', value: grCfg.cTheme.pl_col_sbar_btn_hovered },
 				{ id: 'pl_btns_03', label: 'pl.col.sbar_thumb_normal', value: grCfg.cTheme.pl_col_sbar_thumb_normal },
 				{ id: 'pl_btns_04', label: 'pl.col.sbar_thumb_hovered', value: grCfg.cTheme.pl_col_sbar_thumb_hovered },
-				{ id: 'pl_btns_04', label: 'pl.col.sbar_thumb_drag', value: grCfg.cTheme.pl_col_sbar_thumb_drag }
+				{ id: 'pl_btns_05', label: 'pl.col.sbar_thumb_drag', value: grCfg.cTheme.pl_col_sbar_thumb_drag }
 			]
 		};
 
