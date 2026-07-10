@@ -1559,6 +1559,7 @@ class BioPanel {
 		}
 		this.text.w = Math.max(this.text.w, 10);
 		this.style.max_y = this.lines_drawn * bio.ui.font.main_h + this.text.t - bio.ui.font.main_h * 0.9;
+		if (bio.lyrics) bio.lyrics.updateLyricsBounds();
 		if (!this.id.init) bio.filmStrip.check();
 		this.id.init = false;
 	}

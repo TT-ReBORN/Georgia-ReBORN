@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-06-2026                                              * //
+// * Last change:    10-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -609,27 +609,13 @@ class BioLyrics {
 		this.transitionOffset = this.durationScroll / 2;
 		this.transBot = {};
 		this.transTop = {};
-
-		bioSet.lyricsFadeHeight = $Bio.clamp(bioSet.lyricsFadeHeight, -1, 2);
-		const fadeHeight = this.lineHeight * bioSet.lyricsFadeHeight;
-		this.x = bio.panel.text.l;
-		this.y = bio.panel.text.t - this.lineHeight + fadeHeight;
-		this.w = bio.panel.text.w;
-		this.h = bio.panel.lines_drawn * bio.ui.font.main_h + this.lineHeight * 2 - fadeHeight * 2;
-
-		const linesDrawn = Math.floor(this.h / this.lineHeight);
-		const oddNumLines = linesDrawn % 2;
-
-		this.locusOffset = this.h / 2 - (oddNumLines ? this.lineHeight / 2 : this.lineHeight);
-		this.top = this.locusOffset - this.lineHeight * (Math.floor(linesDrawn / 2) - (oddNumLines ? 1 : 2)) + this.y;
-		this.bot = Math.round(this.top + this.lineHeight * (linesDrawn - 3));
-
 		this.type = {
 			none: false,
 			synced: false,
 			unsynced: false
 		};
 
+		this.updateLyricsBounds();
 		this.parseLyrics(lyr);
 	}
 
@@ -918,12 +904,20 @@ class BioLyrics {
 	updateLyricsBounds() {
 		if (!this.lineHeight) return;
 
+		bioSet.lyricsFadeHeight = $Bio.clamp(bioSet.lyricsFadeHeight, -1, 2);
+		const fadeHeight = this.lineHeight * bioSet.lyricsFadeHeight;
+
+		this.x = bio.panel.text.l;
+		this.y = bio.panel.text.t - this.lineHeight + fadeHeight;
+		this.w = bio.panel.text.w;
+		this.h = (bio.panel.style.max_y - bio.panel.text.t) + this.lineHeight * 2 - fadeHeight * 2;
+
 		const linesDrawn = Math.floor(this.h / this.lineHeight);
 		const oddNumLines = linesDrawn % 2;
 
 		this.locusOffset = this.h / 2 - (oddNumLines ? this.lineHeight / 2 : this.lineHeight);
 		this.top = this.locusOffset - this.lineHeight * (Math.floor(linesDrawn / 2) - (oddNumLines ? 1 : 2)) + this.y;
-		this.bot = Math.round(this.top + this.lineHeight * (linesDrawn - 3));
+		this.bot = Math.round(this.top + this.lineHeight * (linesDrawn - 2));
 	}
 	// #endregion
 
