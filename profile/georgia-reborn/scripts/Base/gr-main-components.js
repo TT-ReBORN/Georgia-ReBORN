@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    03-07-2026                                              * //
+// * Last change:    10-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -426,17 +426,22 @@ class BackgroundImage {
 	drawBgImage(gr, img, scale, x, y, w, h, opacity, mask, maskOffsetY, maskHeight) {
 		if (!img || !img.image) return;
 
-		if (!img.scaled) {
+		if (!img.scaled || img.scaledW !== w || img.scaledH !== h || img.scaledMode !== scale) {
 			img.scaled = ScaleImage(img.image, scale, x, y, w, h, 0, 0, img.image.Width, img.image.Height);
-		}
 
-		if (!img.scaled) return;
+			if (!img.scaled) return;
+
+			img.scaledW = w;
+			img.scaledH = h;
+			img.scaledMode = scale;
+			img.masked = null;
+		}
 
 		if (mask && !img.masked) {
 			img.masked = MaskImage(img.scaled, 0, maskOffsetY, img.scaled.Width, img.scaled.Height - maskHeight);
 		}
 
-		const finalImage = mask ? img.masked : img.scaled;
+		const finalImage = mask && img.masked ? img.masked : img.scaled;
 
 		if (finalImage) {
 			gr.DrawImage(finalImage, x, y, w, h, 0, 0, finalImage.Width, finalImage.Height, 0, opacity);
