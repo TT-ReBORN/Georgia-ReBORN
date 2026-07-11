@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    11-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2145,7 +2145,7 @@ class LibExplorerAlbumView {
 				}
 
 				// Rating
-				if (track.rating > 0) {
+				if (track.rating > 0 || this.showTrackRatingGrid) {
 					lib.ex.main.drawRatingStars(g, track.rating, lib.ex.main.font.rebornSymbols, leftOffset + this.trackRatingX, relY, this.trackHeight, SCALE(-2), false);
 				}
 
