@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    03-07-2026                                              * //
+// * Last change:    11-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -293,6 +293,15 @@ class Display {
 		grSet.transportButtonSize_default = HD_QHD_4K(32, 34);
 		grSet.transportButtonSize_artwork = HD_QHD_4K(32, 34);
 		grSet.transportButtonSize_compact = HD_QHD_4K(32, 34);
+		grSet.notificationFontSize_default = HD_QHD_4K(18, 20);
+		grSet.notificationFontSize_artwork = HD_QHD_4K(16, 18);
+		grSet.notificationFontSize_compact  = HD_QHD_4K(16, 18);
+		grSet.popupFontSize_default = HD_QHD_4K(16, 18);
+		grSet.popupFontSize_artwork = HD_QHD_4K(14, 16);
+		grSet.popupFontSize_compact  = HD_QHD_4K(14, 16);
+		grSet.tooltipFontSize_default = HD_QHD_4K(16, 18);
+		grSet.tooltipFontSize_artwork = HD_QHD_4K(14, 16);
+		grSet.tooltipFontSize_compact  = HD_QHD_4K(14, 16);
 
 		// * Details
 		grSet.gridArtistFontSize_default = HD_QHD_4K(18, 20);
