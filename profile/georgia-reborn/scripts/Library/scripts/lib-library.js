@@ -439,11 +439,18 @@ class LibLibrary {
 	}
 
 	format(item, splitter, i, node) {
+		if (splitter == '\\') {
+			// folder view only - '\\' is the folder splitter, never the tag splitter
+			item = $Lib.decodeLibraryPath(item);
+		}
+
 		item = item.split(splitter);
+
 		if (lib.panel.imgView && lib.panel.lines == 2) {
 			item[0] = `${item[0]}^@^${item[1] || '?'}`;
 			item.splice(1, 1);
 		}
+
 		node.splice(i, 0, item);
 	}
 
@@ -563,7 +570,7 @@ class LibLibrary {
 							libItem[0] = libItem[0].split('^@^');
 							libItem = libItem.flat();
 						}
-						return !$Lib.equal(libItem, items[j].split('\\'));
+						return !$Lib.equal(libItem, $Lib.decodeLibraryPath(items[j]).split('\\'));
 					}
 				});
 				if (ret) return true;
@@ -838,22 +845,27 @@ class LibLibrary {
 					break;
 				}
 				case 1:
-					li.GetLibraryRelativePaths().forEach((v, i) => arr[i] = v.length ? v.split('\\') : ['File(s) Not In Library']);
+					li.GetLibraryRelativePaths().forEach((v, i) => arr[i] = v.length ? $Lib.decodeLibraryPath(v).split('\\') : ['File(s) Not In Library']);
 					break;
 			}
 			if (lib.panel.imgView && lib.panel.lines == 2) this.checkLines(arr);
 			if (lib.panel.imgView && lib.panel.lines == 2) this.expandArr(arr);
-		} else {
+		}
+		else {
 			arr = !search ? this.libNode : this.searchNode;
 			const arrExpanded = arr.length && arr[0][0].includes('^@^');
-			if (lib.panel.imgView && lib.panel.lines == 2) this.checkLines(arr, arrExpanded);
+			if (lib.panel.imgView && lib.panel.lines == 2) {
+				this.checkLines(arr, arrExpanded);
+			}
 			if (lib.panel.imgView) {
 				if (lib.panel.lines == 2) {
 					if (!arrExpanded) this.expandArr(arr);
-				} else if (lib.panel.lines == 1) {
-					if (arrExpanded) this.flattenArr(arr);
+				} else if (lib.panel.lines == 1 && arrExpanded) {
+					this.flattenArr(arr);
 				}
-			} else if (arrExpanded) this.flattenArr(arr);
+			} else if (arrExpanded) {
+				this.flattenArr(arr);
+			}
 		}
 	}
 

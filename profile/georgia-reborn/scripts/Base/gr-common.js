@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    24-06-2026                                              * //
+// * Last change:    11-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1095,8 +1095,10 @@ const Unicode = {
  * @property {RegExp} WebLastFmLine - Matches full Last.fm lines with optional newline `/^Last\.fm: .*$(\n)?/gm`.
  * @property {RegExp} WebLastFmPrefix - Matches Last.fm prefix with space `/^Last\.fm:\s/gm`.
  * @property {RegExp} WebLastFmVariant - Matches Last.fm variants ending with semicolon `/^Last(\.|-)fm:.*?;/g`.
+ * @property {RegExp} WebProtocolAndHost - Matches the protocol and host of a URL including the trailing slash `/^https?:\/\/[^\/]+\//i`.
  * @property {RegExp} WebStreaming - Matches streaming sources `/^(http|fy\+|3dydfy:|spotify)/`.
  * @property {RegExp} WebTopLevelDomain - Matches top-level domain `/\.[^/.]+$/`.
+ * @property {RegExp} WebUrlHexEscape - Matches valid URL percent-encoded hexadecimal sequences `/%[0-9A-Fa-f]{2}/`.
  *
  * @property {RegExp} WikiBirthDate - Matches birth date template `/{{birth\sdate([^}]+)}}/gi`.
  * @property {RegExp} WikiBoldItalic - Matches wiki bold/italic markup `/'''?/g`.
@@ -1546,8 +1548,10 @@ const Regex = {
 	WebLastFmLine: /^Last\.fm: .*$(\n)?/gm,
 	WebLastFmPrefix: /^Last\.fm:\s/gm,
 	WebLastFmVariant: /^Last(\.|-)fm:.*?;/g,
+	WebProtocolAndHost: /^https?:\/\/[^\/]+\//i,
 	WebStreaming: /^(http|fy\+|3dydfy:|spotify)/,
 	WebTopLevelDomain: /\.[^/.]+$/,
+	WebUrlHexEscape: /%[0-9A-Fa-f]{2}/,
 
 	// * WIKI * //
 	WikiBirthDate: /{{birth\sdate([^}]+)}}/gi,
