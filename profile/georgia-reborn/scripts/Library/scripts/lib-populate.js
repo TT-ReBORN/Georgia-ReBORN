@@ -1614,7 +1614,22 @@ class LibPopulate {
 		if (libSet.touchControl && (this.autoFill.mouse || this.autoPlay.click) && lib.ui.id.touch_dn != ix) return;
 		const item = this.tree[ix];
 		if (this.clicked_on != 'text') return;
-		if (!libSet.libSource) return this.setPlaylistSelection(ix, item);
+		if (!libSet.libSource) {
+			const autoScroll = grSet.playlistAutoScrollSelectLibrary
+				&& grm.ui.displayLibrarySplit() && !lib.vk.k('ctrl') && !lib.vk.k('shift')
+
+			if (autoScroll) {
+				grm.ui.libraryLayoutSplitAutoScrollSelectSync = true;
+			}
+
+			this.setPlaylistSelection(ix, item);
+
+			if (autoScroll) {
+				this.scrollPlaylistToSelection(item);
+			}
+
+			return;
+		}
 		if (lib.vk.k('alt')) {
 			if (grSet.addTracksPlaylistSwitch) {
 				grm.button.btn.library.enabled = false;
@@ -1629,7 +1644,7 @@ class LibPopulate {
 				}, 500);
 				window.Repaint();
 			}
-			this.mbtnUpOrAltClickUp(x, y, '', 'alt'); // {
+			this.mbtnUpOrAltClickUp(x, y, '', 'alt');
 			return;
 		}
 		if (!lib.vk.k('ctrl')) {
