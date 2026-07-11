@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-07-2026                                              * //
+// * Last change:    11-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -423,53 +423,42 @@ class Lyrics {
 	}
 
 	/**
-	 * Filters and highlights lyrics based on settings.
+	 * Filters parsed (pre-wrap) lyrics based on the translation setting.
+	 * When translation is disabled only the line selected by lyricsTranslationLine is kept per timestamp group.
+	 * @param {Array<object>} lyrics - The parsed lyrics with `timestamp` and `group` properties.
+	 * @returns {Array<object>} The filtered lyrics, or the original array unchanged when translation is shown.
 	 */
-	filterAndHighlightLyrics() {
+	filterAndHighlightLyrics(lyrics) {
+		if (grSet.lyricsTranslation) {
+			return lyrics;
+		}
+
 		const filteredLyrics = [];
 		const groupedLyrics = {};
 
-		for (const lyric of this.lyrics) {
+		for (const lyric of lyrics) {
 			if (!groupedLyrics[lyric.timestamp]) {
 				groupedLyrics[lyric.timestamp] = {};
 			}
+
 			if (!groupedLyrics[lyric.timestamp][lyric.group]) {
 				groupedLyrics[lyric.timestamp][lyric.group] = [];
 			}
+
 			groupedLyrics[lyric.timestamp][lyric.group].push(lyric);
 		}
 
 		for (const timestamp in groupedLyrics) {
 			const timestampGroups = Object.keys(groupedLyrics[timestamp]).sort((a, b) => a - b);
-			if (grSet.lyricsTranslation) {
-				for (const group of timestampGroups) { // Keep all groups
-					filteredLyrics.push(...groupedLyrics[timestamp][group]);
-				}
-			}
-			else { // Select the group based on lyricsTranslationLine
-				const selectedGroupIndex = grSet.lyricsTranslationLine - 1;
-				if (timestampGroups.length > 0) {
-					const selectedGroup = timestampGroups[Math.min(selectedGroupIndex, timestampGroups.length - 1)];
-					filteredLyrics.push(...groupedLyrics[timestamp][selectedGroup]);
-				}
-			}
+			const selectedGroupIndex = grSet.lyricsTranslationLine - 1;
+			const selectedGroup = timestampGroups[Math.min(selectedGroupIndex, timestampGroups.length - 1)];
+
+			filteredLyrics.push(...groupedLyrics[timestamp][selectedGroup]);
 		}
 
-		this.lyrics = filteredLyrics;
+		filteredLyrics.sort((a, b) => a.timestamp - b.timestamp || a.sentenceGroup - b.sentenceGroup);
 
-		// Recompute yOffset for the post-filter line set
-		const isBilingual = grSet.lyricsTranslation && this.lyrics.some((l, i) =>
-			i > 0 && l.group !== undefined && l.group !== this.lyrics[i - 1].group && l.timestamp === this.lyrics[i - 1].timestamp
-		);
-
-		let cumulativeY = 0;
-		for (let i = 0; i < this.lyrics.length; i++) {
-			if (i > 0 && this.lyrics[i].sentenceGroup !== this.lyrics[i - 1].sentenceGroup) {
-				cumulativeY += isBilingual ? this.sentenceSpacing : this.sentenceSpacing * 0.5;
-			}
-			this.lyrics[i].yOffset = cumulativeY;
-			cumulativeY += this.lineHeight;
-		}
+		return filteredLyrics;
 	}
 
 	/**
@@ -497,8 +486,8 @@ class Lyrics {
 			if (isNaN(this.lyricsOffset)) this.lyricsOffset = 0;
 
 			const parsedLyrics = this.parseSyncLyrics(lyr, this.type.none);
-			this.formatLyrics(parsedLyrics, this.type.synced);
-			this.filterAndHighlightLyrics();
+			const filteredLyrics = this.filterAndHighlightLyrics(parsedLyrics);
+			this.formatLyrics(filteredLyrics, this.type.synced);
 		}
 		else if (this.type.unsynced) {
 			const parsedLines = this.parseUnsyncedLyrics(lyr, this.type.none);
