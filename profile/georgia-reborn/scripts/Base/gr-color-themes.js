@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-07-2026                                              * //
+// * Last change:    11-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -198,6 +198,10 @@ class ColorThemes {
 		bio.ui.col.source = theme.bio_ui_col_source;
 		bio.ui.col.accent = theme.bio_ui_col_accent;
 		bio.ui.col.summary = theme.bio_ui_col_summary;
+
+		// * POPUP COLORS * //
+		bio.ui.col.popupBg = theme.bio_ui_col_popupBg;
+		bio.ui.col.popupText = theme.bio_ui_col_popupText;
 
 		// * MISC COLORS * //
 		bio.ui.col.lyricsNormal = theme.bio_ui_col_lyricsNormal;
@@ -532,6 +536,7 @@ class ColorThemes {
 		}
 
 		const { primary, ctx, isWhiteOrBlack, staticTheme, theme } = this._createThemeContext('biography');
+		const { THEME, BW, BW2, BWR } = grAlias;
 		const getColor = this._getColor(primary, Color.LUM(pl.col.bg), staticTheme, isWhiteOrBlack, ctx);
 
 		// * MAIN COLORS * //
@@ -552,7 +557,7 @@ class ColorThemes {
 
 		// * POPUP COLORS * //
 		bio.ui.col.popupBg = RGBtoRGBA(pl.col.header_nowplaying_bg, 255);
-		bio.ui.col.popupText = getColor(theme.bio_ui_col_popupText, 'text.active');
+		bio.ui.col.popupText = THEME === 'white' && (!BW && !BW2 && !BWR) ? pl.col.row_title_playing : pl.col.header_artist_playing;
 
 		// * MISC COLORS * //
 		const lyricsRefLum = Color.LUM(pl.col.bg);
