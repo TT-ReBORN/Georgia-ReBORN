@@ -598,7 +598,7 @@ class LibPopulate {
 					(item.count ? `${['', 'Tracks', 'Items'][this.nodeCounts]}:${item.count}` : '');
 				} else if (trace1) {
 					text = (!lib.panel.colMarker ? item.name : item.name.replace(Regex.LibMarkerColor, '')) + (!this.countsRight || this.statisticsShow ? item.count : '');
-					text = text.replace(/&/g, '&&');
+					if (!grSet.showStyledTooltips) text = text.replace(/&/g, '&&');
 				}
 				if (text != libTooltip.Text) this.deactivateTooltip();
 				if (!trace1 && !trace2 || !item.tt && !item.stats_tt) {
@@ -621,7 +621,7 @@ class LibPopulate {
 					trace3 = item.tt.y3 == -1 ? false : x >= item.tt.x && x <= item.tt.x + item.tt.w && y >= item.tt.y3 && y <= item.tt.y3 + libImg.text.h;
 					text = trace1 || trace2 || trace3 ? item.tt.text : '';
 					if (lib.panel.colMarker) text = text.replace(Regex.LibMarkerColor, '');
-					text = text.replace(/&/g, '&&');
+					if (!grSet.showStyledTooltips) text = text.replace(/&/g, '&&');
 					if (text != libTooltip.Text) this.deactivateTooltip();
 					if (!trace1 && !trace2 && !trace3 || !item.tt[1] && !item.tt[2] && !item.tt[3]) {
 						this.deactivateTooltip();
@@ -630,7 +630,7 @@ class LibPopulate {
 				} else {
 					text = lib.panel.lines == 2 ? !libSet.albumArtFlipLabels ? `${item.grp}\n${item.lot}` : `${item.lot}\n${item.grp}` : item.grp;
 					if (lib.panel.colMarker) text = text.replace(Regex.LibMarkerColor, '');
-					text = text.replace(/&/g, '&&');
+					if (!grSet.showStyledTooltips) text = text.replace(/&/g, '&&');
 					if (text != libTooltip.Text) this.deactivateTooltip();
 				}
 				break;
