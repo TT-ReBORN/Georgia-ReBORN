@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-07-2026                                              * //
+// * Last change:    12-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -674,20 +674,20 @@ class ColorThemes {
 
 		// * PEAKMETER BAR COLORS * //
 		grCol.peakmeterBarProg          = grCol.progressBar;
-		grCol.peakmeterBarProgFill      = getColorPMWF(mainTheme.grCol_peakmeterBarProgFill,      staticColorPMWF ? 'peakmeterBar.progFillStatic'      : 'peakmeterBar.progFill',      'oklch', true, ctx, true);
-		grCol.peakmeterBarFillTop       = getColorPMWF(mainTheme.grCol_peakmeterBarFillTop,       staticColorPMWF ? 'peakmeterBar.fillTopStatic'       : 'peakmeterBar.fillTop',       'oklch', true, ctx, true);
-		grCol.peakmeterBarFillMiddle    = getColorPMWF(mainTheme.grCol_peakmeterBarFillMiddle,    staticColorPMWF ? 'peakmeterBar.fillMiddleStatic'    : 'peakmeterBar.fillMiddle',    'oklch', true, ctx, true);
-		grCol.peakmeterBarFillBack      = getColorPMWF(mainTheme.grCol_peakmeterBarFillBack,      staticColorPMWF ? 'peakmeterBar.fillBackStatic'      : 'peakmeterBar.fillBack',      'oklch', true, ctx, true);
-		grCol.peakmeterBarVertProgFill  = getColorPMWF(mainTheme.grCol_peakmeterBarVertProgFill,  staticColorPMWF ? 'peakmeterBar.vertProgFillStatic'  : 'peakmeterBar.vertProgFill',  'oklch', true, ctx, true);
-		grCol.peakmeterBarVertFill      = getColorPMWF(mainTheme.grCol_peakmeterBarVertFill,      staticColorPMWF ? 'peakmeterBar.vertFillStatic'      : 'peakmeterBar.vertFill',      'oklch', true, ctx, true);
-		grCol.peakmeterBarVertFillPeaks = getColorPMWF(mainTheme.grCol_peakmeterBarVertFillPeaks, staticColorPMWF ? 'peakmeterBar.vertFillPeaksStatic' : 'peakmeterBar.vertFillPeaks', 'oklch', true, ctx, true);
+		grCol.peakmeterBarProgFill      = getColorPMWF(mainTheme.grCol_peakmeterBarProgFill,      staticColorPMWF ? 'peakmeterBar.progFillStatic'      : 'peakmeterBar.progFill',      'oklch', true, ctx, !staticTheme);
+		grCol.peakmeterBarFillTop       = getColorPMWF(mainTheme.grCol_peakmeterBarFillTop,       staticColorPMWF ? 'peakmeterBar.fillTopStatic'       : 'peakmeterBar.fillTop',       'oklch', true, ctx, !staticTheme);
+		grCol.peakmeterBarFillMiddle    = getColorPMWF(mainTheme.grCol_peakmeterBarFillMiddle,    staticColorPMWF ? 'peakmeterBar.fillMiddleStatic'    : 'peakmeterBar.fillMiddle',    'oklch', true, ctx, !staticTheme);
+		grCol.peakmeterBarFillBack      = getColorPMWF(mainTheme.grCol_peakmeterBarFillBack,      staticColorPMWF ? 'peakmeterBar.fillBackStatic'      : 'peakmeterBar.fillBack',      'oklch', true, ctx, !staticTheme);
+		grCol.peakmeterBarVertProgFill  = getColorPMWF(mainTheme.grCol_peakmeterBarVertProgFill,  staticColorPMWF ? 'peakmeterBar.vertProgFillStatic'  : 'peakmeterBar.vertProgFill',  'oklch', true, ctx, !staticTheme);
+		grCol.peakmeterBarVertFill      = getColorPMWF(mainTheme.grCol_peakmeterBarVertFill,      staticColorPMWF ? 'peakmeterBar.vertFillStatic'      : 'peakmeterBar.vertFill',      'oklch', true, ctx, !staticTheme);
+		grCol.peakmeterBarVertFillPeaks = getColorPMWF(mainTheme.grCol_peakmeterBarVertFillPeaks, staticColorPMWF ? 'peakmeterBar.vertFillPeaksStatic' : 'peakmeterBar.vertFillPeaks', 'oklch', true, ctx, !staticTheme);
 
 		// * WAVEFORM BAR COLORS * //
-		grCol.waveformBarFillFront    = getColorPMWF(mainTheme.grCol_waveformBarFillFront,    staticColorPMWF ? 'waveformBar.fillFrontStatic' : 'waveformBar.fillFront', 'oklch', true, ctx, true);
-		grCol.waveformBarFillBack     = getColorPMWF(mainTheme.grCol_waveformBarFillBack,     staticColorPMWF ? 'waveformBar.fillBackStatic'  : 'waveformBar.fillBack',  'oklch', true, ctx, true);
-		grCol.waveformBarFillPreFront = getColorPMWF(mainTheme.grCol_waveformBarFillPreFront, staticColorPMWF ? 'waveformBar.preFrontStatic'  : 'waveformBar.preFront',  'oklch', true, ctx, true);
-		grCol.waveformBarFillPreBack  = getColorPMWF(mainTheme.grCol_waveformBarFillPreBack,  staticColorPMWF ? 'waveformBar.preBackStatic'   : 'waveformBar.preBack',   'oklch', true, ctx, true);
-		grCol.waveformBarIndicator    = getColorPMWF(mainTheme.grCol_waveformBarIndicator,    staticColorPMWF ? 'waveformBar.indicatorStatic' : 'waveformBar.indicator', 'oklch', true, ctx, true);
+		grCol.waveformBarFillFront    = getColorPMWF(mainTheme.grCol_waveformBarFillFront,    staticColorPMWF ? 'waveformBar.fillFrontStatic' : 'waveformBar.fillFront', 'oklch', true, ctx, !staticTheme);
+		grCol.waveformBarFillBack     = getColorPMWF(mainTheme.grCol_waveformBarFillBack,     staticColorPMWF ? 'waveformBar.fillBackStatic'  : 'waveformBar.fillBack',  'oklch', true, ctx, !staticTheme);
+		grCol.waveformBarFillPreFront = getColorPMWF(mainTheme.grCol_waveformBarFillPreFront, staticColorPMWF ? 'waveformBar.preFrontStatic'  : 'waveformBar.preFront',  'oklch', true, ctx, !staticTheme);
+		grCol.waveformBarFillPreBack  = getColorPMWF(mainTheme.grCol_waveformBarFillPreBack,  staticColorPMWF ? 'waveformBar.preBackStatic'   : 'waveformBar.preBack',   'oklch', true, ctx, !staticTheme);
+		grCol.waveformBarIndicator    = getColorPMWF(mainTheme.grCol_waveformBarIndicator,    staticColorPMWF ? 'waveformBar.indicatorStatic' : 'waveformBar.indicator', 'oklch', true, ctx, !staticTheme);
 
 		// * VOLUME BAR COLORS * //
 		grCol.volumeBar = getColor(mainTheme.grCol_volumeBar, 'volumeBar.bg', 'rgb', false, ctxBR);
