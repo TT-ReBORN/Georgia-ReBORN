@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-07-2026                                              * //
+// * Last change:    13-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -221,6 +221,8 @@ class MainUI {
 		this.flagImgs = [];
 		/** @private @type {GdiBitmap} The Hi-Res Audio badge logo image shown on album art when enabled. */
 		this.hiResAudioLogo = null;
+		/** @private @type {string} The Hi-Res Audio badge cache key used to detect when hiResAudioLogo needs reloading. */
+		this.hiResAudioLogoCacheKey = '';
 		// #endregion
 
 		// * STATE * //
@@ -269,6 +271,8 @@ class MainUI {
 		this.noAlbumArtSizeSet = false;
 		/** @public @type {boolean} Only load theme colors when newTrackFetchingArtwork = true. */
 		this.newTrackFetchingArtwork = false;
+		/** @public @type {boolean} The state when the currently playing track is Hi-Res. */
+		this.trackIsHiRes = false;
 		/** @public @type {boolean} The state when the mouse is within the boundaries of the lyrics album art. */
 		this.mouseInLyricsAlbumArt = false;
 		/** @public @type {boolean} The state when the mouse is within the boundaries of the lyrics full layout edge bounds. */
@@ -562,16 +566,12 @@ class MainUI {
 	 * @param {GdiGraphics} gr - The GDI graphics object.
 	 */
 	drawHiResAudioLogo(gr) {
-		if (!grSet.showHiResAudioBadge || this.displayLyrics && grSet.lyricsLayout === 'full') return;
+		if (!grSet.showHiResAudioBadge || this.displayLyrics && grSet.lyricsLayout === 'full' ||
+			!this.trackIsHiRes || !this.albumArtDisplayed()) {
+			return;
+		}
 
-		const trackIsHiRes =
-			(Number($('$info(bitspersample)', this.initMetadb())) > 16
-			||
-			Number($('$info(bitrate)', this.initMetadb())) > 1411);
-
-		if (!trackIsHiRes || !this.albumArtDisplayed()) return;
-
-		this.hiResAudioLogo = gdi.Image(grPath.hiResAudioLogoPath());
+		this.loadHiResAudioLogo();
 
 		const scaleFactor = RES._4K ? 0.5 : 1;
 		const w = SCALE(this.hiResAudioLogo.Width * scaleFactor);
@@ -1613,6 +1613,7 @@ class MainUI {
 		this.currentAlbumFolder = !this.isStreaming ? metadb && metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
 		this.currentLastPlayed = $(grTF.last_played, metadb);
 		this.playingPlaylist = grSet.showGridPlayingPlaylist ? $(grTF.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
+		this.trackIsHiRes = Number($('$info(bitspersample)', metadb)) > 16 || Number($('$info(bitrate)', metadb)) > 1411;
 	}
 
 	/**
@@ -2780,7 +2781,7 @@ class MainUI {
 	// #region MAIN - PUBLIC METHODS - COMMON
 	/**
 	 * Clears individual cache properties, the specified cache type, or all caches.
-	 * @param {string} [type] - The type of cache to clear. Can be 'metrics', 'ratings', 'albumArt', 'albumArtCache', 'albumArtColors', 'flag', 'debug'. If not provided, all caches will be cleared.
+	 * @param {string} [type] - The type of cache to clear. Can be 'albumArt', 'albumArtCache', 'albumArtColors', 'debug', 'flag', 'hiResAudioLogo', 'metrics', 'rating'. If not provided, all caches will be cleared.
 	 * @param {string} [property] - The specific property to clear within the cache type. Applicable only if `type` is provided.
 	 * @param {boolean} [clearArtCache] - Whether to clear everything in the artCache object.
 	 * @param {boolean} [keepAlbumArt] - Whether to keep the album art. Applicable only if `type` is 'albumArt' or not provided (clearing all caches).
@@ -2799,12 +2800,6 @@ class MainUI {
 	 */
 	clearCache(type, property, clearArtCache, keepAlbumArt) {
 		const cacheActions = {
-			metrics: () => {
-				this.cachedLowerBarMetrics = false;
-			},
-			ratings: () => {
-				this.cachedCurrentRatings = false;
-			},
 			albumArt: () => {
 				this.albumArt = keepAlbumArt ? this.albumArt : null;
 				this.albumArtScaled = null;
@@ -2816,11 +2811,22 @@ class MainUI {
 			albumArtColors: () => {
 				this.cachedAlbumArtColors = [];
 			},
+			debug: () => {
+				grm.debug.debugTimingsArray = [];
+			},
 			flag: () => {
 				this.flagImgs = [];
 			},
-			debug: () => {
-				grm.debug.debugTimingsArray = [];
+			hiResAudioLogo: () => {
+				this.hiResAudioLogo = null;
+				this.hiResAudioLogoCacheKey = '';
+				grm.debug.debugLog('Main cache => Hi-Res audio logo cache cleared');
+			},
+			metrics: () => {
+				this.cachedLowerBarMetrics = false;
+			},
+			ratings: () => {
+				this.cachedCurrentRatings = false;
 			}
 		};
 
@@ -4038,6 +4044,18 @@ class MainUI {
 		const countryName = (ConvertIsoCountryCodeToFull(country) || country).trim().replace(Regex.SpaceSingle, '-'); // In case we have a 2-digit country code
 		const path = `${$($Escape(grPath.flagsBase), metadb) + HD_4K('32\\', '64\\') + countryName}.png`;
 		return gdi.Image(path);
+	}
+
+	/**
+	 * Loads and caches the Hi-Res Audio badge logo image.
+	 */
+	loadHiResAudioLogo() {
+		const cacheKey = `${grSet.hiResAudioBadgeSize}_${grSet.hiResAudioBadgeRound}_${grSet.customThemeImages}_${RES._4K}`;
+
+		if (this.hiResAudioLogo && this.hiResAudioLogoCacheKey === cacheKey) return;
+
+		this.hiResAudioLogo = gdi.Image(grPath.hiResAudioLogoPath());
+		this.hiResAudioLogoCacheKey = cacheKey;
 	}
 	// #endregion
 
