@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-07-2026                                              * //
+// * Last change:    13-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -53,6 +53,20 @@ class BioLyrics {
 		this.stepTime = 0;
 		/** @private @type {FbTitleFormat} The titleFormat object to get the track length in seconds. */
 		this.tfLength = fb.TitleFormat('%length_seconds%');
+		/** @private @type {?number} The interval id for the blend-only ticker used while paused and the main timer is stopped. */
+		this.translationBlendTimer = null;
+		/** @private @type {boolean} The flag whether the loaded lyrics contain paired original+translation lines sharing a timestamp. */
+		this.translationLyrics = false;
+		/** @private @type {number|null} The sentence group whose gap-free (compact) offsets are currently cached; null forces a recompute. */
+		this.translationSyncAppliedGroup = null;
+		/** @private @type {number} The current 0-1 blend between the compact (sync-only) and full lyric layouts; animates on reveal/hide transitions. */
+		this.translationSyncBlend = 1;
+		/** @private @type {number} The elapsed time in ms for the current compact/full blend transition. */
+		this.translationSyncBlendElapsed = 0;
+		/** @private @type {number} The blend value captured at the start of the current transition, used as the easing base. */
+		this.translationSyncBlendStart = 1;
+		/** @private @type {number} The blend value the current transition is animating toward (0 = compact, 1 = full). */
+		this.translationSyncBlendTarget = 1;
 	}
 
 	// * PUBLIC METHODS * //
@@ -68,12 +82,8 @@ class BioLyrics {
 			this.clearHighlight();
 
 			const currentSentenceGroup = this.lyrics[this.locus].sentenceGroup;
-			let currentStart = this.locus;
 			let currentEnd = this.locus;
 
-			while (currentStart > 0 && this.lyrics[currentStart - 1].sentenceGroup === currentSentenceGroup) {
-				currentStart--;
-			}
 			while (currentEnd < this.lyrics.length - 1 && this.lyrics[currentEnd + 1].sentenceGroup === currentSentenceGroup) {
 				currentEnd++;
 			}
@@ -81,16 +91,19 @@ class BioLyrics {
 			const nextStart = currentEnd + 1;
 
 			if (nextStart < this.lyrics.length) {
-				this.scroll = this.lyrics[nextStart].yOffset - this.lyrics[this.locus].yOffset;
+				const prevOffset = this.getBlendedOffset(this.lyrics[this.locus]);
+
+				this.translationUpdateSyncOffsets(this.lyrics[nextStart].sentenceGroup);
+
+				const nextOffset = this.getBlendedOffset(this.lyrics[nextStart]);
+				this.scroll = nextOffset - prevOffset;
 				this.locus = nextStart;
-			}
-			else {
-				this.locus = this.lyrics.length - 1;
 			}
 		}
 
 		this.scrollStart = this.scroll;
 		this.scrollElapsed = 0;
+
 		this.getScrollSpeed();
 		this.setHighlight();
 		this.repaintRect();
@@ -139,9 +152,19 @@ class BioLyrics {
 	 */
 	clear() {
 		this.stop();
+
+		if (this.translationBlendTimer) {
+			clearInterval(this.translationBlendTimer);
+			this.translationBlendTimer = null;
+		}
+
 		this.lyrics = [];
 		this.scrollDragOffset = 0;
-		this.highlightedWrapGroup = -1;
+		this.translationSyncAppliedGroup = null;
+		this.translationSyncBlend = 1;
+		this.translationSyncBlendTarget = 1;
+		this.translationSyncBlendStart = 1;
+		this.translationSyncBlendElapsed = 0;
 		this.shadowBitmapCache.clear();
 	}
 
@@ -149,8 +172,6 @@ class BioLyrics {
 	 * Removes highlight from all lines in the lyric array.
 	 */
 	clearHighlight() {
-		this.highlightedWrapGroup = -1;
-
 		for (const v of this.lyrics) {
 			v.highlight = false;
 		}
@@ -170,8 +191,11 @@ class BioLyrics {
 	 * @param {object} lyric - The lyric object.
 	 * @param {number} line_y - The y-coordinate of the line.
 	 * @param {number} blendIn - The pre-computed highlight blend colour for this render pass.
+	 * @param {number} [revealAlpha] - The extra 0-1 opacity multiplier applied while a hidden secondary translation line is fading in/out during the sync-only reveal transition.
 	 */
-	drawLyric(gr, lyric, line_y, blendIn) {
+	drawLyric(gr, lyric, line_y, blendIn, revealAlpha = 1) {
+		if (revealAlpha <= 0) return;
+
 		const isHighlighted = lyric.highlight;
 		const font = isHighlighted ? this.font.lyrics : bio.ui.font.lyrics;
 		const aboveTop = line_y < this.top;
@@ -195,7 +219,7 @@ class BioLyrics {
 				fadeAlpha *= this.calcTransparentMaskAlpha(boundaryY);
 			}
 
-			shadowAlpha = Math.round(fadeAlpha * 255);
+			shadowAlpha = Math.round(fadeAlpha * revealAlpha * 255);
 			color = RGBtoRGBA(bio.ui.col.lyricsNormal, shadowAlpha);
 		}
 		else {
@@ -207,7 +231,12 @@ class BioLyrics {
 				if (maskFactor <= 0) return;
 
 				const baseAlpha = (color >>> 24) & 0xFF;
-				shadowAlpha = Math.round(baseAlpha * maskFactor);
+				shadowAlpha = Math.round(baseAlpha * maskFactor * revealAlpha);
+				color = (shadowAlpha << 24) | (color & 0x00FFFFFF);
+			}
+			else if (revealAlpha < 1) {
+				const baseAlpha = (color >>> 24) & 0xFF;
+				shadowAlpha = Math.round(baseAlpha * revealAlpha);
 				color = (shadowAlpha << 24) | (color & 0x00FFFFFF);
 			}
 		}
@@ -230,21 +259,33 @@ class BioLyrics {
 	drawLyrics(gr) {
 		if (!this.display()) return;
 
-		const top = this.lyrics[this.locus].yOffset - this.locusOffset + this.scrollDragOffset;
+		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
+
+		const currentSentenceGroup = this.lyrics[this.locus].sentenceGroup;
+		const locusYOffset = this.getBlendedOffset(this.lyrics[this.locus]);
+
+		const top = locusYOffset - this.locusOffset + this.scrollDragOffset;
 		const y = this.y + this.scroll;
 
 		// DEBUG gr.DrawRect(this.x, this.top, this.w, this.bot, 3, RGBA(255, 0, 0, 255));
-		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
 		const transition_factor = Clamp((this.lineHeight - this.scroll) / this.lineHeight, 0, 1);
-		const transition_factor_in = !this.lyrics[this.locus].multiLine ? transition_factor : 1;
+		const transition_factor_in = this.lyrics[this.locus].multiLine ? 1 : transition_factor;
 		const blendIn = this.type.synced ? BlendColors(bio.ui.col.lyricsNormal, bio.ui.col.lyricsHighlight, transition_factor_in) : bio.ui.col.lyricsNormal;
 
 		for (const lyric of this.lyrics) {
-			const line_y = Math.round(y - top + lyric.yOffset);
-			if (line_y < this.top - this.lineHeight * 0.5 || line_y > this.bot + this.lineHeight) continue;
+			const isHiddenSecondary = lyric.isOriginalTranslation === false && lyric.sentenceGroup !== currentSentenceGroup;
+
+			if (isHiddenSecondary && this.translationSyncBlend <= 0) continue;
+
+			const lineYOffset = this.getBlendedOffset(lyric);
+			const line_y = Math.round(y - top + lineYOffset);
+
+			if (line_y > this.bot + this.lineHeight) break;
+			if (line_y < this.top - this.lineHeight * 0.5) continue;
+
 			// DEBUG gr.DrawRect(this.x, line_y, this.w, this.lineHeight, 1, RGBA(0, 255, 255, 100));
-			this.drawLyric(gr, lyric, line_y, blendIn);
+			this.drawLyric(gr, lyric, line_y, blendIn, isHiddenSecondary ? this.translationSyncBlend : 1);
 		}
 
 		this.drawLyricsOffset(gr);
@@ -291,12 +332,17 @@ class BioLyrics {
 
 	/**
 	 * Filters parsed (pre-wrap) lyrics based on the translation setting.
-	 * When translation is disabled only the line selected by lyricsTranslationLine is kept per timestamp group.
+	 * When translation is disabled only the line selected by lyricsTranslationHighlightMode is kept per timestamp group.
+	 * When translation is shown and lyricsTranslationCurrentOnly is enabled, tags each line as
+	 * primary/secondary so drawLyrics() can hide secondary lines outside the current sentence group.
 	 * @param {Array<object>} lyrics - The parsed lyrics with `timestamp` and `group` properties.
-	 * @returns {Array<object>} The filtered lyrics, or the original array unchanged when translation is shown.
+	 * @returns {Array<object>} The filtered lyrics, or the original array (possibly tagged) when translation is shown.
 	 */
 	filterAndHighlightLyrics(lyrics) {
 		if (bioSet.lyricsTranslation) {
+			if (bioSet.lyricsTranslationCurrentOnly) {
+				this.translationTagOriginalLines(lyrics);
+			}
 			return lyrics;
 		}
 
@@ -315,9 +361,10 @@ class BioLyrics {
 			groupedLyrics[lyric.timestamp][lyric.group].push(lyric);
 		}
 
+		const selectedGroupIndex = bioSet.lyricsTranslationHighlightMode === 3 ? 0 : bioSet.lyricsTranslationHighlightMode - 1;
+
 		for (const timestamp in groupedLyrics) {
 			const timestampGroups = Object.keys(groupedLyrics[timestamp]).sort((a, b) => a - b);
-			const selectedGroupIndex = bioSet.lyricsTranslationLine - 1;
 			const selectedGroup = timestampGroups[Math.min(selectedGroupIndex, timestampGroups.length - 1)];
 
 			filteredLyrics.push(...groupedLyrics[timestamp][selectedGroup]);
@@ -334,25 +381,33 @@ class BioLyrics {
 	 * @param {boolean} isSynced - Whether the lyrics are synced with the audio.
 	 */
 	formatLyrics(lyrics, isSynced) {
+		this.translationLyrics = false;
+
 		if (lyrics.length && this.w > 10) {
 			if (isSynced && lyrics[0].content && lyrics[0].timestamp > this.durationScroll) {
 				lyrics.unshift({ timestamp: 0, content: '', group: -1, sentenceGroup: -1 });
 			}
 
-			const isBilingual = bioSet.lyricsTranslation && lyrics.some((l, i) =>
-				i > 0 && l.group !== undefined && l.group !== lyrics[i - 1].group && l.timestamp === lyrics[i - 1].timestamp
+			this.translationLyrics = bioSet.lyricsTranslation && lyrics.some((l, i) =>
+				i > 0 && l.group !== lyrics[i - 1].group && l.timestamp === lyrics[i - 1].timestamp
 			);
 
 			$Bio.gr(1, 1, false, g => {
 				for (let i = 0; i < lyrics.length; i++) {
 					const l = g.EstimateLineWrap(lyrics[i].content, this.font.lyrics, this.w - 10);
-					if (l[1] > this.maxLyrWidth) this.maxLyrWidth = l[1];
+
+					if (l[1] > this.maxLyrWidth) {
+						this.maxLyrWidth = l[1];
+					}
+
 					if (l.length > 2) {
 						const numLines = l.length / 2;
 						let maxScrollTime = this.durationScroll * 2;
+
 						if (lyrics[i + 1]) {
 							maxScrollTime = Math.min(maxScrollTime * numLines, (lyrics[i + 1].timestamp - lyrics[i].timestamp) / numLines);
 						}
+
 						for (let j = 0; j < l.length; j += 2) {
 							this.lyrics.push({
 								content: l[j].trim(),
@@ -361,7 +416,8 @@ class BioLyrics {
 								multiLine: !!j,
 								group: lyrics[i].group,
 								wrapGroup: i,
-								sentenceGroup: lyrics[i].sentenceGroup
+								sentenceGroup: lyrics[i].sentenceGroup,
+								isOriginalTranslation: lyrics[i].isOriginalTranslation
 							});
 						}
 					}
@@ -372,7 +428,8 @@ class BioLyrics {
 							id: i,
 							group: lyrics[i].group,
 							wrapGroup: i,
-							sentenceGroup: lyrics[i].sentenceGroup
+							sentenceGroup: lyrics[i].sentenceGroup,
+							isOriginalTranslation: lyrics[i].isOriginalTranslation
 						});
 					}
 				}
@@ -380,9 +437,10 @@ class BioLyrics {
 
 			// Compute cumulative vertical offsets, adding sentence spacing at group boundaries
 			let cumulativeY = 0;
+
 			for (let i = 0; i < this.lyrics.length; i++) {
 				if (i > 0 && this.lyrics[i].sentenceGroup !== this.lyrics[i - 1].sentenceGroup) {
-					cumulativeY += isBilingual ? this.sentenceSpacing : this.sentenceSpacing * 0.5;
+					cumulativeY += this.translationLyrics ? this.sentenceSpacing : this.sentenceSpacing * 0.5;
 				}
 				this.lyrics[i].yOffset = cumulativeY;
 				cumulativeY += this.lineHeight;
@@ -402,6 +460,23 @@ class BioLyrics {
 		}
 
 		this.repaintRect();
+	}
+
+	/**
+	 * Blends a lyric's compact (sync-only) and full vertical offsets according to the current reveal transition.
+	 * @param {object} lyric - The lyric line whose offset should be computed.
+	 * @returns {number} The interpolated vertical offset for this frame.
+	 */
+	getBlendedOffset(lyric) {
+		if (this.translationSyncBlend >= 1) {
+			return lyric.yOffset;
+		}
+
+		if (this.translationSyncBlend <= 0) {
+			return lyric.compactYOffset;
+		}
+
+		return Lerp(lyric.compactYOffset, lyric.yOffset, this.translationSyncBlend);
 	}
 
 	/**
@@ -531,6 +606,19 @@ class BioLyrics {
 	}
 
 	/**
+	 * Determines whether secondary (non-primary) translation lines should be hidden right now,
+	 * i.e. whether the gap-free `compactYOffset` scheme should be used instead of the full `yOffset`.
+	 * @returns {boolean} True when sync-only hiding is currently in effect.
+	 */
+	isSyncOnlyActive() {
+		return (
+				this.type.synced && bioSet.lyricsTranslation && bioSet.lyricsTranslationCurrentOnly
+				&&
+				(!bioSet.lyricsTranslationScrollReveal || !this.scrollDrag && !this.showOffset)
+			);
+	}
+
+	/**
 	 * Initializes various variables and settings for displaying lyrics and sends them to parse.
 	 * @param {Array<string>} lyr - The lyrics that will be loaded and displayed.
 	 */
@@ -566,8 +654,8 @@ class BioLyrics {
 		this.lyrics = [];
 		this.lyricsOffset = 0;
 		this.maxLyrWidth = 0;
-		this.highlightedWrapGroup = -1;
 		this.newHighlighted = false;
+		this.translationSyncAppliedGroup = null;
 
 		this.durationScroll = bioSet.lyricsScrollAdaptive ? Math.round(bioSet.lyricsScrollRateMax * 2 / 3) : bioSet.lyricsScrollRateAvg * 0.5;
 		this.factor = this.durationScroll < 1500 ? 20 : 24;
@@ -615,7 +703,9 @@ class BioLyrics {
 		if (!bioSet.scrollUnsynced && this.type.unsynced) {
 			return 0;
 		}
+
 		const time = bio.panel.isRadio() ? fb.PlaybackTime - bio.txt.reader.trackStartTime : fb.PlaybackTime;
+
 		return Math.round(time * 1000) + this.lyricsOffset + this.transitionOffset + this.userOffset;
 	}
 
@@ -636,12 +726,16 @@ class BioLyrics {
 
 		if (this.type.synced) {
 			let lyrOffset = null;
+
 			lyr.some(line => {
 				lyrOffset = line.match(Regex.LyricsOffset);
 				return lyrOffset;
 			});
+
 			this.lyricsOffset = lyrOffset && lyrOffset.length > 0 ? parseInt(lyrOffset[1]) : 0;
-			if (isNaN(this.lyricsOffset)) this.lyricsOffset = 0;
+			if (isNaN(this.lyricsOffset)) {
+				this.lyricsOffset = 0;
+			}
 
 			const parsedLyrics = this.parseSyncLyrics(lyr, this.type.none);
 			const filteredLyrics = this.filterAndHighlightLyrics(parsedLyrics);
@@ -663,6 +757,11 @@ class BioLyrics {
 				line.timestamp = groupTimestamp;
 			}
 		}
+
+		this.translationSyncBlend = this.isSyncOnlyActive() ? 0 : 1;
+		this.translationSyncBlendTarget = this.translationSyncBlend;
+		this.translationSyncBlendStart = this.translationSyncBlend;
+		this.translationSyncBlendElapsed = 0;
 
 		this.seek();
 		this.start();
@@ -793,6 +892,7 @@ class BioLyrics {
 
 		while (low <= high) {
 			const mid = Math.floor((low + high) / 2);
+
 			if (this.lyrics[mid].timestamp <= curTime) {
 				currentIndex = mid;
 				low = mid + 1;
@@ -804,24 +904,34 @@ class BioLyrics {
 		if (currentIndex >= 0) {
 			const sg = this.lyrics[currentIndex].sentenceGroup;
 			let startIndex = currentIndex;
+
 			while (startIndex > 0 && this.lyrics[startIndex - 1].sentenceGroup === sg) {
 				startIndex--;
 			}
+
 			this.locus = startIndex;
+			this.translationUpdateSyncOffsets(sg);
 			this.setHighlight();
-		} else {
+		}
+		else {
 			this.locus = 0;
+			if (this.lyrics.length) {
+				this.translationUpdateSyncOffsets(this.lyrics[0].sentenceGroup);
+			}
 		}
 
 		this.repaintRect();
 	}
 
 	/**
-	 * Highlights the translation line within the current sentence group.
+	 * Highlights the translation line(s) within the current sentence group.
+	 * When lyricsTranslationHighlightMode === 3 is enabled and both original and translation lines
+	 * are visible for this group, every line in the group is highlighted together.
 	 */
 	setHighlight() {
 		if (!this.type.synced || this.locus < 0) return;
 
+		const wrapGroupsInGroup = [];
 		const currentSentenceGroup = this.lyrics[this.locus].sentenceGroup;
 		const idxStart = this.locus;
 		let idxEnd = this.locus;
@@ -830,14 +940,24 @@ class BioLyrics {
 			idxEnd++;
 		}
 
-		const groupSize = idxEnd - idxStart + 1;
-		const highlightIdx = idxStart + Math.min(bioSet.lyricsTranslationLine - 1, groupSize - 1);
+		for (let i = idxStart; i <= idxEnd; i++) {
+			if (wrapGroupsInGroup[wrapGroupsInGroup.length - 1] !== this.lyrics[i].wrapGroup) {
+				wrapGroupsInGroup.push(this.lyrics[i].wrapGroup);
+			}
+		}
 
-		if (this.lyrics[highlightIdx]) {
-			const targetWrapGroup = this.lyrics[highlightIdx].wrapGroup;
-			this.highlightedWrapGroup = targetWrapGroup;
+		const targetWrapGroup = wrapGroupsInGroup[Math.min(bioSet.lyricsTranslationHighlightMode - 1, wrapGroupsInGroup.length - 1)];
+		if (targetWrapGroup === undefined) return;
+
+		if (bioSet.lyricsTranslationHighlightMode === 3 && bioSet.lyricsTranslation && wrapGroupsInGroup.length > 1) {
+			for (let i = idxStart; i <= idxEnd; i++) {
+				this.lyrics[i].highlight = true;
+			}
+		} else {
 			for (const lyric of this.lyrics) {
-				if (lyric.wrapGroup === targetWrapGroup) lyric.highlight = true;
+				if (lyric.wrapGroup === targetWrapGroup) {
+					lyric.highlight = true;
+				}
 			}
 		}
 	}
@@ -847,6 +967,8 @@ class BioLyrics {
 	 */
 	smoothScroll() {
 		if (!bio.txt.lyricsDisplayed()) return;
+
+		this.translationUpdateSyncBlend();
 
 		if (this.scrollUpdateNeeded()) {
 			this.advanceHighLighted();
@@ -861,6 +983,11 @@ class BioLyrics {
 	 */
 	start() {
 		if (this.timer || !fb.IsPlaying || fb.IsPaused) return;
+
+		if (this.translationBlendTimer) {
+			clearInterval(this.translationBlendTimer);
+			this.translationBlendTimer = null;
+		}
 
 		this.timer = setInterval(() => {
 			if (!this.init) this.smoothScroll();
@@ -884,6 +1011,109 @@ class BioLyrics {
 	 */
 	tidy(n) {
 		return n.replace(Regex.LyricsTimestamp, '$1$4').replace(Regex.LyricsTimestampEnhanced, '$1$4').trim();
+	}
+
+	/**
+	 * Keeps the compact/full reveal blend animating so dragging or wheel-scrolling the lyrics smoothly reveals translation lines.
+	 */
+	translationBlendAnimationReveal() {
+		if (this.timer || this.translationBlendTimer ||
+			!bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly || !bioSet.lyricsTranslationScrollReveal) {
+			return;
+		}
+
+		this.translationBlendTimer = setInterval(() => {
+			this.translationUpdateSyncBlend();
+
+			if (this.translationSyncBlend === this.translationSyncBlendTarget) {
+				clearInterval(this.translationBlendTimer);
+				this.translationBlendTimer = null;
+			}
+		}, 16);
+	}
+
+	/**
+	 * Tags each lyric line with `isOriginalTranslation`: true for the original line (the lowest `group` id,
+	 * whichever line appeared first in the file) within its timestamp group, false for every other line sharing that timestamp.
+	 * @param {Array<object>} lyrics - The parsed (pre-wrap) lyrics with `timestamp` and `group` properties.
+	 */
+	translationTagOriginalLines(lyrics) {
+		const originalGroupByTimestamp = new Map();
+
+		for (const lyric of lyrics) {
+			const currentOriginal = originalGroupByTimestamp.get(lyric.timestamp);
+			if (currentOriginal === undefined || lyric.group < currentOriginal) {
+				originalGroupByTimestamp.set(lyric.timestamp, lyric.group);
+			}
+		}
+
+		for (const lyric of lyrics) {
+			lyric.isOriginalTranslation = lyric.group === originalGroupByTimestamp.get(lyric.timestamp);
+		}
+	}
+
+	/**
+	 * Advances the compact/full layout blend used to smoothly reveal or hide secondary translation lines when the
+	 * effective sync-only state changes (e.g. a scroll drag starts/stops while lyricsTranslationScrollReveal is on).
+	 * Runs on the same per-tick timer as the scroll-easing animation, so it only advances while playback is active.
+	 */
+	translationUpdateSyncBlend() {
+		if (!bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly) {
+			return;
+		}
+
+		const target = this.isSyncOnlyActive() ? 0 : 1;
+
+		if (target !== this.translationSyncBlendTarget) {
+			this.translationSyncBlendTarget = target;
+			this.translationSyncBlendStart = this.translationSyncBlend;
+			this.translationSyncBlendElapsed = 0;
+		}
+
+		if (this.translationSyncBlend === this.translationSyncBlendTarget) {
+			return;
+		}
+
+		this.translationSyncBlendElapsed += 16;
+		const t = Math.min(this.translationSyncBlendElapsed / bioSet.lyricsTranslationRevealDuration, 1);
+		const easing = Easing(bioSet.lyricsScrollEasing, t);
+
+		this.translationSyncBlend = t >= 1
+			? this.translationSyncBlendTarget
+			: Lerp(this.translationSyncBlendStart, this.translationSyncBlendTarget, easing);
+
+		this.repaintRect();
+	}
+
+	/**
+	 * Updates `compactYOffset` for every line so that, when lyricsTranslationCurrentOnly is hiding secondary translation lines,
+	 * no vertical gap is left where they would have been. Only the given sentence group keeps full (all-lines) height;
+	 * every other group collapses to the height of its primary line.
+	 * @param {number} currentSentenceGroup - The sentenceGroup that should stay fully expanded.
+	 */
+	translationUpdateSyncOffsets(currentSentenceGroup) {
+		if (!this.type.synced || !bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly ||
+			this.translationSyncAppliedGroup === currentSentenceGroup) {
+			return;
+		}
+
+		this.translationSyncAppliedGroup = currentSentenceGroup;
+
+		let cumulativeY = 0;
+		let prevSentenceGroup = null;
+
+		for (const lyric of this.lyrics) {
+			const isVisible = lyric.sentenceGroup === currentSentenceGroup || lyric.isOriginalTranslation !== false;
+
+			if (prevSentenceGroup !== null && lyric.sentenceGroup !== prevSentenceGroup) {
+				cumulativeY += this.translationLyrics ? this.sentenceSpacing : this.sentenceSpacing * 0.5;
+			}
+
+			lyric.compactYOffset = cumulativeY;
+			if (isVisible) cumulativeY += this.lineHeight;
+
+			prevSentenceGroup = lyric.sentenceGroup;
+		}
 	}
 
 	/**
@@ -920,6 +1150,7 @@ class BioLyrics {
 	on_mouse_lbtn_down(x, y, m) {
 		this.scrollDrag = true;
 		this.scrollDragY = y;
+		this.translationBlendAnimationReveal();
 	}
 
 	/**
@@ -930,13 +1161,16 @@ class BioLyrics {
 	 */
 	on_mouse_lbtn_up(x, y, m) {
 		this.scrollDrag = false;
+		this.translationBlendAnimationReveal();
 	}
 
 	/**
 	 * Ends the scroll drag operation when the mouse leaves.
 	 */
 	on_mouse_leave() {
+		if (!this.scrollDrag) return;
 		this.scrollDrag = false;
+		this.translationBlendAnimationReveal();
 	}
 
 	/**
@@ -972,9 +1206,12 @@ class BioLyrics {
 		if (!this.userOffset) this.repaintRect();
 		this.showOffset = this.type.synced && this.userOffset !== 0;
 
+		this.translationBlendAnimationReveal();
+
 		clearTimeout(this.showOffsetTimer);
 		this.showOffsetTimer = setTimeout(() => {
 			this.showOffset = false;
+			this.translationBlendAnimationReveal();
 			this.repaintRect();
 		}, 5000);
 
@@ -982,12 +1219,17 @@ class BioLyrics {
 	}
 
 	/**
-	 * Checks if playback is paused and stops or starts the animation accordingly.
-	 * @param {boolean} isPaused - Whether playback is currently paused.
+	 * Checks if the playback is paused and stops or starts accordingly.
+	 * @param {boolean} isPaused - Whether playback is currently paused or not.
 	 */
 	on_playback_pause(isPaused) {
-		if (isPaused) this.stop();
-		else this.start();
+		if (isPaused) {
+			this.stop();
+			this.translationBlendAnimationReveal();
+		}
+		else {
+			this.start();
+		}
 	}
 
 	/**

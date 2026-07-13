@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-07-2026                                              * //
+// * Last change:    13-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1734,7 +1734,10 @@ class ConfigDefaults {
 			lyricsScrollRateAvg: 750,
 			lyricsScrollRateMax: 375,
 			lyricsTranslation: true,
-			lyricsTranslationLine: 1,
+			lyricsTranslationHighlightMode: 1,
+			lyricsTranslationCurrentOnly: false,
+			lyricsTranslationScrollReveal: false,
+			lyricsTranslationRevealDuration: 500,
 			sourceAll: false,
 			classicalMusicMode: false,
 			cycPhotoLocation: 0,
@@ -1798,7 +1801,10 @@ class ConfigDefaults {
 			lyricsScrollRateAvg: 'Values: false, 300, 500, 750, 1000, 1500 - not in Options, set by lyricsScrollSpeed',
 			lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed',
 			lyricsTranslation: 'Values: true, false - Options > Biography > Lyrics > Translation > Show translation',
-			lyricsTranslationLine: 'Values: 1, 2 - Options > Biography > Lyrics > Translation',
+			lyricsTranslationHighlightMode: 'Values: 1, 2, 3 - Options > Biography > Lyrics > Translation',
+			lyricsTranslationCurrentOnly: 'Values: true, false - Options > Biography > Lyrics > Translation > Show current translation only',
+			lyricsTranslationScrollReveal: 'Values: true, false - Options > Biography > Lyrics > Translation > Show all lines while scrolling',
+			lyricsTranslationRevealDuration: 'Values: 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Biography > Lyrics > Translation > Reveal animation duration',
 			sourceAll: 'Values: true, false - Options > Biography > Source > Text > Amalgamate',
 			classicalMusicMode: 'Values: true, false - Options > Biography > Source > Text > Prefer composition (allmusic && wikipedia review)',
 			cycPhotoLocation: 'Values: 0, 1, 2 - Options > Biography > Source > Photo',
@@ -1861,7 +1867,10 @@ class ConfigDefaults {
 			lyricsScrollRateAvg: 750,
 			lyricsScrollRateMax: 375,
 			lyricsTranslation: true,
-			lyricsTranslationLine: 1
+			lyricsTranslationHighlightMode: 1,
+			lyricsTranslationCurrentOnly: false,
+			lyricsTranslationScrollReveal: false,
+			lyricsTranslationRevealDuration: 500
 		};
 
 		/** @public @type {object} Options > Lyrics settings config name dscription. */
@@ -1888,7 +1897,10 @@ class ConfigDefaults {
 			lyricsScrollRateAvg: 'Values: false, 300, 500, 750, 1000, 1500 - not in Options, set by lyricsScrollSpeed',
 			lyricsScrollRateMax: 'Values: false, 150, 250, 375, 500, 725 - not in Options, set by lyricsScrollSpeed',
 			lyricsTranslation: 'Values: true, false - Options > Lyrics > Translation > Show translation',
-			lyricsTranslationLine: 'Values: 1, 2 - Options > Lyrics > Translation',
+			lyricsTranslationHighlightMode: 'Values: 1, 2, 3 - Options > Lyrics > Translation',
+			lyricsTranslationCurrentOnly: 'Values: true, false - Options > Lyrics > Translation > Show current translation only',
+			lyricsTranslationScrollReveal: 'Values: true, false - Options > Lyrics > Translation > Show all lines while scrolling',
+			lyricsTranslationRevealDuration: 'Values: 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Lyrics > Translation > Reveal animation duration'
 		};
 
 		/** @public @type {object} Options > Lyrics settings config header dscription. */

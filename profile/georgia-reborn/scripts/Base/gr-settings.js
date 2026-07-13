@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-07-2026                                              * //
+// * Last change:    13-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -665,7 +665,10 @@ grSet.addProperties({
 	lyricsScrollRateAvg:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed avg rate', 750], // 300, 500, 750, 1000, 1500 - average lyrics scroll in ms
 	lyricsScrollRateMax:                ['Georgia-ReBORN - 14. Lyrics: Scroll speed max rate', 375], // average lyrics scroll / 2 = maximum lyrics scroll in ms
 	lyricsTranslation:                  ['Georgia-ReBORN - 14. Lyrics: Show lyrics translation', true], // true - show translation in bilingual lyrics
-	lyricsTranslationLine:              ['Georgia-ReBORN - 14. Lyrics: Translation line', 1], // 1 - 2 - the index of the translation line, first or second line in bilingual lyrics
+	lyricsTranslationHighlightMode:     ['Georgia-ReBORN - 14. Lyrics: Translation highlight mode', 1], // 1 - 3 - the index of the translation line, first or second line in bilingual lyrics
+	lyricsTranslationCurrentOnly:       ['Georgia-ReBORN - 14. Lyrics: Translation show current translation only', false], // false - displays only the current translation line instead of all
+	lyricsTranslationScrollReveal:      ['Georgia-ReBORN - 14. Lyrics: Translation show all lines while scrolling', false], // false - displays all translations lines when scrolling lyrics
+	lyricsTranslationRevealDuration:    ['Georgia-ReBORN - 14. Lyrics: Translation reveal animation duration', 500], // 500 - the animation duration of the scroll reveal
 
 	// * Settings
 	themeDayNightEnabled:               ['Georgia-ReBORN - 15. Settings: Auto-day/night mode enabled', false], // false: The theme day/night mode state
@@ -1587,7 +1590,10 @@ class ThemeSettingsManager {
 		this._setSetting(bioSet, 'lyricsScrollRateAvg', grCfg.themeBiography, 'lyricsScrollRateAvg', 750);
 		this._setSetting(bioSet, 'lyricsScrollRateMax', grCfg.themeBiography, 'lyricsScrollRateMax', 375);
 		this._setSetting(bioSet, 'lyricsTranslation', grCfg.themeBiography, 'lyricsTranslation', true);
-		this._setSetting(bioSet, 'lyricsTranslationLine', grCfg.themeBiography, 'lyricsTranslationLine', 1);
+		this._setSetting(bioSet, 'lyricsTranslationHighlightMode', grCfg.themeBiography, 'lyricsTranslationHighlightMode', 1);
+		this._setSetting(bioSet, 'lyricsTranslationCurrentOnly', grCfg.themeBiography, 'lyricsTranslationCurrentOnly', false);
+		this._setSetting(bioSet, 'lyricsTranslationScrollReveal', grCfg.themeBiography, 'lyricsTranslationScrollReveal', false);
+		this._setSetting(bioSet, 'lyricsTranslationRevealDuration', grCfg.themeBiography, 'lyricsTranslationRevealDuration', 500);
 		this._setSetting(bioSet, 'sourceAll', grCfg.themeBiography, 'sourceAll', false);
 		this._setSetting(bioSet, 'classicalMusicMode', grCfg.themeBiography, 'classicalMusicMode', false);
 		this._setSetting(bioSet, 'cycPhotoLocation', grCfg.themeBiography, 'cycPhotoLocation', 0);
@@ -1640,7 +1646,10 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'lyricsScrollRateAvg', grCfg.themeLyrics, 'lyricsScrollRateAvg', 750);
 		this._setSetting(grSet, 'lyricsScrollRateMax', grCfg.themeLyrics, 'lyricsScrollRateMax', 375);
 		this._setSetting(grSet, 'lyricsTranslation', grCfg.themeLyrics, 'lyricsTranslation', true);
-		this._setSetting(grSet, 'lyricsTranslationLine', grCfg.themeLyrics, 'lyricsTranslationLine', 1);
+		this._setSetting(grSet, 'lyricsTranslationHighlightMode', grCfg.themeLyrics, 'lyricsTranslationHighlightMode', 1);
+		this._setSetting(grSet, 'lyricsTranslationCurrentOnly', grCfg.themeLyrics, 'lyricsTranslationCurrentOnly', false);
+		this._setSetting(grSet, 'lyricsTranslationScrollReveal', grCfg.themeLyrics, 'lyricsTranslationScrollReveal', false);
+		this._setSetting(grSet, 'lyricsTranslationRevealDuration', grCfg.themeLyrics, 'lyricsTranslationRevealDuration', 500);
 		this._setSetting(grSet, 'displayLyrics', grCfg.themeLyrics, 'displayLyrics', false);
 	}
 

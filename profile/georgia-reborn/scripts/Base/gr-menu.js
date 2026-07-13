@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-07-2026                                              * //
+// * Last change:    13-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3568,11 +3568,23 @@ class TopMenuOptions {
 			window.Repaint();
 		});
 		biographyLyricsTranslationMenu.addSeparator();
-		biographyLyricsTranslationMenu.addRadioItems(['First line', 'Second Line'], bioSet.lyricsTranslationLine, [1, 2], (line) => {
-			bioSet.lyricsTranslationLine = line;
+		biographyLyricsTranslationMenu.addRadioItems(['Show highlight on original line', 'Show highlight on translation line', 'Show highlight on both lines'], bioSet.lyricsTranslationHighlightMode, [1, 2, 3], (mode) => {
+			bioSet.lyricsTranslationHighlightMode = mode;
 			bio.lyrics.loadLyrics(bio.lyrics.lyr);
 			window.Repaint();
 		});
+		biographyLyricsTranslationMenu.addToggleItem('Show current translation only', bioSet, 'lyricsTranslationCurrentOnly', () => {
+			bio.lyrics.loadLyrics(bio.lyrics.lyr);
+			window.Repaint();
+		}, !bioSet.lyricsTranslation);
+		biographyLyricsTranslationMenu.addToggleItem('Show all lines while scrolling', bioSet, 'lyricsTranslationScrollReveal', () => {
+			window.Repaint();
+		}, !bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly);
+		biographyLyricsTranslationMenu.addSeparator();
+		biographyLyricsTranslationMenu.createRadioSubMenu('Reveal animation duration', ['Disabled', '100ms', '200ms', '300ms', '400ms', '500ms (default)', '600ms', '700ms', '800ms', '900ms', '1000ms'], bioSet.lyricsTranslationRevealDuration, [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
+			bioSet.lyricsTranslationRevealDuration = duration;
+			window.Repaint();
+		}, !bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly || !bioSet.lyricsTranslationScrollReveal, false, [0]);
 		biographyLyricsTranslationMenu.appendTo(biographyLyricsMenu);
 		biographyLyricsMenu.appendTo(biographyMenu);
 
@@ -3964,11 +3976,24 @@ class TopMenuOptions {
 			window.Repaint();
 		});
 		lyricsTranslationMenu.addSeparator();
-		lyricsTranslationMenu.addRadioItems(['First line', 'Second Line'], grSet.lyricsTranslationLine, [1, 2], (line) => {
-			grSet.lyricsTranslationLine = line;
+		lyricsTranslationMenu.addRadioItems(['Show highlight on original line', 'Show highlight on translation line', 'Show highlight on both lines'], grSet.lyricsTranslationHighlightMode, [1, 2, 3], (mode) => {
+			grSet.lyricsTranslationHighlightMode = mode;
 			grm.lyrics.initLyrics();
 			window.Repaint();
-		});
+		}, !grSet.lyricsTranslation);
+		lyricsTranslationMenu.addSeparator();
+		lyricsTranslationMenu.addToggleItem('Show current translation only', grSet, 'lyricsTranslationCurrentOnly', () => {
+			grm.lyrics.initLyrics();
+			window.Repaint();
+		}, !grSet.lyricsTranslation);
+		lyricsTranslationMenu.addToggleItem('Show all lines while scrolling', grSet, 'lyricsTranslationScrollReveal', () => {
+			window.Repaint();
+		}, !grSet.lyricsTranslation || !grSet.lyricsTranslationCurrentOnly);
+		lyricsTranslationMenu.addSeparator();
+		lyricsTranslationMenu.createRadioSubMenu('Reveal animation duration', ['Disabled', '100ms', '200ms', '300ms', '400ms', '500ms (default)', '600ms', '700ms', '800ms', '900ms', '1000ms'], grSet.lyricsTranslationRevealDuration, [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
+			grSet.lyricsTranslationRevealDuration = duration;
+			window.Repaint();
+		}, !grSet.lyricsTranslation || !grSet.lyricsTranslationCurrentOnly || !grSet.lyricsTranslationScrollReveal, false, [0]);
 		lyricsTranslationMenu.appendTo(lyricsMenu);
 		lyricsMenu.addSeparator();
 

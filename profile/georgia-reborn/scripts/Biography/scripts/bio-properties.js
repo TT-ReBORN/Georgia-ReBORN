@@ -266,7 +266,10 @@ let bioProperties = [
 	['Panel Biography - Lyrics: Scroll speed avg rate', 750, 'lyricsScrollRateAvg'],
 	['Panel Biography - Lyrics: Scroll speed max rate', 375, 'lyricsScrollRateMax'],
 	['Panel Biography - Lyrics: Show lyrics translation', true, 'lyricsTranslation'],
-	['Panel Biography - Lyrics: Translation line', 1, 'lyricsTranslationLine'],
+	['Panel Biography - Lyrics: Translation highlight mode', 1, 'lyricsTranslationHighlightMode'],
+	['Panel Biography - Lyrics: Translation show current translation only', false, 'lyricsTranslationCurrentOnly'],
+	['Panel Biography - Lyrics: Translation show all lines while scrolling', false, 'lyricsTranslationScrollReveal'],
+	['Panel Biography - Lyrics: Translation reveal animation duration', 500, 'lyricsTranslationRevealDuration'],
 
 	['Panel Biography - Menu Show Inactivate', 0, 'menuShowInactivate'],
 	['Panel Biography - Menu Show Paste', 1, 'menuShowPaste'],

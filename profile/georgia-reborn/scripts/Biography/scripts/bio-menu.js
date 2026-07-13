@@ -739,17 +739,75 @@ class BioMenuItems {
 			separator: true
 		});
 
-		const lyricsScrollTranslationItems = ['First line', 'Second line'];
+		const lyricsScrollTranslationItems = ['Show highlight on original line', 'Show highlight on translation line', 'Show highlight on both lines'];
 		lyricsScrollTranslationItems.forEach((str, i) => {
 			bioMenu.newItem({
 				menuName: 'LyricsTranslation',
 				str,
 				func: () => {
-					bioSet.lyricsTranslationLine = i + 1;
+					bioSet.lyricsTranslationHighlightMode = i + 1;
 					bio.lyrics.loadLyrics(bio.lyrics.lyr);
 					window.Repaint();
 				},
-				checkRadio: bioSet.lyricsTranslationLine === i + 1
+				flags: bioSet.lyricsTranslation ? BIO_MF_STRING : BIO_MF_GRAYED,
+				checkRadio: bioSet.lyricsTranslationHighlightMode === i + 1,
+				separator: i === 2
+			});
+		});
+
+		bioMenu.newItem({
+			menuName: 'LyricsTranslation',
+			str: 'Show current translation only',
+			func: () => {
+				bioSet.lyricsTranslationCurrentOnly = !bioSet.lyricsTranslationCurrentOnly;
+				bio.lyrics.loadLyrics(bio.lyrics.lyr);
+				window.Repaint();
+			},
+			flags: bioSet.lyricsTranslation ? BIO_MF_STRING : BIO_MF_GRAYED,
+			checkItem: bioSet.lyricsTranslationCurrentOnly
+		});
+
+		bioMenu.newItem({
+			menuName: 'LyricsTranslation',
+			str: 'Show all lines while scrolling',
+			func: () => {
+				bioSet.lyricsTranslationScrollReveal = !bioSet.lyricsTranslationScrollReveal;
+				window.Repaint();
+			},
+			flags: bioSet.lyricsTranslation && bioSet.lyricsTranslationCurrentOnly ? BIO_MF_STRING : BIO_MF_GRAYED,
+			checkItem: bioSet.lyricsTranslationScrollReveal
+		});
+
+		bioMenu.newMenu({
+			menuName: 'Reveal animation duration',
+			str: 'Reveal animation duration',
+			flags: bioSet.lyricsTranslation && bioSet.lyricsTranslationCurrentOnly && bioSet.lyricsTranslationScrollReveal ? BIO_MF_STRING : BIO_MF_GRAYED,
+			appendTo: 'LyricsTranslation',
+		});
+
+		const lyricsTranslationRevealDuration = [
+			['Disabled',   0],
+			['  100ms',  100],
+			['  200ms',  200],
+			['  300ms',  300],
+			['  400ms',  400],
+			['  500ms',  500],
+			['  600ms',  600],
+			['  700ms',  700],
+			['  800ms',  800],
+			['  900ms',  900],
+			['1000ms',  1000]
+		];
+		lyricsTranslationRevealDuration.forEach(([label, duration], i) => {
+			bioMenu.newItem({
+				menuName: 'Reveal animation duration',
+				str: label,
+				func: () => {
+					bioSet.lyricsTranslationRevealDuration = duration;
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsTranslationRevealDuration === duration,
+				separator: i === 0
 			});
 		});
 		// #endregion
