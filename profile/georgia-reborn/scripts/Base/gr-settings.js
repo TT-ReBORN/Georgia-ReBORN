@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-07-2026                                              * //
+// * Last change:    14-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -572,7 +572,8 @@ grSet.addProperties({
 	noDiscArtStub:                      ['Georgia-ReBORN - 11. Details: No disc art placeholder', false], // Do not show disc art placeholder
 	discArtStub:                        ['Georgia-ReBORN - 11. Details: Disc art placeholder', 'cdAlbumCover'], // Displays the disc art placeholder
 	displayDiscArt:                     ['Georgia-ReBORN - 11. Details: Display disc art', true], // true: Show disc artwork behind album artwork. This artwork is expected to be named cd.png and have transparent backgrounds (can be found at fanart.tv)
-	discArtOnTop:                       ['Georgia-ReBORN - 11. Details: Show disc art above front cover', false], // true: Display discArt above front cover
+	discArtOnTop:                       ['Georgia-ReBORN - 11. Details: Display disc art above front cover', false], // false: Display discArt above front cover
+	discArtEmbedded:                    ['Georgia-ReBORN - 11. Details: Display embedded disc art if available', false], // false: Display embedded disc art if available
 	spinDiscArt:                        ['Georgia-ReBORN - 11. Details: Spin disc art', false], // true: discArt will spin while the song plays
 	spinDiscArtImageCount:              ['Georgia-ReBORN - 11. Details: # of images to create while spinning', 72], // Higher numbers will increase memory usage, and slow down spin
 	spinDiscArtRedrawInterval:          ['Georgia-ReBORN - 11. Details: Spin disc draw interval', 75], // Speed in ms with which to attempt redraw. Lower numbers will increase CPU
@@ -1375,6 +1376,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'discArtStub', grCfg.themeDetails, 'discArtStub', 'cdAlbumCover');
 		this._setSetting(grSet, 'displayDiscArt', grCfg.themeDetails, 'displayDiscArt', true);
 		this._setSetting(grSet, 'discArtOnTop', grCfg.themeDetails, 'discArtOnTop', false);
+		this._setSetting(grSet, 'discArtEmbedded', grCfg.themeDetails, 'discArtEmbedded', false);
 		this._setSetting(grSet, 'spinDiscArt', grCfg.themeDetails, 'spinDiscArt', false);
 		this._setSetting(grSet, 'spinDiscArtImageCount', grCfg.themeDetails, 'spinDiscArtImageCount', 72);
 		this._setSetting(grSet, 'spinDiscArtRedrawInterval', grCfg.themeDetails, 'spinDiscArtRedrawInterval', 75);

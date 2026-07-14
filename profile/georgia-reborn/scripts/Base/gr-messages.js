@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    09-07-2026                                              * //
+// * Last change:    14-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -588,6 +588,23 @@ class MessageManager {
 		};
 
 		this.msgMenuDetailsOptions = {
+			discArtEmbedded: {
+				msg: 'Display embedded disc art if available\n\n'
+					+ 'This uses the album art embedded\n'
+					+ 'in the track\'s "Disc" artwork slot as\n'
+					+ 'the disc image, when no external\n'
+					+ 'disc art file is found.\n\n'
+					+ 'Select tracks > Properties> Artwork tab > Disc\n\n'
+					+ 'This is not a foobar-exclusive tag slot,\n'
+					+ 'it corresponds to the standard "media/label"\n'
+					+ 'embedded picture type, so other tagging tools\n'
+					+ '(Mp3tag, MusicBrainz Picard) can also write to it.\n\n'
+					+ '>>> Important <<<\n'
+					+ 'This is read per track, not per album.\n'
+					+ 'Embed the image into every track of the album,\n'
+					+ 'otherwise only tracks that have it embedded\n'
+					+ 'will show it.\n\n'
+			},
 			discArtStub: {
 				msg: `The custom disc art placeholder was not found in:\n${grPath.discArtCustomStub}\n\n`
 					+ 'Be sure that image exist and has the correct filename\n'

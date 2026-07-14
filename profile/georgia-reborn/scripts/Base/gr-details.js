@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    08-07-2026                                              * //
+// * Last change:    14-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1752,7 +1752,16 @@ class Details {
 		grm.debug.setDebugProfile(grm.debug.showDebugTiming || grCfg.settings.showDebugPerformanceOverlay, 'create', 'fetchDiscArt');
 
 		if (grSet.displayDiscArt && !grm.ui.isStreaming) {
-			this.loadDiscArt(this.findDiscArtPath());
+			const discArtPath = this.findDiscArtPath();
+			const discArtEmbedded = grSet.discArtEmbedded && (grSet.noDiscArtStub || grSet.showDiscArtStub);
+
+			// * No on-disk disc art file found - fall back to the embedded "Disc" tag picture before the generic stub
+			if (!this.discArtFound && discArtEmbedded && this.loadDiscArtEmbedded()) {
+				grm.debug.setDebugProfile(false, 'print', 'fetchDiscArt');
+				return;
+			}
+
+			this.loadDiscArt(discArtPath);
 		}
 
 		grm.debug.setDebugProfile(false, 'print', 'fetchDiscArt');
@@ -1854,6 +1863,40 @@ class Details {
 			this.clearCache('metrics', 'cachedLabelLastLeftEdge'); // Recalc label location
 			grm.debug.repaintWindow();
 		});
+	}
+
+	/**
+	 * Attempts to load the embedded "Disc" album art picture (`AlbumArtId.Disc`) directly from the track's tags
+	 * and use it as the active disc art, bypassing the generic CD/vinyl stub fallback.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 * @returns {boolean} True if an embedded disc art image was found and set as the active disc art, false otherwise.
+	 */
+	loadDiscArtEmbedded(metadb = grm.ui.initMetadb()) {
+		if (!metadb) return false;
+
+		const cacheType = 3; // Own artCache slot - do NOT reuse 2, that's discArtCover's slot for the same metadb.Path key
+		const cachedDiscArt = grm.artCache.getImage(metadb.Path, cacheType);
+
+		if (cachedDiscArt) {
+			this.disposeDiscArt(this.discArt);
+			this.discArt = cachedDiscArt;
+			this.discArtFound = true;
+			this.updateDiscArt();
+			return true;
+		}
+
+		const embeddedDiscArt = utils.GetAlbumArtV2(metadb, AlbumArtId.Disc);
+
+		if (!embeddedDiscArt) return false;
+
+		this.disposeDiscArt(this.discArt); // Delay disposal so we don't get flashing
+		this.discArt = grm.artCache.encache(embeddedDiscArt, metadb.Path, cacheType);
+		this.discArtFound = true;
+
+		this.clearCache('metrics', 'cachedLabelLastLeftEdge'); // Recalc label location
+		this.updateDiscArt();
+
+		return true;
 	}
 
 	/**

@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-07-2026                                              * //
+// * Last change:    14-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2420,6 +2420,19 @@ class TopMenuOptions {
 				grSet.detailsAlbumArtDiscAreaOpacity = 255;
 				window.Repaint();
 			}, !grSet.displayDiscArt);
+			discArtMenu.addToggleItem('Display embedded disc art if available', grSet, 'discArtEmbedded', () => {
+				if (!grSet.discArtEmbedded) {
+					grm.ui.fetchNewArtwork(fb.GetNowPlaying());
+					window.Repaint();
+					return;
+				}
+				if (grSet.discArtEmbedded) {
+					grm.msg.showPopupNotice('menu', 'discArtEmbedded');
+				}
+				grm.details.clearCache('discArt');
+				grm.details.fetchDiscArt();
+				window.Repaint();
+			});
 			discArtMenu.addSeparator();
 			discArtMenu.addToggleItem('Spin disc art while songs play (increases memory and CPU)', grSet, 'spinDiscArt', () => {
 				if (grSet.spinDiscArt) {
