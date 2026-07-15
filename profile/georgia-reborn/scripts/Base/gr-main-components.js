@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    10-07-2026                                              * //
+// * Last change:    15-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -36,14 +36,20 @@ class ArtCache {
 		this.cache = {};
 		/** @private @type {object.<string, ArtCacheObj>} The secondary cache used mainly for disc art covers to prevent overwriting album art with masked images. */
 		this.cache2 = {};
+		/** @private @type {object.<string, ArtCacheObj>} The tertiary cache used for the embedded CD/disc art picture, kept fully independent from cache2 (discArtCover) even though both are keyed by the same metadb.Path. */
+		this.cache3 = {};
 		/** @private @type {string[]} The array of cache keys in the order of their usage. */
 		this.cacheIndexes = [];
 		/** @private @type {string[]} The array of secondary cache keys in the order of their usage. */
 		this.cacheIndexes2 = [];
+		/** @private @type {string[]} The array of tertiary cache keys in the order of their usage. */
+		this.cacheIndexes3 = [];
 		/** @private @type {number} The maximum number of images that can be stored in the primary cache. */
 		this.cacheMaxSize = maxCacheSize;
 		/** @private @type {number} The maximum number of images that can be stored in the secondary cache. */
 		this.cacheMaxSize2 = maxCacheSize;
+		/** @private @type {number} The maximum number of images that can be stored in the tertiary cache. */
+		this.cacheMaxSize3 = maxCacheSize;
 
 		/** @private @type {number} The maximum width an image can be displayed. */
 		this.imgMaxWidth = SCALE(1440);
@@ -62,14 +68,45 @@ class ArtCache {
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
+	 * Gets the cache object, its usage-order index array, and its max size for the given cache pool.
+	 * @param {number} cacheIndex - The cache index from 1-3:
+	 * - 1 (primary = album art),
+	 * - 2 (secondary = discArtCover),
+	 * - 3 (tertiary = embedded disc art).
+	 *
+	 * Anything other than 1 or 3 falls back to the secondary pool.
+	 * @returns {{cache: object.<string, ArtCacheObj>, cacheIndexes: string[], cacheMaxSize: number}} The matching cache pool.
+	 */
+	getCachePool(cacheIndex) {
+		if (cacheIndex === 1) {
+			return {
+				cache: this.cache,
+				cacheIndexes: this.cacheIndexes,
+				cacheMaxSize: this.cacheMaxSize
+			};
+		}
+		if (cacheIndex === 3) {
+			return {
+				cache: this.cache3,
+				cacheIndexes: this.cacheIndexes3,
+				cacheMaxSize: this.cacheMaxSize3
+			};
+		}
+		return {
+			cache: this.cache2,
+			cacheIndexes: this.cacheIndexes2,
+			cacheMaxSize: this.cacheMaxSize2
+		};
+	}
+
+	/**
 	 * Gets cached image if it exists under the location string. If image is found, move it's index to the end of the cacheIndexes.
 	 * @param {string} location - The string value to check if image is cached under.
-	 * @param {number} cacheIndex - The first or second index of the cache to check.
+	 * @param {number} cacheIndex - The first, second, or third index of the cache to check.
 	 * @returns {GdiBitmap|null} The cached image, or null if not found or the file does not exist.
 	 */
 	getImage(location, cacheIndex = 1) {
-		const cache = cacheIndex === 1 ? this.cache : this.cache2;
-		const cacheIndexes = cacheIndex === 1 ? this.cacheIndexes : this.cacheIndexes2;
+		const { cache, cacheIndexes } = this.getCachePool(cacheIndex);
 
 		if (!cache[location] || !fso.FileExists(location)) {
 			// If image is not in cache or location does not exist, return to prevent crash.
@@ -94,15 +131,15 @@ class ArtCache {
 	}
 
 	/**
-	 * Gets and optionally logs the size of an image or all images in both caches if cacheIndex is 0.
-	 * @param {string|null} location - The location string of the image to check. If null, process all images in the specified cache or both if cacheIndex is 0.
-	 * @param {number} cacheIndex - The index of the cache to check. 0 for both, 1 for the first, 2 for the second. Defaults to 1.
+	 * Gets and optionally logs the size of an image or all images in the caches if cacheIndex is 0.
+	 * @param {string|null} location - The location string of the image to check. If null, process all images in the specified cache or all three if cacheIndex is 0.
+	 * @param {number} cacheIndex - The index of the cache to check. 0 for all three, 1 for the first, 2 for the second, 3 for the third. Defaults to 1.
 	 * @param {boolean} logSize - Whether to log the size(s) to the console. Defaults to false.
 	 * @returns {number|null|object} The size of the image in bytes, all images sizes if location is null and cacheIndex is specified, or null if the image is not found.
 	 * @example
 	 * - Get size of a specific image in cache 1: getImageSize('path/to/img.jpg', 1);
 	 * - Get sizes of all images in cache 1: getImageSize(null, 1, true);
-	 * - Get sizes of all images in both caches: getImageSize(null, 0, true);
+	 * - Get sizes of all images in all caches: getImageSize(null, 0, true);
 	 */
 	getImageSize(location, cacheIndex = 1, logSize = false) {
 		const processCache = (cache, prefix = '') => {
@@ -117,13 +154,14 @@ class ArtCache {
 			return sizes;
 		};
 
-		if (cacheIndex === 0) { // If location is 0, process both caches
+		if (cacheIndex === 0) { // If cacheIndex is 0, process all three caches
 			const sizes1 = processCache(this.cache, 'Cache 1 ');
 			const sizes2 = processCache(this.cache2, 'Cache 2 ');
-			return { ...sizes1, ...sizes2 }; // Merge results from both caches
+			const sizes3 = processCache(this.cache3, 'Cache 3 ');
+			return { ...sizes1, ...sizes2, ...sizes3 }; // Merge results from all caches
 		}
 
-		const cache = cacheIndex === 1 ? this.cache : this.cache2;
+		const { cache } = this.getCachePool(cacheIndex);
 
 		if (location === null) { // If location is null, process all images in the specified cache.
 			return processCache(cache);
@@ -141,13 +179,13 @@ class ArtCache {
 
 	/**
 	 * Gets and optionally logs the total size of the cached images.
-	 * If cacheIndex is 0, calculates for both caches combined.
-	 * @param {number} cacheIndex - The index of the cache to calculate size for. If 0, calculates for both caches.
+	 * If cacheIndex is 0, calculates for all three caches combined.
+	 * @param {number} cacheIndex - The index of the cache to calculate size for. If 0, calculates for all three caches.
 	 * @param {boolean} logSizes - Whether to log individual image sizes to the console.
 	 * @returns {number} The total size of the cache or caches in bytes.
 	 * @example
 	 * - Get total size of cache 1: getTotalCacheSize(1, true);
-	 * - Get total size of both caches combined: getTotalCacheSize(0, true);
+	 * - Get total size of all caches combined: getTotalCacheSize(0, true);
 	 */
 	getTotalCacheSize(cacheIndex, logSizes = false) {
 		let totalSize = 0;
@@ -162,15 +200,16 @@ class ArtCache {
 			}
 		};
 
-		if (cacheIndex === 0) { // If cacheIndex is 0, process both caches
+		if (cacheIndex === 0) { // If cacheIndex is 0, process all three caches
 			calculateAndLogSize(this.cache, 'Cache 1');
 			calculateAndLogSize(this.cache2, 'Cache 2');
+			calculateAndLogSize(this.cache3, 'Cache 3');
 		} else {
-			const cache = cacheIndex === 1 ? this.cache : this.cache2;
+			const { cache } = this.getCachePool(cacheIndex);
 			calculateAndLogSize(cache, `Cache ${cacheIndex}`);
 		}
 
-		const cacheLabel = cacheIndex === 0 ? 'Total size for both caches' : `Total size for Cache ${cacheIndex}`;
+		const cacheLabel = cacheIndex === 0 ? 'Total size for all caches' : `Total size for Cache ${cacheIndex}`;
 		const totalFormattedSize = FormatSize(totalSize);
 		if (logSizes) console.log(`Art cache => ${cacheLabel}: ${totalFormattedSize}`);
 
@@ -200,14 +239,12 @@ class ArtCache {
 	 * Adds a rescaled image to the cache under string `location` and returns the cached image.
 	 * @param {GdiBitmap} img - The image object to cache.
 	 * @param {string} location - The string value to cache image under. Does not need to be a path.
-	 * @param {number} cacheIndex - The first or second index of the cache to check.
+	 * @param {number} cacheIndex - The first, second, or third index of the cache to check.
 	 * @returns {GdiBitmap} The image stored in the cache at the specified location.
 	 * If there is no image in the cache at that location, it returns the original image passed as a parameter.
 	 */
 	encache(img, location, cacheIndex = 1) {
-		const cache = cacheIndex === 1 ? this.cache : this.cache2;
-		const cacheIndexes = cacheIndex === 1 ? this.cacheIndexes : this.cacheIndexes2;
-		const cacheMaxSize = cacheIndex === 1 ? this.cacheMaxSize : this.cacheMaxSize2;
+		const { cache, cacheIndexes, cacheMaxSize } = this.getCachePool(cacheIndex);
 
 		try {
 			let { Width: w, Height: h } = img;
@@ -236,7 +273,8 @@ class ArtCache {
 				grm.debug.debugLog('Art cache => Removing img from cache:', remove);
 				delete cache[remove];
 			}
-		} catch (e) {
+		}
+		catch (e) {
 			// Do not console.log inverted band logo and label images in the process of being created
 			grm.ui.bandLogoInverted && console.log(`\nArt cache => <Error: Image could not be properly parsed: ${location}>\n`);
 		}
@@ -251,6 +289,7 @@ class ArtCache {
 		if (grCfg.settings.showDebugLog) {
 			grm.debug.debugLog(`Art cache => Total cache size for Cache 1: ${this.getTotalCacheSize(1, false)}`);
 			grm.debug.debugLog(`Art cache => Total cache size for Cache 2: ${this.getTotalCacheSize(2, false)}`);
+			grm.debug.debugLog(`Art cache => Total cache size for Cache 3: ${this.getTotalCacheSize(3, false)}`);
 			grm.debug.debugLog(`Art cache => Total cache size cleared: ${this.getTotalCacheSize(0, false)}`);
 		}
 
@@ -263,6 +302,7 @@ class ArtCache {
 
 		clearCache(this.cacheIndexes, this.cache);
 		clearCache(this.cacheIndexes2, this.cache2);
+		clearCache(this.cacheIndexes3, this.cache3);
 	}
 	// #endregion
 }

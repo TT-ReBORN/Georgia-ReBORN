@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-07-2026                                              * //
+// * Last change:    15-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1698,11 +1698,16 @@ class Details {
 		if (['cdAlbumCover', 'vinylAlbumCover'].includes(grSet.discArtStub) &&
 			(!this.discArtFound && (!grSet.noDiscArtStub || grSet.showDiscArtStub)) &&
 			this.discArtCover && this.discArtCover.Width > 0 && this.discArtCover.Height > 0) {
+			let { discArtCover } = this;
+
 			if (applyMask) {
-				this.createDiscArtCoverMask(this.discArtCover, this.discArtCover.Width, this.discArtCover.Height);
+				discArtCover = discArtCover.Clone(0, 0, discArtCover.Width, discArtCover.Height);
+				this.createDiscArtCoverMask(discArtCover, discArtCover.Width, discArtCover.Height);
 			}
-			return CombineImages(this.discArt, this.discArtCover, this.discArtSize.w, this.discArtSize.h);
+
+			return CombineImages(this.discArt, discArtCover, this.discArtSize.w, this.discArtSize.h);
 		}
+
 		return this.discArt;
 	}
 
