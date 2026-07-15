@@ -1528,7 +1528,16 @@ class LibPopulate {
 					return;
 				}
 				if (!libSet.libSource) {
-					plman.ExecutePlaylistDefaultAction($Lib.pl_active, this.range(item.item)[0]);
+					const searchIx = this.range(item.item)[0];
+					let playIx = searchIx;
+
+					if (lib.panel.search.txt || libSet.filterBy || lib.panel.multiProcess) {
+						const handle = lib.panel.list[searchIx];
+						const trueIx = handle ? lib.lib.full_list.Find(handle) : -1;
+						if (trueIx !== -1) playIx = trueIx;
+					}
+
+					plman.ExecutePlaylistDefaultAction($Lib.pl_active, playIx);
 					return;
 				}
 				if (!this.dblClickAction && !this.autoFill.mouse && !this.autoPlay.click) return this.send(item, x, y);
