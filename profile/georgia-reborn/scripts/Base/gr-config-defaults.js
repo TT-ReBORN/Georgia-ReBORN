@@ -1742,6 +1742,7 @@ class ConfigDefaults {
 			lyricsTranslationCurrentOnly: false,
 			lyricsTranslationScrollReveal: false,
 			lyricsTranslationRevealDuration: 500,
+			lyricsTranslationRevealCollapse: 3000,
 			sourceAll: false,
 			classicalMusicMode: false,
 			cycPhotoLocation: 0,
@@ -1809,6 +1810,7 @@ class ConfigDefaults {
 			lyricsTranslationCurrentOnly: 'Values: true, false - Options > Biography > Lyrics > Translation > Show current translation only',
 			lyricsTranslationScrollReveal: 'Values: true, false - Options > Biography > Lyrics > Translation > Show all lines while scrolling',
 			lyricsTranslationRevealDuration: 'Values: 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Biography > Lyrics > Translation > Reveal animation duration',
+			lyricsTranslationRevealCollapse: 'Values: 0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000 - Options > Biography > Lyrics > Translation > Reveal animation collapse',
 			sourceAll: 'Values: true, false - Options > Biography > Source > Text > Amalgamate',
 			classicalMusicMode: 'Values: true, false - Options > Biography > Source > Text > Prefer composition (allmusic && wikipedia review)',
 			cycPhotoLocation: 'Values: 0, 1, 2 - Options > Biography > Source > Photo',
@@ -1874,7 +1876,8 @@ class ConfigDefaults {
 			lyricsTranslationHighlightMode: 1,
 			lyricsTranslationCurrentOnly: false,
 			lyricsTranslationScrollReveal: false,
-			lyricsTranslationRevealDuration: 500
+			lyricsTranslationRevealDuration: 500,
+			lyricsTranslationRevealCollapse: 3000
 		};
 
 		/** @public @type {object} Options > Lyrics settings config name dscription. */
@@ -1904,7 +1907,8 @@ class ConfigDefaults {
 			lyricsTranslationHighlightMode: 'Values: 1, 2, 3 - Options > Lyrics > Translation',
 			lyricsTranslationCurrentOnly: 'Values: true, false - Options > Lyrics > Translation > Show current translation only',
 			lyricsTranslationScrollReveal: 'Values: true, false - Options > Lyrics > Translation > Show all lines while scrolling',
-			lyricsTranslationRevealDuration: 'Values: 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Lyrics > Translation > Reveal animation duration'
+			lyricsTranslationRevealDuration: 'Values: 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 - Options > Lyrics > Translation > Reveal animation duration',
+			lyricsTranslationRevealCollapse: 'Values: 0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000 - Options > Lyrics > Translation > Reveal animation collapse'
 		};
 
 		/** @public @type {object} Options > Lyrics settings config header dscription. */

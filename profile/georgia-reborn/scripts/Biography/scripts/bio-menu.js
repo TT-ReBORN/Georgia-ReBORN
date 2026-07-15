@@ -784,19 +784,18 @@ class BioMenuItems {
 			flags: bioSet.lyricsTranslation && bioSet.lyricsTranslationCurrentOnly && bioSet.lyricsTranslationScrollReveal ? BIO_MF_STRING : BIO_MF_GRAYED,
 			appendTo: 'LyricsTranslation',
 		});
-
 		const lyricsTranslationRevealDuration = [
-			['Disabled',   0],
-			['  100ms',  100],
-			['  200ms',  200],
-			['  300ms',  300],
-			['  400ms',  400],
-			['  500ms',  500],
-			['  600ms',  600],
-			['  700ms',  700],
-			['  800ms',  800],
-			['  900ms',  900],
-			['1000ms',  1000]
+			['Disabled',              0],
+			['  100 ms',            100],
+			['  200 ms',            200],
+			['  300 ms',            300],
+			['  400 ms',            400],
+			['  500 ms (default)',  500],
+			['  600 ms',            600],
+			['  700 ms',            700],
+			['  800 ms',            800],
+			['  900 ms',            900],
+			['1000 ms',            1000]
 		];
 		lyricsTranslationRevealDuration.forEach(([label, duration], i) => {
 			bioMenu.newItem({
@@ -807,6 +806,38 @@ class BioMenuItems {
 					window.Repaint();
 				},
 				checkRadio: bioSet.lyricsTranslationRevealDuration === duration,
+				separator: i === 0
+			});
+		});
+
+		bioMenu.newMenu({
+			menuName: 'Reveal animation collapse',
+			str: 'Reveal animation collapse',
+			flags: bioSet.lyricsTranslation && bioSet.lyricsTranslationCurrentOnly && bioSet.lyricsTranslationScrollReveal ? BIO_MF_STRING : BIO_MF_GRAYED,
+			appendTo: 'LyricsTranslation',
+		});
+		const lyricsTranslationRevealCollapse = [
+			['Disabled',              0],
+			['  1 sec',            1000],
+			['  2 sec',            2000],
+			['  3 sec (default)',  3000],
+			['  4 sec',            4000],
+			['  5 sec',            5000],
+			['  6 sec',            6000],
+			['  7 sec',            7000],
+			['  8 sec',            8000],
+			['  9 sec',            9000],
+			['10 sec',            10000]
+		];
+		lyricsTranslationRevealCollapse.forEach(([label, delay], i) => {
+			bioMenu.newItem({
+				menuName: 'Reveal animation collapse',
+				str: label,
+				func: () => {
+					bioSet.lyricsTranslationRevealCollapse = delay;
+					window.Repaint();
+				},
+				checkRadio: bioSet.lyricsTranslationRevealCollapse === delay,
 				separator: i === 0
 			});
 		});

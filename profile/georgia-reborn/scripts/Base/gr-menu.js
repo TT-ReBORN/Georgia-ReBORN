@@ -3599,8 +3599,12 @@ class TopMenuOptions {
 			window.Repaint();
 		}, !bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly);
 		biographyLyricsTranslationMenu.addSeparator();
-		biographyLyricsTranslationMenu.createRadioSubMenu('Reveal animation duration', ['Disabled', '100ms', '200ms', '300ms', '400ms', '500ms (default)', '600ms', '700ms', '800ms', '900ms', '1000ms'], bioSet.lyricsTranslationRevealDuration, [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
+		biographyLyricsTranslationMenu.createRadioSubMenu('Reveal animation duration', ['Disabled', '  100 ms', '  200 ms', '  300 ms', '  400 ms', '  500 ms (default)', '  600 ms', '  700 ms', '  800 ms', '  900 ms', '1000 ms'], bioSet.lyricsTranslationRevealDuration, [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
 			bioSet.lyricsTranslationRevealDuration = duration;
+			window.Repaint();
+		}, !bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly || !bioSet.lyricsTranslationScrollReveal, false, [0]);
+		biographyLyricsTranslationMenu.createRadioSubMenu('Reveal animation collapse', ['Disabled', '  1 sec', '  2 sec', '  3 sec (default)', '  4 sec', '  5 sec', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], bioSet.lyricsTranslationRevealCollapse, [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000], (delay) => {
+			bioSet.lyricsTranslationRevealCollapse = delay;
 			window.Repaint();
 		}, !bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly || !bioSet.lyricsTranslationScrollReveal, false, [0]);
 		biographyLyricsTranslationMenu.appendTo(biographyLyricsMenu);
@@ -4008,8 +4012,12 @@ class TopMenuOptions {
 			window.Repaint();
 		}, !grSet.lyricsTranslation || !grSet.lyricsTranslationCurrentOnly);
 		lyricsTranslationMenu.addSeparator();
-		lyricsTranslationMenu.createRadioSubMenu('Reveal animation duration', ['Disabled', '100ms', '200ms', '300ms', '400ms', '500ms (default)', '600ms', '700ms', '800ms', '900ms', '1000ms'], grSet.lyricsTranslationRevealDuration, [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
+		lyricsTranslationMenu.createRadioSubMenu('Reveal animation duration', ['Disabled', '  100 ms', '  200 ms', '  300 ms', '  400 ms', '  500 ms (default)', '  600 ms', '  700 ms', '  800 ms', '  900 ms', '1000 ms'], grSet.lyricsTranslationRevealDuration, [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], (duration) => {
 			grSet.lyricsTranslationRevealDuration = duration;
+			window.Repaint();
+		}, !grSet.lyricsTranslation || !grSet.lyricsTranslationCurrentOnly || !grSet.lyricsTranslationScrollReveal, false, [0]);
+		lyricsTranslationMenu.createRadioSubMenu('Reveal animation collapse', ['Disabled', '  1 sec', '  2 sec', '  3 sec (default)', '  4 sec', '  5 sec', '  6 sec', '  7 sec', '  8 sec', '  9 sec', '10 sec'], grSet.lyricsTranslationRevealCollapse, [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000], (delay) => {
+			grSet.lyricsTranslationRevealCollapse = delay;
 			window.Repaint();
 		}, !grSet.lyricsTranslation || !grSet.lyricsTranslationCurrentOnly || !grSet.lyricsTranslationScrollReveal, false, [0]);
 		lyricsTranslationMenu.appendTo(lyricsMenu);

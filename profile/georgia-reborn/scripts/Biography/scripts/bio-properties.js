@@ -270,6 +270,7 @@ let bioProperties = [
 	['Panel Biography - Lyrics: Translation show current translation only', false, 'lyricsTranslationCurrentOnly'],
 	['Panel Biography - Lyrics: Translation show all lines while scrolling', false, 'lyricsTranslationScrollReveal'],
 	['Panel Biography - Lyrics: Translation reveal animation duration', 500, 'lyricsTranslationRevealDuration'],
+	['Panel Biography - Lyrics: Translation reveal animation collapse', 3000, 'lyricsTranslationRevealCollapse'],
 
 	['Panel Biography - Menu Show Inactivate', 0, 'menuShowInactivate'],
 	['Panel Biography - Menu Show Paste', 1, 'menuShowPaste'],

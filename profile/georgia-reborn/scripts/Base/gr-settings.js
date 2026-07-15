@@ -670,6 +670,7 @@ grSet.addProperties({
 	lyricsTranslationCurrentOnly:       ['Georgia-ReBORN - 14. Lyrics: Translation show current translation only', false], // false - displays only the current translation line instead of all
 	lyricsTranslationScrollReveal:      ['Georgia-ReBORN - 14. Lyrics: Translation show all lines while scrolling', false], // false - displays all translations lines when scrolling lyrics
 	lyricsTranslationRevealDuration:    ['Georgia-ReBORN - 14. Lyrics: Translation reveal animation duration', 500], // 500 - the animation duration of the scroll reveal
+	lyricsTranslationRevealCollapse:    ['Georgia-ReBORN - 14. Lyrics: Translation reveal animation collapse', 3000], // 3000 - the animation auto-collapse of the scroll reveal
 
 	// * Settings
 	themeDayNightEnabled:               ['Georgia-ReBORN - 15. Settings: Auto-day/night mode enabled', false], // false: The theme day/night mode state
@@ -1597,6 +1598,7 @@ class ThemeSettingsManager {
 		this._setSetting(bioSet, 'lyricsTranslationCurrentOnly', grCfg.themeBiography, 'lyricsTranslationCurrentOnly', false);
 		this._setSetting(bioSet, 'lyricsTranslationScrollReveal', grCfg.themeBiography, 'lyricsTranslationScrollReveal', false);
 		this._setSetting(bioSet, 'lyricsTranslationRevealDuration', grCfg.themeBiography, 'lyricsTranslationRevealDuration', 500);
+		this._setSetting(bioSet, 'lyricsTranslationRevealCollapse', grCfg.themeBiography, 'lyricsTranslationRevealCollapse', 3000);
 		this._setSetting(bioSet, 'sourceAll', grCfg.themeBiography, 'sourceAll', false);
 		this._setSetting(bioSet, 'classicalMusicMode', grCfg.themeBiography, 'classicalMusicMode', false);
 		this._setSetting(bioSet, 'cycPhotoLocation', grCfg.themeBiography, 'cycPhotoLocation', 0);
@@ -1653,6 +1655,7 @@ class ThemeSettingsManager {
 		this._setSetting(grSet, 'lyricsTranslationCurrentOnly', grCfg.themeLyrics, 'lyricsTranslationCurrentOnly', false);
 		this._setSetting(grSet, 'lyricsTranslationScrollReveal', grCfg.themeLyrics, 'lyricsTranslationScrollReveal', false);
 		this._setSetting(grSet, 'lyricsTranslationRevealDuration', grCfg.themeLyrics, 'lyricsTranslationRevealDuration', 500);
+		this._setSetting(grSet, 'lyricsTranslationRevealCollapse', grCfg.themeLyrics, 'lyricsTranslationRevealCollapse', 3000);
 		this._setSetting(grSet, 'displayLyrics', grCfg.themeLyrics, 'displayLyrics', false);
 	}
 

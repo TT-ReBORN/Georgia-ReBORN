@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    13-07-2026                                              * //
+// * Last change:    15-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -53,10 +53,22 @@ class BioLyrics {
 		this.stepTime = 0;
 		/** @private @type {FbTitleFormat} The titleFormat object to get the track length in seconds. */
 		this.tfLength = fb.TitleFormat('%length_seconds%');
+		/** @private @type {boolean} The state when auto-collapse grace period is holding the translation reveal open. */
+		this.translationAutoCollapseHold = false;
+		/** @private @type {?number} The timeout id for the auto-collapse grace period. */
+		this.translationAutoCollapseTimer = null;
 		/** @private @type {?number} The interval id for the blend-only ticker used while paused and the main timer is stopped. */
 		this.translationBlendTimer = null;
 		/** @private @type {boolean} The flag whether the loaded lyrics contain paired original+translation lines sharing a timestamp. */
 		this.translationLyrics = false;
+		/** @private @type {number} The scroll drag offset value captured at the moment the transition began; layers subsequent drag input on top of the anchor while it is active. */
+		this.translationScrollAnchorDragOffset = 0;
+		/** @private @type {number} The lyric line index used as a fixed on-screen anchor during a compact/full reveal transition; -1 when no anchor is active. */
+		this.translationScrollAnchorIndex = -1;
+		/** @private @type {number} The blended offset of the anchor line captured at the moment the transition began. */
+		this.translationScrollAnchorOffset = 0;
+		/** @private @type {number} The scroll reference ("top") captured at the moment the transition began. */
+		this.translationScrollAnchorTop = 0;
 		/** @private @type {number|null} The sentence group whose gap-free (compact) offsets are currently cached; null forces a recompute. */
 		this.translationSyncAppliedGroup = null;
 		/** @private @type {number} The current 0-1 blend between the compact (sync-only) and full lyric layouts; animates on reveal/hide transitions. */
@@ -157,6 +169,10 @@ class BioLyrics {
 			clearInterval(this.translationBlendTimer);
 			this.translationBlendTimer = null;
 		}
+
+		clearTimeout(this.translationAutoCollapseTimer);
+		this.translationAutoCollapseHold = false;
+		this.translationScrollAnchorIndex = -1;
 
 		this.lyrics = [];
 		this.scrollDragOffset = 0;
@@ -262,9 +278,8 @@ class BioLyrics {
 		gr.SetTextRenderingHint(TextRenderingHint.ClearTypeGridFit);
 
 		const currentSentenceGroup = this.lyrics[this.locus].sentenceGroup;
-		const locusYOffset = this.getBlendedOffset(this.lyrics[this.locus]);
 
-		const top = locusYOffset - this.locusOffset + this.scrollDragOffset;
+		const top = this.getScrollTop();
 		const y = this.y + this.scroll;
 
 		// DEBUG gr.DrawRect(this.x, this.top, this.w, this.bot, 3, RGBA(255, 0, 0, 255));
@@ -543,6 +558,22 @@ class BioLyrics {
 	}
 
 	/**
+	 * Gets the current vertical scroll reference subtracted from every lyric line's blended offset to compute its on-screen position.
+	 * @returns {number} The scroll reference ("top").
+	 */
+	getScrollTop() {
+		if (this.translationScrollAnchorIndex >= 0) {
+			const anchorNow = this.getBlendedOffset(this.lyrics[this.translationScrollAnchorIndex]);
+
+			return this.translationScrollAnchorTop
+				+ (anchorNow - this.translationScrollAnchorOffset)
+				+ (this.scrollDragOffset - this.translationScrollAnchorDragOffset);
+		}
+
+		return this.getBlendedOffset(this.lyrics[this.locus]) - this.locusOffset + this.scrollDragOffset;
+	}
+
+	/**
 	 * Gets or creates a cached pre-rendered blurred shadow bitmap for a lyric line.
 	 * The text rect inside the bitmap mirrors the DrawString rect in drawLyric exactly,
 	 * so DrawImage alignment is a trivial (pad, pad) to (x, y) mapping.
@@ -614,7 +645,7 @@ class BioLyrics {
 		return (
 				this.type.synced && bioSet.lyricsTranslation && bioSet.lyricsTranslationCurrentOnly
 				&&
-				(!bioSet.lyricsTranslationScrollReveal || !this.scrollDrag && !this.showOffset)
+				(!bioSet.lyricsTranslationScrollReveal || !this.scrollDrag && !this.showOffset && !this.translationAutoCollapseHold)
 			);
 	}
 
@@ -1032,6 +1063,73 @@ class BioLyrics {
 		}, 16);
 	}
 
+
+	/**
+	 * Captures the lyric line currently nearest the vertical center of the viewport, together with its current blended offset
+	 * and the current scroll reference, so a compact/full reveal transition can hold that on-screen position fixed instead of
+	 * drifting with the (possibly off-screen) locus line.
+	 */
+	translationScrollAnchorCapture() {
+		if (this.locus < 0 || !this.lyrics.length) return;
+
+		const currentTop = this.getScrollTop();
+		const y = this.y + this.scroll;
+		const viewCenter = (this.top + this.bot) / 2;
+
+		let closestIndex = this.locus;
+		let closestDist = Infinity;
+
+		for (let i = 0; i < this.lyrics.length; i++) {
+			const lineY = y - currentTop + this.getBlendedOffset(this.lyrics[i]);
+			const dist = Math.abs(lineY - viewCenter);
+
+			if (dist < closestDist) {
+				closestDist = dist;
+				closestIndex = i;
+			}
+		}
+
+		this.translationScrollAnchorDragOffset = this.scrollDragOffset;
+		this.translationScrollAnchorIndex = closestIndex;
+		this.translationScrollAnchorOffset = this.getBlendedOffset(this.lyrics[closestIndex]);
+		this.translationScrollAnchorTop = currentTop;
+	}
+
+	/**
+	 * Releases the fixed scroll anchor, compensating `scrollDragOffset` so control hands back to the locus line without a visual jump.
+	 * @param {boolean} [force] - When true, releases immediately regardless of the transition or `showOffset` state.
+	 */
+	translationScrollAnchorRelease(force = false) {
+		if (this.translationScrollAnchorIndex < 0 || this.scrollDrag ||
+			!force && (this.translationSyncBlend !== this.translationSyncBlendTarget || this.showOffset)) {
+			return;
+		}
+
+		const anchoredTop = this.getScrollTop();
+		this.translationScrollAnchorIndex = -1;
+		this.scrollDragOffset += anchoredTop - this.getScrollTop();
+	}
+
+	/**
+	 * Starts the auto-collapse grace period after a scroll drag ends, keeping secondary translation lines revealed
+	 * for `lyricsTranslationRevealCollapse` ms so the user doesn't have to hold the mouse down to keep reading.
+	 */
+	translationStartAutoCollapseTimer() {
+		if (!bioSet.lyricsTranslation || !bioSet.lyricsTranslationCurrentOnly ||
+			!bioSet.lyricsTranslationScrollReveal || !bioSet.lyricsTranslationRevealCollapse) {
+			return;
+		}
+
+		this.translationAutoCollapseHold = true;
+		clearTimeout(this.translationAutoCollapseTimer);
+
+		this.translationAutoCollapseTimer = setTimeout(() => {
+			this.translationAutoCollapseHold = false;
+			this.translationBlendAnimationReveal();
+			this.repaintRect();
+		}, bioSet.lyricsTranslationRevealCollapse);
+	}
+
 	/**
 	 * Tags each lyric line with `isOriginalTranslation`: true for the original line (the lowest `group` id,
 	 * whichever line appeared first in the file) within its timestamp group, false for every other line sharing that timestamp.
@@ -1065,24 +1163,25 @@ class BioLyrics {
 		const target = this.isSyncOnlyActive() ? 0 : 1;
 
 		if (target !== this.translationSyncBlendTarget) {
+			this.translationScrollAnchorCapture();
 			this.translationSyncBlendTarget = target;
 			this.translationSyncBlendStart = this.translationSyncBlend;
 			this.translationSyncBlendElapsed = 0;
 		}
 
-		if (this.translationSyncBlend === this.translationSyncBlendTarget) {
-			return;
+		if (this.translationSyncBlend !== this.translationSyncBlendTarget) {
+			this.translationSyncBlendElapsed += 16;
+			const t = Math.min(this.translationSyncBlendElapsed / bioSet.lyricsTranslationRevealDuration, 1);
+			const easing = Easing(bioSet.lyricsScrollEasing, t);
+
+			this.translationSyncBlend = t >= 1
+				? this.translationSyncBlendTarget
+				: Lerp(this.translationSyncBlendStart, this.translationSyncBlendTarget, easing);
+
+			this.repaintRect();
 		}
 
-		this.translationSyncBlendElapsed += 16;
-		const t = Math.min(this.translationSyncBlendElapsed / bioSet.lyricsTranslationRevealDuration, 1);
-		const easing = Easing(bioSet.lyricsScrollEasing, t);
-
-		this.translationSyncBlend = t >= 1
-			? this.translationSyncBlendTarget
-			: Lerp(this.translationSyncBlendStart, this.translationSyncBlendTarget, easing);
-
-		this.repaintRect();
+		this.translationScrollAnchorRelease();
 	}
 
 	/**
@@ -1150,6 +1249,8 @@ class BioLyrics {
 	on_mouse_lbtn_down(x, y, m) {
 		this.scrollDrag = true;
 		this.scrollDragY = y;
+		this.translationAutoCollapseHold = false;
+		clearTimeout(this.translationAutoCollapseTimer);
 		this.translationBlendAnimationReveal();
 	}
 
@@ -1161,6 +1262,7 @@ class BioLyrics {
 	 */
 	on_mouse_lbtn_up(x, y, m) {
 		this.scrollDrag = false;
+		this.translationStartAutoCollapseTimer();
 		this.translationBlendAnimationReveal();
 	}
 
@@ -1170,6 +1272,7 @@ class BioLyrics {
 	on_mouse_leave() {
 		if (!this.scrollDrag) return;
 		this.scrollDrag = false;
+		this.translationStartAutoCollapseTimer();
 		this.translationBlendAnimationReveal();
 	}
 
@@ -1215,6 +1318,7 @@ class BioLyrics {
 			this.repaintRect();
 		}, 5000);
 
+		this.translationScrollAnchorRelease(true);
 		this.seek();
 	}
 
