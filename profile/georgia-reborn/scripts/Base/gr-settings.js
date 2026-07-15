@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-07-2026                                              * //
+// * Last change:    15-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1466,6 +1466,7 @@ class ThemeSettingsManager {
 		this._setSetting(libSet, 'imgStyleArtist', grCfg.themeLibrary, 'imgStyleArtist', 1);
 		this._setSetting(libSet, 'albumArtLabelType', grCfg.themeLibrary, 'albumArtLabelType', 1);
 		this._setSetting(libSet, 'albumArtFlipLabels', grCfg.themeLibrary, 'albumArtFlipLabels', false);
+		this._setSetting(libSet, 'albumArtTextAlign', grCfg.themeLibrary, 'albumArtTextAlign', 0);
 		this._setSetting(grSet, 'libraryBgImg', grCfg.themeLibrary, 'libraryBgImg', false);
 		this._setSetting(grSet, 'libraryBgImgCycle', grCfg.themeLibrary, 'libraryBgImgCycle', true);
 		this._setSetting(grSet, 'libraryBgImgCycleTime', grCfg.themeLibrary, 'libraryBgImgCycleTime', 15);

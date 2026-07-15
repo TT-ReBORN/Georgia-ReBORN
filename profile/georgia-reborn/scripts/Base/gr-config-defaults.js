@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-07-2026                                              * //
+// * Last change:    15-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1493,6 +1493,7 @@ class ConfigDefaults {
 			imgStyleArtist: 1,
 			albumArtLabelType: 1,
 			albumArtFlipLabels: false,
+			albumArtTextAlign: 0,
 			libraryBgImg: false,
 			libraryBgImgCycle: true,
 			libraryBgImgCycleTime: 15,
@@ -1602,7 +1603,8 @@ class ConfigDefaults {
 			imgStyleIcon: 'Values: 0, 1, 2 - Options > Library > Album art > Image > Icon',
 			imgStyleArtist: 'Values: 0, 1, 2 - Options > Library > Album art > Image > Artist',
 			albumArtLabelType: 'Values: 1, 2, 3, 4, 0 - Options > Library > Album art > Labels',
-			albumArtFlipLabels: 'Values: true, false - Options > Library > Album art > Labels',
+			albumArtFlipLabels: 'Values: true, false - Options > Library > Album art > Labels > Flip',
+			albumArtTextAlign: 'Values: 0, 1, 2 - Options > Library > Album art > Labels > Text alignment',
 			libraryBgImg: 'Values: true, false - Options > Library > Background > Show image on background',
 			libraryBgImgCycle: 'Values: true, false - Options > Library > Background > Cycle images',
 			libraryBgImgCycleTime: 'Values: 5, 10, 15, 30, 60 - Options > Library > Background > Cycle time',

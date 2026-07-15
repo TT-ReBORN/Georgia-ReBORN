@@ -412,6 +412,10 @@ Selected items will be displayed in the menu.
 				<div class="div_text1">Labels</div>
 				<div id="labels"></div>
 				<div id="flip"></div>
+				<div class="div_text2">Text alignment</div>
+				<span class="dropdown"><a id="textAlign_dropdown" class="dropbtn" href="#" onclick="toggle('textAlign');"></a>
+				<span id="textAlign" class="dropdown-content"></span>
+				</span>
 				<div class="div_text2">Overlay</div>
 				<span class="dropdown"><a id="overlay_dropdown" class="dropbtn" href="#" onclick="toggle('overlay');"></a>
 				<span id="overlay" class="dropdown-content"></span>
@@ -772,6 +776,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				var albumArtGapLabels = ['Normal (0 = auto)', 'Compact'];
 				var albumArtLabels = ['None', 'Bottom', 'Right', 'Blend', 'Dark', 'Flip'];
 				var albumArtOverlayLabels = ['None', 'Track Count', 'Year'];
+				var textAlignLabels = ['Left (default)', 'Center', 'Right'];
 				var altClickLabels = ['Add to default playlist', 'Add to current playlist', 'Add to playback queue (alt dblclk removes)'];
 				var barLabels = ['Search', 'Filter Button', 'Settings button*'];
 				var clickLabels = libSet['actionMode_internal'].value == 1 ? ['Send to playlist'] : libSet['actionMode_internal'].value == 2 ? ['Select'] : ['Select', 'Send to playlist', 'Send to playlist & play', 'Send to playlist & play [add if playing]'];
@@ -944,6 +949,12 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 					window.overlay_dropdown.innerHTML = albumArtOverlayLabels[n];
 					libSet['itemOverlayType_internal'].value = n;
 					window.overlay.style.display = 'none';
+				}
+
+				function setTextAlign(n) {
+					window.textAlign_dropdown.innerHTML = textAlignLabels[n];
+					libSet['albumArtTextAlign_internal'].value = n;
+					window.textAlign.style.display = 'none';
 				}
 
 				function setSearch(n) {
@@ -1224,6 +1235,9 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 
 					window.overlay_dropdown.innerHTML = albumArtOverlayLabels[libSet['itemOverlayType_internal'].value];
 					for (i = 0; i < 3; i++) {window.overlay.insertAdjacentHTML('beforeend', '<a onclick="setOverlay(' + i + ');">'+albumArtOverlayLabels[i]+'</a>');}
+
+					window.textAlign_dropdown.innerHTML = textAlignLabels[libSet['albumArtTextAlign_internal'].value];
+					for (i = 0; i < 3; i++) {window.textAlign.insertAdjacentHTML('beforeend', '<a onclick="setTextAlign(' + i + ');">'+textAlignLabels[i]+'</a>');}
 
 					for (i = 0; i < 2; i++) {window.followCurrent.insertAdjacentHTML('beforeend', '<div><input id="selection_checkbox'+i+'" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="selection_checkbox'+i+'" class="checkbox_label">'+followCurrentLabels[i]+'</label></div>');}
 					for (i = 0; i < 2; i++) {window.useCache.insertAdjacentHTML('beforeend', '<div><input id="cache_checkbox" name="albumart_checkbox" style="'+cbox+'" type="checkbox" /><label for="cache_checkbox" class="checkbox_label">'+diskCacheLabels[i]+'</label></div>');}
@@ -1681,6 +1695,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 					window.noCoverStub_dropdown.innerHTML = '<b>No cover:</b> ' + libSet.curNoCoverImg_internal.default_value;
 					libSet.curNoCoverImg_internal.value = libSet.curNoCoverImg_internal.default_value;
 					setOverlay(libSet['itemOverlayType_internal'].default_value);
+					setTextAlign(libSet['albumArtTextAlign_internal'].default_value);
 					setthumbSize(libSet['thumbNailSize_internal'].default_value);
 				}
 				if (cur.page == 'custom') setCustomColours('default_value');
@@ -1812,6 +1827,7 @@ Font style codes: 0 regular, 1 bold, 2 italic,  3 bold italic, 4 underline
 				['sbarIcon_dropdown', 'sbarIcon'],
 				['search_dropdown', 'search'],
 				['showHl_dropdown', 'showHl'],
+				['textAlign_dropdown', 'textAlign'],
 				['theme_dropdown', 'themeBg'],
 				['thumbSize_dropdown', 'thumbSize']
 			];

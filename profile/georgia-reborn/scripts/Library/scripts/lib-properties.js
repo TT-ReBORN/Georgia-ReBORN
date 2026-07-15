@@ -232,6 +232,7 @@ let libProperties = [
 	['Panel Library - Image Follow Selection Standard Mode', false, 'stndModeFollowSelection'],
 	['Panel Library - Image Item Overlay', 1, 'itemOverlayType'],
 	['Panel Library - Image Label', 1, 'albumArtLabelType'],
+	['Panel Library - Image Label Text Alignment Left-0 Center-1 Right-2', 0, 'albumArtTextAlign'],
 	['Panel Library - Image Memory Limit MB (0 = default)', 0, 'memoryLimit'],
 	['Panel Library - Image No Artist Images', JSON.stringify([]), 'noArtistImages'],
 	['Panel Library - Image No Cover Images', JSON.stringify([]), 'noCoverImages'],

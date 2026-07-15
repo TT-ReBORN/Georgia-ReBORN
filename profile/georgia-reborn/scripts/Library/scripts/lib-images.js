@@ -537,13 +537,13 @@ class LibImages {
 						const y3 = this.im.y + this.text.y3;
 						if (lib.panel.lines == 2) {
 							this.checkTooltip(gr, item, x, y1, y2, y3, this.text.w, grp, lot, statistics, lib.ui.font.group, /*ui.font.lot,*/ lib.ui.font.group, lib.ui.font.statistics);
-							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[1] ? lib.panel.cc : lib.panel.lc) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.groupEllipsisSpace, 'group');
-							!lib.panel.colMarker ? gr.GdiDrawText(lot, lib.ui.font.lot, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[2] ? lib.panel.cc : lib.panel.lc) : lib.pop.cusCol(gr, lot, item, x, y2, this.text.w, this.text.h, type, nowp, lib.ui.font.lot, lib.ui.font.lotEllipsisSpace, 'lott');
-							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y3, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[2] ? lib.panel.cc : lib.panel.lc);
+							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.getLabelFormat(!item.tt[1])) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.groupEllipsisSpace, 'group');
+							!lib.panel.colMarker ? gr.GdiDrawText(lot, lib.ui.font.lot, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.getLabelFormat(!item.tt[2])) : lib.pop.cusCol(gr, lot, item, x, y2, this.text.w, this.text.h, type, nowp, lib.ui.font.lot, lib.ui.font.lotEllipsisSpace, 'lott');
+							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y3, this.text.w, this.text.h, this.getLabelFormat(!item.tt[3]));
 						} else {
 							this.checkTooltip(gr, item, x, y1, statistics ? y2 : -1, -1, this.text.w, grp, statistics, false, lib.ui.font.group, lib.ui.font.statistics);
-							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[1] ? lib.panel.cc : lib.panel.lc) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.mainEllipsisSpace, 'group');
-							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.style.image != 1 && !this.labels.right && !item.tt[2] ? lib.panel.cc : lib.panel.lc);
+							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.getLabelFormat(!item.tt[1])) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.mainEllipsisSpace, 'group');
+							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.getLabelFormat(!item.tt[2]));
 						}
 					} else {
 						y1 = this.im.y + this.text.y1;
@@ -551,13 +551,13 @@ class LibImages {
 						const y3 = y2 + this.text.h * 0.95;
 						if (lib.panel.lines == 2) {
 							this.checkTooltip(gr, item, x, y1, y2, y3, this.text.w, grp, lot, statistics, lib.ui.font.group, /*ui.font.lot,*/ lib.ui.font.group, lib.ui.font.statistics);
-							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !item.tt[1] ? lib.panel.cc : lib.panel.lc) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.groupEllipsisSpace, 'lott');
-							!lib.panel.colMarker ? gr.GdiDrawText(lot, lib.ui.font.lot, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.style.image != 1 && !item.tt[2] ? lib.panel.cc : lib.panel.lc) : lib.pop.cusCol(gr, lot, item, x, y2, this.text.w, this.text.h, type, nowp, lib.ui.font.lot, lib.ui.font.lotEllipsisSpace, 'group');
-							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y3, this.text.w, this.text.h, this.style.image != 1 && !item.tt[3] ? lib.panel.cc : lib.panel.lc);
+							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.getLabelFormat(!item.tt[1])) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.groupEllipsisSpace, 'lott');
+							!lib.panel.colMarker ? gr.GdiDrawText(lot, lib.ui.font.lot, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.getLabelFormat(!item.tt[2])) : lib.pop.cusCol(gr, lot, item, x, y2, this.text.w, this.text.h, type, nowp, lib.ui.font.lot, lib.ui.font.lotEllipsisSpace, 'group');
+							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y3, this.text.w, this.text.h, this.getLabelFormat(!item.tt[3]));
 						} else {
 							this.checkTooltip(gr, item, x, y1, statistics ? y2 : -1, -1, this.text.w, grp, statistics, false, lib.ui.font.group, /*ui.font.lot,*/ lib.ui.font.group, lib.ui.font.statistics);
-							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.style.image != 1 && !item.tt[1] ? lib.panel.cc : lib.panel.lc) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.groupEllipsisSpace, 'group');
-							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.style.image != 1 && !item.tt[2] ? lib.panel.cc : lib.panel.lc);
+							!lib.panel.colMarker ? gr.GdiDrawText(grp, lib.ui.font.group, txt_c /*grpCol*/, x, y1, this.text.w, this.text.h, this.getLabelFormat(!item.tt[1])) : lib.pop.cusCol(gr, grp, item, x, y1, this.text.w, this.text.h, type, nowp, lib.ui.font.group, lib.ui.font.groupEllipsisSpace, 'group');
+							if (statistics) gr.GdiDrawText(statistics, lib.ui.font.statistics, txt_c /*lotCol*/, x, y2, this.text.w, this.text.h, this.getLabelFormat(!item.tt[2]));
 						}
 					}
 				}
@@ -908,6 +908,22 @@ class LibImages {
 				break;
 		}
 		this.albumArtDiskCache ? (preLoad ? this.preLoad() : this.getImages()) : this.loadThrottle();
+	}
+
+	getLabelFormat(fits) {
+		if (this.labels.right || !fits) {
+			return lib.panel.lc;
+		}
+
+		if (libSet.albumArtTextAlign === 1) {
+			return lib.panel.cc;
+		}
+		else if (libSet.albumArtTextAlign === 2) {
+			return lib.panel.rc;
+		}
+		else {
+			return lib.panel.lc;
+		}
 	}
 
 	getLotCol(item, nowp, hover) {

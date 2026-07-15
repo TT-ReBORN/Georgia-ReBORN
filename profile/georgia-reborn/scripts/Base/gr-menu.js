@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    14-07-2026                                              * //
+// * Last change:    15-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2791,6 +2791,11 @@ class TopMenuOptions {
 		});
 		libraryLabelsMenu.addSeparator();
 		libraryLabelsMenu.addToggleItem('Flip', libSet, 'albumArtFlipLabels', () => {  lib.panel.updateProp(1); });
+		libraryLabelsMenu.addSeparator();
+		libraryLabelsMenu.createRadioSubMenu('Text alignment', ['Left (default)', 'Center', 'Right'], libSet.albumArtTextAlign, [0, 1, 2], (align) => {
+			libSet.albumArtTextAlign = align;
+			lib.panel.updateProp(1);
+		});
 		libraryLabelsMenu.appendTo(libraryAlbumArtMenu);
 
 		// * BACKGROUND * //
