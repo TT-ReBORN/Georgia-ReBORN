@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-07-2026                                              * //
+// * Last change:    16-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -137,19 +137,19 @@ class ConfigDefaults {
 		// #region ARTWORK IMAGE PATHS
 		/** @public @type {array} Artwork image paths load order - add, change or re-order entries as needed. */
 		this.imgPathDefaults = [
-			// * File names with formats in the current directory
+			// * File names with formats in the track's own directory (album root for single disc, or the CDn subfolder for box sets)
 			'$replace(%path%,%filename_ext%,)folder*',
 			'$replace(%path%,%filename_ext%,)cover*',
 			'$replace(%path%,%filename_ext%,)front*',
 			'$replace(%path%,%filename_ext%,)*.*',
 
-			// * All folder images in parent directory
+			// * File names with formats one level above the track's own directory (album root, when tracks are split into CDn subfolders)
 			'$replace(%path%,%directoryname%\\%filename_ext%,)folder*',
 			'$replace(%path%,%directoryname%\\%filename_ext%,)cover*',
 			'$replace(%path%,%directoryname%\\%filename_ext%,)front*',
 			'$replace(%path%,%directoryname%\\%filename_ext%,)*.*',
 
-			// * Artwork, Scans in root directory ( 1 Disc )
+			// * Artwork, Scans inside the track's own directory (single disc, or per-disc subfolder when using CDn folders)
 			'$replace(%path%\\Artwork\\,%filename_ext%,)folder*',
 			'$replace(%path%\\Artwork\\,%filename_ext%,)cover*',
 			'$replace(%path%\\Artwork\\,%filename_ext%,)front*',
@@ -159,7 +159,7 @@ class ConfigDefaults {
 			'$replace(%path%\\Scans\\,%filename_ext%,)front*',
 			'$replace(%path%\\Scans\\,%filename_ext%,)*.*',
 
-			// * Artwork, Scans in other subfolders ( Multi Discs )
+			// * Artwork, Scans one level above the track's own directory (shared folder for box sets using CDn folders)
 			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)folder*',
 			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)cover*',
 			'$replace(%path%\\..\\Artwork\\,%filename_ext%,)front*',
@@ -179,36 +179,43 @@ class ConfigDefaults {
 			'* Note: This setting will NOT be automatically set if you use top menu Options > Settings > Theme configuration > Save settings to config file                                                          ' +
 			'* Performance Note: Adding more paths affects performance. If your music collection consistently uses specific folders for artwork consider removing unnecessary paths to optimize performance.         ' +
 			'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ');
+		// #endregion
 
 		// * DISC ART IMAGE PATHS * //
 		// #region DISC ART IMAGE PATHS
 		/** @public @type {array} Disc art image paths load order - add, change or re-order entries as needed. */
 		this.discArtPathDefaults = [
-			// * File names with formats in the current directory
-			'$directory_path(%path%)\\*cd.png',
+			// * File names in the track's own directory (single disc, or per-disc subfolder when using CDn folders)
 			'$directory_path(%path%)\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\*cd.png',
+			'$directory_path(%path%)\\*vinyl$if2($if2(%vinylside%,%vinyl side%),).png',
 			'$directory_path(%path%)\\*vinyl.png',
-			'$directory_path(%path%)\\*vinyl$if2(%vinyl side%,).png',
 
-			// * Artwork, Scans in root directory ( 1 Disc )
-			'$directory_path(%path%)\\Artwork\\*cd.png',
+			// * File names one level above the track's own directory (shared cover at album root, tracks split into CDn folders, no Artwork/Scans wrapper)
+			'$directory_path(%path%)\\..\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\..\\*cd.png',
+			'$directory_path(%path%)\\..\\*vinyl$if2($if2(%vinylside%,%vinyl side%),).png',
+			'$directory_path(%path%)\\..\\*vinyl.png',
+
+			// * Artwork, Scans in the track's own directory (single disc, or per-disc subfolder when using CDn folders)
 			'$directory_path(%path%)\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\Artwork\\*cd.png',
+			'$directory_path(%path%)\\Artwork\\*vinyl$if2($if2(%vinylside%,%vinyl side%),).png',
 			'$directory_path(%path%)\\Artwork\\*vinyl.png',
-			'$directory_path(%path%)\\Artwork\\*vinyl$if2(%vinyl side%,).png',
-			'$directory_path(%path%)\\Scans\\*cd.png',
 			'$directory_path(%path%)\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\Scans\\*cd.png',
+			'$directory_path(%path%)\\Scans\\*vinyl$if2($if2(%vinylside%,%vinyl side%),).png',
 			'$directory_path(%path%)\\Scans\\*vinyl.png',
-			'$directory_path(%path%)\\Scans\\*vinyl$if2(%vinyl side%,).png',
 
-			// * Artwork, Scans in other subfolders ( Multi Discs )
-			'$directory_path(%path%)\\..\\Artwork\\*cd.png',
+			// * Artwork, Scans one level above the track's own directory (shared folder for box sets using CDn folders)
 			'$directory_path(%path%)\\..\\Artwork\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
+			'$directory_path(%path%)\\..\\Artwork\\*cd.png',
+			'$directory_path(%path%)\\..\\Artwork\\*vinyl$if2($if2(%vinylside%,%vinyl side%),).png',
 			'$directory_path(%path%)\\..\\Artwork\\*vinyl.png',
-			'$directory_path(%path%)\\..\\Artwork\\*vinyl$if2(%vinyl side%,).png',
-			'$directory_path(%path%)\\..\\Scans\\*cd.png',
 			'$directory_path(%path%)\\..\\Scans\\*cd$ifgreater(%totaldiscs%,1,%discnumber%,).png',
-			'$directory_path(%path%)\\..\\Scans\\*vinyl.png',
-			'$directory_path(%path%)\\..\\Scans\\*vinyl$if2(%vinyl side%,).png'
+			'$directory_path(%path%)\\..\\Scans\\*cd.png',
+			'$directory_path(%path%)\\..\\Scans\\*vinyl$if2($if2(%vinylside%,%vinyl side%),).png',
+			'$directory_path(%path%)\\..\\Scans\\*vinyl.png'
 		];
 
 		/** @public @type {object} Disc art image paths config header description. */
@@ -1960,6 +1967,7 @@ class ConfigDefaults {
 			waveformBarAutoDelete: false,
 			themePerformance: 'balanced',
 			rendererMode: 0,
+			menuDesign: 'default',
 			devTools: false
 		};
 
@@ -1982,6 +1990,7 @@ class ConfigDefaults {
 			waveformBarAutoDelete: 'Values: true, false - Options > Settings > Theme cache > Waveform bar > Auto-delete waveform bar cache on startup',
 			themePerformance: 'Values: "lowestQuality", "lowQuality", "balanced", "highQuality", "highestQuality" - Options > Settings > Theme performance',
 			rendererMode: 'Values: 0, 1, - Options > Settings > Renderer',
+			menuDesign: 'Values: "default", "modern" - Options > Settings > Menu',
 			devTools: 'Values: true, false - Options > Settings > Developer tools'
 		};
 
