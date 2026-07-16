@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    11-07-2026                                              * //
+// * Last change:    16-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -839,6 +839,7 @@ const Unicode = {
  *
  * @property {RegExp} ArtAlbumArtExtensions - Matches album art extensions `/\.(jpg|png|webp)$/i`.
  * @property {RegExp} ArtAlbumArtWildcard - Matches album art path wildcards `/(\*|\b(folder|cover|front)\b)\.\*`/g. Captures: wildcard or keyword.
+ * @property {RegExp} ArtCoverDiscFilename - Matches disc-specific cover filenames `/^(cover|folder|front)0*(\d+)\.[^.]+$/i`. Captures: prefix, disc number.
  * @property {RegExp} ArtDiscArtFilename - Matches disc art filenames `/(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i`. Captures: base, suffix.
  * @property {RegExp} ArtDiscArtWildcard - Matches disc art path wildcards `/(\*|\b(cd|disc|vinyl)\b)\.\*`/g. Captures: wildcard or keyword.
  * @property {RegExp} ArtImageExtensions - Matches common image extensions `/(?:jpe?g|png|webp|gif|bmp)$/i`.
@@ -1275,6 +1276,7 @@ const Regex = {
 	// * ARTWORK & IMAGES * //
 	ArtAlbumArtExtensions: /\.(jpg|png|webp)$/i,
 	ArtAlbumArtWildcard: /(\*|\b(folder|cover|front)\b)\.\*/g,
+	ArtCoverDiscFilename: /^(cover|folder|front)0*(\d+)\.[^.]+$/i,
 	ArtDiscArtFilename: /(cd|disc|vinyl)([0-9]*|[a-h])\.(png|jpg)/i,
 	ArtDiscArtWildcard: /(\*|\b(cd|disc|vinyl)\b)\.\*/g,
 	ArtImageExtensions: /(?:jpe?g|png|webp|gif|bmp)$/i,

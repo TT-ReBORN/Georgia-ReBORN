@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    06-07-2026                                              * //
+// * Last change:    16-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -96,7 +96,6 @@ const grm = {};
  * @property {string} flagsBase - The the flags filepath.
  * @property {string} lastFmImageRed - The last.fm red logo filepath.
  * @property {string} lastFmImageWhite - The last.fm white logo filepath.
- * @property {Function} discArtImagePaths - The collection of all disc art paths to search in.
  * @property {Function} discArtStubPaths - The collection of all disc art stub paths to search in.
  * @property {string} discArtCustomStub - The disc art custom stub filepath.
  * @property {string} hiResAudioLogoPath - The Hi-Res audio logo filepath.
@@ -121,17 +120,6 @@ const grPath = {
 	lastFmImageWhite: `${fb.ProfilePath}georgia-reborn\\${grSet.customThemeImages ? 'images\\custom' : 'images'}\\misc\\last-fm-36.png`,
 
 	// * DISC ART * //
-	/**
-	 * A collection of all disc art paths to search in.
-	 * This method returns an array of paths with expressions evaluated by the title format helper.
-	 * We expect disc art will be in .png with transparent background, best found at fanart.tv.
-	 * @type {() => string[]} A function returning an array of string paths.
-	 */
-	discArtImagePaths() {
-		const paths = grCfg.discArtPaths.map(path => $(path));
-		return paths.flatMap(pattern => utils.Glob(pattern));
-	},
-
 	/**
 	 * A collection of all disc art stub paths to search in.
 	 * This method returns an object where the key is the disc art stub name and the value is the path to the image.

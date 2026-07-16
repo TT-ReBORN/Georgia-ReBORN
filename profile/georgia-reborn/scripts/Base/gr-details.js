@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-07-2026                                              * //
+// * Last change:    16-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1777,21 +1777,22 @@ class Details {
 	 * @returns {string} The path to the disc art or disc art stub.
 	 */
 	findDiscArtPath() {
-		const discArtImagePaths = grPath.discArtImagePaths();
-		const discArtStubPaths = grPath.discArtStubPaths();
-
 		if (grSet.noDiscArtStub || grSet.showDiscArtStub) {
-			for (const path of discArtImagePaths) {
-				if (IsFile(path)) {
+			for (const path of grCfg.discArtPaths) {
+				const matches = utils.Glob($(path));
+				if (matches.length) {
 					this.discArtFound = true;
-					return path;
+					return matches[0];
 				}
 			}
 		}
 
 		this.discArtFound = false;
 
-		return grSet.noDiscArtStub ? '' : discArtStubPaths[grSet.discArtStub] || grPath.discArtCustomStub;
+		return (
+			grSet.noDiscArtStub ? '' :
+			grPath.discArtStubPaths()[grSet.discArtStub] || grPath.discArtCustomStub
+		);
 	}
 
 	/**

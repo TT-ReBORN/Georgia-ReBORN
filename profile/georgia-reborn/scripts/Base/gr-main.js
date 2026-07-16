@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-07-2026                                              * //
+// * Last change:    16-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4422,9 +4422,15 @@ class MainUI {
 	 */
 	fetchAlbumArtLocalFiles(metadb) {
 		const albumArtPattern = grSet.filterAlbumArt && this.albumArtPattern;
-		this.albumArtList = this.getImagePathList('albumArt', metadb, albumArtPattern).filter(path => this.albumArtImageFormats.test(path));
+		this.albumArtList = this.getImagePathList('albumArt', metadb, albumArtPattern)
+			.filter(path => this.albumArtImageFormats.test(path));
 
 		if (this.albumArtList.length && !grSet.loadEmbeddedAlbumArtFirst) {
+			const discCoverIndex = this.findDiscCoverIndex(this.albumArtList, metadb);
+			if (discCoverIndex > 0) {
+				const [discCover] = this.albumArtList.splice(discCoverIndex, 1);
+				this.albumArtList.unshift(discCover);
+			}
 			this.displayAlbumArtFromList();
 		}
 		else if (metadb && (this.albumArt = utils.GetAlbumArtV2(metadb))) {
@@ -4433,6 +4439,31 @@ class MainUI {
 		else {
 			this.displayNoAlbumArtStub();
 		}
+	}
+
+	/**
+	 * Finds a disc-specific cover file within the resolved album art list
+	 * - cover2.jpg,
+	 * - cover02.jpg,
+	 * - folder2.png...
+	 *
+	 * for disc 2 of a multi-disc release sharing one folder or a shared root with `CDn` folders.
+	 * @param {string[]} albumArtList - The resolved list of album art file paths for the current track.
+	 * @param {FbMetadbHandle} metadb - The metadb of the track.
+	 * @returns {number} The index of the matching disc-specific cover in `albumArtList`, or -1 if none was found.
+	 */
+	findDiscCoverIndex(albumArtList, metadb) {
+		const totalDiscs = Number($('$if2(%totaldiscs%,1)', metadb));
+		if (totalDiscs <= 1) return -1;
+
+		const discNumber = Number($('$if2(%discnumber%,0)', metadb));
+		if (!discNumber) return -1;
+
+		return albumArtList.findIndex(path => {
+			const filename = path.match(Regex.PathFilenameExtract)[0];
+			const match = filename.match(Regex.ArtCoverDiscFilename);
+			return match && Number(match[2]) === discNumber;
+		});
 	}
 
 	/**
