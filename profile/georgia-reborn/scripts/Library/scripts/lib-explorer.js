@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    11-07-2026                                              * //
+// * Last change:    17-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -5926,7 +5926,7 @@ class LibExplorerData {
 
 			// Structure
 			totaldiscs: '[%totaldiscs%]',
-			discnumber: '$if(%discsubtitle%,[Disc %discnumber% – ]%discsubtitle%)',
+			discnumber: `$if(%discsubtitle%,[Disc %discnumber% ${Unicode.EmDash} %discsubtitle%])`,
 			tracknumber:'$pad(%tracknumber%,2,0)',
 			tracknumber_raw: '[%tracknumber%]',
 			discnumber_tracknumber: '%discnumber%|%tracknumber%',
