@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-07-2026                                              * //
+// * Last change:    17-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -224,6 +224,12 @@ class Details {
 		// #region STATE
 		/** @private @type {boolean} The state when disc art was found on hard drive used in Details. */
 		this.discArtFound = false;
+		/** @private @type {string} The cache key (album folder|disc number|vinyl side) for which the on-disk disc art search was last resolved; lets findDiscArtPath() skip re-globbing for tracks that share all three - e.g. every track on the same disc when discArtEmbedded triggers a per-track re-check. */
+		this.discArtDiskCacheKey = '';
+		/** @private @type {string} The last resolved on-disk disc art path for discArtDiskCacheKey, meaningful only when discArtDiskCachedFound is true. */
+		this.discArtDiskCachedPath = '';
+		/** @private @type {boolean} The state when an on-disk disc art file was actually found for discArtDiskCacheKey. */
+		this.discArtDiskCachedFound = false;
 		/** @public @type {boolean} The last.fm logo image displayed when we %lastfm_play_count% > 0, shown in the metadata grid in Details. */
 		this.playCountVerifiedByLastFm = false;
 		/** @public @type {object} The boundary section object contains check functions for different sections of the metadata grid. */
@@ -959,9 +965,12 @@ class Details {
 				this.discArt = keepDiscArt ? this.discArt : null;
 				this.discArtCover = null;
 				this.discArtArray = [];
-				this.discArtRotation = null;
 				this.discArtD2DImage = null;
 				this.discArtD2DRotationAngle = 0;
+				this.discArtDiskCacheKey = '';
+				this.discArtDiskCachedPath = '';
+				this.discArtDiskCachedFound = false;
+				this.discArtRotation = null;
 			},
 			codecLogo: () => {
 				this.gridCodecLogo = null;
@@ -1778,16 +1787,37 @@ class Details {
 	 */
 	findDiscArtPath() {
 		if (grSet.noDiscArtStub || grSet.showDiscArtStub) {
-			for (const path of grCfg.discArtPaths) {
-				const matches = utils.Glob($(path));
-				if (matches.length) {
-					this.discArtFound = true;
-					return matches[0];
+			const cacheKey = `${grm.ui.currentAlbumFolder}|${$('$if2(%discnumber%,0)')}|${$(`$if2(${grTF.vinyl_side},ZZ)`)}`;
+
+			if (this.discArtDiskCacheKey === cacheKey) {
+				this.discArtFound = this.discArtDiskCachedFound;
+				if (this.discArtFound) return this.discArtDiskCachedPath;
+			}
+			else {
+				let resolvedPath = '';
+				let found = false;
+				const groups = GlobGroupTemplatesByDir(grCfg.discArtPaths);
+
+				for (const group of groups) {
+					const matches = GlobResolveDirectory(group.dir, group.filenames);
+					if (matches.length) {
+						resolvedPath = matches[0];
+						found = true;
+						break;
+					}
 				}
+
+				this.discArtDiskCacheKey = cacheKey;
+				this.discArtDiskCachedPath = resolvedPath;
+				this.discArtDiskCachedFound = found;
+				this.discArtFound = found;
+
+				if (found) return resolvedPath;
 			}
 		}
-
-		this.discArtFound = false;
+		else {
+			this.discArtFound = false;
+		}
 
 		return (
 			grSet.noDiscArtStub ? '' :

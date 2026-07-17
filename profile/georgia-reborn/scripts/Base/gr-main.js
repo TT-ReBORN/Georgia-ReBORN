@@ -1618,31 +1618,32 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	initMetadata(metadb = undefined) {
+		// * Artist
 		grStr.artist = $(grTF.artist, metadb);
-		grStr.artistLower = !grSet.showLowerBarArtist_layout ? '' : grStr.artist;
+		grStr.artistLower = grSet.showLowerBarArtist_layout ? grStr.artist : '';
 		grStr.original_artist = $(grTF.original_artist, metadb);
 		grStr.composer = $(grTF.composer, metadb);
+
+		// * Track
 		grStr.tracknum = grSet.showVinylNums ? $(grTF.vinyl_track, metadb) : $(grTF.tracknum, metadb).trim();
 		grStr.title = `${$(grTF.title, metadb)} ${$(grTF.original_artist, metadb)}`;
-		grStr.titleLower = !grSet.showLowerBarTitle_layout ? '' : grSet.showLowerBarComposer_layout  ? `${grStr.title} ${grStr.composer}` : `${grStr.title}`;
+		grStr.titleLower = !grSet.showLowerBarTitle_layout ? '' : grSet.showLowerBarComposer_layout ? `${grStr.title} ${grStr.composer}` : `${grStr.title}`;
+
+		// * Album
 		grStr.album = $(`[%album%][ '['${grTF.album_translation}']']`, metadb);
 		grStr.album_subtitle = $(`[ '['${grTF.album_subtitle}']']`, metadb);
+		grStr.disc = grSet.layout === 'default' ? $(grTF.disc, metadb) :  '';
+		grStr.length = FormatPlaybackLength(metadb);
 		grStr.year = $(grTF.year, metadb) === '0000' ? '' : $(grTF.year, metadb);
-		grStr.disc = grSet.layout !== 'default' ? '' :  $(grTF.disc, metadb);
 
-		const playbackLength = Math.round(metadb ? metadb.Length : fb.PlaybackLength);
-		const h = Math.floor(playbackLength / 3600);
-		const m = Math.floor(playbackLength % 3600 / 60);
-		const s = Math.floor(playbackLength % 60);
-		grStr.length = `${h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}` : m}:${s < 10 ? '0' : ''}${s}`;
+		// * Misc
+		grm.details.playCountVerifiedByLastFm = !['0', '?'].includes($('%lastfm_play_count%', metadb));
 
-		const lastfmPlayCount = $('%lastfm_play_count%', metadb);
-		grm.details.playCountVerifiedByLastFm = lastfmPlayCount !== '0' && lastfmPlayCount !== '?';
-
-		this.currentAlbumFolder = !this.isStreaming ? metadb && metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
+		// * States
+		this.currentAlbumFolder = (!this.isStreaming && metadb) ? metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
 		this.currentLastPlayed = $(grTF.last_played, metadb);
 		this.isTrackHiRes = Number($('$info(bitspersample)', metadb)) > 16 || Number($('$info(bitrate)', metadb)) > 1411;
-		this.playingPlaylist = grSet.showGridPlayingPlaylist ? $(grTF.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
+		this.playingPlaylist = grTF.playing_playlist = grSet.showGridPlayingPlaylist ? plman.GetPlaylistName(plman.PlayingPlaylist) : '';
 	}
 
 	/**
@@ -3128,7 +3129,8 @@ class MainUI {
 		}
 
 		if (type === 'albumArt') {
-			const albumArtPathsRaw = grCfg.imgPaths.flatMap(path => utils.Glob($(path, metadb)));
+			const groups = GlobGroupTemplatesByDir(grCfg.imgPaths, metadb);
+			const albumArtPathsRaw = groups.flatMap(group => GlobResolveDirectory(group.dir, group.filenames));
 			const albumArtPaths = [...new Set(albumArtPathsRaw)];
 			return FilterFiles(albumArtPaths, pattern);
 		}

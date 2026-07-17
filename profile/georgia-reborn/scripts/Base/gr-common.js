@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-07-2026                                              * //
+// * Last change:    17-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -846,6 +846,7 @@ const Unicode = {
  * @property {RegExp} ArtImageFileSortNumber - Matches _number.jpg|png|webp in filenames `/_(\d+)\.(jpe?g|png|webp)$/i`. Captures: number.
  * @property {RegExp} ArtImageLabelSuffix - Matches trailing label suffixes `/ (Records|Recordings|Music)$/`.
  *
+ * @property {RegExp} PathAnyFilename - Matches any filename (including extensionless ones), used as the regex equivalent of the unrestricted `*.*` glob wildcard `/^.*$/`.
  * @property {RegExp} PathBackslash - Matches single backslashes `/\\/g`.
  * @property {RegExp} PathBackslashEndsWith - Matches paths ending with a single backslash `/\\$/`.
  * @property {RegExp} PathBackslashPadded - Matches backslash with optional surrounding spaces `/\s*\\\s*`/g.
@@ -1284,6 +1285,7 @@ const Regex = {
 	ArtImageLabelSuffix: / (Records|Recordings|Music)$/,
 
 	// * PATHS & FILESYSTEM * //
+	PathAnyFilename: /^.*$/,
 	PathBackslash: /\\/g,
 	PathBackslashEndsWith: /\\$/,
 	PathBackslashPadded: /\s*\\\s*/g,

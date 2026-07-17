@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-07-2026                                              * //
+// * Last change:    17-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1416,6 +1416,139 @@ function GetShortPath(path) {
 
 
 /**
+ * Gets a single `*.ext` glob pattern that safely covers every filename-wildcard pattern in the list,
+ * provided they all share the same literal trailing file extension.
+ * @global
+ * @param {string[]} filenames - The filename-wildcard patterns to inspect.
+ * @returns {string|null} The common `*.ext` glob pattern, or null if the patterns don't share exactly one extension.
+ */
+function GlobGetCommonExtension(filenames) {
+	if (!filenames.length) return null;
+
+	let commonExtension;
+
+	for (let i = 0; i < filenames.length; i++) {
+		const match = filenames[i].match(Regex.PathFileExtensionFinal);
+		const extension = match ? match[0].toLowerCase() : null;
+
+		if (i === 0) {
+			commonExtension = extension;
+		}
+		else if (extension !== commonExtension) {
+			return null; // * Bail on first mismatch instead of scanning every remaining filename
+		}
+	}
+
+	return commonExtension ? `*${commonExtension}` : null;
+}
+
+
+/**
+ * Evaluates an array of title-formatting path templates against a track and groups them by their resolved directory,
+ * preserving the original first-appearance order of each directory. This is the grouping step behind {@link GlobResolveDirectory},
+ * used to collapse `grCfg.imgPaths`/`grCfg.discArtPaths` style path lists into the fewest possible `utils.Glob()` calls
+ * without losing the user-configured priority order.
+ * @global
+ * @param {string[]} pathTemplates - The array of title-formatting path templates, e.g. `grCfg.imgPaths`.
+ * @param {FbMetadbHandle} [metadb] - The metadb used to evaluate the title-formatting templates.
+ * @returns {{dir: string, filenames: string[]}[]} The path templates grouped by resolved directory, in first-appearance order.
+ */
+function GlobGroupTemplatesByDir(pathTemplates, metadb) {
+	const groups = [];
+	const groupsByDir = new Map();
+
+	for (const template of pathTemplates) {
+		const evaluatedPath = $(template, metadb);
+		if (!evaluatedPath) continue;
+
+		const lastSep = Math.max(evaluatedPath.lastIndexOf('\\'), evaluatedPath.lastIndexOf('/'));
+		const dir = evaluatedPath.slice(0, lastSep + 1);   // lastSep === -1 -> '' (no separator found)
+		const filename = evaluatedPath.slice(lastSep + 1); // lastSep === -1 -> full string
+
+		let group = groupsByDir.get(dir);
+
+		if (!group) {
+			group = { dir, filenames: [] };
+			groupsByDir.set(dir, group);
+			groups.push(group);
+		}
+
+		group.filenames.push(filename);
+	}
+
+	return groups;
+}
+
+
+/**
+ * Resolves one directory's worth of filename-wildcard patterns with the fewest possible `utils.Glob()` calls.
+ * When every pattern shares one file extension (or one pattern is the unrestricted `*.*`), a single broad Glob() call
+ * is issued and the results are ranked and filtered in-memory to reproduce exactly what a sequential,
+ * one-Glob()-call-per-pattern loop would have returned - same result set, same priority order.
+ * Falls back to one Glob() call per pattern (today's behavior) for any directory whose patterns don't share
+ * a safely-collapsible extension, so hand-edited path lists keep working unchanged.
+ * @global
+ * @param {string} dir - The already-evaluated directory path, including the trailing separator.
+ * @param {string[]} filenames - The filename-wildcard patterns to resolve, in priority order.
+ * @returns {string[]} The matched file paths, in priority order.
+ */
+function GlobResolveDirectory(dir, filenames) {
+	if (!filenames.length) return [];
+
+	const broadPattern = filenames.includes('*.*') ? '*.*' : GlobGetCommonExtension(filenames);
+
+	// * Patterns don't share a safely-collapsible extension, fall back to one Glob() call per pattern
+	if (!broadPattern) {
+		const seen = new Set();
+		const out = [];
+
+		for (const filename of filenames) {
+			for (const file of utils.Glob(dir + filename)) {
+				if (!seen.has(file)) {
+					seen.add(file);
+					out.push(file);
+				}
+			}
+		}
+
+		return out;
+	}
+
+	const files = utils.Glob(dir + broadPattern);
+	// '*.*' must match everything Glob() would've returned for it, including extensionless filenames
+	const patterns = filenames.map(filename => filename === '*.*' ? Regex.PathAnyFilename : WildcardToRegex(filename));
+	const patternCount = patterns.length;
+	const entries = [];
+
+	for (let i = 0; i < files.length; i++) {
+		const file = files[i];
+
+		// * Extract the filename from the path Glob() actually returned, rather than slicing off dir.length characters
+		// * Glob() isn't contractually guaranteed to echo `dir` back byte-for-byte (trailing separator, casing, normalization could differ)
+		// * so re-deriving it from the result is what keeps this correct regardless of Glob()'s internal reconstruction.
+		const lastSep = Math.max(file.lastIndexOf('\\'), file.lastIndexOf('/'));
+		const name = file.slice(lastSep + 1);
+		let rank = patternCount;
+
+		for (let j = 0; j < patternCount; j++) {
+			if (patterns[j].test(name)) {
+				rank = j;
+				break;
+			}
+		}
+
+		if (rank < patternCount) { // Drop files matching none of this directory's configured patterns
+			entries.push({ file, i, rank });
+		}
+	}
+
+	return entries
+		.sort((a, b) => a.rank - b.rank || a.i - b.i)
+		.map(entry => entry.file);
+}
+
+
+/**
  * Checks if a file exists.
  * @global
  * @param {string} filename - The filename to check.
@@ -1572,6 +1705,32 @@ function SaveFSO(file, value, bUTF16) {
 
 	console.log(`Error saving to ${file}`);
 	return false;
+}
+
+
+/**
+ * Converts a simple wildcard pattern (using only `*` as a wildcard) into an anchored,
+ * case-insensitive RegExp matching a full filename.
+ * @global
+ * @param {string} wildcardPattern - The wildcard pattern to convert, e.g. `folder*` or `*cd2.png`.
+ * @returns {RegExp} The equivalent case-insensitive RegExp.
+ */
+function WildcardToRegex(wildcardPattern) {
+	// Lazily initializes the cache property on the first run
+	const cache = WildcardToRegex.cache || (WildcardToRegex.cache = new Map());
+	const cached = cache.get(wildcardPattern);
+
+	if (cached) return cached;
+
+	const escaped = wildcardPattern
+		.replace(Regex.PathGlobSpecials, '\\$&')
+		.replace(Regex.PathWildcardAsterisk, '.*');
+
+	const regex = new RegExp(`^${escaped}$`, 'i');
+
+	cache.set(wildcardPattern, regex);
+
+	return regex;
 }
 // #endregion
 
@@ -5437,6 +5596,22 @@ function DateToYMD(date) {
 	const m = date.getMonth() + 1; // Month from 0 to 11
 	const y = date.getFullYear();
 	return `${y}-${(m <= 9 ? `0${m}` : m)}-${(d <= 9 ? `0${d}` : d)}`;
+}
+
+
+/**
+ * Formats the playback length of a track into a standard HH:MM:SS or MM:SS string.
+ * @global
+ * @param {FbMetadbHandle} [metadb] - The current metadb handle. If omitted or null, falls back to fb.PlaybackLength.
+ * @returns {string} The formatted time string.
+ */
+function FormatPlaybackLength(metadb) {
+	const playbackLength = Math.round(metadb ? metadb.Length : fb.PlaybackLength);
+	const h = Math.floor(playbackLength / 3600);
+	const m = Math.floor((playbackLength % 3600) / 60);
+	const s = Math.floor(playbackLength % 60);
+
+	return `${h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}` : m}:${s < 10 ? '0' : ''}${s}`;
 }
 
 
