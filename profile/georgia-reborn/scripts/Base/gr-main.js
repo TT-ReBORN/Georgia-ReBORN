@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    16-07-2026                                              * //
+// * Last change:    17-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -251,6 +251,8 @@ class MainUI {
 		this.isStreaming = false;
 		/** @public @type {boolean} Is the song playing from a CD? */
 		this.isPlayingCD = false;
+		/** @public @type {boolean} The state when the currently playing track is Hi-Res. */
+		this.isTrackHiRes = false;
 		/** @private @type {boolean} Checks if the previous track used GR_* tags, for pending restoration on next track. */
 		this.themeFromTags = false;
 		/** @private @type {boolean} Used to restore theme state after custom [%GR_THEME%] or [%GR_STYLE%] or [%GR_PRESET%] usage. */
@@ -271,8 +273,6 @@ class MainUI {
 		this.noAlbumArtSizeSet = false;
 		/** @public @type {boolean} Only load theme colors when newTrackFetchingArtwork = true. */
 		this.newTrackFetchingArtwork = false;
-		/** @public @type {boolean} The state when the currently playing track is Hi-Res. */
-		this.trackIsHiRes = false;
 		/** @public @type {boolean} The state when the mouse is within the boundaries of the lyrics album art. */
 		this.mouseInLyricsAlbumArt = false;
 		/** @public @type {boolean} The state when the mouse is within the boundaries of the lyrics full layout edge bounds. */
@@ -567,7 +567,7 @@ class MainUI {
 	 */
 	drawHiResAudioLogo(gr) {
 		if (!grSet.showHiResAudioBadge || this.displayLyrics && grSet.lyricsLayout === 'full' ||
-			!this.trackIsHiRes || !this.albumArtDisplayed()) {
+			!this.isTrackHiRes || !this.albumArtDisplayed()) {
 			return;
 		}
 
@@ -1641,8 +1641,8 @@ class MainUI {
 
 		this.currentAlbumFolder = !this.isStreaming ? metadb && metadb.Path.substring(0, metadb.Path.lastIndexOf('\\')) : '';
 		this.currentLastPlayed = $(grTF.last_played, metadb);
+		this.isTrackHiRes = Number($('$info(bitspersample)', metadb)) > 16 || Number($('$info(bitrate)', metadb)) > 1411;
 		this.playingPlaylist = grSet.showGridPlayingPlaylist ? $(grTF.playing_playlist = plman.GetPlaylistName(plman.PlayingPlaylist)) : '';
-		this.trackIsHiRes = Number($('$info(bitspersample)', metadb)) > 16 || Number($('$info(bitrate)', metadb)) > 1411;
 	}
 
 	/**
@@ -2849,6 +2849,7 @@ class MainUI {
 			hiResAudioLogo: () => {
 				this.hiResAudioLogo = null;
 				this.hiResAudioLogoCacheKey = '';
+				this.isTrackHiRes = false;
 				grm.debug.debugLog('Main cache => Hi-Res audio logo cache cleared');
 			},
 			metrics: () => {
