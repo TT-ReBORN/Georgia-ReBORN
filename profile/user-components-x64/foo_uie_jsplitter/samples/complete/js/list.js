@@ -240,16 +240,29 @@ function _list(mode, x, y, w, h) {
 				}
 				break;
 			case 'lastfm_info':
-				panel.m.AppendMenuItem(MF_STRING, 1100, 'Similar artists');
+				panel.m.AppendMenuItem(MF_STRING, 1100, 'Artist Info');
 				panel.m.AppendMenuItem(MF_STRING, 1101, 'User Charts');
 				panel.m.AppendMenuItem(MF_STRING, 1102, 'Recent Tracks');
 				panel.m.CheckMenuRadioItem(1100, 1102, this.properties.mode.value + 1100);
 				panel.m.AppendMenuSeparator();
-				if (this.properties.mode.value < 2) {
+				if (this.properties.mode.value == 0) {
+					panel.m.AppendMenuItem(MF_STRING, 1105, 'Similar Artists');
+					panel.m.AppendMenuItem(MF_STRING, 1106, 'Top Tracks');
+					panel.m.AppendMenuItem(MF_STRING, 1107, 'Top Tags');
+					panel.m.CheckMenuRadioItem(1105, 1107, this.properties.artist_method.value + 1105);
+					panel.m.AppendMenuSeparator();
+					if (this.properties.artist_method.value == 0) {
+						panel.s10.AppendMenuItem(MF_STRING, 1110, 'Open Last.fm website');
+						panel.s10.AppendMenuItem(MF_STRING, 1111, 'Autoplaylist');
+						panel.s10.CheckMenuRadioItem(1110, 1111, this.properties.link.value + 1110);
+						panel.s10.AppendTo(panel.m, MF_STRING, 'Links');
+						panel.m.AppendMenuSeparator();
+					}
+				} else if (this.properties.mode.value < 2) {
 					panel.s10.AppendMenuItem(MF_STRING, 1110, 'Open Last.fm website');
 					panel.s10.AppendMenuItem(MF_STRING, 1111, 'Autoplaylist');
 					panel.s10.CheckMenuRadioItem(1110, 1111, this.properties.link.value + 1110);
-					panel.s10.AppendTo(panel.m, this.properties.mode.value == 0 || this.properties.method.value == 0 ? MF_STRING : MF_GRAYED, 'Links');
+					panel.s10.AppendTo(panel.m, this.properties.method.value == 0 ? MF_STRING : MF_GRAYED, 'Links');
 					panel.m.AppendMenuSeparator();
 				}
 				if (this.properties.mode.value == 1) {
@@ -346,6 +359,12 @@ function _list(mode, x, y, w, h) {
 			case 1102:
 				this.properties.mode.value = idx - 1100;
 				this.update();
+				break;
+			case 1105:
+			case 1106:
+			case 1107:
+				this.properties.artist_method.value = idx - 1105;
+				this.reset();
 				break;
 			case 1110:
 			case 1111:
@@ -458,14 +477,26 @@ function _list(mode, x, y, w, h) {
 				this.filename = '';
 				switch (this.properties.mode.value) {
 					case 0:
-						this.filename = _artistFolder(this.artist) + 'lastfm.artist.getSimilar.json';
+						this.filename = _artistFolder(this.artist) + 'lastfm.' + this.artist_methods[this.properties.artist_method.value].method + '.json';
 						if (_isFile(this.filename)) {
-							this.data = _(_.get(_jsonParseFile(this.filename), 'similarartists.artist', []))
-								.map((item) => ({
-									name: item.name,
-									width: _textWidth(item.name, panel.fonts.normal),
-									url: this.properties.link.value == 0 ? item.url : 'artist HAS ' + item.name
-								}))
+							this.data = _(_.get(_jsonParseFile(this.filename), this.artist_methods[this.properties.artist_method.value].json, []))
+								.map((item) => {
+									let name, url;
+									if (this.properties.artist_method.value == 1) {
+										name = item.name;
+										url = item.url;
+									} else {
+										name = item.name;
+										url = this.properties.artist_method.value == 0
+											? (this.properties.link.value == 0 ? item.url : 'artist HAS ' + item.name)
+											: item.url;
+									}
+									return {
+										name: name,
+										width: _textWidth(name, panel.fonts.normal),
+										url: url
+									};
+								})
 								.value();
 							if (_fileExpired(this.filename, ONE_DAY)) {
 								this.get();
@@ -646,7 +677,7 @@ function _list(mode, x, y, w, h) {
 			case 'lastfm_info':
 				switch (this.properties.mode.value) {
 					case 0:
-						return this.artist + ': similar artists';
+						return this.artist + ': ' + this.artist_methods[this.properties.artist_method.value].display;
 					case 1:
 						return lastfm.username + ': ' + this.periods[this.properties.period.value].display + ' ' + this.methods[this.properties.method.value].display + ' charts';
 					case 2:
@@ -813,7 +844,7 @@ function _list(mode, x, y, w, h) {
 							if (!_tagged(this.artist)) {
 								return;
 							}
-							url = lastfm.get_base_url() + '&limit=100&method=artist.getSimilar&artist=' + encodeURIComponent(this.artist);
+							url = lastfm.get_base_url() + '&limit=100&method=' + this.artist_methods[this.properties.artist_method.value].method + '&artist=' + encodeURIComponent(this.artist);
 							break;
 						case 1:
 							url = lastfm.get_base_url() + '&limit=100&method=' + this.methods[this.properties.method.value].method + '&period=' + this.periods[this.properties.period.value].period + '&user=' + lastfm.username;
@@ -853,6 +884,21 @@ function _list(mode, x, y, w, h) {
 				_createFolder(folders.data);
 				_createFolder(folders.artists);
 				_createFolder(folders.lastfm);
+
+				this.artist_methods = [{
+					method: 'artist.getSimilar',
+					json: 'similarartists.artist',
+					display: 'similar artists'
+				}, {
+					method: 'artist.getTopTracks',
+					json: 'toptracks.track',
+					display: 'top tracks'
+				}, {
+					method: 'artist.getTopTags',
+					json: 'toptags.tag',
+					display: 'top tags'
+				}
+				];
 
 				this.methods = [{
 					method: 'user.getTopArtists',
@@ -894,7 +940,8 @@ function _list(mode, x, y, w, h) {
 				this.filenames = {};
 
 				this.properties = {
-					mode: new _p('2K3.LIST.LASTFM.MODE', 0), // 0 similar artists 1 charts
+					mode: new _p('2K3.LIST.LASTFM.MODE', 0), // 0 artist 1 charts 2 recent tracks
+					artist_method: new _p('2K3.LIST.LASTFM.ARTIST.METHOD', 0), // 0 similar artists 1 top tracks 2 top tags
 					method: new _p('2K3.LIST.LASTFM.CHARTS.METHOD', 0),
 					period: new _p('2K3.LIST.LASTFM.CHARTS.PERIOD', 0),
 					colour: new _p('2K3.LIST.LASTFM.CHARTS.BAR.COLOUR', _RGB(60, 60, 60)),

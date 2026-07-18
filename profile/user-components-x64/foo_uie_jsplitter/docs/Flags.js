@@ -1425,6 +1425,68 @@ const AttachImage2Codec = {
 };
 
 /**
+ * Controls how the window is to be shown. Used in {@link utils.Run}<br>
+ * <b>Hide</b>: Hides the window and activates another window.<br>
+ * <b>Normal</b>: Activates and displays a window. If the window is minimized, maximized, or arranged, the system restores it to its original size and position. An application should specify this flag when displaying the window for the first time.<br>
+ * <b>Minimized</b>: Activates the window and displays it as a minimized window.<br>
+ * <b>Maximized</b>: Activates the window and displays it as a maximized window.<br>
+ * <b>NoActivate</b>: Displays a window in its most recent size and position. This value is similar to <b>Normal</b>, except that the window is not activated.<br>
+ * <b>Show</b>: Activates the window and displays it in its current size and position.<br>
+ * <b>Minimize</b>: Minimizes the specified window and activates the next top-level window in the Z order.<br>
+ * <b>MinNoActive</b>: Displays the window as a minimized window. This value is similar to <b>Minimized</b>, except the window is not activated.<br>
+ * <b>NA</b>: Displays the window in its current size and position. This value is similar to <b>Show</b>, except that the window is not activated.<br>
+ * <b>Restore</b>: Activates and displays the window. If the window is minimized, maximized, or arranged, the system restores it to its original size and position. An application should specify this flag when restoring a minimized window.<br>
+ * <b>Default</b>: Sets the show state based on the <b>ShowWindow</b> value specified in the <b>STARTUPINFO</b> structure passed to the <b>CreateProcess</b> function by the program that started the application.<br>
+ * <b>ForceMinimize</b>: Minimizes a window, even if the thread that owns the window is not responding. This flag should only be used when minimizing windows from a different thread.<br>
+ * @memberof module:Flags
+ * @default
+ */
+const ShowWindow = {
+    Hide: 0,
+    Normal: 1,
+    Minimized: 2,
+    Maximized: 3,
+    NoActivate: 4,
+    Show: 5,
+    Minimize: 6,
+    MinNoActive: 7,
+    NA: 8,
+    Restore: 9,
+    Default: 10,
+    ForceMinimize: 11
+};
+
+/**
+ * Used in {@link utils.Run}
+ * A string, referred to as a verb, that specifies the action to be performed.<br>
+ * The set of available verbs depends on the particular file or folder. Generally, the actions available from an object's shortcut menu are available verbs.<br>
+ * This parameter can be empty, in which case the default verb is used if available. If not, the ":::no-loc text="open"::" verb is used.<br>
+ * If neither verb is available, the system uses the first verb listed in the registry.<br>
+ * The following verbs are commonly used:<br>
+ * <b>Open</b>: Opens the file specified by the lpFile parameter. The file can be an executable file, a document file, or a folder.<br>
+ * <b>Edit</b>: Launches an editor and opens the document for editing. If <b>target</b> is not a document file, the function will fail.<br>
+ * <b>Explore</b>: Explores the folder specified by lpFile.<br>
+ * <b>Find</b>: Initiates a search starting from the specified directory.<br>
+ * <b>Openas</b>: Launches a picker UI allowing the user to select an app with which to open the file specified by the <b>target</b> parameter.<br>
+ * <b>Print</b>: Prints the document file specified by lpFile. If lpFile is not a document file, the function will fail.<br>
+ * <b>Properties</b>: Displays the file or folder's properties.<br>
+ * <b>RunAs</b>: Launches an application as Administrator. User Account Control (UAC) will prompt the user for consent to run the application elevated or enter the credentials of an administrator account used to run the application.<br>
+ * @memberof module:Flags
+ * @default
+ */
+const RunVerb = {
+    Default: "",
+    Open: "open",
+    Edit: "edit",
+    Explore: "explore",
+    Find: "find",
+    OpenAs: "openas",
+    Print: "print",
+    Properties: "properties",
+    RunAs: "runas"
+};
+
+/**
  * SupportColourFlagCUI = {
  *     text: 0x0,
  *     selection_text: 0x2,

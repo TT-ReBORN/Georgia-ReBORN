@@ -1039,7 +1039,7 @@ let d2d = {
      *
      * @param {string} path_or_xml string containing SVG file path or raw XML
      * @param {number=} [max_width=0] If specified rasterizes with width = max_width and height according to the proportions, otherwise uses "width" and "height" attributes in SVG header if exist
-     * @return {D2DBitmap?} Rasterized bitmap, null in case of error
+     * @return {?D2DBitmap} Rasterized bitmap, null in case of error
      * 
      * @example
      * const svg_file = fb.ComponentPath + 'samples\\svg\\android.svg';

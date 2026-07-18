@@ -1,0 +1,200 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Source code: ParseHtml.js</title>
+        <link rel="stylesheet" href="../styles/vs.css">
+      </head>
+      <body>
+        <pre><code>﻿<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Demonstrates utils.ParseHtml(), HtmlDocument, and HtmlNode.</span>
+<span class="hljs-comment">//</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">log_section</span>(<span class="hljs-params">title</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;=== &quot;</span> + title + <span class="hljs-string">&quot; ===&quot;</span>);
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">normalize_text</span>(<span class="hljs-params">s</span>) {
+    <span class="hljs-keyword">return</span> (s || <span class="hljs-string">&quot;&quot;</span>).<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/\s+/g</span>, <span class="hljs-string">&quot; &quot;</span>).<span class="hljs-title function_">trim</span>();
+}
+
+<span class="hljs-comment">// This example uses the same structure as samples/basic/html/parse_test.html.</span>
+<span class="hljs-comment">// const html = utils.ReadUTF8(`${fb.ComponentPath}\\samples\\basic\\html\\parse_test.html`);</span>
+<span class="hljs-keyword">const</span> html = <span class="hljs-string">`
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+	&lt;meta charset=&quot;utf-8&quot;&gt;
+	&lt;title&gt;Lexbor Parser Test&lt;/title&gt;
+	&lt;meta property=&quot;og:title&quot; content=&quot;Test Artist Biography&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;main id=&quot;page&quot; class=&quot;artist-page biography&quot;&gt;
+		&lt;h1 class=&quot;artist-name&quot;&gt;Test Artist&lt;/h1&gt;
+
+		&lt;section class=&quot;wiki-content&quot; data-source=&quot;lastfm&quot;&gt;
+			&lt;p&gt;
+				Test Artist is an experimental music project from London.
+				The project combines &lt;strong&gt;ambient&lt;/strong&gt;, &lt;em&gt;industrial&lt;/em&gt;,
+				and electronic music.
+			&lt;/p&gt;
+
+			&lt;p&gt;
+				Their first album,
+				&lt;a href=&quot;/music/Test+Artist/First+Album&quot; class=&quot;album-link&quot;&gt;First Album&lt;/a&gt;,
+				was released in 2020.
+			&lt;/p&gt;
+		&lt;/section&gt;
+
+		&lt;section class=&quot;albums&quot;&gt;
+			&lt;h2&gt;Albums&lt;/h2&gt;
+
+			&lt;ul class=&quot;album-list&quot;&gt;
+				&lt;li class=&quot;album&quot; data-year=&quot;2020&quot;&gt;
+					&lt;a href=&quot;/music/Test+Artist/First+Album&quot;&gt;First Album&lt;/a&gt;
+				&lt;/li&gt;
+				&lt;li class=&quot;album featured&quot; data-year=&quot;2022&quot;&gt;
+					&lt;a href=&quot;/music/Test+Artist/Second+Album&quot;&gt;Second Album&lt;/a&gt;
+				&lt;/li&gt;
+				&lt;li class=&quot;album&quot; data-year=&quot;2024&quot;&gt;
+					&lt;span&gt;No link album&lt;/span&gt;
+				&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/section&gt;
+
+		&lt;section class=&quot;external-links&quot;&gt;
+			&lt;h2&gt;External links&lt;/h2&gt;
+
+			&lt;ul&gt;
+				&lt;li&gt;
+					text before link
+					&lt;a href=&quot;https://example.com/artist&quot; rel=&quot;external&quot;&gt;Official site&lt;/a&gt;
+				&lt;/li&gt;
+				&lt;li&gt;
+					&lt;!-- comment before link --&gt;
+					&lt;a href=&quot;https://musicbrainz.org/artist/test&quot;&gt;MusicBrainz&lt;/a&gt;
+				&lt;/li&gt;
+				&lt;li&gt;
+					&lt;span&gt;Broken item without href&lt;/span&gt;
+				&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/section&gt;
+	&lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+`</span>;
+
+<span class="hljs-keyword">const</span> doc = utils.<span class="hljs-title class_">ParseHtml</span>(html);
+
+<span class="hljs-keyword">if</span> (!doc) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Parse failed.&quot;</span>);
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;Document basics&quot;</span>);
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;documentElement tag:&quot;</span>, doc.<span class="hljs-property">documentElement</span>.<span class="hljs-property">tagName</span>); <span class="hljs-comment">// html</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;root tag:&quot;</span>, doc.<span class="hljs-property">root</span>.<span class="hljs-property">tagName</span>);                       <span class="hljs-comment">// html</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;head innerHTML:&quot;</span>, <span class="hljs-title function_">normalize_text</span>(doc.<span class="hljs-property">head</span>.<span class="hljs-property">innerHTML</span>));
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;body text:&quot;</span>, <span class="hljs-title function_">normalize_text</span>(doc.<span class="hljs-property">body</span>.<span class="hljs-property">textContent</span>));
+
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;querySelector&quot;</span>);
+
+    <span class="hljs-keyword">const</span> title = doc.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;title&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;title:&quot;</span>, title ? title.<span class="hljs-property">textContent</span> : <span class="hljs-string">&quot;&lt;missing&gt;&quot;</span>);
+
+    <span class="hljs-keyword">const</span> artistName = doc.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.artist-name&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;artist:&quot;</span>, artistName ? artistName.<span class="hljs-property">textContent</span> : <span class="hljs-string">&quot;&lt;missing&gt;&quot;</span>);
+
+    <span class="hljs-keyword">const</span> wiki = doc.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.wiki-content&quot;</span>);
+    <span class="hljs-keyword">if</span> (wiki) {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;wiki source:&quot;</span>, wiki.<span class="hljs-title function_">getAttribute</span>(<span class="hljs-string">&quot;data-source&quot;</span>)); <span class="hljs-comment">// lastfm</span>
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;wiki text:&quot;</span>, <span class="hljs-title function_">normalize_text</span>(wiki.<span class="hljs-property">textContent</span>));
+    }
+
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;querySelectorAll&quot;</span>);
+
+    <span class="hljs-keyword">const</span> albums = doc.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&quot;.album&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;albums count:&quot;</span>, albums.<span class="hljs-property">length</span>); <span class="hljs-comment">// 3</span>
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; albums.<span class="hljs-property">length</span>; i++) {
+        <span class="hljs-keyword">const</span> album = albums[i];
+        <span class="hljs-keyword">const</span> link = album.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;a&quot;</span>);
+
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(
+            <span class="hljs-string">&quot;album #&quot;</span> + (i + <span class="hljs-number">1</span>) + <span class="hljs-string">&quot;:&quot;</span>,
+            <span class="hljs-string">&quot;year=&quot;</span> + album.<span class="hljs-title function_">getAttribute</span>(<span class="hljs-string">&quot;data-year&quot;</span>),
+            <span class="hljs-string">&quot;featured=&quot;</span> + album.<span class="hljs-title function_">hasClass</span>(<span class="hljs-string">&quot;featured&quot;</span>),
+            <span class="hljs-string">&quot;title=&quot;</span> + (link ? <span class="hljs-title function_">normalize_text</span>(link.<span class="hljs-property">textContent</span>) : <span class="hljs-title function_">normalize_text</span>(album.<span class="hljs-property">textContent</span>)),
+            <span class="hljs-string">&quot;href=&quot;</span> + (link ? link.<span class="hljs-title function_">getAttribute</span>(<span class="hljs-string">&quot;href&quot;</span>) : <span class="hljs-string">&quot;&lt;no link&gt;&quot;</span>)
+        );
+    }
+
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;Attribute selectors&quot;</span>);
+
+    <span class="hljs-keyword">const</span> nodesWithClass = doc.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&quot;[class]&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;nodes with class:&quot;</span>, nodesWithClass.<span class="hljs-property">length</span>);
+
+    <span class="hljs-keyword">const</span> featuredAlbums = doc.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&quot;.album.featured&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;featured albums:&quot;</span>, featuredAlbums.<span class="hljs-property">length</span>);
+
+    <span class="hljs-keyword">const</span> albumToken = doc.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&quot;[class~=&#x27;album&#x27;]&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;[class~=&#x27;album&#x27;]:&quot;</span>, albumToken.<span class="hljs-property">length</span>);
+
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;getElementsByTagName&quot;</span>);
+
+    <span class="hljs-keyword">const</span> allLinks = doc.<span class="hljs-title function_">getElementsByTagName</span>(<span class="hljs-string">&quot;a&quot;</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;all links:&quot;</span>, allLinks.<span class="hljs-property">length</span>);
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; allLinks.<span class="hljs-property">length</span>; i++) {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(
+            <span class="hljs-string">&quot;#&quot;</span> + (i + <span class="hljs-number">1</span>),
+            <span class="hljs-title function_">normalize_text</span>(allLinks[i].<span class="hljs-property">textContent</span>),
+            <span class="hljs-string">&quot;=&gt;&quot;</span>,
+            allLinks[i].<span class="hljs-title function_">getAttribute</span>(<span class="hljs-string">&quot;href&quot;</span>)
+        );
+    }
+
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;children vs childNodes&quot;</span>);
+
+    <span class="hljs-keyword">const</span> p = doc.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.wiki-content p&quot;</span>);
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;p.children.length:&quot;</span>, p.<span class="hljs-property">children</span>.<span class="hljs-property">length</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;p.childNodes.length:&quot;</span>, p.<span class="hljs-property">childNodes</span>.<span class="hljs-property">length</span>);
+
+    <span class="hljs-comment">// firstChild is a text node here. JSON.stringify() is used intentionally</span>
+    <span class="hljs-comment">// to show that original whitespace and line breaks are preserved.</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;p.firstChild text:&quot;</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(p.<span class="hljs-property">firstChild</span>.<span class="hljs-property">textContent</span>));
+
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;Safe link extraction&quot;</span>);
+
+    <span class="hljs-keyword">const</span> externalItems = doc.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&quot;.external-links li&quot;</span>);
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; externalItems.<span class="hljs-property">length</span>; i++) {
+        <span class="hljs-keyword">const</span> li = externalItems[i];
+
+        <span class="hljs-comment">// Do not use li.firstChild.getAttribute(&quot;href&quot;):</span>
+        <span class="hljs-comment">// firstChild can be a text node or a comment.</span>
+        <span class="hljs-keyword">const</span> a = li.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;a[href]&quot;</span>);
+
+        <span class="hljs-keyword">if</span> (!a) {
+            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;external item #&quot;</span> + (i + <span class="hljs-number">1</span>) + <span class="hljs-string">&quot;: no link&quot;</span>);
+            <span class="hljs-keyword">continue</span>;
+        }
+
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(
+            <span class="hljs-string">&quot;external item #&quot;</span> + (i + <span class="hljs-number">1</span>) + <span class="hljs-string">&quot;:&quot;</span>,
+            <span class="hljs-title function_">normalize_text</span>(a.<span class="hljs-property">textContent</span>),
+            <span class="hljs-string">&quot;=&gt;&quot;</span>,
+            a.<span class="hljs-title function_">getAttribute</span>(<span class="hljs-string">&quot;href&quot;</span>)
+        );
+    }
+
+    <span class="hljs-title function_">log_section</span>(<span class="hljs-string">&quot;Missing nodes&quot;</span>);
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;missing node:&quot;</span>, doc.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.missing&quot;</span>));          <span class="hljs-comment">// null</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;missing list length:&quot;</span>, doc.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&quot;.missing&quot;</span>).<span class="hljs-property">length</span>); <span class="hljs-comment">// 0</span>
+}
+</code></pre>
+      </body>
+    </html>
+  

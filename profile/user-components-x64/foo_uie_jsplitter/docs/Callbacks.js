@@ -125,7 +125,7 @@ function on_font_changed() { }
  * @memberof module:Callbacks
  * @param {FbMetadbHandle} handle
  * @param {number} art_id See {@link module:Flags.AlbumArtId AlbumArtId} flags
- * @param {?GdiBitmap} image null on failure
+ * @param {?GdiBitmap} image (or {@link D2DBitmap} if {@link window.DrawMode} == 1). Null on failure
  * @param {string} image_path path to image file (or music file if image is embedded)
  */
 function on_get_album_art_done(handle, art_id, image, image_path) { }
@@ -193,7 +193,7 @@ function on_library_items_removed(handle_list) { }
  *
  * @memberof module:Callbacks
  * @param {number} cookie the return value from the {@link gdi.LoadImageAsync} call
- * @param {?GdiBitmap} image null on failure (invalid path/not an image)
+ * @param {?GdiBitmap} image (or {@link D2DBitmap} if {@link window.DrawMode} == 1). Null on failure (invalid path/not an image)
  * @param {string} image_path the path that was originally supplied to {@link gdi.LoadImageAsync}
  */
 function on_load_image_done(cookie, image, image_path) { }
@@ -686,3 +686,27 @@ function on_http_request_done(task_id, success, response_text, status, response_
  * @param {PerformanceObserver} observer The observer object that is receiving the above entries.
  */
 function PerformanceObserverCallback (entries, observer) { }
+
+/**
+ * Called when a process started by utils.RunCmdAsync finishes, fails to start, or times out.<br>
+ *
+ * @callback on_run_cmd_async_done
+ *
+ * @param {number} task_id
+ * Task id returned by utils.RunCmdAsync.<br>
+ *
+ * @param {boolean} success
+ * true only when the process was started, finished before timeout, and exited with code 0.<br>
+ * false when the process fails to start, times out, or exits with a non-zero code.<br>
+ *
+ * @param {number} exit_code
+ * Process exit code.<br>
+ * If the process timed out, this value is 0xFFFFFFFF.<br>
+ *
+ * @param {string} stdout
+ * Captured standard output.<br>
+ *
+ * @param {string} stderr
+ * Captured standard error and internal error messages.<br>
+ */
+function on_run_cmd_async_done(task_id, success, exit_code, stdout, stderr) { }
