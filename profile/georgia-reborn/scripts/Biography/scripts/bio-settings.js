@@ -454,7 +454,7 @@ class BioSettings {
 			this.imgRevHQ = true;
 			if (!this.autoCache) this.supCache = true;
 		}
-		this.photoNum = $Bio.clamp(this.photoNum, 1, 40);
+		this.photoNum = $Bio.clamp(this.photoNum, 0, 40);
 		this.photoLimit = this.photoLimit ? Math.max(this.photoLimit, this.photoNum, this.photoAutoAdd * 5) : 0;
 
 		this.fuzzyMatchReview = $Bio.clamp(this.fuzzyMatchReview, 0, 100);
@@ -707,7 +707,7 @@ let bioSettings = [
 	['Auto Cache Time', 0, 'num', 'autoCacheTime'],
 	['Save Folder', '%storage_folder%\\biography-cache\\biography\\lastfm\\$lower($cut(%BIO_ARTIST%,1))', 'text', 'foLfmSim'],
 
-	['Image [Artist] Initial Download Number (1-20)', 10, 'num', 'photoNum'],
+	['Image [Artist] Initial Download Number (0-40, 0 = Disabled)', 10, 'num', 'photoNum'],
 	['Image [Artist] Auto-Add New', true, 'boolean', 'photoAutoAdd'],
 	['Image [Artist] Cache Limit', 0, 'num', 'photoLimit'],
 

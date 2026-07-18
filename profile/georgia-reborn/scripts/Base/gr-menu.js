@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    15-07-2026                                              * //
+// * Last change:    18-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3778,10 +3778,10 @@ class TopMenuOptions {
 		biographyImageMenu.addSeparator();
 
 		const biographyImageDownloadMenu = new Menu('Downloads');
-		biographyImageDownloadMenu.addRadioItems(['  5 Images', '10 Images (default)', '15 Images', '20 Images'], bioCfg.photoNum, [5, 10, 15, 20], (num) => {
+		biographyImageDownloadMenu.addRadioItems(['  Disabled', '  5 Images', '10 Images (default)', '15 Images', '20 Images'], bioCfg.photoNum, [0, 5, 10, 15, 20], (num) => {
 			bioCfg.photoNum = num;
 			bio.ui.updateProp(1);
-		});
+		}, false, false, [0]);
 		biographyImageDownloadMenu.appendTo(biographyImageMenu);
 		biographyImageMenu.addSeparator();
 

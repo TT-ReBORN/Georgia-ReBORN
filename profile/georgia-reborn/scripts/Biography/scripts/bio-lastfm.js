@@ -250,6 +250,8 @@ class BioDldArtImages {
 	}
 
 	run(dl_ar, force, art, p_stndBio, p_supCache) {
+		if (!bioCfg.photoNum) return;
+
 		if (!utils.DownloadFileAsync && !$Bio.file(`${bioCfg.storageFolder}foo_lastfm_img.vbs`)) {
 			return;
 		}
