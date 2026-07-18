@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   04-10-2025                                              * //
-// * Last change:    17-07-2026                                              * //
+// * Last change:    18-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -886,7 +886,7 @@ class LibExplorerMain {
 			similarArtistView: this.state.artistImgScaling
 		}[this.state.view];
 
-		this.state.compactMode = this.ui.mainContainer.w < requiredW || grSet.libraryLayout === 'normal';
+		this.state.compactMode = this.ui.mainContainer.w < requiredW || grSet.libraryLayout !== 'full';
 		this.artwork.size = this.state.compactMode ? 0 : Math.floor(Math.min(this.ui.explorer.w / 2 - this.ui.margin, this.ui.explorer.h - this.ui.margin));
 		const scalingMode = this.artwork.size === 0 || !this.artwork.image ? 'reset' : scalingModeCurrent;
 
