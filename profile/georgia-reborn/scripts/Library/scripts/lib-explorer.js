@@ -1409,7 +1409,7 @@ class LibExplorerMain {
 			else if (lib.ex.web.missingReleasesImageDLAuto) {
 				this.state.pendingThumbs.set(cachePath, item);
 				item.thumb = 'loading';
-				utils.DownloadFileAsync(item.thumbUrl, cachePath);
+				lib.ex.web.downloadImage(item.thumbUrl, cachePath);
 			}
 			else {
 				item.thumb = libImg.stub.noImg;
@@ -8745,6 +8745,35 @@ class LibExplorerWeb {
 	}
 
 	/**
+	 * Downloads an image or array of images.
+	 * @param {string} dir - The target directory path.
+	 * @param {string} prefix - The file prefix for the image.
+	 * @param {string|Array<string>} links - The URL or array of URLs to download.
+	 */
+	downloadImage(url, destPath, opts = {}) {
+		const useCurl = CurlDownloadManager.isAvailable();
+
+		if (useCurl) {
+			CurlDownloadManager.startDownload(url, destPath, {
+				referer: opts.referer,
+				timeout: opts.timeout,
+
+				onSuccess: (path) => {
+					on_download_file_done(path, true, '');
+				},
+
+				onError: (err) => {
+					console.log(`Library Explorer => downloadFile => curl failed for ${destPath}, falling back:`, err);
+					utils.DownloadFileAsync(url, destPath);
+				}
+			});
+		}
+		else {
+			utils.DownloadFileAsync(url, destPath);
+		}
+	}
+
+	/**
 	 * Fetches album cover by trying sources in order: iTunes -> MusicBrainz -> Bandcamp.
 	 * @param {string} artistName - The artist name.
 	 * @param {string} albumName - The album name.
@@ -8899,7 +8928,7 @@ class LibExplorerWeb {
 				lib.ex.main.state.pendingImages.delete(file);
 				callback(downloadedImg || null, downloadedImg ? null : 'Download failed');
 			});
-			utils.DownloadFileAsync(artworkUrl, file);
+			lib.ex.web.downloadImage(artworkUrl, file);
 
 		}, true);
 	}
@@ -8986,7 +9015,7 @@ class LibExplorerWeb {
 				lib.ex.main.state.pendingImages.delete(file);
 				callback(downloadedImg || null, downloadedImg ? null : 'Download failed');
 			});
-			utils.DownloadFileAsync(artUrl, file);
+			lib.ex.web.downloadImage(artUrl, file);
 		}, false); // false = don't parse as JSON
 	}
 
@@ -9055,7 +9084,7 @@ class LibExplorerWeb {
 				lib.ex.main.state.pendingImages.delete(file);
 				callback(downloadedImg || null, downloadedImg ? null : 'Download failed');
 			});
-			utils.DownloadFileAsync(imageUrl, file);
+			lib.ex.web.downloadImage(imageUrl, file);
 
 		}, true);
 	}
@@ -9202,7 +9231,7 @@ class LibExplorerWeb {
 					if (i === 1) { // Defer main callback
 						lib.ex.main.state.pendingImages.set(file, onComplete);
 					}
-					utils.DownloadFileAsync(url, file);
+					lib.ex.web.downloadImage(url, file);
 				}
 			}
 		}, false);
@@ -9704,7 +9733,7 @@ class LibExplorerWeb {
 			if (!lib.ex.main.state.pendingThumbs.has(cachePath)) {
 				lib.ex.main.state.pendingThumbs.set(cachePath, item);
 				item.thumb = 'loading';
-				utils.DownloadFileAsync(item.thumbUrl, cachePath);
+				lib.ex.web.downloadImage(item.thumbUrl, cachePath);
 				lib.ex.utils.repaintViewport();
 			}
 		}

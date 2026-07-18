@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    17-07-2026                                              * //
+// * Last change:    18-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -844,6 +844,274 @@ function GetWindowsVersion() {
 // * WEB * //
 /////////////
 // #region WEB
+/**
+ * Downloads files via standard Windows curl.exe instead of utils.DownloadFileAsync / the MSXML2.XMLHTTP + ADODB.Stream
+ * VBS fallback. Both of those go through WinHTTP/WinINet, which on some systems mishandles SNI
+ * or negotiates a TLS version last.fm's Cloudflare/Fastly front-end rejects.
+ *
+ * Arguments are passed via a `-K` config file rather than the command line,
+ * so URLs and paths never have to survive cmd.exe's parsing rules.
+ * @global
+ */
+class CurlDownloadManager {
+	// * STATIC STATE * //
+	// #region STATIC STATE
+	/** @private @type {boolean|null} The cached availability status of curl. */
+	static availableCache = null;
+	/** @private @type {string} The resolved path to curl.exe. */
+	static curlPath = this._resolvePath();
+	/** @private @type {Map<string, object>} The tmpPath mapped to download bookkeeping. */
+	static pending = new Map();
+	/** @private @type {number|null} The polling timer ID. */
+	static pollTimer = null;
+	// #endregion
+
+	// * PRIVATE METHODS * //
+	// #region PRIVATE METHODS
+	/**
+	 * Cleans up temporary files.
+	 * @param {...string} paths - The file paths to clean up.
+	 * @private
+	 */
+	static _cleanup(...paths) {
+		for (const path of paths) {
+			try {
+				if (path && IsFile(path)) {
+					fso.DeleteFile(path);
+				}
+			}
+			catch (e) {}
+		}
+	}
+
+	/**
+	 * Gets the size of a file.
+	 * @param {string} p - The file path.
+	 * @returns {number|null} The file size in bytes, or null if unreadable.
+	 * @private
+	 */
+	static _fileSize(p) {
+		try {
+			return fso.GetFile(p).Size;
+		} catch (e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Finishes a download process.
+	 * @param {string} tmpPath - The temporary file path.
+	 * @param {object} entry - The download entry object.
+	 * @param {number|null} size - The final file size.
+	 * @param {boolean} timedOut - The timeout flag.
+	 * @private
+	 */
+	static _finish(tmpPath, entry, size, timedOut) {
+		const success = size !== null && size > 0;
+
+		if (success) {
+			try {
+				if (IsFile(entry.destPath)) {
+					fso.DeleteFile(entry.destPath);
+				}
+
+				fso.MoveFile(tmpPath, entry.destPath);
+
+				if (entry.onSuccess) {
+					entry.onSuccess(entry.destPath);
+				}
+			}
+			catch (e) {
+				if (entry.onError) entry.onError(`move failed: ${e.message}`);
+			}
+		}
+		else {
+			const errText = IsFile(entry.errPath)
+				? Open(entry.errPath).trim()
+				: (timedOut
+					? `curl timed out after ${Math.round(entry.timeoutMs / 1000)}s`
+					: 'curl reported no output'
+				);
+			if (entry.onError) {
+				entry.onError(errText || 'unknown curl error');
+			}
+		}
+
+		this._cleanup(tmpPath, entry.errPath, entry.cfgPath);
+	}
+
+	/**
+	 * Polls all pending downloads.
+	 * @private
+	 */
+	static _pollAll() {
+		if (!this.pending.size) {
+			clearInterval(this.pollTimer);
+			this.pollTimer = null;
+			return;
+		}
+
+		this.pending.forEach((entry, tmpPath) => {
+			const elapsed = Date.now() - entry.started;
+			const size = this._fileSize(tmpPath);
+
+			if (size !== null && size > 0 && size === entry.lastSize) {
+				entry.stableCount++;
+			} else {
+				entry.stableCount = 0;
+			}
+			entry.lastSize = size;
+
+			const stableEnough = entry.stableCount >= 3 && elapsed > 1000; // ~900ms without growth, at least 1s elapsed
+			const timedOut = elapsed > entry.timeoutMs;
+			if (!stableEnough && !timedOut) return;
+
+			this.pending.delete(tmpPath);
+			this._finish(tmpPath, entry, size, timedOut);
+		});
+	}
+
+	/**
+	 * Starts the polling interval for active downloads.
+	 * @private
+	 */
+	static _pollingStart() {
+		if (this.pollTimer) return;
+
+		this.pollTimer = setInterval(() => {
+			this._pollAll();
+		}, 300);
+	}
+
+	/**
+	 * Resolves the path to the curl executable.
+	 * @returns {string} The resolved curl.exe path.
+	 * @private
+	 */
+	static _resolvePath() {
+		try {
+			const sysCurl = `${WshShell.ExpandEnvironmentStrings('%SystemRoot%')}\\System32\\curl.exe`;
+			if (IsFile(sysCurl)) return sysCurl;
+		}
+		catch (e) {}
+
+		// Fallback assuming curl is in the system PATH
+		return 'curl.exe';
+	}
+
+	/**
+	 * Sanitizes a string for inclusion in a curl config file.
+	 * curl config-file values use \\, \", \t, \n, \r, \v as escapes and silently drop backslashes
+	 * before any other letter — so raw Windows paths must not go in as-is. Forward slashes work fine
+	 * for curl's file I/O on Windows, so normalizing to those sidesteps the whole escaping problem.
+	 * @param {string} s - The string to sanitize.
+	 * @returns {string} The sanitized string.
+	 * @private
+	 */
+	static _sanitizeForCfg(s) {
+		return String(s).replace(Regex.PathBackslash, '/').replace(Regex.PunctQuoteDouble, '\\"');
+	}
+	// #endregion
+
+	// * PUBLIC METHODS * //
+	// #region PUBLIC METHODS
+	/**
+	 * Checks whether curl.exe can actually be launched on this system. Cached after the first call.
+	 * @returns {boolean} The availability status of curl.
+	 */
+	static isAvailable() {
+		if (this.availableCache !== null) {
+			return this.availableCache;
+		}
+
+		try {
+			const exitCode = WshShell.Run(`"${this.curlPath}" --version`, 0, true);
+			this.availableCache = exitCode === 0;
+		}
+		catch (e) {
+			this.availableCache = false;
+		}
+
+		console.log(`curl resolved to: ${this.curlPath} (available: ${this.availableCache})`);
+		return this.availableCache;
+	}
+
+	/**
+	 * Starts downloading a file using curl.
+	 * @param {string} url - The target download URL.
+	 * @param {string} destPath - The final destination path.
+	 * @param {object} [opts] - The download options object.
+	 * @param {number} [opts.timeout] - The timeout in seconds.
+	 * @param {string} [opts.referer] - The HTTP referer header.
+	 * @param {function(string):void} [opts.onSuccess] - The callback called with destPath on success.
+	 * @param {function(string):void} [opts.onError] - The callback called with an error message on failure.
+	 */
+	static startDownload(url, destPath, opts = {}) {
+		const dir = destPath.substring(0, destPath.lastIndexOf('\\') + 1);
+		CreateFolder(dir);
+
+		const tmpPath = `${destPath}.part`;
+		const errPath = `${destPath}.err`;
+		const cfgPath = `${destPath}.curlcfg`;
+
+		for (const p of [tmpPath, errPath, cfgPath]) {
+			try {
+				if (IsFile(p)) {
+					fso.DeleteFile(p);
+				}
+			}
+			catch (e) {}
+		}
+
+		const timeout = opts.timeout || 30;
+		const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
+		const cfgLines = [
+			`url = "${this._sanitizeForCfg(url)}"`,
+			`output = "${this._sanitizeForCfg(tmpPath)}"`,
+			`stderr = "${this._sanitizeForCfg(errPath)}"`,
+			'silent',
+			'show-error',
+			'fail',
+			'location',
+			'insecure', // ! Bypasses Fastly's mismatched SSL certificate, we only need it for image fetching anways
+			`max-time = ${timeout}`,
+			'tlsv1.2',
+			`user-agent = "${this._sanitizeForCfg(userAgent)}"`
+		];
+
+		if (opts.referer) {
+			cfgLines.push(`referer = "${this._sanitizeForCfg(opts.referer)}"`);
+		}
+
+		// Set BOM parameter to false. curl's config parser chokes on the UTF-8 BOM.
+		Save(cfgPath, cfgLines.join('\r\n'), false);
+
+		try {
+			WshShell.Run(`"${this.curlPath}" -K "${cfgPath}"`, 0, false); // hidden, non-blocking
+		}
+		catch (e) {
+			this._cleanup(tmpPath, errPath, cfgPath);
+			if (opts.onError) opts.onError(e.message);
+			return;
+		}
+
+		this.pending.set(tmpPath, {
+			destPath, errPath, cfgPath,
+			onSuccess: opts.onSuccess,
+			onError: opts.onError,
+			started: Date.now(),
+			lastSize: -1,
+			stableCount: 0,
+			timeoutMs: (timeout + 15) * 1000
+		});
+
+		this._pollingStart();
+	}
+	// #endregion
+}
+
+
 /**
  * Compares two versions to determine if a version has changed.
  * Release must be in form of 2.0.0-beta1, or 2.0.1.

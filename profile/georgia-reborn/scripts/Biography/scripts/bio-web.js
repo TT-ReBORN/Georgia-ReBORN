@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    23-12-2025                                              * //
+// * Last change:    18-07-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,7 +16,7 @@
 // * CUSTOM XHR MANAGER * //
 ////////////////////////////
 /**
- * A custom XMLHttpRequest Manager
+ * A custom XMLHttpRequest Manager.
  * Provides custom async XHR with request tracking or ActiveX fallback.
  *
  * @requires utils.HTTPRequestAsync (optional, falls back to ActiveX)
@@ -26,7 +26,9 @@ class BioXMLHttpRequestManager {
 	 * Creates the `BioXMLHttpRequestManager` instance.
 	 */
 	constructor() {
-		/** @type {Map<number, BioXMLHttpRequest>} Active requests by task ID */
+		/** @public @type {Map<string, string>} The pending URLs mapped by path. */
+		this.pendingUrls = new Map();
+		/** @public @type {Map<number, BioXMLHttpRequest>} The active requests by task ID. */
 		this.requests = new Map();
 	}
 
@@ -34,8 +36,8 @@ class BioXMLHttpRequestManager {
 	// #region PUBLIC METHODS
 	/**
 	 * Registers task with request instance.
-	 * @param {number} taskId - Task ID from utils.HTTPRequestAsync.
-	 * @param {BioXMLHttpRequest} request
+	 * @param {number} taskId - The task ID from utils.HTTPRequestAsync.
+	 * @param {BioXMLHttpRequest} request - The BioXMLHttpRequest instance.
 	 */
 	addRequest(taskId, request) {
 		this.requests.set(taskId, request);
@@ -43,8 +45,8 @@ class BioXMLHttpRequestManager {
 
 	/**
 	 * Creates XMLHttpRequest instance.
-	 * @param {boolean} [bBuiltIn=true] - Use custom impl (true) or ActiveX (false).
-	 * @returns {BioXMLHttpRequest|ActiveXObject}
+	 * @param {boolean} [bBuiltIn=true] - The flag to use custom impl (true) or ActiveX (false).
+	 * @returns {BioXMLHttpRequest|ActiveXObject} The new XMLHttpRequest instance.
 	 */
 	createRequest(bBuiltIn = true) {
 		if (typeof utils !== 'undefined' && utils.HTTPRequestAsync && bBuiltIn) {
@@ -55,15 +57,15 @@ class BioXMLHttpRequestManager {
 
 	/**
 	 * Removes request from tracking.
-	 * @param {number} taskId
-	 * @returns {boolean} True if removed.
+	 * @param {number} taskId - The task identifier.
+	 * @returns {boolean} The success state if removed (true).
 	 */
 	removeRequest(taskId) {
 		return this.requests.delete(taskId);
 	}
 
 	/**
-	 * Aborts all active requests (e.g., on shutdown)
+	 * Aborts all active requests (e.g., on shutdown).
 	 */
 	clearAll() {
 		const requests = Array.from(this.requests.values());
@@ -80,7 +82,8 @@ class BioXMLHttpRequestManager {
 	}
 
 	/**
-	 * @returns {number} Count of active requests
+	 * Gets active request count.
+	 * @returns {number} The count of active requests.
 	 */
 	getActiveCount() {
 		return this.requests.size;
@@ -92,21 +95,26 @@ class BioXMLHttpRequestManager {
 	/**
 	 * The file download completion handler.
 	 * Must be called from on_download_file_done() in host class.
+	 * @param {string} path - The file path.
+	 * @param {boolean} success - The success state.
+	 * @param {string} errorText - The error text string.
 	 */
 	on_download_file_done(path, success, errorText) {
+		const url = this.pendingUrls.get(path) || '(unknown URL)';
+		this.pendingUrls.delete(path);
 		if (!success) {
-			console.log('Biography - Error saving img:\n\t', errorText);
+			console.log(`Biography - Error saving img:\n\tPath: ${path}\n\tURL: ${url}\n\tError: ${errorText}`);
 		}
 	}
 
 	/**
 	 * The HTTP request completion handler.
 	 * Must be called from on_http_request_done() in host class.
-	 * @param {number} taskId - Task identifier
-	 * @param {boolean} success - Request succeeded
-	 * @param {string} responseText - Response body
-	 * @param {number|string} status - HTTP status code
-	 * @param {string} headers - Response headers (JSON string)
+	 * @param {number} taskId - The task identifier.
+	 * @param {boolean} success - The request succeeded state.
+	 * @param {string} responseText - The response body text.
+	 * @param {number|string} status - The HTTP status code.
+	 * @param {string} headers - The response headers (JSON string).
 	 */
 	on_http_request_done(taskId, success, responseText, status, headers) {
 		const request = this.requests.get(taskId);
@@ -132,8 +140,8 @@ class BioXMLHttpRequestManager {
 // * CUSTOM XHR * //
 ////////////////////
 /**
- * A Custom XMLHttpRequest compatible with standard XHR API
- * Wraps utils.HTTPRequestAsync for async operations
+ * A Custom XMLHttpRequest compatible with standard XHR API.
+ * Wraps utils.HTTPRequestAsync for async operations.
  */
 class BioXMLHttpRequest {
 	/**
@@ -142,43 +150,43 @@ class BioXMLHttpRequest {
 	 */
 	constructor(manager) {
 		// Instance
-		/** @public @type {BioXMLHttpRequestManager} Reference to the manager instance */
+		/** @public @type {BioXMLHttpRequestManager} The reference to the manager instance. */
 		this.manager = manager;
 
 		// Internal state
-		/** @private @type {number|null} Task ID from utils.HTTPRequestAsync */
+		/** @private @type {number|null} The task ID from utils.HTTPRequestAsync. */
 		this.id = null;
-		/** @private @type {string|null} Request URL */
+		/** @private @type {string|null} The request URL. */
 		this.url = null;
-		/** @private @type {number} HTTP method (0=GET, 1=POST) */
+		/** @private @type {number} The HTTP method (0=GET, 1=POST). */
 		this.type = 0;
-		/** @private @type {Object|null} Request headers (lazy init for memory efficiency) */
+		/** @private @type {Object|null} The request headers (lazy init for memory efficiency). */
 		this.headers = null;
-		/** @private @type {boolean} Abort flag */
+		/** @private @type {boolean} The abort flag. */
 		this.aborted = false;
 
 		// XHR standard state
-		/** @private @type {number} XHR ready state (0=UNSENT, 1=OPENED, 2=HEADERS_RECEIVED, 4=DONE) */
+		/** @private @type {number} The XHR ready state (0=UNSENT, 1=OPENED, 2=HEADERS_RECEIVED, 4=DONE). */
 		this._readyState = 0;
-		/** @private @type {string|null} Response headers */
+		/** @private @type {string|null} The response headers. */
 		this._responseHeaders = null;
-		/** @private @type {string|null} Response body text */
+		/** @private @type {string|null} The response body text. */
 		this._responseText = null;
-		/** @private @type {number} HTTP status code */
+		/** @private @type {number} The HTTP status code. */
 		this._status = 0;
 
 		// Pre-bind legacy methods
-		/** @private @type {Function} Bound reference to the open() method for PascalCase compatibility. */
+		/** @private @type {Function} The bound reference to the open() method for PascalCase compatibility. */
 		this._boundOpen = this.open.bind(this);
-		/** @private @type {Function} Bound reference to the setRequestHeader() method for PascalCase compatibility. */
+		/** @private @type {Function} The bound reference to the setRequestHeader() method for PascalCase compatibility. */
 		this._boundSetRequestHeader = this.setRequestHeader.bind(this);
-		/** @private @type {Function} Bound reference to the send() method for PascalCase compatibility. */
+		/** @private @type {Function} The bound reference to the send() method for PascalCase compatibility. */
 		this._boundSend = this.send.bind(this);
-		/** @private @type {Function} Bound reference to the abort() method for PascalCase compatibility. */
+		/** @private @type {Function} The bound reference to the abort() method for PascalCase compatibility. */
 		this._boundAbort = this.abort.bind(this);
 
 		// Callback
-		/** @public @type {Function|null} Ready state change callback */
+		/** @public @type {Function|null} The ready state change callback. */
 		this.onreadystatechange = null;
 	}
 
@@ -237,7 +245,7 @@ class BioXMLHttpRequest {
 
 	/**
 	 * Legacy method: Sets HTTP header (PascalCase alias for setRequestHeader).
-	 * @returns {Function} Bound setRequestHeader method.
+	 * @returns {Function} The bound setRequestHeader method.
 	 */
 	get SetRequestHeader() {
 		return this._boundSetRequestHeader;
@@ -245,7 +253,7 @@ class BioXMLHttpRequest {
 
 	/**
 	 * Legacy method: Aborts request if in progress (PascalCase alias for abort).
-	 * @returns {Function} Bound abort method.
+	 * @returns {Function} The bound abort method.
 	 */
 	get Abort() {
 		return this._boundAbort;
@@ -253,7 +261,7 @@ class BioXMLHttpRequest {
 
 	/**
 	 * Legacy method: Initializes request (PascalCase alias for open).
-	 * @returns {Function} Bound open method.
+	 * @returns {Function} The bound open method.
 	 */
 	get Open() {
 		return this._boundOpen;
@@ -261,7 +269,7 @@ class BioXMLHttpRequest {
 
 	/**
 	 * Legacy method: Sends HTTP request (PascalCase alias for send).
-	 * @returns {Function} Bound send method.
+	 * @returns {Function} The bound send method.
 	 */
 	get Send() {
 		return this._boundSend;
@@ -292,7 +300,11 @@ class BioXMLHttpRequest {
 	// * PRIVATE METHODS * //
 	// #region PRIVATE METHODS
 	/**
-	 * Finalizes request with response (called by manager)
+	 * Finalizes request with response (called by manager).
+	 * @param {boolean} success - The success status.
+	 * @param {string} responseText - The response body text.
+	 * @param {number|string} status - The HTTP status code.
+	 * @param {string} headers - The response headers.
 	 * @private
 	 */
 	_finalize(success, responseText, status, headers) {
@@ -304,8 +316,8 @@ class BioXMLHttpRequest {
 	}
 
 	/**
-	 * Resets to UNSENT state
-	 * @param {boolean} emitCallback - Trigger onreadystatechange
+	 * Resets to UNSENT state.
+	 * @param {boolean} emitCallback - The flag to trigger onreadystatechange.
 	 * @private
 	 */
 	_reset(emitCallback) {
@@ -323,7 +335,7 @@ class BioXMLHttpRequest {
 	}
 
 	/**
-	 * Safely invokes onreadystatechange callback
+	 * Safely invokes onreadystatechange callback.
 	 * @private
 	 */
 	_triggerCallback() {
@@ -341,7 +353,7 @@ class BioXMLHttpRequest {
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
 	/**
-	 * Aborts request if in progress
+	 * Aborts request if in progress.
 	 */
 	abort() {
 		if (this._readyState === 0 || this._readyState === 4) return;
@@ -350,9 +362,9 @@ class BioXMLHttpRequest {
 	}
 
 	/**
-	 * Initializes request (allows reuse after completion/abort per XHR spec)
-	 * @param {string} type - HTTP method (GET/POST)
-	 * @param {string} url - Request URL
+	 * Initializes request (allows reuse after completion/abort per XHR spec).
+	 * @param {string} type - The HTTP method (GET/POST).
+	 * @param {string} url - The request URL.
 	 */
 	open(type, url) {
 		if (typeof url !== 'string' || !url) {
@@ -373,9 +385,9 @@ class BioXMLHttpRequest {
 	}
 
 	/**
-	 * Sets HTTP header (after open, before send)
-	 * @param {string} key - Header name
-	 * @param {string} value - Header value
+	 * Sets HTTP header (after open, before send).
+	 * @param {string} key - The header name.
+	 * @param {string} value - The header value.
 	 */
 	setRequestHeader(key, value) {
 		if (this._readyState !== 1) {
@@ -390,8 +402,8 @@ class BioXMLHttpRequest {
 	}
 
 	/**
-	 * Sends HTTP request
-	 * @param {string} [body] - Request body (POST only)
+	 * Sends HTTP request.
+	 * @param {string} [body] - The request body (POST only).
 	 */
 	send(body) {
 		if (this._readyState !== 1) {
@@ -437,8 +449,8 @@ class BioWebData {
 	// #region PRIVATE METHODS
 	/**
 	 * Parses data from file path or returns raw data.
-	 * @param {string|Array<Object>} fileOrData - File path or data array.
-	 * @returns {Array<Object>|null} Parsed data or null.
+	 * @param {string|Array<Object>} fileOrData - The file path or data array.
+	 * @returns {Array<Object>|null} The parsed data array or null.
 	 * @private
 	 */
 	_parseData(fileOrData) {
@@ -447,9 +459,9 @@ class BioWebData {
 
 	/**
 	 * Generates lookup key for artist with optional MBID.
-	 * @param {string} artist - Artist name.
-	 * @param {string} [mbid] - MusicBrainz ID.
-	 * @returns {string} Composite key.
+	 * @param {string} artist - The artist name.
+	 * @param {string} [mbid] - The MusicBrainz ID.
+	 * @returns {string} The composite lookup key.
 	 * @private
 	 */
 	_getKey(artist, mbid = '') {
@@ -458,7 +470,7 @@ class BioWebData {
 
 	/**
 	 * Sorts artist values by score in descending order.
-	 * @param {Array<Object>} data - Artist data array.
+	 * @param {Array<Object>} data - The artist data array to sort.
 	 * @private
 	 */
 	_sortByScore(data) {
@@ -471,8 +483,8 @@ class BioWebData {
 
 	/**
 	 * Writes data to file with proper formatting.
-	 * @param {string} file - File path.
-	 * @param {Array<Object>} data - Data to save.
+	 * @param {string} file - The destination file path.
+	 * @param {Array<Object>} data - The data array to save.
 	 * @private
 	 */
 	_saveToFile(file, data) {
@@ -483,6 +495,12 @@ class BioWebData {
 
 	// * PUBLIC METHODS * //
 	// #region PUBLIC METHODS
+	/**
+	 * Downloads an image or array of images.
+	 * @param {string} dir - The target directory path.
+	 * @param {string} prefix - The file prefix for the image.
+	 * @param {string|Array<string>} links - The URL or array of URLs to download.
+	 */
 	downloadImage(dir, prefix, links) {
 		const linkArray = Array.isArray(links) ? links : [links];
 		if (!linkArray.length) return;
@@ -495,28 +513,52 @@ class BioWebData {
 			})) : 0;
 
 		let imageIndex = maxIndex + 1;
+		const useCurl = bioCfg.useCurlDownload && CurlDownloadManager.isAvailable();
 
-		linkArray.forEach(v => {
+		for (const url of linkArray) {
 			const paddedIndex = String(imageIndex).padStart(2, '0');
 			const imPth = `${dir}${prefix}_${paddedIndex}_original.jpg`;
 
-			if (utils.DownloadFileAsync) {
-				utils.DownloadFileAsync(v, imPth);
+			if (useCurl) {
+				bioCurl.startDownload(url, imPth, {
+					referer: 'https://www.last.fm/',
+					onError: (err) => {
+						$Bio.trace(`curl download failed for ${imPth}, falling back:\n\t${err}`);
+						this.downloadImageLegacy(url, imPth);
+					}
+				});
 			} else {
-				$Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${v}" "${imPth}"`, 0);
+				this.downloadImageLegacy(url, imPth);
 			}
+
 			imageIndex++;
-		});
+		}
+	}
+
+	/**
+	 * Pre-curl download path (utils.DownloadFileAsync, or the VBS/cscript fallback).
+	 * Used on systems without curl.exe, and as a last resort if a curl download itself fails.
+	 * @param {string} url - The URL of the image to download.
+	 * @param {string} imPth - The target image file path.
+	 * @private
+	 */
+	downloadImageLegacy(url, imPth) {
+		if (utils.DownloadFileAsync) {
+			bioXHR.pendingUrls.set(imPth, url);
+			utils.DownloadFileAsync(url, imPth);
+		} else {
+			$Bio.run(`cscript //nologo "${bioCfg.storageFolder}foo_lastfm_img.vbs" "${url}" "${imPth}"`, 0);
+		}
 	}
 
 	/**
 	 * Merges similar artist data from file with new data.
 	 * Creates a unified dataset, updating existing entries and adding new ones.
 	 * All artist entries are sorted by score in descending order.
-	 * @param {string|Array<Object>} fileOrData - File path to JSON data or parsed data array.
+	 * @param {string|Array<Object>} fileOrData - The file path to JSON data or parsed data array.
 	 *   Each object should have: { artist: string, mbid?: string, val: Array<{score: number}> }
-	 * @param {Array<Object>|null} [newData=null] - New data to merge with existing data.
-	 * @returns {Array<Object>|null} Merged and sorted data array, or null if no data available.
+	 * @param {Array<Object>|null} [newData=null] - The new data to merge with existing data.
+	 * @returns {Array<Object>|null} The merged and sorted data array, or null if no data available.
 	 */
 	getSimilarDataFromFile(fileOrData, newData = null) {
 		const data = this._parseData(fileOrData);
@@ -560,6 +602,13 @@ class BioWebData {
 		return data;
 	}
 
+	/**
+	 * Validates if existing images of a certain type are present.
+	 * @param {string} type - The image type identifier.
+	 * @param {string} folder - The search folder path.
+	 * @param {number} [minCount=1] - The minimum required image count.
+	 * @returns {boolean} The boolean indicating if the criteria is met.
+	 */
 	hasExistingImages(type, folder, minCount = 1) {
 		if (!$Lib.folder(folder)) return false;
 
@@ -577,9 +626,9 @@ class BioWebData {
 	/**
 	 * Checks if file data already contains all entries from new data.
 	 * Used to avoid unnecessary file writes when data hasn't changed.
-	 * @param {string|Array<Object>} fileOrData - File path to JSON data or parsed data array.
-	 * @param {Array<Object>} newData - New data to check against existing data.
-	 * @returns {boolean} True if all new data entries exist in file data, false otherwise.
+	 * @param {string|Array<Object>} fileOrData - The file path to JSON data or parsed data array.
+	 * @param {Array<Object>} newData - The new data to check against existing data.
+	 * @returns {boolean} The boolean confirming if all new data entries exist in file data.
 	 */
 	hasSimilarData(fileOrData, newData) {
 		const data = this._parseData(fileOrData);
@@ -608,8 +657,8 @@ class BioWebData {
 	 * Updates similar artist data file with new entries.
 	 * Only writes to disk if new data is not already present.
 	 * Creates file if it doesn't exist.
-	 * @param {string} file - Path to the JSON cache file.
-	 * @param {Array<Object>} newData - New artist data to add/update.
+	 * @param {string} file - The path to the JSON cache file.
+	 * @param {Array<Object>} newData - The new artist data to add/update.
 	 */
 	updateSimilarDataFile(file, newData) {
 		const fileExists = $Bio.file(file);
