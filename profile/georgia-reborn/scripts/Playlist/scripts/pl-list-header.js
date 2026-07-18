@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    21-06-2026                                              * //
+// * Last change:    18-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -263,6 +263,10 @@ class PlaylistHeader extends PlaylistBaseHeader {
 		this.art = undefined;
 		/** @public @type {GdiBitmap} */
 		this.header_image = undefined;
+		/** @private @type {boolean} The state whether the collapsed-focus/full-selection sidemarker was drawn into the currently cached bitmap. */
+		this.headerSideMarkerVisible = false;
+		/** @private @type {?number} The header sideMarker color baked in while sideMarkerVisible is true. */
+		this.headerdSideMarkerCachedColor = undefined;
 
 		/** @private @type {Object.<string, Hyperlink>} */
 		this.hyperlinks = {};
@@ -452,6 +456,14 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			this.clearCachedHeaderImg();
 		}
 
+		const headerSideMarkerVisible = this.is_collapsed && this.is_focused() || this.is_completely_selected() && plSet.show_header && plSet.auto_collapse;
+		const headerSideMarkerColorChanged = headerSideMarkerVisible && this.headerdSideMarkerCachedColor !== pl.col.header_sideMarker;
+		if (this.headerSideMarkerVisible !== headerSideMarkerVisible || headerSideMarkerColorChanged) {
+			this.headerSideMarkerVisible = headerSideMarkerVisible;
+			cache_header = false;
+			this.clearCachedHeaderImg();
+		}
+
 		if (!cache_header || !this.header_image) {
 			const updatedNowpBg = pl.col.header_nowplaying_bg !== null; // * Wait until nowplaying bg has a new color to prevent flashing
 			const state = this.is_playing() && updatedNowpBg ? 'playing' : 'normal';
@@ -492,9 +504,10 @@ class PlaylistHeader extends PlaylistBaseHeader {
 			// * Need to apply text rendering AntiAliasGridFit when using style Blend, Biography's artist image on background or when using custom theme fonts with larger font sizes
 			grClip.SetTextRenderingHint(grSet.colorChameleon || grSet.styleBlend || grSet.playlistBgImg || grSet.libraryBgImg || grSet.customThemeFonts && grSet.playlistHeaderFontSize_layout > 18 ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.ClearTypeGridFit);
 
-			if (this.is_collapsed && this.is_focused() || this.is_completely_selected() && plSet.show_header && plSet.auto_collapse) {
+			if (this.headerSideMarkerVisible) {
 				grClip.DrawRect(-1, 0, this.w + 1, this.h - 1, 1, line_color);
 				grClip.FillSolidRect(0, 0, SCALE(8), this.h, pl.col.header_sideMarker);
+				this.headerdSideMarkerCachedColor = pl.col.header_sideMarker;
 			}
 
 			//************************************************************//
