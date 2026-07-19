@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-07-2026                                              * //
+// * Last change:    19-07-2026                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1032,7 +1032,6 @@ class CurlDownloadManager {
 			this.availableCache = false;
 		}
 
-		console.log(`curl resolved to: ${this.curlPath} (available: ${this.availableCache})`);
 		return this.availableCache;
 	}
 

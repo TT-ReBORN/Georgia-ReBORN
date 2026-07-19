@@ -960,16 +960,31 @@ class BioDldLastfmGenresWhitelist {
 		this.xmlhttp = null;
 	}
 
+	// * STATIC STATE * //
+	// #region STATIC STATE
+	/** @private @type {number} The epoch ms before which a new attempt is skipped. */
+	static retryAfter = 0;
+	/** @private @type {number} The back-off duration after a failed attempt, in ms. */
+	static retryDelay = 5 * 60 * 1000; // 5 min
+	// #endregion
+
 	onStateChange() {
 		if (this.xmlhttp != null && this.func != null && this.xmlhttp.readyState == 4) {
 			clearTimeout(this.timer);
 			this.timer = null;
-			if (this.xmlhttp.status == 200) this.func();
-			else $Bio.trace(`unable to update last.fm genres whitelist Status error: ${this.xmlhttp.status}`, true);
+			if (this.xmlhttp.status == 200) {
+				BioDldLastfmGenresWhitelist.retryAfter = 0;
+				this.func();
+			} else {
+				BioDldLastfmGenresWhitelist.retryAfter = Date.now() + BioDldLastfmGenresWhitelist.retryDelay;
+				const reason = this.xmlhttp.status ? `HTTP ${this.xmlhttp.status}` : 'no response (request failed, timed out, or host unreachable)';
+				$Bio.trace(`unable to update last.fm genres whitelist: ${reason} — retrying in ${Math.round(BioDldLastfmGenresWhitelist.retryDelay / 60000)} min`, true);
+			}
 		}
 	}
 
 	search() {
+		if (Date.now() < BioDldLastfmGenresWhitelist.retryAfter) return;
 		this.func = null;
 		this.xmlhttp = bioXHR.createRequest(bioSet.useUtilsLastfm); // Regorxxx <- Http Requests when utils.HTTPRequestAsync is available ->
 		const URL = 'https://musicbrainz.org/genres';

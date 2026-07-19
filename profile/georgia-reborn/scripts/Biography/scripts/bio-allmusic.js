@@ -16,6 +16,52 @@ class BioRequestAllmusic {
 			'0x80072ee2': 408, // Timeout
 			'0x8000000a': 408  // Data timeout
 		};
+		/** @private @type {number} Epoch ms until which AllMusic requests are short-circuited after a detected Cloudflare challenge. */
+		this.cloudflareBlockedUntil = 0;
+		/** @private @type {number} Back-off duration after a detected Cloudflare challenge, in ms. */
+		this.cloudflareBlockDuration = 15 * 60 * 1000; // 15 min
+		/** @private @type {boolean} Whether the current block window has already been logged, to avoid repeat spam. */
+		this.cloudflareLogged = false;
+	}
+
+	/**
+	 * Detects whether a response looks like a Cloudflare bot-management challenge page rather than real content,
+	 * so callers can back off instead of treating it as an ordinary miss.
+	 * @param {number} status - The HTTP status code.
+	 * @param {string} responseText - The response body.
+	 * @returns {boolean} True if this looks like a Cloudflare challenge/block page.
+	 */
+	isCloudflareChallenge(status, responseText) {
+		if ((status != 403 && status != 503) || typeof responseText != 'string' || !responseText.length) {
+			return false;
+		}
+
+		return /cf_chl_opt|cf-mitigated|challenges\.cloudflare\.com|<title>\s*Just a moment/i.test(responseText);
+	}
+
+	/**
+	 * Formats a rejected request into a short, log-friendly string instead of dumping the raw response body.
+	 * @param {{status?: number, responseText?: string, cloudflareBlocked?: boolean}} error - The rejection payload.
+	 * @returns {string} A short description suitable for $Bio.trace.
+	 */
+	formatError(error) {
+		if (!error) {
+			return 'unknown error';
+		}
+
+		if (error.cloudflareBlocked) {
+			return 'blocked by Cloudflare bot-protection, backing off';
+		}
+
+		const status = error.status || 'unknown';
+		const snippet = typeof error.responseText == 'string' && error.responseText.length ?
+			error.responseText
+			.replace(Regex.HtmlTagAny, ' ')
+			.replace(Regex.SpaceMultiple, ' ')
+			.trim().slice(0, 120)
+			: '';
+
+		return `status ${status}${snippet ? ` - ${snippet}` : ''}`;
 	}
 
 	/**
@@ -131,7 +177,9 @@ class BioRequestAllmusic {
 	}
 
 	/**
-	 * Handles state change, resolving/rejecting based on status.
+	 * Handles state change, resolving/rejecting based on status. Also detects a Cloudflare
+	 * bot-management challenge and, if found, starts a back-off window so subsequent AllMusic
+	 * requests are skipped instead of repeatedly hitting (and re-logging) the same block.
 	 * @param {Function} resolve - Promise resolve.
 	 * @param {Function} reject - Promise reject.
 	 * @param {Function|null} func - Optional callback.
@@ -150,11 +198,22 @@ class BioRequestAllmusic {
 		const responseText = this.request.ResponseText;
 
 		if (status >= 200 && status < 300) {
+			this.cloudflareBlockedUntil = 0;
+			this.cloudflareLogged = false;
 			if (func) {
 				func(responseText, this.request);
 			}
 			resolve(responseText);
-		} else {
+		}
+		else if (this.isCloudflareChallenge(status, responseText)) {
+			this.cloudflareBlockedUntil = Date.now() + this.cloudflareBlockDuration;
+			if (!this.cloudflareLogged) {
+				this.cloudflareLogged = true;
+				$Bio.trace(`allmusic: blocked by Cloudflare bot-protection, backing off ${Math.round(this.cloudflareBlockDuration / 60000)} min`, true);
+			}
+			reject({ status, responseText, cloudflareBlocked: true });
+		}
+		else {
 			reject({ status, responseText });
 		}
 
@@ -162,7 +221,8 @@ class BioRequestAllmusic {
 	}
 
 	/**
-	 * Sends the request, returning a Promise.
+	 * Sends the request, returning a Promise. If a Cloudflare challenge was recently detected,
+	 * the request is skipped entirely (no network call at all) until the back-off window expires.
 	 * @param {Object} options - Request options.
 	 * @param {string} [options.method='GET'] - HTTP method.
 	 * @param {string} options.URL - URL.
@@ -174,6 +234,10 @@ class BioRequestAllmusic {
 	 * @returns {Promise<string>} Resolves with response text on success.
 	 */
 	send({ method = 'GET', URL, body = undefined, func = null, requestHeader = [], bypassCache = false, timeout = 5000 }) {
+		if (Date.now() < this.cloudflareBlockedUntil) {
+			return Promise.reject({ status: 0, responseText: '', cloudflareBlocked: true });
+		}
+
 		this.abortRequest();
 
 		// Async XMLHttpRequest mode
@@ -267,11 +331,13 @@ class BioDldAllmusic {
 						bioDoc.close();
 					},
 					(error) => {
-						$Bio.trace(`allmusic review / biography: ${bio.server.album} / ${bio.server.albumArtist}: not found Status error: ${this.xmlhttp.status}`, true);
+						if (!error || !error.cloudflareBlocked) {
+							$Bio.trace(`allmusic review / biography: ${this.artist} - ${this.title}: not found (${bioAllMusicReq.formatError(error)})`, true);
+						}
 					}
 				).catch((error) => {
 					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
-					if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
+					if (!$Bio.file(this.pth_bio) && (!error || !error.cloudflareBlocked)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
 				});
 				break;
 
@@ -308,11 +374,13 @@ class BioDldAllmusic {
 						}
 					},
 					(error) => {
-						$Bio.trace(`allmusic review / biography: ${bio.server.album} / ${bio.server.albumArtist}: not found Status error: ${this.xmlhttp.status}`, true);
+						if (!error || !error.cloudflareBlocked) {
+							$Bio.trace(`allmusic review / biography: ${this.artist} - ${this.title}: not found (${bioAllMusicReq.formatError(error)})`, true);
+						}
 					}
 				).catch((error) => {
 					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
-					if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
+					if (!$Bio.file(this.pth_bio) && (!error || !error.cloudflareBlocked)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
 				});
 				break;
 
@@ -331,8 +399,8 @@ class BioDldAllmusic {
 						if (this.artistLink) {
 							this.search('artistPage', this.artistLink, 'https://allmusic.com');
 						}
-				},
-				(error) => {}
+					},
+					(error) => {} // silent by design, 'id'/'artist' already reported the miss; this step just skips the artistPage follow-up
 				).catch((error) => {});
 				break;
 
@@ -348,18 +416,20 @@ class BioDldAllmusic {
 				}).then(
 					(response) => {
 						bioParse.amArtist(this, response, this.artist, '', this.title, this.fo_bio, this.pth_bio, '');
-			},
-			(error) => {
-				$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found Status error: ${JSON.stringify(error)}`, true)
-			}
-			).catch((error) => {
-				if (this.album) {
-					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
-				} else {
-					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
-				}
-				if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
-			});
+					},
+					(error) => {
+						if (!error || !error.cloudflareBlocked) {
+							$Bio.trace(`allmusic review / biography: ${this.artist} - ${this.title}: not found (${bioAllMusicReq.formatError(error)})`, true);
+						}
+					}
+				).catch((error) => {
+					if (this.album) {
+						bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
+					} else {
+						bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
+					}
+					if (!$Bio.file(this.pth_bio) && (!error || !error.cloudflareBlocked)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
+				});
 				break;
 		}
 	}
@@ -447,13 +517,15 @@ class BioDldAllmusicRev {
 						bioDoc.close();
 					},
 					(error) => {
-						$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found Status error: ${JSON.stringify(error)}`, true)
+						if (!error || !error.cloudflareBlocked) {
+							$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found (${bioAllMusicReq.formatError(error)})`, true);
+						}
 					}
 				).catch((error) => {
 					bio.server.getBio(this.force, this.art, 1);
 					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
 					bio.server.updateNotFound(`Rev ${bioCfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
-					$Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
+					if (!error || !error.cloudflareBlocked) $Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
 				});
 				break;
 
@@ -596,7 +668,9 @@ class BioDldAllmusicRev {
 						if (this.dn_type.includes('+biography') && this.artistLink) {
 							return this.search('biography', `${this.artistLink}/biographyAjax`, this.artistLink);
 						}
-						$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found Status error: ${JSON.stringify(error)}`, true)
+						if (!error || !error.cloudflareBlocked) {
+							$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found (${bioAllMusicReq.formatError(error)})`, true);
+						}
 					}
 				).catch((error) => {
 					if (this.dn_type.includes('+biography') && this.artistLink) {
@@ -604,7 +678,7 @@ class BioDldAllmusicRev {
 					}
 					bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.pth_rev}`);
 					bio.server.updateNotFound(`Rev ${bioCfg.partialMatch} ${this.pth_rev}${this.dn_type != 'track' ? '' : ` ${this.album} ${this.albumArtist}`}`);
-					$Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
+					if (!error || !error.cloudflareBlocked) $Bio.trace(`allmusic review: ${this.album} / ${this.albumArtist}: not found`, true);
 				});
 				break;
 
@@ -638,9 +712,11 @@ class BioDldAllmusicRev {
 				}).then(
 					(response) => {
 						bioParse.amArtist(this, response, this.artist, this.album, '', this.fo_bio, this.pth_bio, this.pth_rev);
-				},
+					},
 					(error) => {
-						$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found Status error: ${JSON.stringify(error)}`, true)
+						if (!error || !error.cloudflareBlocked) {
+							$Bio.trace(`allmusic review / biography: ${this.album} / ${this.albumArtist}: not found (${bioAllMusicReq.formatError(error)})`, true);
+						}
 					}
 				).catch((error) => {
 					if (this.album) {
@@ -648,7 +724,7 @@ class BioDldAllmusicRev {
 					} else {
 						bio.server.updateNotFound(`Bio ${bioCfg.partialMatch} ${this.artist} - ${this.title}`);
 					}
-					if (!$Bio.file(this.pth_bio)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
+					if (!$Bio.file(this.pth_bio) && (!error || !error.cloudflareBlocked)) $Bio.trace(`allmusic biography: ${this.artist}: not found`, true);
 				});
 				break;
 		}
