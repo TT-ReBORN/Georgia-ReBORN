@@ -5,7 +5,7 @@
 // * Website:        https://github.com/TT-ReBORN/Georgia-ReBORN             * //
 // * Version:        3.0-x64-DEV                                             * //
 // * Dev. started:   22-12-2017                                              * //
-// * Last change:    18-07-2025                                              * //
+// * Last change:    19-07-2025                                              * //
 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -513,14 +513,14 @@ class BioWebData {
 			})) : 0;
 
 		let imageIndex = maxIndex + 1;
-		const useCurl = bioCfg.useCurlDownload && CurlDownloadManager.isAvailable();
+		const useCurl = CurlDownloadManager.isAvailable();
 
 		for (const url of linkArray) {
 			const paddedIndex = String(imageIndex).padStart(2, '0');
 			const imPth = `${dir}${prefix}_${paddedIndex}_original.jpg`;
 
 			if (useCurl) {
-				bioCurl.startDownload(url, imPth, {
+				CurlDownloadManager.startDownload(url, imPth, {
 					referer: 'https://www.last.fm/',
 					onError: (err) => {
 						$Bio.trace(`curl download failed for ${imPth}, falling back:\n\t${err}`);
