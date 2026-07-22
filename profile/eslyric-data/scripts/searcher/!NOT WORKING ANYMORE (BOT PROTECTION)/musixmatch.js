@@ -1,6 +1,6 @@
 ﻿export function getConfig(cfg) {
 	cfg.name = 'Musixmatch (Synced)';
-	cfg.version = '0.2';
+	cfg.version = '0.2.1';
 	cfg.author = 'ohyeah & TT';
 	cfg.useRawMeta = false;
 }
@@ -45,7 +45,29 @@ export function getLyrics(meta, man) {
 
 		try {
 			const obj = JSON.parse(body);
+			const header = obj.message && obj.message.header;
+			const statusCode = header && header.status_code;
+
+			if (statusCode !== 200) {
+				if (statusCode === 401 && header.hint === 'captcha') {
+					log('search blocked: musixmatch is requiring a captcha for this token/IP, cannot recover automatically');
+				}
+				else if (statusCode === 401 && header.hint === 'renew') {
+					log('search rejected: token needs renewal, clearing cached token');
+					man.setSvcData('token', '');
+				}
+				else {
+					log(`search failed: status_code=${statusCode}, hint=${header && header.hint}`);
+				}
+				return;
+			}
+
 			const trackList = obj.message.body.track_list;
+			if (!Array.isArray(trackList)) {
+				log('search succeeded but track_list is missing/not an array');
+				return;
+			}
+
 			for (const trackObj of trackList) {
 				const track = trackObj.track;
 				const id = track.commontrack_id | 0;
@@ -127,11 +149,18 @@ function queryLyric(token, id, isSync) {
 
 		try {
 			const obj = JSON.parse(body);
-			lyricText = obj.message.body[kBodyKey][kLyricKey];
-			if (lyricText == null) {
+			const header = obj.message && obj.message.header;
+			const statusCode = header && header.status_code;
+
+			if (statusCode !== 200) {
+				log(`queryLyric failed: status_code=${statusCode}, hint=${header && header.hint}`);
 				return;
 			}
-		} catch (e) {
+
+			const bodyObj = obj.message.body && obj.message.body[kBodyKey];
+			lyricText = bodyObj ? bodyObj[kLyricKey] : null;
+		}
+		catch (e) {
 			log(`queryLyric exception: ${e.message}`);
 		}
 	});

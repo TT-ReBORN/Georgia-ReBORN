@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" targetNamespace="https://github.com/ESLyric/layout"
+    xmlns="https://github.com/ESLyric/layout" elementFormDefault="qualified">
+
+    <xs:element name="layout">
+        <xs:annotation>
+            <xs:documentation xml:lang="zh">XML根节点(可选), 用于引入此schema</xs:documentation>
+            <xs:documentation xml:lang="en"></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="panel" type="layout-panel" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="zh">布局根节点, 继承于container类型, 用于容纳任意布局元素类型</xs:documentation>
+                        <xs:documentation xml:lang="en"></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="layout-anchor-type">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(left|top|right|bottom|hfill|vfill|fill|hcenter|vcenter|center)(,(left|top|right|bottom|hfill|vfill|fill|hcenter|vcenter|center))*"></xs:pattern>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-layout-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="free">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">自由布局, 布局元素间可重叠</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="stack">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">栈布局, 以水平或垂直方向布局元素</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-orientation-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="vertical">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">垂直栈布局, 子布局元素上下排布</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="horizontal">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">水平栈布局, 子布局元素左右排布</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-justify-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="start">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">与父元素起始位置对齐</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="middle">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">与父元素中间位置对齐</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="end">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">与父元素末端位置对齐</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-cover-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="front"></xs:enumeration>
+            <xs:enumeration value="artist"></xs:enumeration>
+            <xs:enumeration value="disc"></xs:enumeration>
+            <xs:enumeration value="back"></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-text-align-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="left"></xs:enumeration>
+            <xs:enumeration value="center"></xs:enumeration>
+            <xs:enumeration value="right"></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-int-type">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:int"></xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[0-9]+%"></xs:pattern>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-size-type">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:int"></xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[0-9]+%"></xs:pattern>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="(\*|auto)"></xs:pattern>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-color-type">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <!--rgb(r,g,b)-->
+                    <xs:pattern value="rgb\( *\d+ *, *\d+ *, *\d+ *\)"></xs:pattern>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <!--rgb(r,g,b,a)-->
+                    <xs:pattern value="rgba\( *\d+ *, *\d+ *, *\d+ *, *(0|1|0?\.\d+)\)"></xs:pattern>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <!--#RRGGBB-->
+                    <xs:pattern value="#[0-9A-Fa-f]{6}"></xs:pattern>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-overflow-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="hide">
+                <xs:annotation>
+                    <xs:documentation xml:lang="zh">当布局元素尺寸超出父元素范围后隐藏该布局元素</xs:documentation>
+                    <xs:documentation xml:lang="en"></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-command-type">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(mm|cm|lib|esl)://.*"></xs:pattern>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-loop-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="shuttle"></xs:enumeration>
+            <xs:enumeration value="cycle"></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout-fitness-type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="fill"></xs:enumeration>
+            <xs:enumeration value="fit"></xs:enumeration>
+            <xs:enumeration value="stretch"></xs:enumeration>
+            <xs:enumeration value="center"></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- xml element -->
+    <xs:complexType name="layout-panel">
+        <xs:complexContent>
+            <xs:extension base="layout-container">
+                <xs:attribute name="features" type="xs:int">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="zh">布局特性, 标记位</xs:documentation>
+                        <xs:documentation xml:lang="zh">0x01 - 始终显示布局, 播放停止时也会渲染布局各个元素</xs:documentation>
+                        <xs:documentation xml:lang="en"></xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="layout-container">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="container" type="layout-container" minOccurs="0" maxOccurs="unbounded"></xs:element>
+                <xs:element name="label" type="layout-label" minOccurs="0" maxOccurs="unbounded"></xs:element>
+                <xs:element name="albumart" type="layout-albumart" minOccurs="0" maxOccurs="unbounded"></xs:element>
+                <xs:element name="lyric" type="layout-lyric" minOccurs="1" maxOccurs="1"></xs:element>
+                <xs:element name="button" type="layout-button" minOccurs="0" maxOccurs="unbounded"></xs:element>
+                <xs:element name="seekbar" type="layout-seekbar" minOccurs="0" maxOccurs="unbounded"></xs:element>
+                <xs:element name="volume" type="layout-volume" minOccurs="0" maxOccurs="unbounded"></xs:element>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-container"></xs:attributeGroup>
+    </xs:complexType>
+
+    <xs:complexType name="layout-text">
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-text"></xs:attributeGroup>
+    </xs:complexType>
+
+    <xs:complexType name="layout-label">
+        <xs:annotation>
+            <xs:documentation xml:lang="zh">文本布局元素, 支持格式化标题字段</xs:documentation>
+            <xs:documentation xml:lang="zh">可指定使用符号字体作为按钮布局元素使用</xs:documentation>
+            <xs:documentation xml:lang="en"></xs:documentation>
+        </xs:annotation>
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-text"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-label"></xs:attributeGroup>
+    </xs:complexType>
+
+    <xs:complexType name="layout-albumart">
+        <xs:annotation>
+            <xs:documentation xml:lang="zh">专辑封面布局元素, 用于显示专辑封面</xs:documentation>
+            <xs:documentation xml:lang="en"></xs:documentation>
+        </xs:annotation>
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-albumart"></xs:attributeGroup>
+    </xs:complexType>
+
+    <xs:complexType name="layout-lyric">
+        <xs:annotation>
+            <xs:documentation xml:lang="zh">歌词布局元素, 用于显示歌词。布局中必要包含且仅能包含一个歌词布局元素</xs:documentation>
+            <xs:documentation xml:lang="en"></xs:documentation>
+        </xs:annotation>
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-text"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-lyric"></xs:attributeGroup>
+    </xs:complexType>
+
+    <xs:complexType name="layout-button">
+        <xs:annotation>
+            <xs:documentation xml:lang="zh">按钮布局元素</xs:documentation>
+            <xs:documentation xml:lang="en"></xs:documentation>
+        </xs:annotation>
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-button"></xs:attributeGroup>
+    </xs:complexType>
+
+    <xs:complexType name="layout-seekbar">
+        <xs:annotation>
+            <xs:documentation xml:lang="zh">进度布局元素</xs:documentation>
+            <xs:documentation xml:lang="en"></xs:documentation>
+        </xs:annotation>
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-progress-bar"></xs:attributeGroup>
+    </xs:complexType>
+
+    <xs:complexType name="layout-volume">
+        <xs:annotation>
+            <xs:documentation xml:lang="zh">音量布局元素</xs:documentation>
+            <xs:documentation xml:lang="en"></xs:documentation>
+        </xs:annotation>
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-progress-bar"></xs:attributeGroup>
+    </xs:complexType>
+
+    <!--element attributes-->
+    <xs:attributeGroup name="attri-common">
+        <xs:attribute name="name" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">panel布局元素的name用于显示布局名称, 其他布局元素name属性当前仅在勾选显示布局标识时显示</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="anchor" type="layout-anchor-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">锚点对齐方式, 为下述值或以','分隔的组合:</xs:documentation>
+                <xs:documentation xml:lang="zh">left: 以左侧元素或父元素左侧为锚点</xs:documentation>
+                <xs:documentation xml:lang="zh">top: 以上侧元素或父元素上侧为锚点</xs:documentation>
+                <xs:documentation xml:lang="zh">right: 以右侧元素或父元素右侧为锚点</xs:documentation>
+                <xs:documentation xml:lang="zh">bottom: 以下侧元素或父元素下侧为锚点</xs:documentation>
+                <xs:documentation xml:lang="zh">hfill: 同时以左右侧元素或父元素左右侧为锚点</xs:documentation>
+                <xs:documentation xml:lang="zh">vfill: 同时以上下侧元素或父元素上下侧为锚点</xs:documentation>
+                <xs:documentation xml:lang="zh">fill: 以上下左右四侧元素或父元素四侧为锚点</xs:documentation>
+                <xs:documentation xml:lang="zh">hcenter: 以左边距(margin-left)为偏移水平居中</xs:documentation>
+                <xs:documentation xml:lang="zh">vcenter: 以上边距(margin-top)为偏移垂直居中</xs:documentation>
+                <xs:documentation xml:lang="zh">center: 以左/上边距(margin-left/margin-top)为偏移居中</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="margin" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">边距, 支持整数或百分比形式</xs:documentation>
+                <xs:documentation xml:lang="zh">'left,top,right,bottom' 左侧边距为left, 上侧边距为top, 右侧边距为right, 下侧边距为bottom </xs:documentation>
+                <xs:documentation xml:lang="zh">'left,top' 左右侧边距为left, 上下侧边距为top </xs:documentation>
+                <xs:documentation xml:lang="zh">'left' 四侧边距同时设置为left </xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="margin-left" type="layout-int-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">左侧边距, 支持整数或百分比形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="margin-top" type="layout-int-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">上侧边距, 支持整数或百分比形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="margin-right" type="layout-int-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">右侧边距, 支持整数或百分比形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="margin-bottom" type="layout-int-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">下侧边距, 支持整数或百分比形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="left" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">margin-left简短形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="top" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">margin-top简短形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="width" type="layout-size-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">元素宽度, 支持整数或百分比形式或auto, container及label元素支持配置auto</xs:documentation>
+                <xs:documentation xml:lang="zh">label配置auto时自动根据字体渲染宽度设置</xs:documentation>
+                <xs:documentation xml:lang="zh">container配置auto时根据子布局元素占用宽度设置</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="height" type="layout-size-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">元素高度, 支持整数或百分比形式或auto, container及label元素支持配置auto</xs:documentation>
+                <xs:documentation xml:lang="zh">label配置auto时自动根据字体渲染高度设置</xs:documentation>
+                <xs:documentation xml:lang="zh">container配置auto时根据子布局元素占用高度设置</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="min-width" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">元素最小宽度, 当启用min-hide时则表示宽度小于该值时隐藏该元素</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-width" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">元素最大宽度</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="min-height" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">元素最小高度, 当启用min-hide时则表示高度小于该值时隐藏该元素</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-height" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">元素最大高度</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="visibility" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">布局元素显示条件, 配置为格式化标题表达式, 表达式返回1时显示该元素</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="hide-min" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">布局元素尺寸小于某个值时隐藏该元素, 需要设置min-width或min-height属性</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="overflow" type="layout-overflow-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">指定该布局元素尺寸超出父元素尺寸时的行为</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="hide-empty" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">当元素内容为空时隐藏该元素</xs:documentation>
+                <xs:documentation xml:lang="zh">container: 无子布局元素</xs:documentation>
+                <xs:documentation xml:lang="zh">label: 显示文本为空</xs:documentation>
+                <xs:documentation xml:lang="zh">albumart: 无封面</xs:documentation>
+                <xs:documentation xml:lang="zh">lyric: 不支持</xs:documentation>
+                <xs:documentation xml:lang="zh">button: 不支持</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="aspect-ratio" type="xs:float">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">布局元素宽高比, 1.0时表示保持宽高一致, 需要设置其中任意一个值, 同时设置时优先使用宽度来计算高度</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="background-color" type="layout-color-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">背景色, 部分布局元素中有效</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="tooltip" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">提示信息</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-container">
+        <xs:attribute name="layout" type="layout-layout-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">容器布局类型</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="orientation" type="layout-orientation-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">栈布局方向</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="justify" type="layout-justify-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">布局对齐方式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-text">
+        <xs:attribute name="text-align" type="layout-text-align-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">文本对齐方式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-command">
+        <xs:attribute name="command" type="layout-command-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">指定执行命令, 格式如下</xs:documentation>
+                <xs:documentation xml:lang="zh">mm://command 执行主菜单命令, 如'mm://播放/播放或暂停'</xs:documentation>
+                <xs:documentation xml:lang="zh">cm://command 执行当前播放音轨上下文菜单命令, 如'cm://属性'</xs:documentation>
+                <xs:documentation xml:lang="zh">lib://command 查询媒体库, 如'lib://%%artist%% IS %artist%'</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-label">
+        <xs:attributeGroup ref="attri-command"></xs:attributeGroup>
+        <xs:attribute name="caption" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">显示文本, 支持格式化标题表达式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="font-family" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">文本字体, 布局xml文件所在目录存在fonts目录时, 插件将自动加载fonts目录下的字体文件</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="font-size" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">字体Point size</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="text-color" type="layout-color-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">文本颜色</xs:documentation>
+                <xs:documentation xml:lang="zh">rgb(r,g,b)/rgb(r,g,b,a) - r,g,b取值范围[0,255], a取值范围[0, 1.0]</xs:documentation>
+                <xs:documentation xml:lang="zh">#RRGGBB - RGB为十六进制形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="highlight-color" type="layout-color-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">文本高亮颜色, 默认为面板配置高亮色</xs:documentation>
+                <xs:documentation xml:lang="zh">rgb(r,g,b)/rgb(r,g,b,a) - r,g,b取值范围[0,255], a取值范围[0, 1.0]</xs:documentation>
+                <xs:documentation xml:lang="zh">#RRGGBB - RGB为十六进制形式</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="nowrap" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">换行控制, 设置'true'或'1'时不换行</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="line-space" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">行距</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="loop" type="layout-loop-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">文本显示宽度超出布局元素范围时进行滚动</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="loop-speed" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">文本滚动速度, 设置loop时生效</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="loop-padding" type="xs:int">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">滚动为cycle时前后间距</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="bold" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">设置'true'或'1'时使用粗体字体</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="italic" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">设置'true'或'1'时使用斜体风格字体</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="always-eval" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">设置'true'时始终测试caption中的标题格式表达式而不依赖是否正在播放</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-albumart">
+        <xs:attribute name="album-art" type="layout-cover-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">封面来源类型, 设置时优先使用</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="follow-background" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">是否跟随面板背景封面设置(面板背景无需设置为封面或动态封面)</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="use-stub" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">设置'album-art'属性后, 指定是否获取播放器配置的stub封面</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="fitness" type="layout-fitness-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">封面显示契合度</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="radius" type="xs:float">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">设置封面圆角半径</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="radius-x" type="xs:float">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">设置封面圆角半径x部分</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="radius-y" type="xs:float">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">设置封面圆角半径y部分</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="stub" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">使用相对路径的图片作为固定的stub封面, 设置后无封面时将始终显示, 与'use-stub'无关</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-lyric">
+        <xs:attribute name="banner-text" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">指定banner文本, 独立于插件的banner文本设置, 需要设置panel的features属性包含标记位'0x01'以始终显示布局元素, 否则将显示插件配置的banner</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="fallback" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">指定后备文本, 独立于插件的后备文本设置</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-button">
+        <xs:attributeGroup ref="attri-command"></xs:attributeGroup>
+        <xs:attribute name="background" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">按钮图片, 使用相对布局XML文件的路径</xs:documentation>
+                <xs:documentation xml:lang="zh">设置后将自动将图片同目录下文件名带'_hover'后缀的图片作为鼠标悬浮状态图片</xs:documentation>
+                <xs:documentation xml:lang="zh">如设置为'images/play.png'时,则同时自动加载'images/play_hover.png'(如果有)</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-progress-bar">
+        <xs:attribute name="foreground-color" type="layout-color-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">前景色</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="thumb-color" type="layout-color-type">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">滑块颜色</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="radius" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">圆角半径</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="thumb-width" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">滑块宽度</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="thumb-height" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">滑块高度</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="thumb-radius" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">滑块半径</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="track-width" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">滑块半径</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="track-height" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">滑块半径</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="always-show-thumb" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">是否总是显示滑块, false时仅鼠标悬浮时显示. 默认为true</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="vertical" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation xml:lang="zh">垂直显示</xs:documentation>
+                <xs:documentation xml:lang="en"></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="attri-all">
+        <xs:attributeGroup ref="attri-common"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-command"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-container"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-label"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-albumart"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-lyric"></xs:attributeGroup>
+        <xs:attributeGroup ref="attri-button"></xs:attributeGroup>
+    </xs:attributeGroup>
+</xs:schema>
