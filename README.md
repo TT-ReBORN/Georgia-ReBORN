@@ -70,7 +70,7 @@ and looks best if you switch to 'Normal' or a larger player size!
 ## Image Packs
 
 These image packs are optional; they contain artist logos and record labels, which will be displayed in 'Details'.<br />
-**[Download Artist Logos](https://drive.usercontent.google.com/download?id=1_ckVHh1dB2eKobXX8XMAGIxLWjzkB2pe)**
+**[Download Artist Logos](https://drive.usercontent.google.com/download?id=1EZ9Vs4nqCC42Vdx-XV1Kl-Jv-bWV0lTb)**
 and
 **[Download Record Labels](https://drive.usercontent.google.com/download?id=1aEIYnTjlpDKbjkTYu-kJViIMCJGCm2YA)**.
 Extract them to foobar2000\profile\georgia-reborn\images
