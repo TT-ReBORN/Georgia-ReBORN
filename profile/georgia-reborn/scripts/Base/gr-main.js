@@ -577,7 +577,7 @@ class MainUI {
 		const fontSize = grid ? grSet.gridArtistFontSize_layout : grSet.lowerBarFontSize_layout;
 		const lineHeight = gr.CalcTextHeight('Ag', font);
 		const separator = ` ${Unicode.MiddleDot} `;
-		const separatorW = Math.ceil(gr.CalcTextWidth(separator, font));
+		const separatorW = Math.ceil(gr.MeasureString(separator, font, 0, 0, 0, 0, Stringformat.No_Wrap | Stringformat.Measure_Trailing_Spaces).Width);
 		const width = Math.max(0, availableW);
 		const items = [];
 		let x = 0;
@@ -590,7 +590,8 @@ class MainUI {
 
 			// Match DrawString's symbol-font fallback when measuring an artist name.
 			const artistFont = Regex.UtilFontNeedsSymbols.test(pair.artist) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font;
-			const artistW = Math.ceil(gr.CalcTextWidth(pair.artist, artistFont));
+			// DrawString uses GDI+ metrics; CalcTextWidth measures GdiDrawText and can trim a name prematurely.
+			const artistW = Math.ceil(gr.MeasureString(pair.artist, artistFont, 0, 0, 0, 0, Stringformat.No_Wrap).Width);
 			const baseFlagW = pair.flagImg ? HD_4K(pair.flagImg.Height, pair.flagImg.Height * 0.5) * (SCALE(fontSize) / fontSize) : 0;
 			const flagW = pair.flagImg ? Math.max(0, baseFlagW + SCALE(fontSize) - SCALE(26)) : 0;
 			const flagSpace = flagW > 0 ? flagW + SCALE(5) : 0;

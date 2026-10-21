@@ -27,7 +27,7 @@ function fixture(artists = ['Alice', 'Bob'], countries = ['US', 'GB']) {
 		SCALE: value => value,
 		HD_4K: value => value,
 		InterpolationMode: { HighQualityBicubic: 7 },
-		Stringformat: { No_Wrap: 0x1000, Trim_Ellipsis_Char: 0x300000 },
+		Stringformat: { No_Wrap: 0x1000, Trim_Ellipsis_Char: 0x300000, Measure_Trailing_Spaces: 0x800 },
 		GetMetaValues: () => metadata.countries,
 		$: expression => {
 			if (expression === '$meta_num(artist)') return String(metadata.artists.length);
@@ -54,6 +54,7 @@ function fixture(artists = ['Alice', 'Bob'], countries = ['US', 'GB']) {
 	const gr = {
 		CalcTextHeight: () => 20,
 		CalcTextWidth: text => text.length * 8,
+		MeasureString: text => ({ Width: text.length * 8, Height: 20, Lines: 1 }),
 		SetInterpolationMode: () => {},
 		SetTextRenderingHint: () => {},
 		DrawString: (...args) => drawCalls.push({ type: 'text', args }),
@@ -183,7 +184,7 @@ test('Details truncation remains available to existing tooltip logic', () => {
 	const details = Object.create(context.Details.prototype);
 	details.gridContentWidth = 50;
 	context.CalcWrapSpace = () => ({ lineCount: 1, totalWrapSpace: 0 });
-	gr.MeasureString = () => ({ Width: 0, Height: 20, Lines: 1 });
+	gr.MeasureString = text => ({ Width: (text || "").length * 8, Height: 20, Lines: 1 });
 	details.setGridTextMetrics(gr, () => {});
 	assert.equal(details.gridArtistWrapLinesExceed, true);
 	assert.equal(details.gridArtistNumLinesHeight, ui.getArtistCountryPairsLayout(gr, 'metadataGrid', 50).height);
@@ -257,4 +258,22 @@ test('the drawing flags used by the feature exist in the upstream Stringformat e
 	const actual = vm.runInNewContext(enumSource + '\nStringformat;');
 	assert.equal(actual.No_Wrap, 0x1000);
 	assert.equal(actual.Trim_Ellipsis_Char, 0x300000);
+});
+
+test('DrawString rectangles include GDI+ padding instead of GdiDrawText widths', () => {
+	const { ui, gr, drawCalls } = fixture(['\u6210\u9f99', '\u91d1\u559c\u5584']);
+	// GDI+ DrawString needs a wider rectangle than the GDI CalcTextWidth result.
+	gr.MeasureString = text => ({ Width: text.length * 8 + 12, Height: 20, Lines: 1 });
+	for (const type of ['lowerBar', 'metadataGrid']) {
+		const layout = ui.getArtistCountryPairsLayout(gr, type, 600);
+		assert.equal(layout.truncated, false);
+		for (const item of layout.items) {
+			assert.equal(item.textW, gr.MeasureString(item.pair.artist).Width);
+		}
+		assert.equal(layout.separatorW, gr.MeasureString(' · ').Width);
+		ui.drawArtistCountryPairs(gr, type, 0, 0, 600, 40);
+	}
+	for (const call of drawCalls.filter(call => call.type === 'text')) {
+		assert.ok(call.args[5] >= gr.MeasureString(call.args[0]).Width);
+	}
 });
