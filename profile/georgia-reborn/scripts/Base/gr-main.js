@@ -219,6 +219,8 @@ class MainUI {
 		this.noAlbumArtStub = false;
 		/** @public @type {GdiBitmap[]} The array of flag images shown in Details and in the lower bar. */
 		this.flagImgs = [];
+		/** @public @type {Array<{artist:string, country:string, flagImg:GdiBitmap|null}>} Ordered artist/country pairs for multi-artist drawing. */
+		this.artistCountryPairs = [];
 		/** @private @type {GdiBitmap} The Hi-Res Audio badge logo image shown on album art when enabled. */
 		this.hiResAudioLogo = null;
 		/** @private @type {string} The Hi-Res Audio badge cache key used to detect when hiResAudioLogo needs reloading. */
@@ -558,6 +560,105 @@ class MainUI {
 			const flagImg = this.flagImgs[i];
 			gr.DrawImage(flagImg, flagsLeft, yOffset, flagWidth + widthAdjustment, heightAdjustment, 0, 0, flagImg.Width, flagImg.Height);
 			flagsLeft += flagWidth + fontSizeAdjustment;
+		}
+	}
+
+	/**
+	 * Measures interleaved artist/country pairs for drawing and overflow detection.
+	 * Keeps each flag with its artist and omits separators at the start of wrapped lines.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {string} type - The drawing area, 'metadataGrid' or 'lowerBar'.
+	 * @param {number} availableW - The available width in pixels.
+	 * @returns {object} The measured items, line count, dimensions and overflow state.
+	 */
+	getArtistCountryPairsLayout(gr, type, availableW = Infinity) {
+		const grid = type === 'metadataGrid';
+		const font = grid ? grFont.gridArtist : grFont.lowerBarArtist;
+		const fontSize = grid ? grSet.gridArtistFontSize_layout : grSet.lowerBarFontSize_layout;
+		const lineHeight = gr.CalcTextHeight('Ag', font);
+		const separator = ` ${Unicode.MiddleDot} `;
+		const separatorW = Math.ceil(gr.CalcTextWidth(separator, font));
+		const width = Math.max(0, availableW);
+		const items = [];
+		let x = 0;
+		let line = 0;
+		let totalWidth = 0;
+		let truncated = false;
+
+		for (const pair of this.artistCountryPairs) {
+			if (!pair.artist) continue;
+
+			// Match DrawString's symbol-font fallback when measuring an artist name.
+			const artistFont = Regex.UtilFontNeedsSymbols.test(pair.artist) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font;
+			const artistW = Math.ceil(gr.CalcTextWidth(pair.artist, artistFont));
+			const baseFlagW = pair.flagImg ? HD_4K(pair.flagImg.Height, pair.flagImg.Height * 0.5) * (SCALE(fontSize) / fontSize) : 0;
+			const flagW = pair.flagImg ? Math.max(0, baseFlagW + SCALE(fontSize) - SCALE(26)) : 0;
+			const flagSpace = flagW > 0 ? flagW + SCALE(5) : 0;
+			let prefixW = x > 0 ? separatorW : 0;
+
+			if (grid && line === 0 && x > 0 && x + prefixW + flagSpace + artistW > width) {
+				totalWidth = Math.max(totalWidth, x);
+				line++;
+				x = 0;
+				prefixW = 0;
+			}
+
+			const remainingW = width - x - prefixW - flagSpace;
+			if (remainingW <= 0) {
+				truncated = true;
+				break;
+			}
+
+			const textW = Math.min(artistW, remainingW);
+			items.push({ pair, font: artistFont, x, line, prefixW, flagW, flagSpace, baseFlagW, textW });
+			x += prefixW + flagSpace + textW;
+
+			if (artistW > remainingW) {
+				truncated = true;
+				break;
+			}
+		}
+
+		return { items, separator, separatorW, lineHeight, lineCount: line + 1, totalWidth: Math.max(totalWidth, x), height: lineHeight * (line + 1), truncated };
+	}
+
+	/**
+	 * Draws measured artist/country pairs without separating a flag from its artist.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {string} type - The drawing area, 'metadataGrid' or 'lowerBar'.
+	 * @param {number} x - The left edge of the artist area.
+	 * @param {number} y - The top edge of the artist area.
+	 * @param {number} availableW - The available width in pixels.
+	 * @param {number} availableH - The available height in pixels.
+	 */
+	drawArtistCountryPairs(gr, type, x, y, availableW, availableH) {
+		if (availableW <= 0 || availableH <= 0) return;
+
+		const layout = this.getArtistCountryPairsLayout(gr, type, availableW);
+		const grid = type === 'metadataGrid';
+		const font = grid ? grFont.gridArtist : grFont.lowerBarArtist;
+		const color = grid ? (['white', 'black', 'reborn', 'random'].includes(grSet.theme) ? grCol.detailsText : grSet.theme === 'cream' ? pl.col.header_artist_normal : pl.col.header_artist_playing) : grCol.lowerBarArtist;
+
+		gr.SetInterpolationMode(InterpolationMode.HighQualityBicubic);
+
+		for (const item of layout.items) {
+			const textY = y + item.line * layout.lineHeight;
+			const height = Math.min(layout.lineHeight, availableH - item.line * layout.lineHeight);
+			if (height <= 0) break;
+
+			let textX = x + item.x;
+			if (item.prefixW) {
+				gr.DrawString(layout.separator, font, color, textX, textY, layout.separatorW, height, Stringformat.No_Wrap);
+				textX += item.prefixW;
+			}
+			if (item.flagW > 0) {
+				const flag = item.pair.flagImg;
+				const flagH = height + SCALE(2);
+				const flagY = Math.round(textY - (item.baseFlagW / flagH) - HD_4K(0, 1));
+				gr.DrawImage(flag, textX, flagY, item.flagW, flagH, 0, 0, flag.Width, flag.Height);
+				textX += item.flagSpace;
+			}
+			gr.DrawString(item.pair.artist, item.font, color, textX, textY, item.textW, height, Stringformat.Trim_Ellipsis_Char | Stringformat.No_Wrap);
 		}
 	}
 
@@ -994,13 +1095,18 @@ class MainUI {
 
 		// * Artist, tracknum, title
 		if (this.lowerBarOneLine || this.lowerBarTwoLines && grSet.layout === 'default') {
-			DrawString(gr, grStr.artistLower, grFont.lowerBarArtist, grCol.lowerBarArtist, this.lowerBarArtistX, this.lowerBarArtistY, this.lowerBarAvailableW - this.lowerBarFlagW, this.lowerBarArtistH, Stringformat.Trim_Ellipsis_Char);
+			if (grSet.showLowerBarArtist_layout && grSet.showLowerBarArtistFlags_layout && this.artistCountryPairs.length) {
+				this.drawArtistCountryPairs(gr, 'lowerBar', this.lowerBarArtistX, this.lowerBarArtistY, Math.min(this.lowerBarArtistW, this.lowerBarAvailableW), this.lowerBarArtistH);
+			}
+			else {
+				DrawString(gr, grStr.artistLower, grFont.lowerBarArtist, grCol.lowerBarArtist, this.lowerBarArtistX, this.lowerBarArtistY, this.lowerBarAvailableW - this.lowerBarFlagW, this.lowerBarArtistH, Stringformat.Trim_Ellipsis_Char);
+			}
 		}
 		gr.DrawString(this.getFormattedString('lowerBarTrackNum'), grFont.lowerBarTitle, grCol.lowerBarTitle, this.lowerBarTrackNumX, this.lowerBarTrackNumY, this.lowerBarTrackNumW - this.lowerBarTimeAreaW, this.lowerBarTitleH, StringFormat(0, 0, 4, 0x00001000));
 		DrawString(gr, grStr.titleLower, grFont.lowerBarTitle, grCol.lowerBarTitle, this.lowerBarTitleX, this.lowerBarTitleY, this.lowerBarAvailableW - this.lowerBarTrackNumW, this.lowerBarTitleH, Stringformat.Trim_Ellipsis_Char);
 
 		// * Artist country flags
-		if (grSet.showLowerBarArtist_layout && grSet.showLowerBarArtistFlags_layout && (grSet.layout === 'default' || grSet.layout !== 'default' && !this.lowerBarTwoLines)) {
+		if (!this.artistCountryPairs.length && grSet.showLowerBarArtist_layout && grSet.showLowerBarArtistFlags_layout && (grSet.layout === 'default' || grSet.layout !== 'default' && !this.lowerBarTwoLines)) {
 			this.drawArtistCountryFlag(gr, 'lowerBar');
 		}
 
@@ -1389,8 +1495,11 @@ class MainUI {
 	 */
 	setLowerBarTextMetrics(gr, metricsCalculated) {
 		// * Left bottom corner
-		this.lowerBarFlagW        = this.getFlagSizeWidth('lowerBar');
-		this.lowerBarArtistW      = this.lowerBarFlagW + gr.MeasureString(!grSet.showLowerBarTrackNum_layout || this.isStreaming ? `  ${grStr.artistLower}` : `   ${grStr.artistLower}`, grFont.lowerBarArtist, 0, 0, 0, 0).Width;
+		const useArtistCountryPairs = grSet.showLowerBarArtist_layout && grSet.showLowerBarArtistFlags_layout && this.artistCountryPairs.length;
+		this.lowerBarFlagW        = useArtistCountryPairs ? 0 : this.getFlagSizeWidth('lowerBar');
+		this.lowerBarArtistW      = useArtistCountryPairs ?
+			this.getArtistCountryPairsLayout(gr, 'lowerBar').totalWidth + gr.CalcTextWidth(!grSet.showLowerBarTrackNum_layout || this.isStreaming ? '  ' : '   ', grFont.lowerBarArtist) :
+			this.lowerBarFlagW + gr.MeasureString(!grSet.showLowerBarTrackNum_layout || this.isStreaming ? `  ${grStr.artistLower}` : `   ${grStr.artistLower}`, grFont.lowerBarArtist, 0, 0, 0, 0).Width;
 		this.lowerBarArtistH      = gr.CalcTextHeight(grStr.artistLower, grFont.lowerBarArtist);
 		this.lowerBarTrackNumW    = gr.CalcTextWidth(fb.IsPlaying && (!grSet.showLowerBarTrackNum_layout || fb.PlaybackLength <= 0 && grStr.tracknum === '') ? ` ${Unicode.EnDash} ` : ` ${grStr.tracknum}`, grFont.lowerBarTitle);
 		this.lowerBarTitleW       = this.lowerBarTrackNumW + gr.MeasureString(grStr.titleLower || 'Ag', grFont.lowerBarTitle, 0, 0, 0, 0).Width;
@@ -2846,6 +2955,7 @@ class MainUI {
 			},
 			flag: () => {
 				this.flagImgs = [];
+				this.artistCountryPairs = [];
 			},
 			hiResAudioLogo: () => {
 				this.hiResAudioLogo = null;
@@ -4055,15 +4165,34 @@ class MainUI {
 	 * @param {FbMetadbHandle} metadb - The metadb of the track.
 	 */
 	loadCountryFlags(metadb = undefined) {
+		this.flagImgs = [];
+		this.artistCountryPairs = [];
+		this.clearCache('metrics');
+		grm.details.clearCache('metrics');
+
 		if (!grSet.showGridArtistFlags_layout && !grSet.showLowerBarArtistFlags_layout) return;
 
-		this.flagImgs = [];
-		const countries = GetMetaValues(grTF.artist_country, metadb);
+		metadb = metadb === undefined ? this.initMetadb() : metadb;
+		if (!metadb) return;
 
-		for (const country of countries) {
-			const flagImage = this.loadFlagImage(country, metadb);
-			flagImage && this.flagImgs.push(flagImage);
-		}
+		const countries = GetMetaValues(grTF.artist_country, metadb);
+		const flagCache = new Map();
+		const flags = countries.map(country => {
+			if (!flagCache.has(country)) flagCache.set(country, country ? this.loadFlagImage(country, metadb) : null);
+			return flagCache.get(country);
+		});
+		this.flagImgs = flags.filter(Boolean);
+
+		// Only pair real multi-value ARTIST tags. Preserve single-artist country lists,
+		// fallback fields and custom artist title-format expressions on the legacy path.
+		const artistCount = Number($('$meta_num(artist)', metadb));
+		if (artistCount < 2 || !this.flagImgs.length) return;
+
+		const artists = Array.from({ length: artistCount }, (_, i) => $(`$meta(artist,${i})`, metadb));
+		const artistText = $(grTF.artist, metadb);
+		if (artistText !== $('$meta(artist)', metadb) && artistText !== artists.join(` ${Unicode.MiddleDot} `)) return;
+
+		this.artistCountryPairs = artists.map((artist, i) => ({ artist, country: countries[i] || '', flagImg: flags[i] || null }));
 	}
 
 	/**

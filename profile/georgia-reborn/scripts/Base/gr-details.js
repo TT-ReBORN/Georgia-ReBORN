@@ -438,12 +438,17 @@ class Details {
 		// * Apply better anti-aliasing on smaller font sizes in HD res
 		gr.SetTextRenderingHint(!RES._4K && (grSet.gridArtistFontSize_layout < 18 || grSet.displayScale < 100) ? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.AntiAliasGridFit);
 
-		const artistColor = ['white', 'black', 'reborn', 'random'].includes(grSet.theme) ? grCol.detailsText : grSet.theme === 'cream' ? pl.col.header_artist_normal : pl.col.header_artist_playing;
-		DrawString(gr, grm.ui.getFormattedString('gridArtist'), grFont.gridArtist, artistColor,	this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridArtistNumLinesHeight, Stringformat.Trim_Ellipsis_Char);
+		if (grSet.showGridArtistFlags_layout && grm.ui.artistCountryPairs.length) {
+			grm.ui.drawArtistCountryPairs(gr, 'metadataGrid', this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridArtistNumLinesHeight);
+		}
+		else {
+			const artistColor = ['white', 'black', 'reborn', 'random'].includes(grSet.theme) ? grCol.detailsText : grSet.theme === 'cream' ? pl.col.header_artist_normal : pl.col.header_artist_playing;
+			DrawString(gr, grm.ui.getFormattedString('gridArtist'), grFont.gridArtist, artistColor,	this.gridMarginLeft, Math.round(this.gridTop), this.gridContentWidth, this.gridArtistNumLinesHeight, Stringformat.Trim_Ellipsis_Char);
 
-		// * Artist country flags
-		if (grStr.artist && grSet.showGridArtistFlags_layout) {
-			grm.ui.drawArtistCountryFlag(gr, 'metadataGrid');
+			// * Artist country flags
+			if (grStr.artist && grSet.showGridArtistFlags_layout) {
+				grm.ui.drawArtistCountryFlag(gr, 'metadataGrid');
+			}
 		}
 
 		this.gridArtistTop = this.gridTop;
@@ -897,16 +902,31 @@ class Details {
 	 */
 	setGridTextMetrics(gr, metricsCalculated) {
 		if (grSet.showGridArtist_layout) {
-			this.gridFlagSizeW             = grm.ui.getFlagSizeWidth('metadataGrid');
-			this.gridFlagSizeWhiteSpace    = grm.ui.getFlagSizeWhiteSpace('metadataGrid');
-			this.gridArtistWrapInfo        = CalcWrapSpace(gr, grStr.artist, grFont.gridArtist, this.gridContentWidth, this.cachedGridWrapSpace);
-			this.gridArtistWrapLinesExceed = this.gridArtistWrapInfo.lineCount > 2;
-			this.gridArtistWrapWidth       = this.gridArtistWrapInfo.totalWrapSpace - this.gridFlagSizeW;
-			this.gridArtistWidth           = Math.ceil(gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0, Stringformat.Trim_Ellipsis_Char | Stringformat.Measure_Trailing_Spaces).Width + this.gridFlagSizeW + this.gridArtistWrapWidth);
-			this.gridArtistHeight          = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0).Height;
-			this.gridArtistTxtRec          = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, grSet.showGridArtistFlags_layout && grm.ui.flagImgs.length ? this.gridContentWidth - this.gridFlagSizeW : this.gridContentWidth, grm.ui.wh);
-			this.gridArtistNumLines        = Math.min(2, this.gridArtistTxtRec.Lines);
-			this.gridArtistNumLinesHeight  = gr.CalcTextHeight(grStr.artist, grFont.gridArtist) * this.gridArtistNumLines;
+			if (grSet.showGridArtistFlags_layout && grm.ui.artistCountryPairs.length) {
+				const layout = grm.ui.getArtistCountryPairsLayout(gr, 'metadataGrid', this.gridContentWidth);
+				this.gridFlagSizeW             = 0;
+				this.gridFlagSizeWhiteSpace    = '';
+				this.gridArtistWrapInfo        = { lineCount: layout.lineCount, totalWrapSpace: 0 };
+				this.gridArtistWrapLinesExceed = layout.truncated;
+				this.gridArtistWrapWidth       = 0;
+				this.gridArtistWidth           = layout.totalWidth;
+				this.gridArtistHeight          = layout.lineHeight;
+				this.gridArtistTxtRec          = { Lines: layout.lineCount };
+				this.gridArtistNumLines        = layout.lineCount;
+				this.gridArtistNumLinesHeight  = layout.height;
+			}
+			else {
+				this.gridFlagSizeW             = grm.ui.getFlagSizeWidth('metadataGrid');
+				this.gridFlagSizeWhiteSpace    = grm.ui.getFlagSizeWhiteSpace('metadataGrid');
+				this.gridArtistWrapInfo        = CalcWrapSpace(gr, grStr.artist, grFont.gridArtist, this.gridContentWidth, this.cachedGridWrapSpace);
+				this.gridArtistWrapLinesExceed = this.gridArtistWrapInfo.lineCount > 2;
+				this.gridArtistWrapWidth       = this.gridArtistWrapInfo.totalWrapSpace - this.gridFlagSizeW;
+				this.gridArtistWidth           = Math.ceil(gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0, Stringformat.Trim_Ellipsis_Char | Stringformat.Measure_Trailing_Spaces).Width + this.gridFlagSizeW + this.gridArtistWrapWidth);
+				this.gridArtistHeight          = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, 0, 0).Height;
+				this.gridArtistTxtRec          = gr.MeasureString(grStr.artist, grFont.gridArtist, 0, 0, grSet.showGridArtistFlags_layout && grm.ui.flagImgs.length ? this.gridContentWidth - this.gridFlagSizeW : this.gridContentWidth, grm.ui.wh);
+				this.gridArtistNumLines        = Math.min(2, this.gridArtistTxtRec.Lines);
+				this.gridArtistNumLinesHeight  = gr.CalcTextHeight(grStr.artist, grFont.gridArtist) * this.gridArtistNumLines;
+			}
 		}
 		if (grSet.showGridTitle_layout) {
 			this.gridTrackNumWidth        = Math.ceil(gr.MeasureString(grStr.tracknum, grFont.gridTrackNumber, 0, 0, 0, 0).Width);
