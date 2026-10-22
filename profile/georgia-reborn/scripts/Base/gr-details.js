@@ -863,6 +863,9 @@ class Details {
 
 		Promise.all(metricsPromises).then(() => {
 			this.cachedGridMetrics = this.gridColumnValueBottom > this.gridColumnTop && !grm.display.hasPlayerSizeChanged();
+		}).catch(error => {
+			this.cachedGridMetrics = false;
+			grm.debug.debugLog(`Details => Failed to calculate grid metrics: ${error}`);
 		});
 	}
 

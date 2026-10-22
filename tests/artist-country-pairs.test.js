@@ -9,6 +9,9 @@ const vm = require('node:vm');
 const { test } = require('node:test');
 const base = path.join(__dirname, '../profile/georgia-reborn/scripts/Base');
 
+// Let rejection handlers in the VM finish before checking their effects.
+const flushPromises = () => new Promise(resolve => setImmediate(resolve));
+
 function fixture(artists = ['Alice', 'Bob'], countries = ['US', 'GB']) {
 	const font = { Size: 18, Style: 0 };
 	const flags = new Map();
@@ -275,5 +278,73 @@ test('DrawString rectangles include GDI+ padding instead of GdiDrawText widths',
 	}
 	for (const call of drawCalls.filter(call => call.type === 'text')) {
 		assert.ok(call.args[5] >= gr.MeasureString(call.args[0]).Width);
+	}
+});
+
+test('failed metric calculations leave caches retryable and report the error', async () => {
+	const { context, ui, gr } = fixture();
+	const logs = [];
+	context.grm.debug.debugLog = message => logs.push(message);
+	context.grm.display = { hasPlayerSizeChanged: () => false };
+	const details = Object.create(context.Details.prototype);
+	for (const [target, run, main, text, cache] of [
+		[ui, 'setLowerBarMetrics', 'setLowerBarMainMetrics', 'setLowerBarTextMetrics', 'cachedLowerBarMetrics'],
+		[details, 'setGridMetrics', 'setGridMainMetrics', 'setGridTextMetrics', 'cachedGridMetrics']
+	]) {
+		target[main] = () => { throw new Error('metrics unavailable'); };
+		target[text] = (graphics, resolve) => resolve();
+		target[run](gr);
+		await flushPromises();
+		assert.equal(target[cache], false);
+		target[main] = (graphics, resolve) => resolve();
+		Object.assign(target, { loadingThemeComplete: true, displayDetails: false, gridColumnValueBottom: 20, gridColumnTop: 0 });
+		target[run](gr);
+		await flushPromises();
+		assert.equal(target[cache], true);
+	}
+	assert.equal(logs.length, 2);
+	assert.ok(logs.every(message => message.includes('metrics unavailable')));
+});
+
+test('first-launch background failures are handled without changing initialization order', async () => {
+	const { context, ui } = fixture();
+	const events = [];
+	const logs = [];
+	context.grSet.systemFirstLaunch = true;
+	ui.initMain = async () => { events.push('main'); };
+	ui.setDesign = design => events.push(design);
+	context.grm.debug.debugLog = message => logs.push(message);
+	context.grm.settings = { setThemeSettings: async (...args) => {
+		assert.deepEqual(args, [false, false, true]);
+		events.push('settings');
+		throw new Error('settings unavailable');
+	} };
+	context.grm.display = { autoDetectRes: async () => {
+		events.push('resolution');
+		throw new Error('resolution unavailable');
+	} };
+	await ui.initSystemFirstLaunch();
+	await flushPromises();
+	assert.deepEqual(events, ['main', 'settings', 'resolution', 'reborn']);
+	assert.equal(context.grSet.systemFirstLaunch, false);
+	assert.equal(logs.length, 2);
+	assert.ok(logs.some(message => message.includes('settings unavailable')));
+	assert.ok(logs.some(message => message.includes('resolution unavailable')));
+});
+
+test('artwork decode failures are handled on each list display path', async () => {
+	for (const method of ['cycleAlbumArtImage', 'displayAlbumArtImage', 'displayAlbumArtFromList']) {
+		const { context, ui } = fixture();
+		const logs = [];
+		const oldArt = { name: 'previous cover' };
+		Object.assign(ui, { albumArtList: ['cover.jpg'], albumArtIndex: 0, albumArt: oldArt });
+		ui.loadAlbumArtFromList = async () => { throw new Error('decode failed'); };
+		ui.checkAlbumArtFromListDiscArt = () => assert.fail('failed artwork must not reach success callbacks');
+		context.grm.debug = { debugLog: message => logs.push(message), repaintWindow: () => {} };
+		context.setTimeout = callback => { callback(); return 1; };
+		ui[method]('next', false);
+		await flushPromises();
+		assert.equal(ui.albumArt, oldArt);
+		assert.equal(logs.filter(message => message.includes('decode failed')).length, 1);
 	}
 });

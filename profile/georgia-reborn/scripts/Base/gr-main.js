@@ -564,6 +564,26 @@ class MainUI {
 	}
 
 	/**
+	 * Measures an artist name and its flag using the same font as DrawString.
+	 * @param {GdiGraphics} gr - The GDI graphics object.
+	 * @param {object} pair - The artist and country flag.
+	 * @param {GdiFont} font - The artist font.
+	 * @param {number} fontSize - The configured artist font size.
+	 * @returns {object} The font, text width and flag dimensions.
+	 */
+	measureArtistCountryPair(gr, pair, font, fontSize) {
+		// Match DrawString's symbol-font fallback when measuring an artist name.
+		const artistFont = Regex.UtilFontNeedsSymbols.test(pair.artist) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font;
+		// DrawString uses GDI+ metrics; CalcTextWidth measures GdiDrawText and can trim a name prematurely.
+		const artistW = Math.ceil(gr.MeasureString(pair.artist, artistFont, 0, 0, 0, 0, Stringformat.No_Wrap).Width);
+		const baseFlagW = pair.flagImg ? HD_4K(pair.flagImg.Height, pair.flagImg.Height * 0.5) * (SCALE(fontSize) / fontSize) : 0;
+		const flagW = pair.flagImg ? Math.max(0, baseFlagW + SCALE(fontSize) - SCALE(26)) : 0;
+		const flagSpace = flagW > 0 ? flagW + SCALE(5) : 0;
+
+		return { artistFont, artistW, baseFlagW, flagW, flagSpace };
+	}
+
+	/**
 	 * Measures interleaved artist/country pairs for drawing and overflow detection.
 	 * Keeps each flag with its artist and omits separators at the start of wrapped lines.
 	 * @param {GdiGraphics} gr - The GDI graphics object.
@@ -588,13 +608,7 @@ class MainUI {
 		for (const pair of this.artistCountryPairs) {
 			if (!pair.artist) continue;
 
-			// Match DrawString's symbol-font fallback when measuring an artist name.
-			const artistFont = Regex.UtilFontNeedsSymbols.test(pair.artist) ? gdi.Font('Segoe UI Symbol', font.Size, font.Style) : font;
-			// DrawString uses GDI+ metrics; CalcTextWidth measures GdiDrawText and can trim a name prematurely.
-			const artistW = Math.ceil(gr.MeasureString(pair.artist, artistFont, 0, 0, 0, 0, Stringformat.No_Wrap).Width);
-			const baseFlagW = pair.flagImg ? HD_4K(pair.flagImg.Height, pair.flagImg.Height * 0.5) * (SCALE(fontSize) / fontSize) : 0;
-			const flagW = pair.flagImg ? Math.max(0, baseFlagW + SCALE(fontSize) - SCALE(26)) : 0;
-			const flagSpace = flagW > 0 ? flagW + SCALE(5) : 0;
+			const { artistFont, artistW, baseFlagW, flagW, flagSpace } = this.measureArtistCountryPair(gr, pair, font, fontSize);
 			let prefixW = x > 0 ? separatorW : 0;
 
 			if (grid && line === 0 && x > 0 && x + prefixW + flagSpace + artistW > width) {
@@ -1458,6 +1472,9 @@ class MainUI {
 
 		Promise.all(metricsPromises).then(() => {
 			this.cachedLowerBarMetrics = this.loadingThemeComplete && !grm.display.hasPlayerSizeChanged() && (this.displayDetails ? grm.details.cachedGridMetrics : true);
+		}).catch(error => {
+			this.cachedLowerBarMetrics = false;
+			grm.debug.debugLog(`Lower bar => Failed to calculate metrics: ${error}`);
 		});
 	}
 
@@ -2235,8 +2252,12 @@ class MainUI {
 		if (!grSet.systemFirstLaunch) return;
 
 		await this.initMain();
-		grm.settings.setThemeSettings(false, false, true);
-		grm.display.autoDetectRes();
+		grm.settings.setThemeSettings(false, false, true).catch(error => {
+			grm.debug.debugLog(`Init => Failed to set theme settings: ${error}`);
+		});
+		grm.display.autoDetectRes().catch(error => {
+			grm.debug.debugLog(`Init => Failed to detect resolution: ${error}`);
+		});
 		this.setDesign('reborn');
 
 		grSet.systemFirstLaunch = false;
@@ -4400,6 +4421,8 @@ class MainUI {
 			}
 			grm.details.clearCache('metrics');
 			grm.debug.repaintWindow();
+		}).catch(error => {
+			grm.debug.debugLog(`Album art => Failed to cycle image: ${error}`);
 		});
 	}
 
@@ -4426,6 +4449,8 @@ class MainUI {
 				this.updateAlbumArtThemeColors();
 				this.resizeArtwork(true);
 				window.Repaint();
+			}).catch(error => {
+				grm.debug.debugLog(`Album art => Failed to display image: ${error}`);
 			});
 		}, 1);
 
@@ -4456,7 +4481,10 @@ class MainUI {
 		}
 
 		this.albumArtIndex = 0;
-		this.loadAlbumArtFromList(this.albumArtIndex); // Display first image
+		// Display first image
+		this.loadAlbumArtFromList(this.albumArtIndex).catch(error => {
+			grm.debug.debugLog(`Album art => Failed to load first image: ${error}`);
+		});
 	}
 
 	/**
